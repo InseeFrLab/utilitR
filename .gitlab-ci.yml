@@ -1,0 +1,14 @@
+variables:
+  GIT_SSL_NO_VERIFY: "1"
+
+pages:
+  stage: deploy
+  image: git-registry.stable.innovation.insee.eu/innovation/rstudio
+  script:
+    - Rscript -e "bookdown::render_book('./index.Rmd', output_dir = 'public')"
+  artifacts:
+    paths:
+      - public
+  only:
+    - master
+
