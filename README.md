@@ -1,1 +1,9 @@
-This is a minimal example of a book based on R Markdown and **bookdown** (https://github.com/rstudio/bookdown). Please see the page "Get Started" at https://bookdown.org/home/about/ for how to compile this example.
+# documentationr
+
+<!-- badges: start -->
+[![pipeline status](https://git.stable.innovation.insee.eu/k2kfed/documentationr/badges/master/pipeline.svg)](https://git.stable.innovation.insee.eu/k2kfed/documentationr/-/commits/master)
+<!-- badges: end -->
+
+ 
+Code source pour le `cookbook R`. Le livre est déployée à l'adresse [suivante](http://k2kfed.pages.innovation.insee.eu/documentationr/)
+
