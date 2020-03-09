@@ -37,8 +37,8 @@ Pour les utilisateurs débutants, `Rstudio` propose une interface très pratique
 
 Une fois que le fichier à importer a été sélectionné, un aperçu des premières lignes du fichier s'affiche dans la fenêtre. Dans l'exemple ci-dessous, on essaie d'importer le fichier des communes du Code Officiel Géographique (version 2019). La fenêtre comprend deux panneaux très utiles:
 
-* Un panneau qui permet de définir les options d'importation (rectangle orange);
-* Un panneau qui donne le code qui réalise l'importation demandée (rectangle vert).
+* Un panneau qui permet de définir les **options d'importation** (rectangle orange);
+* Un panneau qui donne le **code qui réalise l'importation demandée** (rectangle vert).
 
 ![](./pics/Importer_csv/Interface_readr2-1.png){width=100%} 
 
@@ -50,12 +50,36 @@ Les principales options d'importation comprennent notamment:
 * `Locale...`: définit les options locales d'importation, notamment l'encodage et le marqueur décimal qui sont des sources récurrentes de problèmes;
 * `NA`: indique la valeur retenue lorsqu'une valeur est manquante.
 
+Enfin, il est possible de modifier le type des données en cliquant sur la petite flèches à côté de l'en-tête de colonne (flèches noires).
 
-##### Utiliser `read_csv()`
+##### Utiliser `read_delim()` et `read_csv()`
 
-Cette fonction comporte un certain nombre d'options. 
 
-options:
+La fonction  `read_delim()` du *package* `readr` est faite pour lire toutes sortes de fichiers plats, et proposent un grand nombre d'options. La fonction `read_csv()` est une version simplifiée de `read_delim()`, adaptée au cas des fichiers `.csv`.
+
+Voici les principales options de `read_csv()`:
+
+| Argument  | Valeur par défaut | Fonction                                                       |
+|-----------|-------------------|----------------------------------------------------------------|
+| file      | Aucune            | Le chemin du fichier à importer                                |
+| col_names | TRUE              | La première ligne contient-elle les noms de colonne?           |
+| col_types | NULL              | Définir le type des variables                                  |
+| skip      | 0                 | Sauter les n premières lignes (0 par défaut)                   |
+| n_max     | Inf               | Nombre maximum de lignes à importer (pas de limite par défaut) |
+| locale    |                   | Réglages locaux (encodage, marqueur décimal...)                |
+
+Par défaut, la fonction `read_csv()` tente de deviner le type des variables (*integer* pour les nombres entiers, *double* pour les nombres décimaux, *character* pour les chaînes de caractères...). Toutefois, il peut arriver que vous souhaitiez préciser le type des variables lorsque le comportement par défaut ne convient pas. Pour cela, il faut utiliser l'option `col_types` et construire donnant le type de la variable considérée. On écrit: `nom_variable1 = col_integer()` pour imposer le type *integer*, `nom_variable2 = col_character()` pour impose le type *character*, etc.
+
+Ainsi, pour importer le fichier des communes du COG en imposant que le code commune soit lu comme une chaîne de caractères et le numéro de région comme un nombre entier, on écrit le code suivant: 
+
+```{r}
+library(readr)
+communes <- read_csv("D:/K2KFED/communes-01012019.csv", 
+                     locale = locale(encoding ="UTF-8"),
+                     col_types = c(com = col_character(),
+                                   reg = col_integer())
+                     )
+```
 
 * encoding;
 * sélection de variables;
