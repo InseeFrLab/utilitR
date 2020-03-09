@@ -9,18 +9,27 @@ L'utilisateur souhaite importer dans `R` des données stockées sous forme de fi
 ::: recommandation
 **Recommandations de l'Insee**
 
-* Pour importer des données de taille réduite (jusqu'à 1 Go), **il est recommandé d'utiliser la fonction `read_csv()` du package `readr`**;
+* Pour importer des données de taille réduite (jusqu'à 1 Go), **il est recommandé d'utiliser les fonctions `read_csv()` et `read_delim()` du package `readr`**;
 * Pour importer des données de taille plus importante (supérieure à 1 Go), **il est recommandé d'utiliser la fonction `fread()` du package `data.table`**.
 * **L'usage du package `csvread` est déconseillé**, de même que l'utilisation des fonctions natives de `R` `read.csv()` et `read.delim()`.
 :::
 
 ### Importer des fichiers plats en `R`
 
-#### Fichiers de taille limitée: `read_csv()`
+#### Fichiers de taille limitée:  `read_delim()` et `read_csv()`
 
 La fonction `read_csv()` du package `readr` est adaptée pour importer des données de taille limitée (moins de 1 Go). Il faut charger le *package* `readr` pour l'utiliser:
 
 ```{r} library(readr)```.
+
+::: conseil
+**Conseils**
+
+* Si vous êtes débutants en `R`, il est recommandé d'utiliser l'utilitaire d'importation de `Rstudio`. Une fois que les données sont correctement importées, vous pouvez copier-coller le code dans votre script `R`. 
+* Si vous connaissez déjà `R`, vous pouvez utiliser directement les fonctions `read_csv()` et `read_delim()`.
+:::
+
+##### Utiliser l'assistant d'importation `Rstudio`
 
 Pour les utilisateurs débutants, `Rstudio` propose une interface très pratique pour importer des fichiers plats avec `read_csv()`. On y accède avec: `File > Import Dataset > From text (readr)...` On obtient la fenêtre suivante. En cliquant sur `Browse` (rectangle rouge), on peut définir le chemin du fichier que l'on souhaite importer.
 
@@ -33,14 +42,16 @@ Une fois que le fichier à importer a été sélectionné, un aperçu des premi�
 
 ![](./pics/Importer_csv/Interface_readr2-1.png){width=100%} 
 
+Les principales options d'importation comprennent notamment:
+
+* `Name`: Le nom du `data.frame` dans lequel les donnée seront stockées;
+* `First Row as Names`: à cocher si la première ligne contient les noms de colonnes;
+* `Delimiter`: Indique le délimiteur des données. Pour mémoire: `Comma` = virgule, `Semicolon` = point virgule, `Tab` = tabulation, `Whitespace` = espace, `Other...` = autre (à définir);
+* `Locale...`: définit les options locales d'importation, notamment l'encodage et le marqueur décimal qui sont des sources récurrentes de problèmes;
+* `NA`: indique la valeur retenue lorsqu'une valeur est manquante.
 
 
-::: conseil
-**Conseil**
-
-La première fois qu'on importe un fichier plat, vous pouvez vous servir de cette interface pour construire le code adapté à votre situation. Une fois que les données sont correctement importées, vous pouvez copier-coller le code dans votre script `R`. 
-:::
-
+##### Utiliser `read_csv()`
 
 Cette fonction comporte un certain nombre d'options. 
 
