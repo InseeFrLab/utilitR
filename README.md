@@ -5,5 +5,5 @@
 <!-- badges: end -->
 
  
-Code source pour le `cookbook R`. Le livre est déployée à l'adresse [suivante](http://k2kfed.pages.innovation.insee.eu/documentationr/)
+Code source pour le `cookbook R`. Le livre est déployée à l'adresse [suivante](http://k2kfed.pages.innovation.insee.eu/documentationr/intro.html)
 
