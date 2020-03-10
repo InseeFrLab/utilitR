@@ -12,9 +12,7 @@ L'utilisateur souhaite importer dans `R` des données stockées sous forme de fi
 * **L'usage du *package* `csvread` est déconseillé**, de même que l'utilisation des fonctions natives de `R` `read.csv()` et `read.delim()`.
 :::
 
-## Importer des fichiers plats en `R`
-
-## Fichiers de taille limitée:  le package `readr`
+## Importer des fichiers plats de taille limitée:  le package `readr`
 
 Le package `readr` propose plusieurs fonctions parfaitement adaptées pour importer des fichiers plats de taille limitée (moins de 1 Go):
 
@@ -30,7 +28,7 @@ Il faut charger le *package* `readr` pour utiliser ces fonctions:
 **Conseils**
 
 * Si vous êtes débutants en `R`, il est recommandé d'utiliser l'utilitaire d'importation de `Rstudio`. Une fois que les données sont correctement importées, vous pouvez copier-coller le code dans votre script `R`. 
-* Si vous connaissez déjà `R`, vous pouvez utiliser directement les fonctions du *package* `readr`.
+* Si vous connaissez déjà `R`, vous pouvez utiliser directement les fonctions du *package* `readr`, de préférence `read_csv()` ou `read_csv2()`.
 :::
 
 ### Utiliser l'assistant d'importation `Rstudio`
@@ -56,12 +54,13 @@ Les principales options d'importation comprennent notamment:
 
 Enfin, il est possible de modifier le type des données en cliquant sur la petite flèches à côté de l'en-tête de colonne (flèches noires).
 
-### Utiliser `read_delim()` et `read_csv()`
+### Utiliser `read_csv()` et `read_csv2()`
 
 
-La fonction  `read_delim()` du *package* `readr` est faite pour lire toutes sortes de fichiers plats, et proposent un grand nombre d'options. Les fonctions `read_csv()` `read_csv2()` sont des versions simplifiées de `read_delim()`, adaptée au cas des fichiers `.csv`.
+Les fonctions `read_csv()` et `read_csv2()` sont des fonctions d'importation spécialement conçues pour les fichiers `.csv`. Par défaut, la fonction `read_csv()` suppose que le séparateur est une virgule, et que le marqueur décimal est un point. La fonction `read_csv2()` est identique à `read_csv()`, à ceci près qu'elle suppose par défaut que le séparateur est un point-virgule, et que le marqueur décimal est une virgule.
 
-Voici les principales options de `read_csv()`:
+
+Voici les principales options de `read_csv()` et de `read_csv2()`:
 
 | Argument  | Valeur par défaut | Fonction                                                       |
 |-----------|-------------------|----------------------------------------------------------------|
@@ -87,7 +86,22 @@ communes <- read_csv("D:/K2KFED/communes-01012019.csv",
 
 
 
-## `fread()`
+### Utiliser la fonction `read_delim()`
+
+La fonction  `read_delim()` est faite pour lire toutes sortes de fichiers plats, et propose un grand nombre d'options. Elle est puissante, mais plus difficile à utiliser que les fonctions `read_csv()` et `read_csv2()`, qui sont des versions simplifiées de `read_delim()`, adaptées au cas des fichiers `.csv`. En pratique, ces deux fonctions sont le plus souvent suffisantes, et il est rare d'avoir vraiment besoin d'utiliser `read_delim()`.
+
+La fonction `read_delim()` propose les mêmes options que `read_csv()` et `read_csv2()`, avec deux ajouts principaux:
+
+* `delim`: le délimiteur du fichier plat;
+* `escape_backslash` (`TRUE`/`FALSE`): les caractères spéciaux du fichier plat ont-ils un échappement (`\`)?
+
+Pour en savoir plus sur `read_delim()`, il suffit de consulter l'aide avec `?read_delim`.
+
+
+
+## Importer des fichiers plats de grande taille: le *package* `data.table`
+
+
 
 * encoding;
 * choix du séparateur;
