@@ -111,11 +111,22 @@ Pour en savoir plus sur `read_delim()`, il suffit de consulter l'aide avec `?rea
 
 
 
-* encoding;
-* choix du séparateur;
-* sélection de variables;
-* type des variables;
-* barre de progrès.
+Les principales options de `fread()` sont les suivantes:
+
+| Argument         | Valeur par défaut                           | Fonction                                                              |
+|------------------|---------------------------------------------|-----------------------------------------------------------------------|
+| file             | Aucune                                      | Le chemin du fichier à importer                                       |
+| sep              | Le caractère le plus fréquent parmi ,\t |;: | Le délimiteur du fichier                                              |
+| header           | `fread()` essaie de deviner                 | La première ligne contient-elle les noms de colonnes?                 |
+| nrows            | Inf                                         | Nombre maximum de lignes à importer (pas de limite par défaut)        |
+| skip             | 0                                           | Sauter les n premières lignes (0 par défaut)                          |
+| stringsAsFactors | FALSE                                       | Les chaînes de caractères sont-elles traitées comme des facteurs?     |
+| select           | NULL                                        | Sélectionner les colonnes à importer                                  |
+| drop             | NULL                                        | Sélectionner les colonnes à ne pas importer                           |
+| colClasses       | `fread()` essaie de deviner                 | Définir le type des variables                                         |
+| encoding         | "unknown"                                   | Définir l'encodage du fichier ("UTF-8" ou "Latin-1")                  |
+| data.table       | TRUE                                        | `fread` renvoie un `data.table` si `TRUE`, un `data.frame` si `FALSE` |
+| showProgress     | TRUE                                        | Indiquer la progression de l'importation                              |
 
 ```r
 library(data.table)
@@ -127,7 +138,7 @@ df <- fread()
 Voici quelques conseils à avoir en tête pour importer des données:
 
 * **Vérifier que votre machine peut charger les données**: `R` importe les données dans la mémoire vive de la machine. Si les fichiers que vous voulez importer sont d'une taille supérieure à celle de la mémoire vive, vous ne pourrez pas les importer intégralement.
-* **Tester votre code d'importation avec quelques lignes**: il faut souvent tâtonner pour bien importer des données. Il est donc recommandé de commencer par importer quelques centaines ou milliers de lignes (en utilisant l'option `` de `readr` ou `nrows` de `fread()`) pour vérifier que le code est correct.
+* **Tester votre code d'importation avec quelques lignes**: il faut souvent tâtonner pour bien importer des données. Il est donc recommandé de commencer par importer quelques centaines ou milliers de lignes (en utilisant l'option `n_max` des fonctions du *package* `readr` ou `nrows` de `fread()`) pour vérifier que le code est correct.
 * Il est important d'**importer un nombre réduit de colonnes**. Bien sélectionner les colonnes permet souvent de réduire significativement la taille des données et de résoudre le problème mentionné au point précédent. Toutefois, seule la fonction `fread()` de `data.table` permet de sélectionner les colonnes (option `select`).
 * Choisir le *package* en fonction du format de sortie (`tibble` versus `data.table`)
 * Bien choisir le format des colonnes.
