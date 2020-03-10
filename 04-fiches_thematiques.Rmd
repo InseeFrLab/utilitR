@@ -4,21 +4,27 @@
 
 ### Tâches concernées et recommandations
 
-L'utilisateur souhaite importer dans `R` des données stockées sous forme de fichiers plats (format `.txt`, `.csv`, `.tsv`).
+L'utilisateur souhaite importer dans `R` des données stockées sous forme de fichiers plats (formats `.txt`, `.csv`, `.tsv`).
 
 ::: recommandation
 **Recommandations de l'Insee**
 
-* Pour importer des données de taille réduite (jusqu'à 1 Go), **il est recommandé d'utiliser les fonctions `read_csv()` et `read_delim()` du package `readr`**;
-* Pour importer des données de taille plus importante (supérieure à 1 Go), **il est recommandé d'utiliser la fonction `fread()` du package `data.table`**.
-* **L'usage du package `csvread` est déconseillé**, de même que l'utilisation des fonctions natives de `R` `read.csv()` et `read.delim()`.
+* Pour importer des données de taille réduite (jusqu'à 1 Go), **il est recommandé d'utiliser les fonctions `read_csv()` et `read_delim()` du *package* `readr`**;
+* Pour importer des données de taille plus importante (supérieure à 1 Go), **il est recommandé d'utiliser la fonction `fread()` du *package* `data.table`**.
+* **L'usage du *package* `csvread` est déconseillé**, de même que l'utilisation des fonctions natives de `R` `read.csv()` et `read.delim()`.
 :::
 
 ### Importer des fichiers plats en `R`
 
-#### Fichiers de taille limitée:  `read_delim()` et `read_csv()`
+#### Fichiers de taille limitée:  le package `readr`
 
-La fonction `read_csv()` du package `readr` est adaptée pour importer des données de taille limitée (moins de 1 Go). Il faut charger le *package* `readr` pour l'utiliser:
+Le package `readr` propose plusieurs fonctions parfaitement adaptées pour importer des fichiers plats de taille limitée (moins de 1 Go):
+
+* `read_csv()` : lecture d'un csv délimit par des virgules, avec un point comme marqueur décimal;
+* `read_csv2()` : lecture d'un csv séparé par des points-virgules, avec une virgule comme marqueur décimal;
+* `read_delim()` : fonction plus générale et paramétrable, pour lire des fichiers délimités.
+
+Il faut charger le *package* `readr` pour utiliser ces fonctions:
 
 ```{r} library(readr)```.
 
@@ -26,12 +32,12 @@ La fonction `read_csv()` du package `readr` est adaptée pour importer des donn�
 **Conseils**
 
 * Si vous êtes débutants en `R`, il est recommandé d'utiliser l'utilitaire d'importation de `Rstudio`. Une fois que les données sont correctement importées, vous pouvez copier-coller le code dans votre script `R`. 
-* Si vous connaissez déjà `R`, vous pouvez utiliser directement les fonctions `read_csv()` et `read_delim()`.
+* Si vous connaissez déjà `R`, vous pouvez utiliser directement les fonctions du *package* `readr`.
 :::
 
 ##### Utiliser l'assistant d'importation `Rstudio`
 
-Pour les utilisateurs débutants, `Rstudio` propose une interface très pratique pour importer des fichiers plats avec `read_csv()`. On y accède avec: `File > Import Dataset > From text (readr)...` On obtient la fenêtre suivante. En cliquant sur `Browse` (rectangle rouge), on peut définir le chemin du fichier que l'on souhaite importer.
+Pour les utilisateurs débutants, `Rstudio` propose une interface graphique très commode pour importer des fichiers plats avec `readr`. On y accède avec: `File > Import Dataset > From text (readr)...`. On obtient la fenêtre suivante. En cliquant sur `Browse` (rectangle rouge), on peut définir le chemin du fichier que l'on souhaite importer.
 
 ![](./pics/Importer_csv/Interface_readr1-1.png){width=100%} 
 
@@ -55,7 +61,7 @@ Enfin, il est possible de modifier le type des données en cliquant sur la petit
 ##### Utiliser `read_delim()` et `read_csv()`
 
 
-La fonction  `read_delim()` du *package* `readr` est faite pour lire toutes sortes de fichiers plats, et proposent un grand nombre d'options. La fonction `read_csv()` est une version simplifiée de `read_delim()`, adaptée au cas des fichiers `.csv`.
+La fonction  `read_delim()` du *package* `readr` est faite pour lire toutes sortes de fichiers plats, et proposent un grand nombre d'options. Les fonctions `read_csv()` `read_csv2()` sont des versions simplifiées de `read_delim()`, adaptée au cas des fichiers `.csv`.
 
 Voici les principales options de `read_csv()`:
 
@@ -70,7 +76,7 @@ Voici les principales options de `read_csv()`:
 
 Par défaut, la fonction `read_csv()` tente de deviner le type des variables (*integer* pour les nombres entiers, *double* pour les nombres décimaux, *character* pour les chaînes de caractères...). Toutefois, il peut arriver que vous souhaitiez préciser le type des variables lorsque le comportement par défaut ne convient pas. Pour cela, il faut utiliser l'option `col_types` et construire donnant le type de la variable considérée. On écrit: `nom_variable1 = col_integer()` pour imposer le type *integer*, `nom_variable2 = col_character()` pour impose le type *character*, etc.
 
-Dans l'exemple qui suit, on veut importer le fichier des communes du code officiel géographique, en déclarant que le fichier est encodé en UTF-8 et en imposant que le code commune soit lu comme une chaîne de caractères et le numéro de région comme un nombre entier, on écrit le code suivant: 
+Dans l'exemple qui suit, on veut importer le fichier des communes du code officiel géographique, en déclarant que le fichier est encodé en UTF-8 et en imposant que le code commune soit lu comme une chaîne de caractères et le code région comme un nombre entier. On écrit le code suivant: 
 
 ```{r, eval = FALSE}
 library(readr)
@@ -91,12 +97,10 @@ communes <- read_csv("D:/K2KFED/communes-01012019.csv",
 * type des variables;
 * barre de progrès.
 
-
 ```r
 library(data.table)
 df <- fread()
 ```
-
 
 ### Bonnes pratiques
 
