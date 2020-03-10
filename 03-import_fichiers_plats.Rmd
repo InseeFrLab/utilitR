@@ -34,7 +34,7 @@ Il faut charger le *package* `readr` pour utiliser ces fonctions:
 ::: remarque
 **Remarque**
 
-Les fonctions du *package* `readr` importent toutes les colonnes d'un fichier plat. Elles ne permettent donc pas d'importer uniquement certaines colonnes. Si vous avez besoin de pouvoir sélectionner les colonnes, utilisez plutôt `data.table`.
+**Il est nettement plus simple de sélectionner des colonnes avec `fread()` qu'avec les fonctions du *package* `readr`**. Il est donc recommandé d'utiliser `fread()` lorsque vous souhaitez sélectionner facilement les colonnes dans le fichier.
 :::
 
 ### Utiliser l'assistant d'importation `Rstudio`
@@ -75,13 +75,19 @@ Voici les principales options de `read_csv()` et de `read_csv2()`:
 | `file`      | Aucune            | Le chemin du fichier à importer                                |
 | `col_names` | `TRUE`              | La première ligne contient-elle les noms de colonne?           |
 | `col_types` | `NULL`              | Définir le type des variables                                  |
+| `cols_only` | Toutes les variables  | Sélecionner les variables (voir ci-dessous)                                  |
 | `skip`      | `0`                 | Sauter les n premières lignes (0 par défaut)                   |
 | `n_max`     | `Inf`               | Nombre maximum de lignes à importer (pas de limite par défaut) |
 | `locale`    |                   | Réglages locaux (encodage, marqueur décimal...)                |
 
-Par défaut, la fonction `read_csv()` tente de deviner le type des variables (*integer* pour les nombres entiers, *double* pour les nombres décimaux, *character* pour les chaînes de caractères...). Toutefois, il peut arriver que vous souhaitiez préciser le type des variables lorsque le comportement par défaut ne convient pas. Pour cela, il faut utiliser l'option `col_types` et construire donnant le type de la variable considérée. On écrit: `nom_variable1 = col_integer()` pour imposer le type *integer*, `nom_variable2 = col_character()` pour impose le type *character*, etc.
+Quelques remarques sur les options de `read_csv()`:
 
-Dans l'exemple qui suit, on veut importer le fichier des communes du code officiel géographique (version 2019, [disponible ici](https://www.insee.fr/fr/information/3720946)), en déclarant que le fichier est encodé en UTF-8 et en imposant que le code commune soit lu comme une chaîne de caractères et le code région comme un nombre entier. On écrit le code suivant: 
+* `read_csv()` essaie par défaut de deviner le type des colonnes (*integer* pour les nombres entiers, *double* pour les nombres décimaux, *character* pour les chaînes de caractères...). L'option `col_types` permet de choisir le type des colonnes, et doit être égale à un vecteur dont chaque élément est de la forme `nom_variable = [type de colonne]`. Les types de colonnes disponibles sont `col_integer()`, `col_logical()`, `col_double()`, `col_character()`, etc.
+Exemple: si on importe une variable entière et une variable caractère, on écrit: `col_types = c(var1 = col_integer(), var2 = col_character())`.
+* `read_csv()` importe par défaut toutes les colonnes. Il est possible de sélectionner les colonnes qu'on veut importer (en utilisant la modalité `cols_only()` de `col_types`), mais 
+
+
+**Exemple**: on veut importer le fichier des communes du code officiel géographique (version 2019, [disponible ici](https://www.insee.fr/fr/information/3720946)), en déclarant que le fichier est encodé en UTF-8 et en imposant que le code commune soit lu comme une chaîne de caractères et le code région comme un nombre entier. On écrit le code suivant: 
 
 ```{r, eval = FALSE}
 library(readr)
@@ -90,9 +96,8 @@ communes <- read_csv("D:/K2KFED/communes-01012019.csv",
                      col_types = c(com = col_character(),
                                    reg = col_integer())
                      )
+names(communes)
 ```
-
-
 
 ### Utiliser la fonction `read_delim()`
 
@@ -140,10 +145,10 @@ Les principales options de `fread()` sont les suivantes:
 | `data.table`       | `TRUE`                                        | `fread` renvoie un `data.table` si `TRUE`, un `data.frame` si `FALSE` |
 | `showProgress`     | `TRUE`                                        | Indiquer la progression de l'importation                              |
 
-Quelques remarques sur les options:
+Quelques remarques sur les options de `fread()`:
 
-* l'option `select` doit être égale à un vecteur de noms. Exemple: `select = c("var1", "var2", "var4")`;
-* l'option `colClasses` doit égale à un vecteur dont chaque élément est de la forme `nom_variable = "type"`. Exemple: `colClasses = c(var1 = "character", var2 = "logical", var4 = "double")`;
+* `fread()` importe par défaut toutes les colonnes. L'option `select` permet de sélectionner les colonnes, et doit être égale à un vecteur de noms. Exemple: `select = c("var1", "var2", "var4")`;
+* `fread()` essaie par défaut de deviner le type des colonnes (*integer* pour les nombres entiers, *double* pour les nombres décimaux, *character* pour les chaînes de caractères...). L'option `colClasses` permet de choisir le type des colonnes, et doit égale à un vecteur dont chaque élément est de la forme `nom_variable = "type"`. Exemple: `colClasses = c(var1 = "character", var2 = "logical", var4 = "double")`;
 * l'option `stringsAsFactors = TRUE` peut ralentir sensiblement l'importation des données; il faut l'utiliser avec circonspection.
 
 Exemple 1: on veut à nouveau importer le fichier des communes du code officiel géographique, en déclarant que le fichier est encodé en UTF-8 et en imposant que le code commune soit lu comme une chaîne de caractères et le code région comme un nombre entier. On écrit le code suivant:
@@ -173,12 +178,23 @@ Voici quelques conseils à avoir en tête pour importer des données:
 * **Vérifier que votre machine peut charger les données**: `R` importe les données dans la mémoire vive de la machine. Si les fichiers que vous voulez importer sont d'une taille supérieure à celle de la mémoire vive, vous ne pourrez pas les importer intégralement.
 * **Tester votre code d'importation avec quelques lignes**: il faut souvent tâtonner pour bien importer des données. Il est donc recommandé de commencer par importer quelques centaines ou milliers de lignes (en utilisant l'option `n_max` des fonctions du *package* `readr` ou `nrows` de `fread()`) pour vérifier que le code est correct.
 * Il est important d'**importer un nombre réduit de colonnes**. Bien sélectionner les colonnes permet souvent de réduire significativement la taille des données et de résoudre le problème mentionné au point précédent. Toutefois, seule la fonction `fread()` de `data.table` permet de sélectionner les colonnes (option `select`).
-* Vous pouvez choisir le *package* que vous utilisez en fonction du format des données que vous souhaitez utiliser: les fonctions de `readr` renvoient un objet `tibble` tandis que `fread()` renvoie un objet `data.table`. Si vous prévoyez d'utiliser des *packages* du *tidyverse* (notamment `tidyr` et `dplyr`), il est préférable d'utiliser `readr`. Si vous prévoyez d'utiliser `data.table`, il est préférable d'utiliser `fread()`.
+* **Vous pouvez choisir le *package* que vous utilisez en fonction des outils que vous voulez utiliser pour manipuler les données**: les fonctions de `readr` renvoient un objet `tibble` tandis que `fread()` renvoie un objet `data.table`. Si vous prévoyez d'utiliser des *packages* du *tidyverse* (notamment `tidyr` et `dplyr`), il est préférable d'utiliser `readr`. Si vous prévoyez d'utiliser `data.table`, il est préférable d'utiliser `fread()`.
 * Bien choisir le format des colonnes.
 
 ## Ressources
 
-* doc de fread
+* Sur `readr`:
+
+    - [documentation du *package*](https://www.rdocumentation.org/packages/readr) (en anglais);
+    - [l'aide-mémoire du *package*](https://rawgit.com/rstudio/cheatsheets/master/data-import.pdf);
+    
+* sur `data.table`:
+        - [documentation du *package*](https://www.rdocumentation.org/packages/readr) (en anglais);
+    - l'aide-mémoire du *package*;
+    
+    
+* [Documentation de `data.table`](https://www.rdocumentation.org/packages/data.table) (en anglais);
+* [Documentation de `readr`](https://www.rdocumentation.org/packages/readr) (en anglais);
 * doc de data.table
 * éventuelle fiche sur les types de données en R.
 
