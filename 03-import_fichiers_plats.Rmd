@@ -81,7 +81,7 @@ Voici les principales options de `read_csv()` et de `read_csv2()`:
 
 Par défaut, la fonction `read_csv()` tente de deviner le type des variables (*integer* pour les nombres entiers, *double* pour les nombres décimaux, *character* pour les chaînes de caractères...). Toutefois, il peut arriver que vous souhaitiez préciser le type des variables lorsque le comportement par défaut ne convient pas. Pour cela, il faut utiliser l'option `col_types` et construire donnant le type de la variable considérée. On écrit: `nom_variable1 = col_integer()` pour imposer le type *integer*, `nom_variable2 = col_character()` pour impose le type *character*, etc.
 
-Dans l'exemple qui suit, on veut importer le fichier des communes du code officiel géographique, en déclarant que le fichier est encodé en UTF-8 et en imposant que le code commune soit lu comme une chaîne de caractères et le code région comme un nombre entier. On écrit le code suivant: 
+Dans l'exemple qui suit, on veut importer le fichier des communes du code officiel géographique (version 2019, disponible [ici](https://www.insee.fr/fr/information/3720946)), en déclarant que le fichier est encodé en UTF-8 et en imposant que le code commune soit lu comme une chaîne de caractères et le code région comme un nombre entier. On écrit le code suivant: 
 
 ```{r, eval = FALSE}
 library(readr)
@@ -115,6 +115,13 @@ Le *package* `data.table` permet d'importer des fichiers plats avec la fonction 
 * Elle permet de sélectionner les colonnes qu'on veut importer;
 * Elle propose un grand nombre d'options, adaptées pour les usages avancées.
 
+Pour utiliser `fread()`, il faut charger le *package* `data.table`:
+
+```{r, eval = FALSE}
+library(data.table)
+```
+
+
 Les principales options de `fread()` sont les suivantes:
 
 | Argument         | Valeur par défaut                           | Fonction                                                              |
@@ -129,19 +136,35 @@ Les principales options de `fread()` sont les suivantes:
 | `drop`             | `NULL`                                        | Sélectionner les colonnes à ne pas importer                           |
 | `colClasses`       | `fread()` essaie de deviner                 | Définir le type des variables                                         |
 | `encoding`         | `"unknown"`                                   | Définir l'encodage du fichier (`"UTF-8"` ou `"Latin-1"`)                  |
+| `dec`              | Le point                                      | Définir le marqueur décimal                                        |
 | `data.table`       | `TRUE`                                        | `fread` renvoie un `data.table` si `TRUE`, un `data.frame` si `FALSE` |
 | `showProgress`     | `TRUE`                                        | Indiquer la progression de l'importation                              |
 
+Quelques remarques sur les options:
 
+* l'option `select` doit être égale à un vecteur de noms. Exemple: `select = c("var1", "var2", "var4")`;
+* l'option `colClasses` doit prendre la forme suivante: `colClasses = c(var1 = "character", var2 = "logical", var4 = "double")`;
+* l'option `stringsAsFactors = TRUE` peut ralentir sensiblement l'importation des données; il faut l'utiliser avec circonspection.
+
+Exemple 1: on veut à nouveau importer le fichier des communes du code officiel géographique, en déclarant que le fichier est encodé en UTF-8 et en imposant que le code commune soit lu comme une chaîne de caractères et le code région comme un nombre entier. On écrit le code suivant:
 
 ```{r, eval = FALSE}
-library(data.table)
 communes <- fread("D:/K2KFED/communes-01012019.csv",
-                  select = c("com", "reg")
-                  col_types = c(com = col_character(),
-                                reg = col_integer())
-)
+                  colClasses = c(com = "character",
+                                 reg = "integer"),
+                  encoding = "UTF-8")
 ```
+
+Exemple 2: on veut réaliser la même importation que précédemment, mais en sélectionnant uniquement le code commune, le nom de la commune et la région. On écrit le code suivant:
+
+```{r, eval = FALSE}
+communes <- fread("D:/K2KFED/communes-01012019.csv",
+                  select = c("com", "libelle", "reg")
+                  colClasses = c(com = "character",
+                                 reg = "integer"),
+                  encoding = "UTF-8")
+```
+
 
 ## Bonnes pratiques
 
