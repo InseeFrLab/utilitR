@@ -82,10 +82,10 @@ Voici les principales options de `read_csv()` et de `read_csv2()`:
 
 Quelques remarques sur les options de `read_csv()`:
 
-* `read_csv()` essaie par défaut de deviner le type des colonnes (*integer* pour les nombres entiers, *double* pour les nombres décimaux, *character* pour les chaînes de caractères...). L'option `col_types` permet de choisir le type des colonnes, et doit être égale à un vecteur dont chaque élément est de la forme `nom_variable = [type de colonne]`. Les types de colonnes disponibles sont `col_integer()`, `col_logical()`, `col_double()`, `col_character()`, etc.
-Exemple: si on importe une variable entière et une variable caractère, on écrit: `col_types = c(var1 = col_integer(), var2 = col_character())`.
-* `read_csv()` importe par défaut toutes les colonnes. Il est possible de sélectionner les colonnes qu'on veut importer (en utilisant la modalité `cols_only()` de `col_types`), mais 
-
+* `read_csv()` essaie par défaut de deviner le type des colonnes (*integer* pour les nombres entiers, *character* pour les chaînes de caractères...). L'option `col_types` permet de choisir le type des colonnes, et doit être égale à un vecteur dont chaque élément est de la forme `nom_variable = [type de colonne]`. Les types de colonnes disponibles sont `col_integer()`, `col_logical()`, `col_double()`, `col_character()` (voir `?cols` pour la liste complète).
+Exemple: si on importe une variable comme nombre entier et une variable comme caractère, on écrit: `col_types = c(var1 = col_integer(), var2 = col_character())`.
+* `read_csv()` importe par défaut toutes les colonnes du fichier. Il est possible mais vraiment complexe de sélectionner les colonnes qu'on veut importer (en utilisant la modalité `cols_only()` de l'option `col_types`).
+Si vous avez besoin de sélectionner des colonnes, **il est fortement recommandé d'utiliser `fread()`** plutôt que `read_csv` (voir plus bas).
 
 **Exemple**: on veut importer le fichier des communes du code officiel géographique (version 2019, [disponible ici](https://www.insee.fr/fr/information/3720946)), en déclarant que le fichier est encodé en UTF-8 et en imposant que le code commune soit lu comme une chaîne de caractères et le code région comme un nombre entier. On écrit le code suivant: 
 
@@ -148,7 +148,7 @@ Les principales options de `fread()` sont les suivantes:
 Quelques remarques sur les options de `fread()`:
 
 * `fread()` importe par défaut toutes les colonnes. L'option `select` permet de sélectionner les colonnes, et doit être égale à un vecteur de noms. Exemple: `select = c("var1", "var2", "var4")`;
-* `fread()` essaie par défaut de deviner le type des colonnes (*integer* pour les nombres entiers, *double* pour les nombres décimaux, *character* pour les chaînes de caractères...). L'option `colClasses` permet de choisir le type des colonnes, et doit égale à un vecteur dont chaque élément est de la forme `nom_variable = "type"`. Exemple: `colClasses = c(var1 = "character", var2 = "logical", var4 = "double")`;
+* `fread()` essaie par défaut de deviner le type des colonnes (*integer* pour les nombres entiers, *character* pour les chaînes de caractères...). L'option `colClasses` permet de choisir le type des colonnes, et doit égale à un vecteur dont chaque élément est de la forme `nom_variable = "type"`. Exemple: `colClasses = c(var1 = "character", var2 = "logical", var4 = "double")`;
 * l'option `stringsAsFactors = TRUE` peut ralentir sensiblement l'importation des données; il faut l'utiliser avec circonspection.
 
 Exemple 1: on veut à nouveau importer le fichier des communes du code officiel géographique, en déclarant que le fichier est encodé en UTF-8 et en imposant que le code commune soit lu comme une chaîne de caractères et le code région comme un nombre entier. On écrit le code suivant:
