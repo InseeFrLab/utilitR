@@ -81,7 +81,7 @@ Voici les principales options de `read_csv()` et de `read_csv2()`:
 
 Par défaut, la fonction `read_csv()` tente de deviner le type des variables (*integer* pour les nombres entiers, *double* pour les nombres décimaux, *character* pour les chaînes de caractères...). Toutefois, il peut arriver que vous souhaitiez préciser le type des variables lorsque le comportement par défaut ne convient pas. Pour cela, il faut utiliser l'option `col_types` et construire donnant le type de la variable considérée. On écrit: `nom_variable1 = col_integer()` pour imposer le type *integer*, `nom_variable2 = col_character()` pour impose le type *character*, etc.
 
-Dans l'exemple qui suit, on veut importer le fichier des communes du code officiel géographique (version 2019, disponible [ici](https://www.insee.fr/fr/information/3720946)), en déclarant que le fichier est encodé en UTF-8 et en imposant que le code commune soit lu comme une chaîne de caractères et le code région comme un nombre entier. On écrit le code suivant: 
+Dans l'exemple qui suit, on veut importer le fichier des communes du code officiel géographique (version 2019, [disponible ici](https://www.insee.fr/fr/information/3720946)), en déclarant que le fichier est encodé en UTF-8 et en imposant que le code commune soit lu comme une chaîne de caractères et le code région comme un nombre entier. On écrit le code suivant: 
 
 ```{r, eval = FALSE}
 library(readr)
@@ -112,7 +112,7 @@ Pour en savoir plus sur `read_delim()`, il suffit de consulter l'aide avec `?rea
 Le *package* `data.table` permet d'importer des fichiers plats avec la fonction `fread()`. Cette fonction présente trois avantages:
 
 * Elle est très rapide (nettement plus que les fonctions du *package* `readr`);
-* Elle permet de sélectionner les colonnes qu'on veut importer;
+* Elle permet de sélectionner les colonnes qu'on veut importer (option `select`);
 * Elle propose un grand nombre d'options, adaptées pour les usages avancées.
 
 Pour utiliser `fread()`, il faut charger le *package* `data.table`:
@@ -143,7 +143,7 @@ Les principales options de `fread()` sont les suivantes:
 Quelques remarques sur les options:
 
 * l'option `select` doit être égale à un vecteur de noms. Exemple: `select = c("var1", "var2", "var4")`;
-* l'option `colClasses` doit prendre la forme suivante: `colClasses = c(var1 = "character", var2 = "logical", var4 = "double")`;
+* l'option `colClasses` doit égale à un vecteur dont chaque élément est de la forme `nom_variable = "type"`. Exemple: `colClasses = c(var1 = "character", var2 = "logical", var4 = "double")`;
 * l'option `stringsAsFactors = TRUE` peut ralentir sensiblement l'importation des données; il faut l'utiliser avec circonspection.
 
 Exemple 1: on veut à nouveau importer le fichier des communes du code officiel géographique, en déclarant que le fichier est encodé en UTF-8 et en imposant que le code commune soit lu comme une chaîne de caractères et le code région comme un nombre entier. On écrit le code suivant:
@@ -159,7 +159,7 @@ Exemple 2: on veut réaliser la même importation que précédemment, mais en s�
 
 ```{r, eval = FALSE}
 communes <- fread("D:/K2KFED/communes-01012019.csv",
-                  select = c("com", "libelle", "reg")
+                  select = c("com", "libelle", "reg"),
                   colClasses = c(com = "character",
                                  reg = "integer"),
                   encoding = "UTF-8")
@@ -173,7 +173,7 @@ Voici quelques conseils à avoir en tête pour importer des données:
 * **Vérifier que votre machine peut charger les données**: `R` importe les données dans la mémoire vive de la machine. Si les fichiers que vous voulez importer sont d'une taille supérieure à celle de la mémoire vive, vous ne pourrez pas les importer intégralement.
 * **Tester votre code d'importation avec quelques lignes**: il faut souvent tâtonner pour bien importer des données. Il est donc recommandé de commencer par importer quelques centaines ou milliers de lignes (en utilisant l'option `n_max` des fonctions du *package* `readr` ou `nrows` de `fread()`) pour vérifier que le code est correct.
 * Il est important d'**importer un nombre réduit de colonnes**. Bien sélectionner les colonnes permet souvent de réduire significativement la taille des données et de résoudre le problème mentionné au point précédent. Toutefois, seule la fonction `fread()` de `data.table` permet de sélectionner les colonnes (option `select`).
-* Choisir le *package* en fonction du format de sortie (`tibble` versus `data.table`)
+* Vous pouvez choisir le *package* que vous utilisez en fonction du format des données que vous souhaitez utiliser: les fonctions de `readr` renvoient un objet `tibble` tandis que `fread()` renvoie un objet `data.table`. Si vous prévoyez d'utiliser des *packages* du *tidyverse* (notamment `tidyr` et `dplyr`), il est préférable d'utiliser `readr`. Si vous prévoyez d'utiliser `data.table`, il est préférable d'utiliser `fread()`.
 * Bien choisir le format des colonnes.
 
 ## Ressources
