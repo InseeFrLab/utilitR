@@ -72,12 +72,12 @@ Voici les principales options de `read_csv()` et de `read_csv2()`:
 
 | Argument  | Valeur par défaut | Fonction                                                       |
 |-----------|-------------------|----------------------------------------------------------------|
-| file      | Aucune            | Le chemin du fichier à importer                                |
-| col_names | TRUE              | La première ligne contient-elle les noms de colonne?           |
-| col_types | NULL              | Définir le type des variables                                  |
-| skip      | 0                 | Sauter les n premières lignes (0 par défaut)                   |
-| n_max     | Inf               | Nombre maximum de lignes à importer (pas de limite par défaut) |
-| locale    |                   | Réglages locaux (encodage, marqueur décimal...)                |
+| `file`      | Aucune            | Le chemin du fichier à importer                                |
+| `col_names` | `TRUE`              | La première ligne contient-elle les noms de colonne?           |
+| `col_types` | `NULL`              | Définir le type des variables                                  |
+| `skip`      | `0`                 | Sauter les n premières lignes (0 par défaut)                   |
+| `n_max`     | `Inf`               | Nombre maximum de lignes à importer (pas de limite par défaut) |
+| `locale`    |                   | Réglages locaux (encodage, marqueur décimal...)                |
 
 Par défaut, la fonction `read_csv()` tente de deviner le type des variables (*integer* pour les nombres entiers, *double* pour les nombres décimaux, *character* pour les chaînes de caractères...). Toutefois, il peut arriver que vous souhaitiez préciser le type des variables lorsque le comportement par défaut ne convient pas. Pour cela, il faut utiliser l'option `col_types` et construire donnant le type de la variable considérée. On écrit: `nom_variable1 = col_integer()` pour imposer le type *integer*, `nom_variable2 = col_character()` pour impose le type *character*, etc.
 
@@ -96,7 +96,7 @@ communes <- read_csv("D:/K2KFED/communes-01012019.csv",
 
 ### Utiliser la fonction `read_delim()`
 
-La fonction `read_delim()` est faite pour lire toutes sortes de fichiers plats, et propose un grand nombre d'options. Elle est puissante, mais plus difficile à utiliser que les fonctions `read_csv()` et `read_csv2()`, qui sont des versions simplifiées de `read_delim()`. En pratique, ces deux fonctions sont le plus souvent suffisantes, et il est rare d'avoir vraiment besoin d'utiliser `read_delim()`.
+La fonction `read_delim()` est faite pour lire toutes sortes de fichiers plats, et propose de nombreuses options pour l'adapter au fichier considéré. Elle est puissante, mais plus difficile à utiliser que les fonctions `read_csv()` et `read_csv2()`, qui sont des versions simplifiées de `read_delim()`. En pratique, ces deux fonctions sont le plus souvent suffisantes, et il est rare d'avoir vraiment besoin d'utiliser `read_delim()`.
 
 La fonction `read_delim()` propose les mêmes options que `read_csv()` et `read_csv2()`, avec deux ajouts principaux:
 
@@ -109,28 +109,38 @@ Pour en savoir plus sur `read_delim()`, il suffit de consulter l'aide avec `?rea
 
 ## Importer des fichiers plats de grande taille: la fonction `fread()` du *package* `data.table`
 
+Le *package* `data.table` permet d'importer des fichiers plats avec la fonction `fread()`. Cette fonction présente trois avantages:
 
+* Elle est très rapide (nettement plus que les fonctions du *package* `readr`);
+* Elle permet de sélectionner les colonnes qu'on veut importer;
+* Elle propose un grand nombre d'options, adaptées pour les usages avancées.
 
 Les principales options de `fread()` sont les suivantes:
 
 | Argument         | Valeur par défaut                           | Fonction                                                              |
 |------------------|---------------------------------------------|-----------------------------------------------------------------------|
-| file             | Aucune                                      | Le chemin du fichier à importer                                       |
-| sep              | Le caractère le plus fréquent parmi ,\t |;: | Le délimiteur du fichier                                              |
-| header           | `fread()` essaie de deviner                 | La première ligne contient-elle les noms de colonnes?                 |
-| nrows            | Inf                                         | Nombre maximum de lignes à importer (pas de limite par défaut)        |
-| skip             | 0                                           | Sauter les n premières lignes (0 par défaut)                          |
-| stringsAsFactors | FALSE                                       | Les chaînes de caractères sont-elles traitées comme des facteurs?     |
-| select           | NULL                                        | Sélectionner les colonnes à importer                                  |
-| drop             | NULL                                        | Sélectionner les colonnes à ne pas importer                           |
-| colClasses       | `fread()` essaie de deviner                 | Définir le type des variables                                         |
-| encoding         | "unknown"                                   | Définir l'encodage du fichier ("UTF-8" ou "Latin-1")                  |
-| data.table       | TRUE                                        | `fread` renvoie un `data.table` si `TRUE`, un `data.frame` si `FALSE` |
-| showProgress     | TRUE                                        | Indiquer la progression de l'importation                              |
+| `file`             | Aucune                                      | Le chemin du fichier à importer                                       |
+| `sep`              | Le caractère le plus fréquent parmi `,\t |;:` | Le délimiteur du fichier                                              |
+| `header`           | `fread()` essaie de deviner                 | La première ligne contient-elle les noms de colonnes?                 |
+| `nrows`            | `Inf`                                         | Nombre maximum de lignes à importer (pas de limite par défaut)        |
+| `skip`             | `0`                                           | Sauter les n premières lignes (0 par défaut)                          |
+| `stringsAsFactors` | `FALSE`                                       | Les chaînes de caractères sont-elles traitées comme des facteurs?     |
+| `select`           | `NULL`                                        | Sélectionner les colonnes à importer                                  |
+| `drop`             | `NULL`                                        | Sélectionner les colonnes à ne pas importer                           |
+| `colClasses`       | `fread()` essaie de deviner                 | Définir le type des variables                                         |
+| `encoding`         | `"unknown"`                                   | Définir l'encodage du fichier (`"UTF-8"` ou `"Latin-1"`)                  |
+| `data.table`       | `TRUE`                                        | `fread` renvoie un `data.table` si `TRUE`, un `data.frame` si `FALSE` |
+| `showProgress`     | `TRUE`                                        | Indiquer la progression de l'importation                              |
 
-```r
+
+
+```{r, eval = FALSE}
 library(data.table)
-df <- fread()
+communes <- fread("D:/K2KFED/communes-01012019.csv",
+                  select = c("com", "reg")
+                  col_types = c(com = col_character(),
+                                reg = col_integer())
+)
 ```
 
 ## Bonnes pratiques
