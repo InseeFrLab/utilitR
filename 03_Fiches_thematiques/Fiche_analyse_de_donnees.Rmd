@@ -1,0 +1,260 @@
+# Appliquer les méthodes d'analyse de données avec `R` (ACP, ACM, ACF...)
+
+## Tâches concernées et recommandations
+
+Vous souhaitez appliquer les méthodes classiques d'analyse de données, notamment l'analyse en composantes principales, l'analyse des correspondances multiples, l'analyse factorielle des correspondances...
+
+
+::: recommandation
+**Recommandations de l'Insee**
+
+* **Il est recommandé d'utiliser le *package* `FactoMineR`** qui permet d'appliquer toutes les méthodes de façon simple et efficace, et dont la documentation existe en français. 
+* **Il est également recommandé d'utiliser le *package* `factoextra`** qui propose des fonctions utiles pour analyser les résultats.
+:::
+
+## Présentation des *packages* `FactoMineR` et `factoextra`
+
+Le *package* `FactoMineR` (attention à la casse!) permet d'utiliser facilement les méthodes d'analyse de données classiques, notamment l'ACP, l'ACM, l'AFC, la CAH... Par chance, il existe de multiples ressources en français sur ce *package* car il a été développé par des chercheurs français (voir [paragraphe Ressources](#RessourcesACP)).
+
+Le *package* `factoextra` permet par ailleurs d'extraire, de manipuler et de visualiser les résultats des méthodes d'analyse de données. Deux points sont à noter:
+
+* `factoextra` fonctionne également avec les autres *packages* d'analyse de données (`stats`, `ade4`, `ExPosition`);
+* `factoextra` produit des graphiques construits avec le *package* `ggplot2`, qui peuvent donc être facilement personnalisés (titre, couleurs...) et exportés.
+
+Cette fiche présente rapidement comment utiliser ces deux *packages* pour réaliser une analyse en composantes principales. Les fonctions de ces *packages* qui appliquent les autres méthodes ont une grammaire similaire, et sont présentées en détail (et en français!) dans la [documentation](#RessourcesACP).
+
+## L'ACP avec `FactoMineR` et `factoextra`
+
+### Etape 1: réaliser l'ACP
+
+Rappel rapide sur l'analyse en composantes principales: l'ACP est une méthode statistique qui permet d’explorer un jeu de données contenant des individus décrits par plusieurs variables quantitatives, pour lesquelles il est très difficile de visualiser les données dans un “hyper-espace” multidimensionnel. L'ACP est utilisée pour résumer le plus d'informations possibles en un nombre limité de nouvelles variables appelées composantes principales (deux ou trois). Ces composantes principales sont une combinaison linéaire des variables de départ, et peuvent être utilisées pour construire des représentations graphiques des donnes, en perdant le moins possible d’information.
+
+```{r, eval = FALSE}
+library(FactoMineR)
+library(factoextra)
+```
+
+```{r, echo = FALSE}
+library(FactoMineR)
+library(factoextra)
+```
+
+L'analyse en composantes principales est réalisée avec la commande `PCA()` de `FactoMineR`. Cette fonction produit une liste qui contient tous les résultats de l'ACP (valeurs propres, coordonnées...). On peut analyser la structure de cette liste avec la fonction `str()`.
+
+```{r, eval = FALSE}
+PCA(df, scale.unit = TRUE, ncp = 5, graph = TRUE)
+```
+
+Les arguments de la fonction `PCA()` sont les suivants:
+
+* `df`: jeu de données de type data frame. Les lignes sont des individus et les colonnes sont des variables numériques;
+* `scale.unit`: une valeur logique. Si `TRUE`, les données sont standardisées/normalisées avant l’analyse;
+* `ncp`: nombre de dimensions conservées dans les résultats finaux;
+* `graph`: une valeur logique. Si `TRUE`, deux graphiques sont affichés: la projection des individus dans l'espace des individus, et la projection des variables dans l'espace des variables.
+
+On va illustrer l'utilisation de `ACP()` avec le jeu de données `decathlon2` du *package* `factoextra`, qui donne les performances d'un ensemble d'athlètes aux dix épreuves du décathlon.
+
+```{r, eval = FALSE}
+data(decathlon2)
+head(decathlon2)
+# Garder les données pertinentes pour l'ACP
+decathlon2_quant <- decathlon2[c(1:23), c(1:10)]
+```
+
+```{r, echo = FALSE}
+data(decathlon2)
+head(decathlon2)
+decathlon2_quant <- decathlon2[1:23, 1:10]
+```
+
+On stocke dans `resultats_acp` les résultats de l'ACP. Il s'agit d'une liste, dont la structure peut être affichée avec la fonction `str(resultats_acp)`. 
+
+```{r, eval = FALSE}
+resultats_acp <- PCA(decathlon2_quant, scale.unit = TRUE, ncp = 5, graph = FALSE)
+```
+
+```{r, echo = FALSE}
+resultats_acp <- PCA(decathlon2_quant, scale.unit = TRUE, ncp = 5, graph = FALSE)
+```
+
+### Etape 2: Exploiter les résultats de l'ACP avec `factoextra`
+
+Les fonctions suivantes du *package* `factoextra` seront utilisées:
+
+* `get_eigenvalue()`: extraire les valeurs propres;
+* `fviz_eig()`: visualiser les valeurs propres;
+* `get_pca_ind()`, `get_pca_var()`: extraire les résultats pour les individus et les variables, respectivement;
+* `fviz_pca_ind()`, `fviz_pca_var()`: visualiser les résultats des individus et des variables, respectivement;
+* `fviz_pca_biplot()`: créer un biplot des individus et des variables.
+
+#### Analyse des valeurs propres
+
+La fonction `get_eigenvalue()` extrait les valeurs propres de l'ACP, et la fonction `fviz_eig()` les représente graphiquement. Ces deux fonctions permettent de choisir rapidement le nombre de composantes principales que l'on souhaite retenir.
+
+```{r, eval = FALSE}
+eig.val <- get_eigenvalue(resultats_acp)
+eig.val
+```
+
+```{r, echo = FALSE}
+eig.val <- get_eigenvalue(resultats_acp)
+eig.val
+```
+
+```{r, eval = FALSE}
+fviz_eig(resultats_acp, addlabels = TRUE)
+```
+
+```{r, echo = FALSE}
+fviz_eig(resultats_acp, addlabels = TRUE)
+```
+
+#### Analyse de la projection des variables
+
+La fonction `get_pca_var()` permet de récupérer des informations sur les variables: 
+
+* `var$coord`: coordonnées des variables pour créer un nuage de points.
+* `var$cos2`: cosinus carré des coordonnées des variables. Cette variable mesure la qualité de représentation des variables sur le graphique de l'ACP (c'est-à-dire dans quelle mesure la variance de chaque variable se décompose selon les différentes composantes principales);
+* `var$contrib`: contient les contributions (en pourcentage) des variables aux composantes principales.
+
+
+```{r, eval = FALSE}
+var <- get_pca_var(resultats_acp)
+var
+```
+
+```{r, echo = FALSE}
+var <- get_pca_var(resultats_acp)
+var
+```
+
+On peut représenter facilement les variables sur le cercle de corrélation avec la fonction `fviz_pca_var()`. Par défaut cette fonction représente les deux premières dimensions, mais on peut choisir d'autres dimensions en précisant `axes = c(i, j)`.
+
+```{r, eval = FALSE}
+fviz_pca_var(resultats_acp)
+```
+
+```{r, echo = FALSE}
+fviz_pca_var(resultats_acp)
+```
+
+```{r, eval = FALSE}
+fviz_pca_var(resultats_acp, axes = c(1, 3))
+```
+
+```{r, echo = FALSE}
+fviz_pca_var(resultats_acp, axes = c(1, 3))
+```
+
+On peut représenter facilement la **qualité de représentation des variables** avec le *package* `corrplot` (somme en ligne sur toutes les dimensions = 1):
+
+```{r, eval = FALSE}
+library(corrplot)
+corrplot(var$cos2, is.corr = FALSE)
+```
+
+```{r, echo = FALSE}
+library(corrplot)
+corrplot(var$cos2, is.corr = FALSE)
+```
+
+On peut également représenter facilement la **contribution des variables aux composantes principales** (somme en colonne sur toutes les variables = 100):
+
+```{r, eval = FALSE}
+corrplot(var$contrib, is.corr = FALSE)
+```
+
+```{r, echo = FALSE}
+corrplot(var$contrib, is.corr = FALSE)
+```
+
+La fonction `fviz_contrib()` permet de faire un graphique des contributions à une composante principale:
+
+```{r, eval = FALSE}
+fviz_contrib(resultats_acp, choice = "var", axes = 1)
+```
+
+```{r, echo = FALSE}
+fviz_contrib(resultats_acp, choice = "var", axes = 1)
+```
+
+
+
+#### Analyse de la projection des individus
+
+La fonction `get_pca_ind()` permet de récupérer des informations sur les individus: les coordonnées, la qualité de représentation et les contributions.
+
+
+```{r, eval = FALSE}
+ind <- get_pca_ind(resultats_acp)
+ind
+```
+
+```{r, echo = FALSE}
+ind <- get_pca_ind(resultats_acp)
+ind
+```
+
+On peut représenter facilement les individus sur le graphique des composantes principales avec la fonction `fviz_pca_ind()`. Par défaut cette fonction représente les deux premières dimensions, mais on peut choisir d'autres dimensions en précisant `axes = c(i, j)`.
+
+```{r, eval = FALSE}
+fviz_pca_ind(resultats_acp)
+```
+
+```{r, echo = FALSE}
+fviz_pca_ind(resultats_acp)
+```
+
+
+```{r, eval = FALSE}
+fviz_pca_ind(resultats_acp, col.ind = "cos2",
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE # Évite le chevauchement de texte
+             )
+```
+
+```{r, echo = FALSE}
+fviz_pca_ind(resultats_acp, col.ind = "cos2",
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE # Évite le chevauchement de texte
+             )
+```
+
+
+La fonction `fviz_contrib()` permet de faire un graphique des contributions des individus à une composante principale:
+
+```{r, eval = FALSE}
+fviz_contrib(resultats_acp, choice = "ind", axes = 1)
+```
+
+```{r, echo = FALSE}
+fviz_contrib(resultats_acp, choice = "ind", axes = 1)
+```
+
+Enfin, la fonction `fviz_pca_biplot()` permet de réaliser un graphique représentant ensemble les variables et les individus. Dans ce graphique, un individu qui se trouve du même côté d’une variable donnée a une valeur élevée pour cette variable (et inversement).
+
+```{r, eval = FALSE}
+fviz_pca_biplot(resultats_acp, repel = TRUE,
+                col.var = "blue", # Couleur des variables
+                col.ind = "red"  # Couleur des individues
+                )
+```
+
+```{r, echo = FALSE}
+fviz_pca_biplot(resultats_acp, repel = TRUE,
+                col.var = "blue", # Couleur des variables
+                col.ind = "red"  # Couleur des individues
+                )
+```
+
+
+## Ressources {#RessourcesACP}
+
+On trouve sur internet beaucoup de ressources sur le *package* `FactoMineR`:
+
+* le [site officiel du *package* `FactoMineR`](http://factominer.free.fr/index_fr.html) (entièrement en français);
+* un [cours complet d'analyse de données avec `FactoMineR`](http://factominer.free.fr/course/MOOC_fr.html) (entièrement en français);
+* les [tutoriels de `FactoMineR`](http://factominer.free.fr/course/FactoTuto_fr.html) (entièrement en français);
+* Les auteurs de `FactoMineR` ont écrit un [livre sur les méthodes d'analyse de données](https://github.com/gabi493/ADEI/blob/master/Husson%20F.%20et%20al.%20-%20Exploratory%20Multivariate%20Analysis%20by%20Example%20-%20Using%20R%20-%202011.pdf) (en anglais), avec des exemples utilisant le *package*.
+* [Une introduction à l'utilisation de `factoextra` pour visualiser les résultats](http://www.sthda.com/english/wiki/factoextra-r-package-easy-multivariate-data-analyses-and-elegant-visualization) (en anglais);
+* Les auteurs de `FactoMineR` ont également développé un [plugin pour faciliter l'utilisation du *package*](http://factominer.free.fr/graphs/RcmdrPlugin-fr.html).
