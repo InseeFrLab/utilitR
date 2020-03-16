@@ -1,6 +1,8 @@
 # Réaliser des représentations cartographiques en `R`
 
-`R` dispose de fonctionnalités graphiques avancées qui permettent de représenter des données sous forme de cartes. Il peut agir comme un système d'information géographique (SIG), c'est à dire un système capable de stocker, organiser et présenter des données alphanumériques spatialement référencées par des coordonnées dans un système de référence (CRS).
+## Données spatiales: kesako ?
+
+`R` dispose de fonctionnalités graphiques avancées qui permettent de représenter des données sous forme de cartes. `R` peut agir comme un système d'information géographique (SIG), c'est à dire un système capable de stocker, organiser et présenter des données alphanumériques spatialement référencées par des coordonnées dans un système de référence (CRS). Une base de données spatiale est, en `R`, une base de données traditionnelle (de type `dataframe`) enrichie d'une géométrie qui permet une représentation dans un espace euclidien ($(x,y)$). Cette géométrie peut prendre la forme de points, de polygones, etc. Le passage de l'espace plan à l'espace réel (la terre, qui est une sphère) se fait grâce à un système de projection. 
 
 Pour réaliser ce type de travaux, il est nécessaire de disposer de 2 *types* de données :
 
@@ -10,54 +12,34 @@ Pour réaliser ce type de travaux, il est nécessaire de disposer de 2 *types* d
 L'Insee propose un outil pour sélectionner et télécharger des données géographiques : [Créacarte](http://creacartes.insee.fr/).
 
 
-## Liste des *packages* utiles pour la cartographie
-
-Selon la nature des besoins et des données géographiques, plusieurs *packages* proposent des fonctionnalités spatiales / cartographiques :
-
-* le *package* `sf` sera utilisé pour les principaux besoins : lecture des formats de données géographiques, traitements sur les relations spatiales entre régions, représentations graphiques, ... ;
-* le *package* `raster` pour gérer le format de données de type maillage ;
-* le *package* `tmap` et/ou `cartography` pour réaliser rapidement des cartes d'étude ;
-* les *packages* `leaflet` et `mapview` pour la cartographie dynamique ;
-* les *packages* pour l'analyse statistique spatiale :
-  * `spdep` pour l'économétrie spatiale : relations de voisinage entre objets spatiaux, indices d'autocorrélation spatiale, ... ;
-  * `fields` pour calculer la distance entre 2 points ;
-  * `spatstat` pour ...
-  * `gstat` et `geoR` pour la géostatistique
-  * `btb` pour du lissage
-* la *package* `rpostgis` pour interfacer `R` à une base de donnée `PostGIS`
-
-Seuls les *packages* `sf` et `tmap` seront abordés dans cette documentation. Pour le reste, se référer à {#RessourcesCARTO}.
+## *Packages* recommandés
 
 ::: recommandation
 **Recommandations de l'Insee**
 
-* **Il est recommandé d'utiliser le *package* `sf`** pour la gestion des données géographiques. 
-* **Il est également recommandé d'utiliser le *package* `cartography` ou `tmap` (voir reco COPS) ** pour tracer rapidement des cartes d'étude.
+* le *package* `tmap` et/ou `cartography` pour réaliser rapidement des cartes d'étude ;
+* les *packages* `leaflet` et `mapview` pour la cartographie dynamique (cartes `html` dans lesquelles on peut se déplacer) ;
+
 :::
 
 
-## `sf`
 
-Le *package* `sf` repose sur le standard ISO 19125 [*simple feature access*](https://en.wikipedia.org/wiki/Simple_Features) défini conjointement par l'*Open Geospatial Consortium (OGC)* et l'*International Organization for Standardization (ISO)*.
-
-## Importer des données géographiques
-
-`sf` propose un ensemble de fonctions, la plupart préfixées par `st_`
-
-La fonction `st_read()` permet de lire différents formats de données géographiques. Les paramètres attendus par la fonction sont :
-
-* `dsn`, le nom de la source de donnée (nom du fichier ou chemin vers le répertoire contenant les données géo) ;
-* `layer`, le nom de la couche. Ce paramètre est facultatif si les données ne contiennent qu'une seule couche.
+Seuls les *packages* `sf` et `tmap` seront abordés dans cette documentation. Pour le maniement des données spatiales, se référer à {#spatdata}.
 
 
-```{r, eval = TRUE}
-library("sf")
-
+```{r}
 # dpt_shape_url <- "myurl"
 # dpt_shape <- st_read(dsn = dpt_shape_url)
 
-nc = st_read(system.file("shape/nc.shp", package="sf"), quiet=TRUE)
+nc <- sf::st_read(system.file("shape/nc.shp", package="sf"),
+                  quiet=TRUE)
 ```
+
+
+
+
+### Manier des données géographiques
+
 
 ### Tracer une carte
 
@@ -84,11 +66,6 @@ plot(nc["BIR74"])
 ```{r, eval = FALSE}
 help("st_write")
 ```
-
-### Joindre des données géographiques et attributaires
-
-TODO
-ma préco : utiliser la fonction `base::match`
 
 ## Extraire des sous ensemble d'une carte
 
@@ -258,19 +235,6 @@ TODO
 * Lien vers [documentation IGN](https://geodesie.ign.fr/?p=61&page=documentation#titre1)
 
 ## Misc / question
-
-Inclure un paragraphe sur le décret n°2019-165 du 5 mars 2019 relatif au système national de référence de coordonnées ? RGAF09 ?
-
-tableau synthèse des [SRC usités en France](https://geodesie.ign.fr/contenu/fichiers/documentation/SRCfrance.pdf) ?
-
-|   Région    | Système				| code epsg |
-|-------------|---------------|-----------|
-| Métropole		| RGF93					| 2154			|
-| Guadeloupe	| RGAF09				| 5490			|
-| Martinique	| RGAF09				| 5490			|
-| Guyane			| RGFG95				| 2972			|
-| La Réunion	| RGR92					| 2975			|
-| Mayotte			| RGM04					| 4471			|
 
 Trucs et astuces ?
 

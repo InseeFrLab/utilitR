@@ -1,0 +1,84 @@
+# Traiter des données spatiales en `R` {#spatdata}
+
+
+## Données spatiales: kesako ?
+
+`R` dispose de fonctionnalités graphiques avancées qui permettent de représenter des données sous forme de cartes. `R` peut agir comme un système d'information géographique (SIG), c'est à dire un système capable de stocker, organiser et présenter des données alphanumériques spatialement référencées par des coordonnées dans un système de référence (CRS). Une base de données spatiale est, en `R`, une base de données traditionnelle (de type `dataframe`) enrichie d'une géométrie qui permet une représentation dans un espace euclidien ($(x,y)$). Cette géométrie peut prendre la forme de points, de polygones, etc. Le passage de l'espace plan à l'espace réel (la terre, qui est une sphère) se fait grâce à un système de projection. 
+
+Pour réaliser ce type de travaux, il est nécessaire de disposer de 2 *types* de données :
+
+1. des données géographiques : objets géométriques tels que des points, vecteurs, polygones, ... ou des maillages (*raster*) ;
+2. des données attributaires : des mesures à représenter sur les cartes.
+
+L'Insee propose un outil pour sélectionner et télécharger des données géographiques : [Créacarte](http://creacartes.insee.fr/).
+
+
+## *Packages* recommandés
+
+::: recommandation
+**Recommandations de l'Insee**
+
+* Le *package* `sf` sera utilisé pour les principaux besoins : lecture des formats de données géographiques, traitements sur les relations spatiales entre régions, représentations graphiques... Il s'agit d'une extension du `tidyverse` aux données spatiales ;
+:::
+
+Le package `sp` est rendu obsolète par `sf`. Il est donc préférable de ne pas utiliser les morceaux de code disponibles sur internet proposant `sp`, sauf si on a besoin d'utiliser d'autres types de dépendances, notamment `spdep`. 
+
+Selon la nature des besoins et des données géographiques, plusieurs *packages* proposent des fonctionnalités complémentaires :
+
+* le *package* `raster` pour gérer le format de données de type maillage ;
+* les *packages* pour l'analyse statistique spatiale :
+  * `spdep` pour l'économétrie spatiale : relations de voisinage entre objets spatiaux, indices d'autocorrélation spatiale, ... ;
+  * `spatstat` pour ...
+  * `gstat` et `geoR` pour la géostatistique
+  * `btb` pour du lissage
+* la *package* `rpostgis` pour interfacer `R` à une base de donnée `PostGIS`
+
+<!--- Lino: plus besoin car `sf::st_distance` fonctionne
+* `fields` pour calculer la distance entre 2 points ; ---->
+
+
+Le *package* `sf` repose sur le standard ISO 19125 [*simple feature access*](https://en.wikipedia.org/wiki/Simple_Features) défini conjointement par l'*Open Geospatial Consortium (OGC)* et l'*International Organization for Standardization (ISO)*. Les systèmes de projection sont définis par des codes dits *codes EPSG*. Ce [site](https://epsg.io/) est une bonne aide mémoire. Les plus fréquents, pour les utilisateurs français, sont les suivants:
+
+* `2154`: système de projection Lambert 93. Il s'agit du système de projection officiel: la plupart des données diffusées par l'administration pour la métropole sont accessibles à partir de ce format.
+* `4326`: WGS 84 ou système de pseudo-Mercator. C'est le système de représentation utilisé par les données GPS.
+* `27572`: Lambert II étendu. Il s'agit de l'ancien système de projection officiel. Les données spatiales anciennes peuvent être dans ce format.
+
+Tableau synthèse des [SRC usités en France](https://geodesie.ign.fr/contenu/fichiers/documentation/SRCfrance.pdf) ?
+
+|   Région    | Système				| code epsg |
+|-------------|---------------|-----------|
+| Métropole		| RGF93					| 2154			|
+| Guadeloupe	| RGAF09				| 5490			|
+| Martinique	| RGAF09				| 5490			|
+| Guyane			| RGFG95				| 2972			|
+| La Réunion	| RGR92					| 2975			|
+| Mayotte			| RGM04					| 4471			|
+
+
+
+## Importer des données géographiques
+
+`sf` propose un ensemble de fonctions, la plupart préfixées par `st_`
+
+La fonction `sf::st_read()` permet de lire différents formats de données géographiques. Les paramètres attendus par la fonction sont :
+
+* `dsn`, le nom de la source de donnée (nom du fichier ou chemin vers le répertoire contenant les données géo) ;
+* `layer`, le nom de la couche. Ce paramètre est facultatif si les données ne contiennent qu'une seule couche.
+
+
+```{r}
+# dpt_shape_url <- "myurl"
+# dpt_shape <- st_read(dsn = dpt_shape_url)
+
+nc <- sf::st_read(system.file("shape/nc.shp", package="sf"),
+                  quiet=TRUE)
+```
+
+Il est possible également de définir le système de projection dès l'import, via l'argument `crs`. 
+
+
+### Joindre des données géographiques et attributaires
+
+TODO
+ma préco : utiliser la fonction `base::match`
+
