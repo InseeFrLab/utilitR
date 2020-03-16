@@ -1,0 +1,29 @@
+variables:
+  GIT_SSL_NO_VERIFY: "1"
+
+before_script:
+    - Rscript -e "install.packages(c('RcppEigen', 'FactoMineR','factoextra', 'corrplot'))"
+    - Rscript -e "bookdown::clean_book(TRUE)"
+
+pages:
+  stage: deploy
+  image: git-registry.stable.innovation.insee.eu/innovation/rstudio
+  script:
+    - Rscript -e "bookdown::render_book('./index.Rmd', output_dir = 'public')"
+  artifacts:
+    paths:
+      - public
+  only:
+    - master
+
+
+buildbookdown:
+  stage: deploy
+  image: git-registry.stable.innovation.insee.eu/innovation/rstudio
+  script:
+    - Rscript -e "bookdown::render_book('index.Rmd', 'bookdown::gitbook')"
+    - Rscript -e "bookdown::render_book('index.Rmd', 'bookdown::pdf_book')"
+  artifacts:
+    paths:
+      - public
+    when: always
