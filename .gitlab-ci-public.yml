@@ -1,0 +1,16 @@
+image: rocker/geospatial
+
+before_script:
+    - Rscript -e "install.packages(c('RcppEigen', 'FactoMineR','factoextra', 'corrplot'))"
+    - Rscript -e "bookdown::clean_book(TRUE)"
+
+
+buildbookdown:
+  stage: build
+  script:
+    - Rscript -e "bookdown::render_book('index.Rmd', 'bookdown::gitbook')"
+    - Rscript -e "bookdown::render_book('index.Rmd', 'bookdown::pdf_book')"
+  artifacts:
+    paths:
+      - public
+    when: always
