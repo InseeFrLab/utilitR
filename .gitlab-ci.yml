@@ -9,8 +9,7 @@ pages:
   stage: deploy
   image: git-registry.stable.innovation.insee.eu/innovation/rstudio
   script:
-    - Rscript -e "bookdown::render_book('index.Rmd', 'bookdown::gitbook')"
-    - Rscript -e "bookdown::render_book('index.Rmd', 'bookdown::pdf_book')"
+    - Rscript -e "bookdown::render_book('./index.Rmd', output_dir = 'public')"
   artifacts:
     paths:
       - public
@@ -22,7 +21,8 @@ buildbookdown:
   stage: deploy
   image: git-registry.stable.innovation.insee.eu/innovation/rstudio
   script:
-  - Rscript -e "bookdown::render_book('./index.Rmd', output_dir = 'public')"
+    - Rscript -e "bookdown::render_book('index.Rmd', 'bookdown::gitbook')"
+    - Rscript -e "bookdown::render_book('index.Rmd', 'bookdown::pdf_book')"
   artifacts:
     paths:
       - public
