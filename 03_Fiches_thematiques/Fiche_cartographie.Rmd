@@ -1,85 +1,281 @@
-# Réaliser des représentations cartographiques en R
+# Réaliser des représentations cartographiques en `R`
 
-## Tâches concernées et recommandations
+`R` dispose de fonctionnalités graphiques avancées qui permettent de représenter des données sous forme de cartes. Il peut agir comme un système d'information géographique (SIG), c'est à dire un système capable de stocker, organiser et présenter des données alphanumériques spatialement référencées par des coordonnées dans un système de référence (CRS).
 
-Quelques détails sur la tâche dont il s'agit
+Pour réaliser ce type de travaux, il est nécessaire de disposer de 2 *types* de données :
+
+1. des données géographiques : objets géométriques tels que des points, vecteurs, polygones, ... ou des maillages (*raster*) ;
+2. des données attributaires : des mesures à représenter sur les cartes.
+
+L'Insee propose un outil pour sélectionner et télécharger des données géographiques : [Créacarte](http://creacartes.insee.fr/).
+
+
+## Liste des *packages* utiles pour la cartographie
+
+Selon la nature des besoins et des données géographiques, plusieurs *packages* proposent des fonctionnalités spatiales / cartographiques :
+
+* le *package* `sf` sera utilisé pour les principaux besoins : lecture des formats de données géographiques, traitements sur les relations spatiales entre régions, représentations graphiques, ... ;
+* le *package* `raster` pour gérer le format de données de type maillage ;
+* le *package* `tmap` et/ou `cartography` pour réaliser rapidement des cartes d'étude ;
+* les *packages* `leaflet` et `mapview` pour la cartographie dynamique ;
+* les *packages* pour l'analyse statistique spatiale :
+  * `spdep` pour l'économétrie spatiale : relations de voisinage entre objets spatiaux, indices d'autocorrélation spatiale, ... ;
+  * `fields` pour calculer la distance entre 2 points ;
+  * `spatstat` pour ...
+  * `gstat` et `geoR` pour la géostatistique
+  * `btb` pour du lissage
+* la *package* `rpostgis` pour interfacer `R` à une base de donnée `PostGIS`
+
+Seuls les *packages* `sf` et `tmap` seront abordés dans cette documentation. Pour le reste, se référer à {#RessourcesCARTO}.
 
 ::: recommandation
 **Recommandations de l'Insee**
 
-Dire en 4-5 lignes comment il est recommandé de procéder:
-
-* le ou les *package*(*s*) dont l'usage est recommandé; si on recommande plusieurs *packages*, expliquer comment choisir lequel (en fonction de la taille des données, du format...)
-* les *packages* dont l'usage est déconseillé; 
-* les autres points de méthode essentiels.
-
+* **Il est recommandé d'utiliser le *package* `sf`** pour la gestion des données géographiques. 
+* **Il est également recommandé d'utiliser le *package* `cartography` ou `tmap` (voir reco COPS) ** pour tracer rapidement des cartes d'étude.
 :::
 
-## Quelques détails sur comment réaliser la tâche avec les outils recommandés
 
-::: conseil
-**Conseil**
+## `sf`
 
-Cette boîte colorée sert à donner un conseil. Son usage n'est évidemment pas obligatoire.
+Le *package* `sf` repose sur le standard ISO 19125 [*simple feature access*](https://en.wikipedia.org/wiki/Simple_Features) défini conjointement par l'*Open Geospatial Consortium (OGC)* et l'*International Organization for Standardization (ISO)*.
 
-:::
+## Importer des données géographiques
 
-::: remarque
-**Remarque**
+`sf` propose un ensemble de fonctions, la plupart préfixées par `st_`
 
-Cette boîte colorée sert à faire une remarque. Son usage n'est évidemment pas obligatoire.
+La fonction `st_read()` permet de lire différents formats de données géographiques. Les paramètres attendus par la fonction sont :
 
-:::
+* `dsn`, le nom de la source de donnée (nom du fichier ou chemin vers le répertoire contenant les données géo) ;
+* `layer`, le nom de la couche. Ce paramètre est facultatif si les données ne contiennent qu'une seule couche.
 
-### Réaliser la tâche, cas 1
 
-Lorsqu'on est débutant, il faut utiliser la fonction `super_fonction()` du *package* `super_package`.
+```{r, eval = TRUE}
+library("sf")
 
-La fonction `super_fonction()` fonctionne comme ceci par défaut: blabla.
+# dpt_shape_url <- "myurl"
+# dpt_shape <- st_read(dsn = dpt_shape_url)
 
-La fonction `super_fonction()` propose beaucoup d'options:
-
-* `option1`: blabla;
-* `option2`: blabla;
-* `option3`: blabla.
-
-Voici un premier exemple de code (le plus simple possible, en utilisant des données facilement disponibles sur le site de l'Insee):
-
-```{r, eval = FALSE}
-library(super_package)
-output <- super_fonction(arguments)
+nc = st_read(system.file("shape/nc.shp", package="sf"), quiet=TRUE)
 ```
 
-Ne pas oublier d'expliquer ce qu'on obtient comme output.
+### Tracer une carte
 
-Voici un second exemple de code, avec des options un peu plus avancées:
+#### Toutes les variables
+
+```{r, eval=TRUE}
+plot(nc)
+```
+
+#### Juste la géométrie
+
+```{r, eval=TRUE}
+plot(st_geometry(nc))
+```
+
+#### Une variable
+
+```{r, eval=TRUE}
+plot(nc["BIR74"])
+```
+
+### Exporter des objets `sf`
 
 ```{r, eval = FALSE}
-output <- super_fonction(arguments et options)
+help("st_write")
+```
+
+### Joindre des données géographiques et attributaires
+
+TODO
+ma préco : utiliser la fonction `base::match`
+
+## Extraire des sous ensemble d'une carte
+
+Si la table attributaire de l'objet spatial le permet
+
+```{r, eval=TRUE}
+espagne_italie <- europe_LAEA[europe_LAEA$iso_a3 %in% c("ITA", "ESP"), ]
+plot(st_geometry(espagne_italie), graticule=T, axes=T)
+```
+
+### Transformations / projections
+
+Pour connaitre le CRS d'un objet spatial, il faut utiliser la fonction `st_crs`. Il est possible de modifier la projection d'une carte grâce à la fonction `st_transform`. Cette fonction attend 2 paramètres :
+
+* `x`: un objet de classe `sf`
+* `crs` : coordinate reference system. Un entier correspondant au code [EPSG](http://www.epsg.org/) ou une chaine de caractère pour le [`proj4string`](https://spatialreference.org/).
+
+```{r, eval=TRUE}
+data("World")
+europe <- World[World$continent == "Europe", ]
+st_crs(europe)
+
+plot(st_geometry(europe),
+		 main=st_crs(europe)[[2]],
+		 cex.main = 0.8,
+		 axes=TRUE,
+		 graticule=TRUE)
+
+europe_LAEA <- st_transform(europe, 3035)
+
+plot(st_geometry(europe_LAEA),
+		 main=st_crs(europe_LAEA)[[2]],
+		 cex.main = 0.8,
+		 axes=TRUE,
+		 graticule=TRUE)
+
+```
+
+### Relations topologiques
+
+Les [relations topologiques](https://github.com/rugbyprof/4553-Spatial-DS/wiki/Topological-Relationships) sont l'adjacence (ou contiguïté), la connectivité, l'inclusion et l'intersection. La liste des fonctions de se type s'obtient *via* la commande `help("geos_binary_pred")`.
+
+```{r, eval=TRUE, echo=FALSE}
+help_console <- function(topic, format=c("text", "html", "latex", "Rd"),
+                         lines=NULL, before=NULL, after=NULL) {  
+  format=match.arg(format)
+  if (!is.character(topic)) topic <- deparse(substitute(topic))
+  helpfile = utils:::.getHelpFile(help(topic))
+
+  hs <- capture.output(switch(format, 
+                              text=tools:::Rd2txt(helpfile),
+                              html=tools:::Rd2HTML(helpfile),
+                              latex=tools:::Rd2latex(helpfile),
+                              Rd=tools:::prepare_Rd(helpfile)
+                              )
+                      )
+  if(!is.null(lines)) hs <- hs[lines]
+  hs <- c(before, hs, after)
+  cat(hs, sep="\n")
+  invisible(hs)
+}
+```
+
+```{r, echo=FALSE, results="asis"}
+help_console(topic="geos_binary_pred", format="html", lines=c(7:46))
+```
+
+### Rogner la carte (*crop*)
+
+```{r, eval=TRUE}
+st_bbox(europe_LAEA)
+
+ma_zone <- c(xmin=2555000,
+						 xmax=7500000,
+						 ymin=800000,
+						 ymax=5500000)
+europe_centree <- st_crop(europe_LAEA, ma_zone)
+plot(st_geometry(europe_centree), graticule=TRUE, axes=TRUE)
+```
+
+### Pimp my map
+
+```{r, eval=TRUE}
+
+library("ggplot2")
+
+lon <- st_coordinates(st_centroid(st_geometry(europe_centree)))[, 1]
+lat <- st_coordinates(st_centroid(st_geometry(europe_centree)))[, 2]
+mybreaks <- c(1000000, 20000000, 50000000, 100000000)
+
+g1 <- ggplot(data=europe_centree) +
+	geom_sf() +
+	geom_point(aes(x=lon, y=lat, size=pop_est))
+
+g1 +
+	scale_size_continuous(name="Population estimée", range=c(1,10), breaks=mybreaks) +
+	ggtitle(label = "Population estimée en xxxx", subtitle = "Source : World dataset") +
+  theme(panel.background = element_rect(fill = "#a3d9f3"))
+
 ```
 
 
-### Réaliser la tâche, cas 2
+## `tmap`
 
-Lorsqu'on est plus avancé, on peut utiliser la fonction `hyper_fonction()` du *package* `hyper_package`.
+`tmap` fonctionne selon l'approche *layered grammar of graphic (LGG)*, c'est à dire un système de couches superposées respectant une grammaire déterminée (comme `ggplot2`). `tmap` est également compatible avec la syntaxe `tidyverse`. 
 
-* Comportement par défaut;
-* Principales options;
-* Exemples de code.
+Ce *package* permet de réaliser différent type de cartes :
 
-## Quelques bonnes pratiques
+* cartes choroplètes
+* cartes catégorielles
+* cartes à symboles proportionnels
+* cartes isoplèthe ou à contour
+* ...
 
-Quelques conseils généraux sur la façon de s'y prendre.
+### Carte choroplète
 
-* Faut-il préprocesser les données avant de réaliser la tâche;
-* Comment minimiser les temps de calculs/la charge en RAM.
+```{r, eval = TRUE}
+library("tmap")
+data("World")
 
+tm_shape(World) +
+	tm_polygons("HPI")
+```
 
-## Ressources
+### Symboles proportionnels
 
-* la documentation des *packages*];
-* les vignettes et *cheatsheets* si elles existent;
-* les formations proposées par l'Insee;
-* les formations/tutoriels disponibles sur internet.
+```{r, eval=TRUE}
+tm_shape(World) +
+	tm_polygons() +
+	tm_bubbles("pop_est")
+```
 
-Dans la mesure du possible, il faut veiller à proposer des ressources en français.
+### Combiner plusieurs objets spatiaux et plusieurs couches
+
+```{r, eval=TRUE}
+data("metro")
+
+tm_shape(World) +
+	tm_polygons("HPI") +
+tm_shape(metro) +
+	tm_symbols(col = "red", size = "pop2020", scale = 1)
+
+```
+
+### Exporter une carte
+
+L'export des cartes se réalise *via* la fonction `tm_save`.
+
+## R + PostGIS
+
+TODO
+
+## Ressources {#RessourcesCARTO}
+
+* la task view [Analysis of Spatial Data du CRAN](https://cran.r-project.org/web/views/Spatial.html)
+* la [vignette du *packages* sf](https://cran.r-project.org/web/packages/sf/vignettes/sf1.html)
+* la [vignette du *package* tmap](https://cran.r-project.org/web/packages/tmap/vignettes/tmap-getstarted.html)
+* l'article du [JSS : `tmap`: Thematic Maps in `R`](https://www.jstatsoft.org/index.php/jss/article/view/v084i06/v84i06.pdf)
+* la [*cheatsheets* de sf](https://github.com/rstudio/cheatsheets/raw/master/sf.pdf)
+* la [*cheatsheets* de leaflet](https://github.com/rstudio/cheatsheets/raw/master/leaflet.pdf)
+* le site internet du livre [Geocomputation with `R`](https://geocompr.robinlovelace.net/)
+* le site internet du livre [Spatial Data Science](https://keen-swartz-3146c4.netlify.com/)
+* le site internet [R géomatique](https://rgeomatic.hypotheses.org/category/cartography)
+* le site internet [du MTES](https://mtes-mct.github.io/parcours-r/m5/creer-des-cartes-avec-ggplot2-et-tmap.html)
+* [Manuel d’analyse spatiale - Théorie et mise en oeuvre pratique avec R, Insee Méthodes n° 131 - octobre 2018](https://www.insee.fr/fr/information/3635442)
+* [Guide de sémiologie cartographique, Documents de travail N° H2018/04](https://www.insee.fr/fr/statistiques/3640429)
+* Lien vers [documentation IGN](https://geodesie.ign.fr/?p=61&page=documentation#titre1)
+
+## Misc / question
+
+Inclure un paragraphe sur le décret n°2019-165 du 5 mars 2019 relatif au système national de référence de coordonnées ? RGAF09 ?
+
+tableau synthèse des [SRC usités en France](https://geodesie.ign.fr/contenu/fichiers/documentation/SRCfrance.pdf) ?
+
+|   Région    | Système				| code epsg |
+|-------------|---------------|-----------|
+| Métropole		| RGF93					| 2154			|
+| Guadeloupe	| RGAF09				| 5490			|
+| Martinique	| RGAF09				| 5490			|
+| Guyane			| RGFG95				| 2972			|
+| La Réunion	| RGR92					| 2975			|
+| Mayotte			| RGM04					| 4471			|
+
+Trucs et astuces ?
+
+erreurs topologiques : zone tampon distance 0.
+
+```{r, eval=FALSE}
+good_geom <- st_buffer(bad_geom, dist = 0)
+```
