@@ -2,20 +2,23 @@ default:
   image: rocker/geospatial
   
 
-build_image:
-  stage: build
-  services: 
-      - docker:dind
-  script:
-    - docker build --build-arg BASE_IMAGE=rocker/geospatial --pull -t $CI_REGISTRY_IMAGE .
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker push $CI_REGISTRY_IMAGE
-  only:
-    - master
+# build_image:
+#  stage: build
+#  services: 
+#      - docker:dind
+#  script:
+#    - docker build --build-arg BASE_IMAGE=rocker/geospatial --pull -t $CI_REGISTRY_IMAGE .
+#    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+#    - docker push $CI_REGISTRY_IMAGE
+#  only:
+#    - master
+
+before_script:
+  - Rscript -e "remotes::install_deps('.', dependencies = TRUE, upgrade = FALSE)"
 
 pages:
   stage: deploy
-  image: $CI_REGISTRY_IMAGE
+#  image: $CI_REGISTRY_IMAGE
   script:
     - Rscript -e "bookdown::render_book('./index.Rmd', output_dir = 'public')"
   artifacts:
