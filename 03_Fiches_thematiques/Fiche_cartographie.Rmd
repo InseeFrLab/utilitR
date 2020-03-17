@@ -40,7 +40,7 @@ nc <- sf::st_read(system.file("shape/nc.shp", package="sf"),
 
 
 
-### Manier des données géographiques
+## Manier des données géographiques
 
 
 ### Tracer une carte
@@ -74,6 +74,8 @@ help("st_write")
 Si la table attributaire de l'objet spatial le permet
 
 ```{r, eval=TRUE}
+data("World")
+europe <- World[World$continent == "Europe", ]
 espagne_italie <- europe_LAEA[europe_LAEA$iso_a3 %in% c("ITA", "ESP"), ]
 plot(st_geometry(espagne_italie), graticule=T, axes=T)
 ```
@@ -86,8 +88,6 @@ Pour connaitre le CRS d'un objet spatial, il faut utiliser la fonction `st_crs`.
 * `crs` : coordinate reference system. Un entier correspondant au code [EPSG](http://www.epsg.org/) ou une chaine de caractère pour le [`proj4string`](https://spatialreference.org/).
 
 ```{r, eval=TRUE}
-data("World")
-europe <- World[World$continent == "Europe", ]
 st_crs(europe)
 
 plot(st_geometry(europe),
