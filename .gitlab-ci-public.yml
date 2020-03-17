@@ -1,9 +1,8 @@
-default:
-  image: rocker/geospatial
+image: docker:stable
 
 services:
   - docker:dind
-
+  
 variables:
   DOCKER_HOST: tcp://docker:2375
   DOCKER_DRIVER: overlay2
@@ -14,14 +13,15 @@ stages:
   - install
   - deploy
 
+before_script:
+  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+
 build_image:
   stage: install
   script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker build --build-arg BASE_IMAGE=rocker/geospatial --pull -t $CI_REGISTRY_IMAGE .
-    - docker push $CI_REGISTRY_IMAGE
-  only:
-    - master
+    - mkdir -p ${SHARED_PATH}
+    - docker build --pull -t $CONTAINER_TEST_IMAGE .
+    - docker push $CONTAINER_TEST_IMAGE
 
 pages:
   stage: deploy
