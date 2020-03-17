@@ -1,8 +1,29 @@
-image: rocker/geospatial
-
 before_script:
-    - Rscript -e "install.packages(c('RcppEigen', 'FactoMineR','factoextra', 'corrplot'))"
+    - Rscript -e "devtools::install_deps('.')"
     - Rscript -e "bookdown::clean_book(TRUE)"
+
+
+build_image:
+  stage: build
+  tags: 
+    - maven
+  script:
+    - docker build --build-arg BASE_IMAGE=rocker/geospatial --pull -t $CI_REGISTRY_IMAGE .
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker push $CI_REGISTRY_IMAGE
+  only:
+    - master
+
+pages:
+  stage: deploy
+  image: $CI_REGISTRY_IMAGE
+  script:
+    - Rscript -e "bookdown::render_book('./index.Rmd', output_dir = 'public')"
+  artifacts:
+    paths:
+      - public
+  only:
+    - master
 
 
 buildbookdown:
@@ -12,5 +33,8 @@ buildbookdown:
     - Rscript -e "bookdown::render_book('index.Rmd', 'bookdown::pdf_book')"
   artifacts:
     paths:
-      - public
+      - _book
     when: always
+
+
+
