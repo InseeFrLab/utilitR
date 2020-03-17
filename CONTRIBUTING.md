@@ -4,6 +4,35 @@ L'objet de ce document est de présenter les différentes
 manières de participer au `cookbook`. Il s'agit d'une adaptation du code des
 contributeurs proposé par l'équipe du `tidyverse`.
 
+## Comment écrire une fiche thématique pour la documentation `R`
+
+* Signaler dans l'*issue* #6 sur quel sujet vous voulez proposer une fiche (toutes suggestions bienvenues);
+* Une fois que l'équipe de contributeurs est d'accord sur l'objet de la fiche:
+    - créer une branche dont le nom reflète l'objet de la fiche (exemple: fiche_graphiques); c'est dans cette branche du dépôt que la fiche va être rédigée;
+     - créer une *issue* dont le nom reflète l'objet de la fiche (exemple: "discussion fiche graphiques"): cette *issue* va servir de fil de discussion sur la fiche.
+* Rédiger la fiche en `Rmarkdown` à partir du modèle de fiche (03_Fiches_thematiques/Modele_de_fiche.Rmd);
+* Quand une première version de la fiche est prête:
+    - vérifier que le code est bien fonctionnel (c'est-à-dire que la branche compile bien);
+    - faire un *merge request* vers la branche master du dépôt, avec les options `squash commits` et `WIP` (Work In Progress);
+* Préciser quels sont les relecteurs de la fiche;
+* Une fois que la fiche est acceptée, l'un des mainteneurs accepte le *merge request*.
+
+## Comment rédiger une fiche thématique
+
+C'est ici que les obsessionnels de la mise en page peuvent se lâcher. Quelques idées:
+
+* Sur la rédaction elle-même:
+    - Rédiger la fiche en `Rmarkdown` à partir du modèle de fiche (03_Fiches_thematiques/Modele_de_fiche.Rmd);
+    - Utiliser systématiquement la syntaxe `package::function()` quand on parle d'une fonction;
+    - mettre *package* en italique;
+* Sur le fond:
+    - **Bien tester tous les exemples**;
+    - Utiliser au maximum des *datasets* disponibles par défaut dans `R` pour les exemples (`iris`, `nycflights13`, etc.);
+    - Pour présenter l'utilisation d'une fonction:
+        + commencer par le comportement par défaut (avec le minimum d'arguments);
+        + présenter les principales options, avec un ou deux exemples.
+
+
 
 ### Retirer des coquilles
 
@@ -12,15 +41,6 @@ il est possible de passer directement par l'interface graphique de `gitlab`.
 Pour cela, vous pouvez suivre
 [cette démarche](https://docs.gitlab.com/ee/user/discussions/#suggest-changes).
 
-### Prérequis
-
-Avant de proposer une `merge request`, il est nécessaire d'ouvrir une *issue*
-et s'assurer que l'équipe de mainteneurs du projet considère qu'il s'agit
-d'un chemin à suivre. Cela permet d'interagir avec eux et ainsi mieux
-définir le chemin à suivre pour développer le `cookbook`. Si l'objet
-de la modification est un `bug` detecté, ajouter le label `bug` et
-essayer d'illustrer avec
-un [exemple reproductible minimal](https://www.tidyverse.org/help/#reprex).
 
 
 ### Processus de `merge request`
