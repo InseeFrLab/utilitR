@@ -1,4 +1,8 @@
-# Guide pour contribuer au `cookbookInsee`
+# Guide pour contribuer au `cookbookInsee` :cop:
+
+:closed_book:
+:police_car: :cop: :oncoming_police_car:
+:books: :guardsman: :nerd: 
 
 L'objet de ce document est de présenter les différentes
 manières de participer au `cookbook`. Il s'agit d'une adaptation du code des
@@ -6,35 +10,38 @@ contributeurs proposé par l'équipe du `tidyverse`.
 
 ## Retirer des coquilles
 
-Pour les erreurs grammaticales, orthographiques ou les coquilles,
-il est possible de passer directement par l'interface graphique de `gitlab`.
+Pour les erreurs grammaticales, orthographiques ou les coquilles (:thumbsdown:),
+il est possible de passer directement par l'interface graphique de `gitlab` :smile:.
 Pour cela, vous pouvez suivre
 [cette démarche](https://docs.gitlab.com/ee/user/discussions/#suggest-changes).
 
 
-## Comment écrire une fiche thématique pour la documentation `R`
+## Marche à suivre pour écrire une fiche thématique pour la documentation `R` :thumbsup:
 
 Dans un premier temps, dans le dépôt `gitlab`:
 
-* Signaler dans l'*issue* `#6` sur quel sujet vous voulez proposer une fiche (toutes suggestions bienvenues);
-* Une fois que l'équipe de contributeurs est d'accord sur l'objet de la fiche:
-    - créer une branche dont le nom reflète l'objet de la fiche (exemple: `fiche_graphiques`); c'est dans cette branche du dépôt que la fiche va être rédigée;
-     - créer une *issue* dont le nom reflète l'objet de la fiche (exemple: *"Discussion fiche graphiques"*): cette *issue* va servir de fil de discussion sur la fiche.
-            + Ajouter des *labels* adéquats dans l'*issue*
+* Signaler dans l'*issue* `#6` sur quel sujet vous voulez proposer une fiche (toutes suggestions bienvenues :nerd: );
+* Une fois que l'équipe de contributeurs est d'accord sur l'objet de la fiche :happy: :
+    - créer une branche dont le nom reflète l'objet de la fiche (exemple: `fiche_graphiques`); c'est dans cette branche du dépôt que la fiche va être rédigée :scroll: :pencil2:);
+    - créer une *issue* dont le nom reflète l'objet de la fiche (exemple: *"Discussion fiche graphiques"*): cette *issue* va servir de fil de discussion sur la fiche :loudspeaker:.
+    - Ajouter des *labels* adéquats dans l'*issue*
 
 Ensuite, avec `R`: 
-* Rédiger la fiche en `Rmarkdown` à partir du modèle de fiche (03_Fiches_thematiques/Modele_de_fiche.Rmd);
+* Rédiger la fiche en `Rmarkdown` à partir du modèle de fiche (03_Fiches_thematiques/Modele_de_fiche.Rmd) :black_nib: ;
 
 * Quand une première version de la fiche est prête:
-    - vérifier que le code est bien fonctionnel (c'est-à-dire que la branche compile bien);
+    - vérifier que le code est bien fonctionnel (c'est-à-dire que la branche compile bien :heavy_check_mark:);
     - faire un *merge request* vers la branche master du dépôt, avec les options `squash commits` et `WIP` (Work In Progress);
-* Préciser quels sont les relecteurs de la fiche;
+* Préciser quels sont les relecteurs de la fiche :nerd:;
 * Une fois que la fiche est acceptée, l'un des mainteneurs accepte la *merge request*.
 
-## Comment rédiger une fiche thématique
+:tada: :confetti_ball:
+
+
+## Comment rédiger une fiche thématique :grinning:
 
 La fiche doit être parfaitement reproductible et respecter quelques contraintes
-formelles. Pour cela, quelques règles sont ici évoquées:
+formelles :police_car:. Pour cela, quelques règles sont ici évoquées:
 
 ### Contraintes formelles
 
@@ -56,7 +63,7 @@ suivre le guide des bonnes pratiques [**lien à mettre**].
 Nous attirons particulièrement votre attention sur la gestion des dépendances.
 
 Il est demandé aux contributeurs d'utiliser systématiquement
-la syntaxe `package::function()`. Il s'agit de la meilleure manière
+la syntaxe `package::function()` :cop:. Il s'agit de la meilleure manière
 de lever toute ambiguïté concernant l'origine d'une fonction.
 Une exception à cette règle concerne le `pipe` du package `magrittr`: `%>%`.
 Celui-ci est importé par défaut dans l'environnement permettant la compilation
@@ -77,7 +84,7 @@ usethis::use_package("monpackage")
 ```
 
 La dépendance sera ajoutée au fichier `DESCRIPTION` automatiquement, au niveau de la 
-liste des `Imports`. 
+liste des `Imports`.  :tada: 
 
 Pour les jeux de données d'exemple, on ajoutera le package d'origine. Par exemple
 on écrira `data("World", package = "sf")`. Une exception à cette règle
@@ -86,14 +93,14 @@ base (`iris`, `mtcars`, etc. ). Pour ceux-là, on pourra simplifier
 l'appel avec la commande `data("iris")`
 
 Les appels à `library(.)` ou `require(.)` sont réservés aux **cas de 
-force majeure**: les fiches qui les utilisent
-seront validées uniquement si la syntaxe  `package::function()` ne fonctionne pas. 
+force majeure** :ambulance: : les fiches qui les utilisent
+seront validées uniquement si la syntaxe  `package::function()` ne fonctionne pas. :cop: 
 
 Les fiches doivent être reproductibles, ce qui nécessite de:
 
-    - **Bien tester tous les exemples**;
-    - Utiliser au maximum des *datasets* disponibles par défaut dans `R` pour les exemples (`iris`, `nycflights13`, etc.);
-    - Pour présenter l'utilisation d'une fonction:
+* **Bien tester tous les exemples**;
+* Utiliser au maximum des *datasets* disponibles par défaut dans `R` pour les exemples (`iris`, `nycflights13`, etc.);
+* Pour présenter l'utilisation d'une fonction:
         + commencer par le comportement par défaut (avec le minimum d'arguments);
         + présenter les principales options, avec un ou deux exemples.
 
