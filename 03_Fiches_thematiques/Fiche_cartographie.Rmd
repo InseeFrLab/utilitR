@@ -22,10 +22,6 @@ L'Insee propose un outil pour sélectionner et télécharger des données géogr
 
 :::
 
-```{r}
-library(sf)
-```
-
 Seuls les *packages* `sf` et `tmap` seront abordés dans cette documentation. Pour le maniement des données spatiales, se référer à {#spatdata}.
 
 
@@ -78,24 +74,24 @@ plot(st_geometry(europe), graticule=T, axes=T)
 
 ### Transformations / projections
 
-Pour connaitre le CRS d'un objet spatial, il faut utiliser la fonction `st_crs`. Il est possible de modifier la projection d'une carte grâce à la fonction `st_transform`. Cette fonction attend 2 paramètres :
+Pour connaitre le CRS d'un objet spatial, il faut utiliser la fonction `st_crs`. Il est possible de modifier la projection d'une carte grâce à la fonction `sf::st_transform`. Cette fonction attend 2 paramètres :
 
 * `x`: un objet de classe `sf`
 * `crs` : coordinate reference system. Un entier correspondant au code [EPSG](http://www.epsg.org/) ou une chaine de caractère pour le [`proj4string`](https://spatialreference.org/).
 
 ```{r, eval=TRUE}
-st_crs(europe)
+sf::st_crs(europe)
 
-plot(st_geometry(europe),
-		 main=st_crs(europe)[[2]],
+plot(sf::st_geometry(europe),
+		 main=sf::st_crs(europe)[[2]],
 		 cex.main = 0.8,
 		 axes=TRUE,
 		 graticule=TRUE)
 
-europe_LAEA <- st_transform(europe, 3035)
+europe_LAEA <- sf::st_transform(europe, 3035)
 
-plot(st_geometry(europe_LAEA),
-		 main=st_crs(europe_LAEA)[[2]],
+plot(sf::st_geometry(europe_LAEA),
+		 main=sf::st_crs(europe_LAEA)[[2]],
 		 cex.main = 0.8,
 		 axes=TRUE,
 		 graticule=TRUE)
@@ -134,34 +130,32 @@ help_console(topic="geos_binary_pred", format="html", lines=c(7:46))
 ### Rogner la carte (*crop*)
 
 ```{r, eval=TRUE}
-st_bbox(europe_LAEA)
+sf::st_bbox(europe_LAEA)
 
 ma_zone <- c(xmin=2555000,
 						 xmax=7500000,
 						 ymin=800000,
 						 ymax=5500000)
-europe_centree <- st_crop(europe_LAEA, ma_zone)
-plot(st_geometry(europe_centree), graticule=TRUE, axes=TRUE)
+europe_centree <- sf::st_crop(europe_LAEA, ma_zone)
+plot(sf::st_geometry(europe_centree), graticule=TRUE, axes=TRUE)
 ```
 
 ### Pimp my map
 
 ```{r, eval=TRUE}
 
-library("ggplot2")
-
-lon <- st_coordinates(st_centroid(st_geometry(europe_centree)))[, 1]
-lat <- st_coordinates(st_centroid(st_geometry(europe_centree)))[, 2]
+lon <- sf::st_coordinates(st_centroid(st_geometry(europe_centree)))[, 1]
+lat <- sf::st_coordinates(st_centroid(st_geometry(europe_centree)))[, 2]
 mybreaks <- c(1000000, 20000000, 50000000, 100000000)
 
-g1 <- ggplot(data=europe_centree) +
-	geom_sf() +
-	geom_point(aes(x=lon, y=lat, size=pop_est))
+g1 <- ggplot2::ggplot(data=europe_centree) +
+	ggplot2::geom_sf() +
+	ggplot2::geom_point(aes(x=lon, y=lat, size=pop_est))
 
 g1 +
-	scale_size_continuous(name="Population estimée", range=c(1,10), breaks=mybreaks) +
-	ggtitle(label = "Population estimée en xxxx", subtitle = "Source : World dataset") +
-  theme(panel.background = element_rect(fill = "#a3d9f3"))
+	ggplot2::scale_size_continuous(name="Population estimée", range=c(1,10), breaks=mybreaks) +
+	ggplot2::ggtitle(label = "Population estimée en xxxx", subtitle = "Source : World dataset") +
+  ggplot2::theme(panel.background = element_rect(fill = "#a3d9f3"))
 
 ```
 
@@ -182,35 +176,35 @@ Ce *package* permet de réaliser différent type de cartes :
 
 ```{r, eval = TRUE}
 library("tmap")
-data("World")
+data("World", package = "tmap")
 
-tm_shape(World) +
-	tm_polygons("HPI")
+tmap::tm_shape(World) +
+	tmap::tm_polygons("HPI")
 ```
 
 ### Symboles proportionnels
 
 ```{r, eval=TRUE}
-tm_shape(World) +
-	tm_polygons() +
-	tm_bubbles("pop_est")
+tmap::tm_shape(World) +
+	tmap::tm_polygons() +
+	tmap::tm_bubbles("pop_est")
 ```
 
 ### Combiner plusieurs objets spatiaux et plusieurs couches
 
 ```{r, eval=TRUE}
-data("metro")
+data("metro", package = "tmap")
 
-tm_shape(World) +
-	tm_polygons("HPI") +
-tm_shape(metro) +
-	tm_symbols(col = "red", size = "pop2020", scale = 1)
+tmap::tm_shape(World) +
+	tmap::tm_polygons("HPI") +
+tmap::tm_shape(metro) +
+	tmap::tm_symbols(col = "red", size = "pop2020", scale = 1)
 
 ```
 
 ### Exporter une carte
 
-L'export des cartes se réalise *via* la fonction `tm_save`.
+L'export des cartes se réalise *via* la fonction `tmap::tm_save`.
 
 ## Cartographie dynamique
 
