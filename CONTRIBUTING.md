@@ -19,12 +19,10 @@ Dans un premier temps, dans le dépôt `gitlab`:
 * Signaler dans l'*issue* `#6` sur quel sujet vous voulez proposer une fiche (toutes suggestions bienvenues);
 * Une fois que l'équipe de contributeurs est d'accord sur l'objet de la fiche:
     - créer une branche dont le nom reflète l'objet de la fiche (exemple: `fiche_graphiques`); c'est dans cette branche du dépôt que la fiche va être rédigée;
-     - créer une *issue* dont le nom reflète l'objet de la fiche (exemple: *"Discussion fiche graphiques"*): cette *issue* va servir de fil de discussion sur la fiche.
-            + Ajouter des *labels* adéquats dans l'*issue*
+    - créer une *issue* dont le nom reflète l'objet de la fiche (exemple: *"Discussion fiche graphiques"*): cette *issue* va servir de fil de discussion sur la fiche. Ne pas oublier d'ajouter des *labels* adéquats dans l'*issue*.
 
 Ensuite, avec `R`: 
 * Rédiger la fiche en `Rmarkdown` à partir du modèle de fiche (03_Fiches_thematiques/Modele_de_fiche.Rmd);
-
 * Quand une première version de la fiche est prête:
     - vérifier que le code est bien fonctionnel (c'est-à-dire que la branche compile bien);
     - faire un *merge request* vers la branche master du dépôt, avec les options `squash commits` et `WIP` (Work In Progress);
@@ -42,17 +40,15 @@ formelles. Pour cela, quelques règles sont ici évoquées:
 * Les extensions des images doivent être en minuscules. Cela veut dire qu'il faut éviter l'extension
 `.PNG` que `Windows` génère parfois (notamment via l'outil capture). Si un 
 ou plusieurs fichiers `.PNG` ont été générés,
-vous pouvez utiliser le morceau de code `R` suivant pour le convertir en 
-`.png`
+vous pouvez utiliser ce [*snippet* de code `R`](https://gitlab.com/linogaliana/documentationR/snippets/1954584) pour le convertir en 
+`.png`.
 
 **TO DO**
 
 
-### Bonnes pratiques `R`
+### Bonnes pratiques de codage en `R`
 
-Les morceaux de code `R` servant d'exemple dans l'institut, 
-il est demandé aux contributeurs de s'astreindre à eux-mêmes
-suivre le guide des bonnes pratiques [**lien à mettre**].
+Dans la mesure où les exemple de code `R` ont vocation à être réutilisés directement par les agents de l'Insee, il est demandé aux contributeurs de suivre le guide des bonnes pratiques [**lien à mettre**].
 Nous attirons particulièrement votre attention sur la gestion des dépendances.
 
 Il est demandé aux contributeurs d'utiliser systématiquement
@@ -60,23 +56,11 @@ la syntaxe `package::function()`. Il s'agit de la meilleure manière
 de lever toute ambiguïté concernant l'origine d'une fonction.
 Une exception à cette règle concerne le `pipe` du package `magrittr`: `%>%`.
 Celui-ci est importé par défaut dans l'environnement permettant la compilation
-du `cookbook`. Vous pouvez donc l'utiliser normalement, par exemple,
-
-```r
-mydata %>% dplyr::summarise(y = mean(x, na.rm = TRUE))
-```
-
-est tout à fait licite.
+du `cookbook`. Vous pouvez donc l'utiliser normalement, par exemple, `r mydata %>% dplyr::summarise(y = mean(x, na.rm = TRUE))` est tout à fait licite.
 
 Les packages utilisés par une fiche doivent être listés dans le fichier `DESCRIPTION`. Vous
 n'avez pas besoin de le modifier manuellement, vous pouvez utiliser une fonction du
-package `usethis` pour cela:
-
-```r
-usethis::use_package("monpackage")
-```
-
-La dépendance sera ajoutée au fichier `DESCRIPTION` automatiquement, au niveau de la 
+package `usethis` pour cela: `r usethis::use_package("monpackage")`. La dépendance sera alors automatiquement ajoutée au fichier `DESCRIPTION`, au niveau de la 
 liste des `Imports`. 
 
 Pour les jeux de données d'exemple, on ajoutera le package d'origine. Par exemple
