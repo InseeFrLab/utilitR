@@ -45,18 +45,18 @@ vous pouvez utiliser ce [*snippet* de code `R`](https://gitlab.com/linogaliana/d
 
 ### Bonnes pratiques de codage en `R`
 
-Dans la mesure où les exemple de code `R` ont vocation à être réutilisés directement par les agents de l'Insee, il est demandé aux contributeurs de suivre le guide des bonnes pratiques [**lien à mettre**].
-Nous attirons particulièrement votre attention sur la gestion des dépendances.
+Dans la mesure où les exemple de code `R` ont vocation à être réutilisés directement par les agents de l'Insee, il est demandé aux contributeurs de suivre le guide des bonnes pratiques [**lien à mettre**]. Le principe général est que la documentation doit être reproductible. Nous attirons particulièrement votre attention sur la gestion des dépendances.
 
-Le principe est que les fiches de la documentation doivent être reproductibles, ce qui nécessite de:
+#### Assurer la qualité du code
 
 * **Bien tester tous les exemples**;
-* Utiliser au maximum des *datasets* disponibles par défaut dans `R` pour les exemples (`iris`, `nycflights13`, etc.);
+* Utiliser uniquement des *datasets* disponibles dans `R` pour les exemples (`iris`, `nycflights13`, etc.);
 * Pour présenter l'utilisation d'une fonction:
         + commencer par le comportement par défaut (avec le minimum d'arguments);
-        + présenter les principales options, avec un ou deux exemples.
+        + présenter les principales options, avec un ou deux exemples;
+* Ne pas faire de *merge request* sur un code qui n'est pas entièrement fonctionnel.
 
-#### Gestion des dépendances
+#### Gérer et savoir présenter les dépendances
 
 * **Il est demandé aux contributeurs d'utiliser systématiquement
 la syntaxe `package::function()`** :cop:. Il s'agit de la meilleure manière
@@ -74,7 +74,7 @@ liste des `Imports`. :tada:
 force majeure** :ambulance: : les fiches qui les utilisent
 seront validées uniquement si la syntaxe  `package::function()` ne fonctionne pas. :cop: 
 
-#### Gestion des jeux de données
+#### Gérer les jeux de données
 
 Pour les jeux de données utilisés dans les exemples, on précise systématiquement le *package* d'origine. Par exemple on écrit `data("World", package = "sf")` pour utiliser la table `World` du *package* `sf`. Une exception à cette règle concerne les jeux de données des *packages* présents dans la distribution de 
 base (`iris`, `mtcars`, etc. ). Pour ceux-là, on pourra simplifier l'appel avec la commande `data("iris")`.
