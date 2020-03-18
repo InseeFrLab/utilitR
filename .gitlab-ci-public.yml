@@ -14,21 +14,20 @@ stages:
   - install
   - deploy
 
-before_script:
-  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-
 #before_script:
 #   - Rscript -e "remotes::install_deps('.', dependencies = TRUE, upgrade = FALSE)"
 
 build_image:
   stage: install
   script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - mkdir -p ${SHARED_PATH}
     - docker build --pull -t $CONTAINER_TEST_IMAGE .
     - docker push $CONTAINER_TEST_IMAGE
 
 pages:
   stage: deploy
+  image: $CONTAINER_TEST_IMAGE
   script:
     - docker run -v ${SHARED_PATH}:/usr/local/src/project/public $CONTAINER_TEST_IMAGE Rscript -e "bookdown::render_book('./index.Rmd', output_dir = 'public')"
 #     - Rscript -e "bookdown::render_book('./index.Rmd', output_dir = 'public')"
@@ -43,10 +42,10 @@ buildbookdown:
   stage: deploy
   image: $CONTAINER_TEST_IMAGE
   script:
-    - docker run -v ${SHARED_PATH}:/usr/local/src/project/public $CONTAINER_TEST_IMAGE Rscript -e "bookdown::render_book('index.Rmd', 'bookdown::gitbook')"
-#    - Rscript -e "bookdown::render_book('index.Rmd', 'bookdown::gitbook')"
-    - docker run -v ${SHARED_PATH}:/usr/local/src/project/public $CONTAINER_TEST_IMAGE Rscript -e "bookdown::render_book('index.Rmd', 'bookdown::pdf_book')"
-#    - Rscript -e "bookdown::render_book('index.Rmd', 'bookdown::pdf_book')"
+#    - docker run -v ${SHARED_PATH}:/usr/local/src/project/public $CONTAINER_TEST_IMAGE Rscript -e "bookdown::render_book('index.Rmd', 'bookdown::gitbook')"
+    - Rscript -e "bookdown::render_book('index.Rmd', 'bookdown::gitbook')"
+#    - docker run -v ${SHARED_PATH}:/usr/local/src/project/public $CONTAINER_TEST_IMAGE Rscript -e "bookdown::render_book('index.Rmd', 'bookdown::pdf_book')"
+    - Rscript -e "bookdown::render_book('index.Rmd', 'bookdown::pdf_book')"
   artifacts:
     paths:
       - _book
