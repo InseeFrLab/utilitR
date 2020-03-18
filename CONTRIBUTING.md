@@ -8,15 +8,7 @@ L'objet de ce document est de présenter les différentes
 manières de participer au `cookbook`. Il s'agit d'une adaptation du code des
 contributeurs proposé par l'équipe du `tidyverse`.
 
-## Retirer des coquilles
-
-Pour les erreurs grammaticales, orthographiques ou les coquilles (:thumbsdown:),
-il est possible de passer directement par l'interface graphique de `gitlab` :smile:.
-Pour cela, vous pouvez suivre
-[cette démarche](https://docs.gitlab.com/ee/user/discussions/#suggest-changes).
-
-
-## Marche à suivre pour écrire une fiche thématique pour la documentation `R` :thumbsup:
+## Comment ajouter une fiche thématique à la documentation `R` :thumbsup:
 
 Dans un premier temps, dans le dépôt `gitlab`:
 
@@ -51,43 +43,53 @@ ou plusieurs fichiers `.PNG` ont été générés,
 vous pouvez utiliser ce [*snippet* de code `R`](https://gitlab.com/linogaliana/documentationR/snippets/1954584) pour le convertir en 
 `.png`.
 
-**TO DO**
-
-
 ### Bonnes pratiques de codage en `R`
 
 Dans la mesure où les exemple de code `R` ont vocation à être réutilisés directement par les agents de l'Insee, il est demandé aux contributeurs de suivre le guide des bonnes pratiques [**lien à mettre**].
 Nous attirons particulièrement votre attention sur la gestion des dépendances.
 
-Il est demandé aux contributeurs d'utiliser systématiquement
-la syntaxe `package::function()` :cop:. Il s'agit de la meilleure manière
-de lever toute ambiguïté concernant l'origine d'une fonction.
-Une exception à cette règle concerne le `pipe` du package `magrittr`: `%>%`.
-Celui-ci est importé par défaut dans l'environnement permettant la compilation
-du `cookbook`. Vous pouvez donc l'utiliser normalement, par exemple, `r mydata %>% dplyr::summarise(y = mean(x, na.rm = TRUE))` est tout à fait licite.
-
-Les packages utilisés par une fiche doivent être listés dans le fichier `DESCRIPTION`. Vous
-n'avez pas besoin de le modifier manuellement, vous pouvez utiliser une fonction du
-package `usethis` pour cela: `r usethis::use_package("monpackage")`. La dépendance sera alors automatiquement ajoutée au fichier `DESCRIPTION`, au niveau de la 
-liste des `Imports`. :tada: 
-
-Pour les jeux de données d'exemple, on ajoutera le package d'origine. Par exemple
-on écrira `data("World", package = "sf")`. Une exception à cette règle
-concerne les jeux de données des *packages* présents dans la distribution de 
-base (`iris`, `mtcars`, etc. ). Pour ceux-là, on pourra simplifier 
-l'appel avec la commande `data("iris")`
-
-Les appels à `library(.)` ou `require(.)` sont réservés aux **cas de 
-force majeure** :ambulance: : les fiches qui les utilisent
-seront validées uniquement si la syntaxe  `package::function()` ne fonctionne pas. :cop: 
-
-Les fiches doivent être reproductibles, ce qui nécessite de:
+Le principe est que les fiches de la documentation doivent être reproductibles, ce qui nécessite de:
 
 * **Bien tester tous les exemples**;
 * Utiliser au maximum des *datasets* disponibles par défaut dans `R` pour les exemples (`iris`, `nycflights13`, etc.);
 * Pour présenter l'utilisation d'une fonction:
         + commencer par le comportement par défaut (avec le minimum d'arguments);
         + présenter les principales options, avec un ou deux exemples.
+
+
+#### Gestion des dépendances
+
+* Il est demandé aux contributeurs d'utiliser systématiquement
+la syntaxe `package::function()` :cop:. Il s'agit de la meilleure manière
+de lever toute ambiguïté concernant l'origine d'une fonction.
+Une exception à cette règle concerne le `pipe` du package `magrittr`: `%>%`.
+Celui-ci est importé par défaut dans l'environnement permettant la compilation
+du `cookbook`. Vous pouvez donc l'utiliser normalement, par exemple, `r mydata %>% dplyr::summarise(y = mean(x, na.rm = TRUE))` est tout à fait licite.
+
+* Les packages utilisés par une fiche doivent être listés dans le fichier `DESCRIPTION`. Vous
+n'avez pas besoin de le modifier manuellement, vous pouvez utiliser une fonction du
+package `usethis` pour cela: `r usethis::use_package("monpackage")`. La dépendance sera alors automatiquement ajoutée au fichier `DESCRIPTION`, au niveau de la 
+liste des `Imports`. :tada: 
+
+Les appels à `library(.)` ou `require(.)` sont réservés aux **cas de 
+force majeure** :ambulance: : les fiches qui les utilisent
+seront validées uniquement si la syntaxe  `package::function()` ne fonctionne pas. :cop: 
+
+#### Gestion des jeux de données
+
+Pour les jeux de données d'exemple, on précise systématiquement le *package* d'origine. Par exemple
+on écrira `data("World", package = "sf")`. Une exception à cette règle
+concerne les jeux de données des *packages* présents dans la distribution de 
+base (`iris`, `mtcars`, etc. ). Pour ceux-là, on pourra simplifier 
+l'appel avec la commande `data("iris")`.
+
+## Retirer des coquilles
+
+Pour les erreurs grammaticales, orthographiques ou les coquilles (:thumbsdown:),
+il est possible de passer directement par l'interface graphique de `gitlab` :smile:.
+Pour cela, vous pouvez suivre
+[cette démarche](https://docs.gitlab.com/ee/user/discussions/#suggest-changes).
+
 
 
 ### Processus de `merge request`
