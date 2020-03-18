@@ -56,32 +56,28 @@ Le principe est que les fiches de la documentation doivent être reproductibles,
         + commencer par le comportement par défaut (avec le minimum d'arguments);
         + présenter les principales options, avec un ou deux exemples.
 
-
 #### Gestion des dépendances
 
-* Il est demandé aux contributeurs d'utiliser systématiquement
-la syntaxe `package::function()` :cop:. Il s'agit de la meilleure manière
+* **Il est demandé aux contributeurs d'utiliser systématiquement
+la syntaxe `package::function()`** :cop:. Il s'agit de la meilleure manière
 de lever toute ambiguïté concernant l'origine d'une fonction.
-Une exception à cette règle concerne le `pipe` du package `magrittr`: `%>%`.
+Une exception à cette règle concerne le `pipe` du *package* `magrittr`: `%>%`.
 Celui-ci est importé par défaut dans l'environnement permettant la compilation
 du `cookbook`. Vous pouvez donc l'utiliser normalement, par exemple, `r mydata %>% dplyr::summarise(y = mean(x, na.rm = TRUE))` est tout à fait licite.
 
-* Les packages utilisés par une fiche doivent être listés dans le fichier `DESCRIPTION`. Vous
+* **Les *packages* utilisés par une fiche doivent être listés dans le fichier `DESCRIPTION`.** Vous
 n'avez pas besoin de le modifier manuellement, vous pouvez utiliser une fonction du
 package `usethis` pour cela: `r usethis::use_package("monpackage")`. La dépendance sera alors automatiquement ajoutée au fichier `DESCRIPTION`, au niveau de la 
 liste des `Imports`. :tada: 
 
-Les appels à `library(.)` ou `require(.)` sont réservés aux **cas de 
+* Les appels à `library(.)` ou `require(.)` sont réservés aux **cas de 
 force majeure** :ambulance: : les fiches qui les utilisent
 seront validées uniquement si la syntaxe  `package::function()` ne fonctionne pas. :cop: 
 
 #### Gestion des jeux de données
 
-Pour les jeux de données d'exemple, on précise systématiquement le *package* d'origine. Par exemple
-on écrira `data("World", package = "sf")`. Une exception à cette règle
-concerne les jeux de données des *packages* présents dans la distribution de 
-base (`iris`, `mtcars`, etc. ). Pour ceux-là, on pourra simplifier 
-l'appel avec la commande `data("iris")`.
+Pour les jeux de données utilisés dans les exemples, on précise systématiquement le *package* d'origine. Par exemple on écrit `data("World", package = "sf")` pour utiliser la table `World` du *package* `sf`. Une exception à cette règle concerne les jeux de données des *packages* présents dans la distribution de 
+base (`iris`, `mtcars`, etc. ). Pour ceux-là, on pourra simplifier l'appel avec la commande `data("iris")`.
 
 ## Retirer des coquilles
 
