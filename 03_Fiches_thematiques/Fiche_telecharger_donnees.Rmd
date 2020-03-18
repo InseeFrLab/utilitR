@@ -1,0 +1,94 @@
+# Télécharger des données depuis R
+
+Plusieurs approches pour télécharger des données depuis `R`.
+
+::: recommandation
+**Recommandations de l'Insee**
+
+* **Il est recommandé d'utiliser le *package* `Rvest` pour scrapper des données ? `xml2` pour parser des fichiers xml, `rsdmx` pour récupérer des données *via* ce standard** 
+:::
+
+## Données ponctuelles
+
+
+Ici, il s'agit de télécharger des données ponctuellement. Les fichiers cibles sont disponibles sur des sites internet.
+
+### *via* la fonction `download.file`
+
+Pour cela, nous pouvons utiliser la fonction `download.file
+
+```{r, eval=FALSE}
+
+filepath <- "url_vers_fichier.zip"
+
+download.file(url = filepath,
+              mode = "wb",
+              destfile = "mon_repertoire_destination/fichier.zip")
+)
+```
+
+Si le fichier téléchargé est un zip, il faut extraire les éléments de l'archive :
+
+```{r, eval=FALSE}
+unzip(zipfile = "mon_repertoire_destination/fichier.zip"), 
+      exdir = "mon_repertoire_extraction")
+```
+
+
+Après cela, il ne reste qu'à lire les données téléchargées (voir fiche "importer des données" #refQuiVaBien)
+Si les données sont de type `csv` :
+
+```{r, eval=FALSE}
+monfichier <- read.csv("mon_repertoire_extraction/monfichier.csv")
+# montrer un exemple avec des données insee.fr ?
+```
+
+### *via* le standard [`sdmx`](https://sdmx.org/)
+
+pour cela, il faut utiliser le package `rsdmx` (à ajouter aux dépendances ?)
+
+```{r, eval=FALSE}
+urlPibHab <- "https://stats.oecd.org/restsdmx/sdmx.ashx/GetData/SNA_TABLE1/ZAF+SAU+ARG+AUS+BRA+CAN+CHN+KOR+USA+IND+IDN+JPN+MEX+RUS+TUR+EU28.B1_GE.HCPC/all?startTime=2016&endTime=2019"
+sdmxPibHab <- rsdmx::readSDMX(urlPibHab)
+pibHab <- as.data.frame(sdmxPibHab)
+# NB : certaines données de la BDM sont accessibles via `sdmx`.
+# ex : "https://bdm.insee.fr/series/sdmx/data/SERIES_BDM/010565710?detail=dataonly"
+```
+
+## Données "réparties"
+
+Il s'agit ici de montrer comment "moissonner" des sites web
+
+### Les différentes licences de données
+
+* etalab
+
+* ODbL
+
+* CC
+
+* Autres
+
+### Quelques notions d'HTML / XML / regex
+
+TODO
+
+### Le langage `xpath`
+
+TODO
+
+### Exemple de webscrapping simple
+
+TODO
+
+## Ressources {#RessourcesWebScraping}
+
+On trouve sur internet de la doc relative à la collecte de données depuis `R`.
+
+* un [article sur le blog de Thinkr](https://thinkr.fr/rvest/) en français
+
+* le [wiki EduTech](http://edutechwiki.unige.ch/fr/Web_scraping_avec_R) en français
+
+* de l'info sur [les regex en R](https://stat.ethz.ch/R-manual/R-devel/library/base/html/regex.html)
+
+
