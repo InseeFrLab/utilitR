@@ -1,37 +1,37 @@
-# image: docker:stable
-image: rocker/geospatial
+image: gitlab/dind
+# image: rocker/geospatial
 
-#services:
-#  - docker:dind
+services:
+  - docker:dind
   
-#variables:
-#  DOCKER_HOST: tcp://docker:2375
-#  DOCKER_DRIVER: overlay2
-#  CONTAINER_TEST_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
-#  SHARED_PATH: /builds/shared/$CI_PROJECT_PATH
+variables:
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_DRIVER: overlay2
+  CONTAINER_TEST_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+  SHARED_PATH: /builds/shared/$CI_PROJECT_PATH
 
 stages:
-#  - install
+  - install
   - deploy
 
-#before_script:
-#  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-
 before_script:
-   - Rscript -e "remotes::install_deps('.', dependencies = TRUE, upgrade = FALSE)"
+  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
 
-#build_image:
-#  stage: install
-#  script:
-#    - mkdir -p ${SHARED_PATH}
-#    - docker build --pull -t $CONTAINER_TEST_IMAGE .
-#    - docker push $CONTAINER_TEST_IMAGE
+#before_script:
+#   - Rscript -e "remotes::install_deps('.', dependencies = TRUE, upgrade = FALSE)"
+
+build_image:
+  stage: install
+  script:
+    - mkdir -p ${SHARED_PATH}
+    - docker build --pull -t $CONTAINER_TEST_IMAGE .
+    - docker push $CONTAINER_TEST_IMAGE
 
 pages:
   stage: deploy
   script:
-#    - docker run -v ${SHARED_PATH}:/usr/local/src/project/public $CONTAINER_TEST_IMAGE Rscript -e "bookdown::render_book('./index.Rmd', output_dir = 'public')"
-     - Rscript -e "bookdown::render_book('./index.Rmd', output_dir = 'public')"
+    - docker run -v ${SHARED_PATH}:/usr/local/src/project/public $CONTAINER_TEST_IMAGE Rscript -e "bookdown::render_book('./index.Rmd', output_dir = 'public')"
+#     - Rscript -e "bookdown::render_book('./index.Rmd', output_dir = 'public')"
   artifacts:
     paths:
       - public
@@ -41,12 +41,12 @@ pages:
 
 buildbookdown:
   stage: deploy
-#  image: $CONTAINER_TEST_IMAGE
+  image: $CONTAINER_TEST_IMAGE
   script:
-#    - docker run -v ${SHARED_PATH}:/usr/local/src/project/public $CONTAINER_TEST_IMAGE Rscript -e "bookdown::render_book('index.Rmd', 'bookdown::gitbook')"
-    - Rscript -e "bookdown::render_book('index.Rmd', 'bookdown::gitbook')"
-#    - docker run -v ${SHARED_PATH}:/usr/local/src/project/public $CONTAINER_TEST_IMAGE Rscript -e "bookdown::render_book('index.Rmd', 'bookdown::pdf_book')"
-    - Rscript -e "bookdown::render_book('index.Rmd', 'bookdown::pdf_book')"
+    - docker run -v ${SHARED_PATH}:/usr/local/src/project/public $CONTAINER_TEST_IMAGE Rscript -e "bookdown::render_book('index.Rmd', 'bookdown::gitbook')"
+#    - Rscript -e "bookdown::render_book('index.Rmd', 'bookdown::gitbook')"
+    - docker run -v ${SHARED_PATH}:/usr/local/src/project/public $CONTAINER_TEST_IMAGE Rscript -e "bookdown::render_book('index.Rmd', 'bookdown::pdf_book')"
+#    - Rscript -e "bookdown::render_book('index.Rmd', 'bookdown::pdf_book')"
   artifacts:
     paths:
       - _book
