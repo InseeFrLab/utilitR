@@ -6,3 +6,6 @@ colorize <- function(x, color) {
       x)
   } else x
 }
+
+
+import::from("magrittr","%>%")
