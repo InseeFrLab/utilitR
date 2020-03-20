@@ -4,7 +4,12 @@
 
 L'utilisateur souhaite réaliser des représentations cartographiques en `R`.
 
-AJOUTER LA RECOMMANDATION ICI
+::: recommandation
+**Recommandations de l'Insee**
+
+* les *packages* `tmap` ou `cartography` pour réaliser rapidement des cartes d'étude;
+* les *packages* `leaflet` et `mapview` pour la cartographie dynamique (cartes `html` dans lesquelles on peut se déplacer).
+:::
 
 ## Données spatiales: kesako ?
 
@@ -18,59 +23,66 @@ Pour réaliser ce type de travaux, il est nécessaire de disposer de 2 *types* d
 L'Insee propose un outil pour sélectionner et télécharger des données géographiques : [Créacarte](http://creacartes.insee.fr/).
 
 
-## *Packages* recommandés
+Seuls les *packages* `sf` et `tmap` seront abordés dans cette documentation. Pour l'analyse de données spatiales, se référer à {#spatdata}.
 
-::: recommandation
-**Recommandations de l'Insee**
+## Manier des données géographiques avec `sf`
 
-* le *package* `tmap` et/ou `cartography` pour réaliser rapidement des cartes d'étude;
-* les *packages* `leaflet` et `mapview` pour la cartographie dynamique (cartes `html` dans lesquelles on peut se déplacer).
+Nous verrons succéssivement comment :
 
-:::
+1. importer et exporter des données géographiques (fonds cartographiques) ;
+2. tracer rapidement des cartes ;
+3. manipuler des objets cartographiques (extractions, projections, relations topologiques)
 
-Seuls les *packages* `sf` et `tmap` seront abordés dans cette documentation. Pour le maniement des données spatiales, se référer à {#spatdata}.
+### Importer et exporter des fonds cartographiques
 
+La fonction `st_read()` permet de lire (importer) plusieurs formats de données géographiques (shapefile, autres).
+
+Les paramètres attendus par la fonction varient en fonction du type de données :
+
+* `dsn`, data source name : le chemin + nom du fichier (parfois juste le répertoire)
+* `layer`, le nom de la couche (facultatif)
+
+```{r, eval=FALSE}
+library("sf")
+mon_objet_geo <- sf::st_read("/repertoire/vers/fonds_carto.shp")
+```
+
+A titre d'exemple, nous chargeons un jeu de données inclus dans le *package* `sf`.
 
 ```{r}
-# dpt_shape_url <- "myurl"
-# dpt_shape <- st_read(dsn = dpt_shape_url)
-
 nc <- sf::st_read(system.file("shape/nc.shp", package="sf"),
                   quiet=TRUE)
 ```
 
-## Manier des données géographiques
-
+La fonction `sf_write` permet de gérer l'export des objets géographiques. Voir `help("st_write", package="sf")`.
 
 ### Tracer une carte
 
-#### Toutes les variables
+La fonction générique `plot` permet de tracer rapidement des cartes.
+
+1. Représenter toutes les variables
 
 ```{r, eval=TRUE}
 plot(nc)
 ```
 
-#### Juste la géométrie
+2. Juste la géométrie
 
 ```{r, eval=TRUE}
 plot(sf::st_geometry(nc))
 ```
 
-#### Une variable
+3. Une variable
 
 ```{r, eval=TRUE}
 plot(nc["BIR74"])
 ```
 
-### Exporter des objets `sf`
+### Manipuler des données cartographiques
 
-```{r, eval = FALSE}
-help("st_write")
-```
+Il est fréquent de devoir opérer des traitements sur les fonds importés. Il est parfois nécessaire d'en extraire une portion. Pour cela, on utilise l'opérateur `[` et une condition logique (si la table attributaire le permet). Nous voyons ci-dessous comment extraire les pays du continent européen parmi l'ensemble des pays du monde.
 
-## Extraire des sous ensemble d'une carte
-
-Si la table attributaire de l'objet spatial le permet
+1. Extraire des sous ensemble d'une carte
 
 ```{r, eval=TRUE}
 data("World", package = "tmap")
@@ -78,15 +90,27 @@ europe <- World[World$continent == "Europe", ]
 plot(sf::st_geometry(europe), graticule=T, axes=T)
 ```
 
-### Transformations / projections
+2. Transformations / projections
 
-Pour connaitre le CRS d'un objet spatial, il faut utiliser la fonction `st_crs`. Il est possible de modifier la projection d'une carte grâce à la fonction `sf::st_transform`. Cette fonction attend 2 paramètres :
+Afin de représenter la terre sur une surface plate (la carte), il est nécessaire de déterminer une projection. Pour de plus amples détails sur le sujet, voir [ce tutoriel de l'IGN](http://education.ign.fr/sites/all/files/geodesie_projections.pdf).
+
+Pour consulter le CRS (*coordinate reference system*) d'un objet spatial, on utilise la fonction `st_crs`.
+
+```{r, eval=TRUE}
+sf::st_crs(europe)
+```
+
+La fonction retourne plusieurs informations :
+
+* le code EPSG, s'il est connu
+* le nom de la projection dans le format `proj4string`.
+
+Il est également possible de modifier la projection d'une carte grâce à la fonction `sf::st_transform`. Cette fonction attend 2 paramètres :
 
 * `x`: un objet de classe `sf`
 * `crs` : coordinate reference system. Un entier correspondant au code [EPSG](http://www.epsg.org/) ou une chaine de caractère pour le [`proj4string`](https://spatialreference.org/).
 
 ```{r, eval=TRUE}
-sf::st_crs(europe)
 
 plot(sf::st_geometry(europe),
 		 main=sf::st_crs(europe)[[2]],
@@ -104,7 +128,7 @@ plot(sf::st_geometry(europe_LAEA),
 
 ```
 
-### Relations topologiques
+3. Relations topologiques
 
 Les [relations topologiques](https://github.com/rugbyprof/4553-Spatial-DS/wiki/Topological-Relationships) sont l'adjacence (ou contiguïté), la connectivité, l'inclusion et l'intersection. La liste des fonctions de se type s'obtient *via* la commande `help("geos_binary_pred")`.
 
@@ -133,7 +157,19 @@ help_console <- function(topic, format=c("text", "html", "latex", "Rd"),
 help_console(topic="geos_binary_pred", format="html", lines=c(7:46))
 ```
 
-### Rogner la carte (*crop*)
+Ces fonctions servent notamment pour analyser les relations entre plusieurs couches de données. A titre d'exemple, elles permettent de répondre aux problématiques suivantes :
+
+* combien de ménages résident dans une zone urbaine sensible
+
+* quelles sont les communes situées à moins de 30 mètres d'une zone inondable
+
+* ...
+
+A partir d'un certain niveau de complexité, l'utilisation d'une base de données spatiale de type `PostGIS` et l'usage du SQL est recommandé (dur de recommander cela, sachant que ce n'est pas encore possible).
+
+4. Rogner une carte
+
+Lorsqu'on souhaite centrer une carte sur une zone particulière, ou simplement supprimer une partie de la carte, il faut utiliser la fonction `sf::st_crop`. Il est recommandé, dans un premier temps, d'observer les limites de la carte avec `sf::st_bbox`.
 
 ```{r, eval=TRUE}
 sf::st_bbox(europe_LAEA)
@@ -142,11 +178,15 @@ ma_zone <- c(xmin=2555000,
 						 xmax=7500000,
 						 ymin=800000,
 						 ymax=5500000)
+
 europe_centree <- sf::st_crop(europe_LAEA, ma_zone)
+
 plot(sf::st_geometry(europe_centree), graticule=TRUE, axes=TRUE)
 ```
 
-### Pimp my map
+5. Tracer une carte avec `ggplot2`
+
+`ggplot2` permet également de tracer une carte, et d'ajuster de nombreux paramètres graphiques (labels, couleurs, titres, ...).
 
 ```{r, eval=TRUE}
 
@@ -165,6 +205,7 @@ g1 +
 
 ```
 
+Dans cet exemple, la combinaison des fonctions `sf::st_coordinates` et `sf::st_centroid` permet d'extraire les centroïdes des polygones, afin de déterminer l'emplacement des symboles.
 
 ## `tmap`
 
@@ -175,7 +216,7 @@ Ce *package* permet de réaliser différent type de cartes :
 * cartes choroplètes
 * cartes catégorielles
 * cartes à symboles proportionnels
-* cartes isoplèthe ou à contour
+* cartes isoplèthes ou à contour
 * ...
 
 ### Carte choroplète
