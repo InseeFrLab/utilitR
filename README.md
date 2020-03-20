@@ -18,6 +18,8 @@ Cette documentation a pour ambition de répondre à trois questions générales:
 * Quelles sont les bonnes pratiques à respecter pour bien utiliser `R`?
 * Comment réaliser des tâches standards avec `R` (importer des données, faire un graphique, etc.)?
 
+**Cette documentation recommande d'utilise `R` avec `Rstudio`**, qui apparaît comme la solution la plus simple et la plus complète pour les utilisateurs débutants et intermédiaires.
+
 # Comment contribuer aux supports ?
 
 Un guide pour les contributeurs est disponible dans le fichier `CONTRIBUTING.md`
