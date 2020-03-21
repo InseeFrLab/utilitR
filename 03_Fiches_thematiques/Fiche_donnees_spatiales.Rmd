@@ -127,11 +127,50 @@ plot(nc_agg['AREA'])
 
 ## Effectuer des opérations sur les géométries d'un objet géométrique
 
+`sf` propose de nombreuses fonctions pour manier la dimension spatiale. On en trouve un certain nombre [ici](https://r-spatial.github.io/sf/reference/geos_unary.html) et [ici](https://r-spatial.github.io/sf/reference/geos_binary_ops.html).
+
+Par exemple, on peut calculer la superficie d'un polygone avec `sf::st_area`. Si l'unité ne convient pas, il est possible de convertir cette superficie en $km^2$:
+
+```{r}
+nc %>%
+  dplyr::mutate(area = sf::st_area(.)) %>%
+  dplyr::mutate(x = units::set_units(area, km^2)) %>%
+  head()
+```
 
 
 ## Joindre des données géographiques et attributaires
 
-TODO
-ma préco : utiliser la fonction `base::match`
+<!---- Gilles: utiliser la fonction `base::match` ------>
+<!---- Lino: dplyr::left_join & co ne te convient pas ? ----->
 
 ## Gérer le système de projection
+
+Le système de projection est fondamental pour que la dimension spatiale soit bien interprétée par `R`. Si un système de projection est défini, il s'affiche lorsqu'on affiche un objet dans la console à la ligne `epsg (SRID):`
+
+```{r}
+head(nc)
+```
+
+Pour vérifier le système de projection d'une base de données, on peut utiliser `sf::st_crs`:
+
+```{r}
+sf::st_crs(nc)
+```
+
+Les deux principales fonctions pour définir le système de projection utilisé sont:
+
+* `sf::st_set_crs`: il s'agit de définir la manière dont les points *(x,y)* sont reliés à la surface terrestre. **Cette commande ne doit pas être utilisée pour changer de système de coordonnées**. 
+* `sf::st_transform`: il s'agit de projeter les points d'une géométrie à une autre. Par exemple, si on désire produire une carte avec un fond `openstreetmaps` ou une carte dynamique `leaflet`, il est nécessaire de re-projecter les données dans le système WGS 84 (code crs 4326)
+
+La (re)définition du système de projection se fait de la manière suivante:
+
+```{r}
+nc <- nc %>% sf::st_set_crs(4267)
+```
+
+Alors que la reprojection s'obtient de la manière suivante:
+
+```{r}
+nc <- nc %>% sf::st_transform(4326)
+```
