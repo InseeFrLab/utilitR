@@ -24,6 +24,8 @@ Ensuite, avec `R`:
     - vérifier que le code est bien fonctionnel (c'est-à-dire que la branche compile bien :heavy_check_mark:);
     - faire un *merge request* vers la branche master du dépôt, avec les options `squash commits` et `WIP` (Work In Progress);
 * Préciser quels sont les relecteurs de la fiche :nerd:;
+* Une discussion s'engage dans la MR sur les améliorations/corrections à apporter à la fiche;
+* **La validation d'une fiche est une décision collective**. La règle approximative est qu'une fiche est intégrée à la documentation si quatre ou cinq contributeurs considèrent qu'elle est acceptable en l'état;
 * Une fois que la fiche est acceptée, l'un des mainteneurs accepte la *merge request*.
 
 :tada: :confetti_ball:
@@ -45,7 +47,7 @@ vous pouvez utiliser ce [*snippet* de code `R`](https://gitlab.com/linogaliana/d
 
 ### Bonnes pratiques de codage en `R`
 
-Dans la mesure où les exemple de code `R` ont vocation à être réutilisés directement par les agents de l'Insee, il est demandé aux contributeurs de suivre le guide des bonnes pratiques [**lien à mettre**]. Le principe général est que la documentation doit être reproductible. Nous attirons particulièrement votre attention sur la gestion des dépendances.
+Dans la mesure où les exemple de code `R` ont vocation à être réutilisés directement par les agents de l'Insee, il est demandé aux contributeurs de suivre le guide des bonnes pratiques (deuxième partie de la documentation). Le principe général est que la documentation doit être reproductible. Nous attirons particulièrement votre attention sur la gestion des dépendances.
 
 #### Assurer la qualité du code
 
@@ -88,7 +90,6 @@ Pour cela, vous pouvez suivre
 
 
 
-### Processus de `merge request`
 
 <!-------------- tidyverse style
 *  We recommend that you create a Git branch for each pull request (PR).  
