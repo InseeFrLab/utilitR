@@ -60,21 +60,14 @@ Dans la mesure où les exemple de code `R` ont vocation à être réutilisés di
 
 #### Gérer et savoir présenter les dépendances
 
-* **Il est demandé aux contributeurs d'utiliser systématiquement
-la syntaxe `package::function()`** :cop:. Il s'agit de la meilleure manière
-de lever toute ambiguïté concernant l'origine d'une fonction.
-Une exception à cette règle concerne le `pipe` du *package* `magrittr`: `%>%`.
-Celui-ci est importé par défaut dans l'environnement permettant la compilation
-du `cookbook`. Vous pouvez donc l'utiliser normalement, par exemple, `r mydata %>% dplyr::summarise(y = mean(x, na.rm = TRUE))` est tout à fait licite.
+Voici comment on présente l'utilisation d'un `package` :cop: :
 
+* Rappeler systématiquement que le *package* est chargé avec `library(package)` (plutôt que `package::function()`);
+* Rappeler systématiquement que le chargement de tous les *packages* doit se faire **au début** du code, et non au milieu du code;
 * **Les *packages* utilisés par une fiche doivent être listés dans le fichier `DESCRIPTION`.** Vous
 n'avez pas besoin de le modifier manuellement, vous pouvez utiliser une fonction du
 package `usethis` pour cela: `r usethis::use_package("monpackage")`. La dépendance sera alors automatiquement ajoutée au fichier `DESCRIPTION`, au niveau de la 
 liste des `Imports`. :tada: 
-
-* Les appels à `library(.)` ou `require(.)` sont réservés aux **cas de 
-force majeure** :ambulance: : les fiches qui les utilisent
-seront validées uniquement si la syntaxe  `package::function()` ne fonctionne pas. :cop: 
 
 #### Gérer les jeux de données
 
