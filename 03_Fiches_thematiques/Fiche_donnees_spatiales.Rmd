@@ -1,7 +1,11 @@
 # Traiter des données spatiales en `R` {#spatdata}
-```{r, echo = FALSE}
+Pour exécuter cette fiche, il est nécessaire d'importer le *package* `magrittr`:
+
+```{r, eval = FALSE}
 library(magrittr)
 ```
+
+Il est également nécessaire d'avoir installé le package `sf` mais il n'est pas nécessaire de l'importer pour pouvoir exécuter le code ci-dessous.
 
 ## Données spatiales: kesako ?
 
@@ -68,30 +72,30 @@ La fonction `sf::st_read()` permet de lire différents formats de données géog
 * `dsn`, le nom de la source de donnée (nom du fichier ou chemin vers le répertoire contenant les données géo) ;
 * `layer`, le nom de la couche. Ce paramètre est facultatif si les données ne contiennent qu'une seule couche.
 
+Cette fiche propose d'utiliser le jeu de données `martinique` du package `cartography` pour illustrer la manière dont on peut exploiter des données spatiales comme s'il s'agissait de données traditionnelles
 
 ```{r}
-# dpt_shape_url <- "myurl"
-# dpt_shape <- st_read(dsn = dpt_shape_url)
-
-nc <- sf::st_read(system.file("shape/nc.shp", package="sf"),
+martinique <- sf::st_read(system.file("shape/martinique.shp", package="cartography"),
                   quiet=TRUE)
+
+plot(martinique['P13_POP'])
 ```
 
 Il est possible également de définir le système de projection dès l'import, via l'argument `crs`. Un objet `sf` correspond en fait à un `dataframe` avec une colonne `geometry` adoptée au type d'objet, par exemple des polygones :
 
 ```{r}
-head(nc)
+head(martinique)
 ```
 
 Pour revenir à un `dataframe` traditionnel, c'est-à-dire sans la dimension géographique, la manière la plus simple est de rendre nulle la géométrie grâce à la commande `sf::st_set_geometry`:
 
 ```{r}
-nc %>% sf::st_set_geometry(NULL) %>% head()
+martinique %>% sf::st_set_geometry(NULL) %>% head()
 ```
 
 ## Où trouver des *shapefiles* ?
 
-
+  
 ## Effectuer des opérations sur les données d'un objet géographique
 
 Avec le *package* `sf`, il est possible d'appliquer les 6 verbes de la grammaire `dplyr` comme si l'objet n'était pas un objet géographique. Attention toutefois aux temps d'exécution qui sont plus lent que pour un `dataframe` traditionnel: pour des données de grande dimension, il peut être préférable d'effectuer les opérations avant de joindre une géométrie à celui-ci. 
@@ -99,34 +103,34 @@ Avec le *package* `sf`, il est possible d'appliquer les 6 verbes de la grammaire
 On peut ainsi sélectionner un sous-champ de la base avec `dplyr::filter` ou faire du tri avec `dplyr::arrange`:
 
 ```{r}
-nc %>% dplyr::filter(PERIMETER<1.5) %>% head()
-nc %>% dplyr::arrange(PERIMETER)
+martinique %>% dplyr::filter(P13_POP>10000) %>% head()
+martinique %>% dplyr::arrange(P13_POP)
 ```
 
 Sélectionner des colonnes avec `dplyr::select` et en créer de nouvelles avec `dplyr::mutate`:
 
 ```{r}
-nc %>% dplyr::select(PERIMETER) %>% dplyr::mutate(x = PERIMETER/mean(PERIMETER)) %>% head()
+martinique %>% dplyr::select(P13_POP) %>% dplyr::mutate(lpop = log(P13_POP)) %>% head()
 ```
 
 On peut appliquer des fonctions de statistiques descriptives avec `dplyr::summarise` et construire des groupes avec `dplyr::group_by`. Le `group_by` sur un objet spatial va également agréger les géométries: il va créer une nouvelle géométrie recoupant l'ensemble des points, des lignes ou des polygones appartenant au groupe. Par exemple, il va construire une géométrie région par somme des géométries des départements. 
 
-Par exemple, imaginons que la base précédent recoupe 3 groupes. On désire faire la somme de la variable `AREA` par groupe. Dans ce cas, après avoir créé de manière aléatoire les groupes (avec la fonction `sample`), on va effectuer un `group_by` puis un `summarise`:
+Par exemple, imaginons que la base précédente recoupe 2 groupes: les villes de plus de 2000 habitants et celles de moins. On désire faire la somme de la variable `P13_POP` par groupe. Dans ce cas, après avoir créé les groupes, on va effectuer un `group_by` puis un `summarise`:
 
 ```{r}
-nc_agg <- nc %>%
-  dplyr::mutate(group = sample(1:3, size = nrow(nc), replace = TRUE)) %>%
+martinique_agg <- martinique %>%
+  dplyr::mutate(group = P13_POP<2000) %>%
   dplyr::group_by(group) %>%
-  dplyr::summarise(AREA = sum(AREA))
+  dplyr::summarise(P13_POP = sum(P13_POP))
 
-head(nc_agg)
+head(martinique_agg)
 ```
 
 Le résultat est analogue à celui qu'on obtiendrait avec un *dataframe*, à l'exception de la colonne `geometry`. On obtient une colonne de format `MULTIPOLYGON` qui agrège des polygones. La représentation graphique rend plus évidente cette agrégation (cf. fiche cartographie):
 
 ```{r}
-plot(nc['AREA'])
-plot(nc_agg['AREA'])
+plot(martinique['P13_POP'])
+plot(martinique_agg['P13_POP'])
 ```
 
 
@@ -137,7 +141,7 @@ plot(nc_agg['AREA'])
 Par exemple, on peut calculer la superficie d'un polygone avec `sf::st_area`. Si l'unité ne convient pas, il est possible de convertir cette superficie en $km^2$:
 
 ```{r}
-nc %>%
+martinique %>%
   dplyr::mutate(area = sf::st_area(.)) %>%
   dplyr::mutate(x = units::set_units(area, km^2)) %>%
   head()
@@ -157,13 +161,13 @@ nc %>%
 Le système de projection est fondamental pour que la dimension spatiale soit bien interprétée par `R`. Si un système de projection est défini, il s'affiche lorsqu'on affiche un objet dans la console à la ligne `epsg (SRID):`
 
 ```{r}
-head(nc)
+head(martinique)
 ```
 
 Pour vérifier le système de projection d'une base de données, on peut utiliser `sf::st_crs`:
 
 ```{r}
-sf::st_crs(nc)
+sf::st_crs(martinique)
 ```
 
 Les deux principales fonctions pour définir le système de projection utilisé sont:
@@ -174,11 +178,11 @@ Les deux principales fonctions pour définir le système de projection utilisé 
 La (re)définition du système de projection se fait de la manière suivante:
 
 ```{r}
-nc <- nc %>% sf::st_set_crs(4267)
+martinique <- martinique %>% sf::st_set_crs(32620)
 ```
 
 Alors que la reprojection s'obtient de la manière suivante:
 
 ```{r}
-nc <- nc %>% sf::st_transform(4326)
+martinique <- martinique %>% sf::st_transform(4326)
 ```
