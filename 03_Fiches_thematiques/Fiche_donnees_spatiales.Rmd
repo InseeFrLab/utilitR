@@ -19,11 +19,11 @@ L’utilisateur souhaite traiter avec `R` des données spatiales (données géol
 
 ## Définition des données spatiales
 
-**Le terme "données spatiales" désigne les données qui portent sur les caractéristiques géographiques des objets (localisation, forme, limites)**. Les caractéristiques géographiques des objets sont décrites à l'aide d'un **système de coordonnées** qui permettent une représentation dans un espace euclidien ($(x,y)$). Le passage de l'espace réel (la Terre, qui est une sphère) à l'espace plan se fait grâce à un **système de projection**. Voici quelques exemples de données spatiales:
+**Le terme "données spatiales" désigne les données qui portent sur les caractéristiques géographiques des objets (localisation, contours, liens)**. Les caractéristiques géographiques des objets sont décrites à l'aide d'un **système de coordonnées** qui permettent une représentation dans un espace euclidien ($(x,y)$). Le passage de l'espace réel (la Terre, qui est une sphère) à l'espace plan se fait grâce à un **système de projection**. Voici quelques exemples de données spatiales:
 
 * Une table décrivant des bâtiments, avec les coordonnées géographiques de chaque bâtiment;
 * Le découpage communal du territoire, avec la forme du territoire de chaque commune;
-* Les couloirs aériens, avec les coordonnées décrivant leur parcours.
+* Les routes terrestres, avec les coordonnées décrivant leur parcours.
 
 Les données spatiales rassemblent classiquement deux types de données :
 
@@ -74,21 +74,28 @@ CommOM: est-ce que `sf::st_read()` repère automatiquement le système de projec
 martinique <- sf::st_read(
   dsn = system.file("shape/martinique.shp", package="cartography"),
   quiet = TRUE)
-
-# Produire une représentation
-plot(martinique['P13_POP'])
 ```
 
-Il est possible également de définir le système de projection dès l'import, via l'argument `crs`. Un objet `sf` correspond en fait à un `dataframe` avec une colonne `geometry` adoptée au type d'objet, par exemple des polygones:
+La commande `head()` fait apparaître la structure du `sf` `martinique`. L'en-tête précise le type de `geometry` (`polygon`, en l'occurrence le contour des communes), et le système de projection (`32620`). La table de données contient la liste des communes avec leurs caractéristiques (nom, population...). Enfin, la dernière colonne (`geometry`) contient l'information géographique (le contour des communes).
 
 ```{r}
 head(martinique)
 ```
 
+
+
+
+
 Pour revenir à un `dataframe` traditionnel, c'est-à-dire sans la dimension géographique, la manière la plus simple est de rendre nulle la géométrie grâce à la commande `sf::st_set_geometry`:
 
 ```{r}
-martinique %>% sf::st_set_geometry(NULL) %>% head()
+martinique %>% sf::st_set_geometry(NULL) %>% head(4)
+```
+
+
+```{r}
+# Produire une représentation cartographique
+plot(martinique['P13_POP'])
 ```
   
 ### Effectuer des opérations sur les données d'un objet géographique
