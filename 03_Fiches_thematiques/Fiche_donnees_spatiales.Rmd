@@ -83,7 +83,9 @@ La commande `head()` fait apparaître la structure du `sf` `martinique`. L'en-t�
 head(martinique)
 ```
 
-Pour revenir à un `dataframe` traditionnel, c'est-à-dire sans la dimension géographique, la manière la plus simple est de rendre nulle la géométrie grâce à la commande `sf::st_set_geometry`. Exemple: `martinique <- martinique %>% sf::st_set_geometry(NULL)`.
+Pour revenir à un `dataframe` traditionnel, c'est-à-dire sans la dimension géographique, la manière la plus simple est de rendre nulle la géométrie grâce à la commande **`sf::st_set_geometry`**. Exemple: `martinique <- martinique %>% sf::st_set_geometry(NULL)`.
+
+CommOM: si j'importe un fichier .csv avec fread (exemple: Fideli avec les coordonnées des logements), comment je fais pour déclarer que x et y sont les coordonnées, et pour préciser la projection? J'imagine que c'est la fonction `sf::st_set_geometry`. 
 
 ```{r}
 # Produire une représentation cartographique
@@ -92,12 +94,13 @@ plot(martinique['P13_POP'])
   
 ### Effectuer des opérations sur les données d'un objet géographique
 
-Avec le *package* `sf`, il est possible d'appliquer les 6 verbes de la grammaire `dplyr` comme si l'objet n'était pas un objet géographique. Attention toutefois aux temps d'exécution qui sont plus lent que pour un `dataframe` traditionnel: pour des données de grande dimension, il peut être préférable d'effectuer les opérations avant de joindre une géométrie à celui-ci. 
+Il est possible d'appliquer aux objets `sf` les fonctions de la grammaire `dplyr` comme si l'objet n'était pas un objet géographique.
+
 
 On peut ainsi sélectionner un sous-champ de la base avec `dplyr::filter` ou faire du tri avec `dplyr::arrange`:
 
 ```{r}
-martinique %>% dplyr::filter(P13_POP>10000) %>% head()
+martinique %>% dplyr::filter(P13_POP > 10000) %>% head()
 martinique %>% dplyr::arrange(P13_POP)
 ```
 
@@ -121,6 +124,12 @@ head(martinique_agg)
 ```
 
 Le résultat est analogue à celui qu'on obtiendrait avec un *dataframe*, à l'exception de la colonne `geometry`. On obtient une colonne de format `MULTIPOLYGON` qui agrège des polygones. La représentation graphique rend plus évidente cette agrégation (cf. fiche cartographie):
+
+
+::: {.conseil data-latex=""}
+**Conseil**
+Les manipulations de données sur un `sf` sont nettement plus lentes que sur un `dataframe` traditionnel (car `R` doit gérer les informations géographiques pendant la manipulation des données). Lorsque vous manipulez des données de grandes dimensions, il peut être préférable d'effectuer les opérations sur les données *avant* de joindre une géométrie à celui-ci.
+:::
 
 ```{r}
 plot(martinique['P13_POP'])
