@@ -87,36 +87,33 @@ Pour revenir à un `dataframe` traditionnel, c'est-à-dire sans la dimension gé
 
 CommOM: si j'importe un fichier .csv avec fread (exemple: Fideli avec les coordonnées des logements), comment je fais pour déclarer que x et y sont les coordonnées, et pour préciser la projection? J'imagine que c'est la fonction `sf::st_set_geometry`. 
 
+On peut produire très rapidement une représentation cartographique d'une données attributaire avec la fonction `plot()`:
+
 ```{r}
-# Produire une représentation cartographique
+# Produire une carte de la population par commune
 plot(martinique['P13_POP'])
 ```
   
 ### Effectuer des opérations sur les données d'un objet géographique
 
-Il est possible d'appliquer aux objets `sf` les fonctions de la grammaire `dplyr` comme si l'objet n'était pas un objet géographique.
-
-
-On peut ainsi sélectionner un sous-champ de la base avec `dplyr::filter` ou faire du tri avec `dplyr::arrange`:
+Il est possible d'appliquer aux objets `sf` les fonctions de la grammaire `dplyr` comme si l'objet n'était pas un objet géographique. On peut ainsi sélectionner un sous-champ de la base avec `dplyr::filter`, faire du tri avec `dplyr::arrange` et créer de nouvelles variables avec `dplyr::mutate`:
 
 ```{r}
-martinique %>% dplyr::filter(P13_POP > 10000) %>% head()
-martinique %>% dplyr::arrange(P13_POP)
+grandes_villes_martinique <- martinique %>% 
+  dplyr::filter(P13_POP > 10000) %>% 
+  dplyr::arrange(P13_POP) %>% 
+  dplyr::mutate(log_pop = log(P13_POP))
 ```
 
-Sélectionner des colonnes avec `dplyr::select` et en créer de nouvelles avec `dplyr::mutate`:
+On peut également appliquer des fonctions de statistiques descriptives avec `dplyr::summarise` et construire des groupes avec `dplyr::group_by`. Le `group_by` sur un objet spatial va également agréger les géométries: il va créer une nouvelle géométrie recoupant l'ensemble des points, des lignes ou des polygones appartenant au groupe. Par exemple, on peut construire très facilement une géométrie région par somme des géométries des départements. 
 
-```{r}
-martinique %>% dplyr::select(P13_POP) %>% dplyr::mutate(lpop = log(P13_POP)) %>% head()
-```
+CommOM: Oh my God, ça c'est un truc de ouf!
 
-On peut appliquer des fonctions de statistiques descriptives avec `dplyr::summarise` et construire des groupes avec `dplyr::group_by`. Le `group_by` sur un objet spatial va également agréger les géométries: il va créer une nouvelle géométrie recoupant l'ensemble des points, des lignes ou des polygones appartenant au groupe. Par exemple, il va construire une géométrie région par somme des géométries des départements. 
-
-Par exemple, imaginons que la base précédente recoupe deux groupes: les villes de plus de 2000 habitants et celles de moins de 2000 habitants. On désire faire la somme de la variable `P13_POP` par groupe. Dans ce cas, après avoir créé les groupes, on va effectuer un `group_by` puis un `summarise`:
+Par exemple, imaginons que la table de données sur la Martinique comprend deux groupes: les villes de plus de 2000 habitants et celles de moins de 2000 habitants. On désire faire la somme de la variable `P13_POP` pour chaque groupe. Dans ce cas, après avoir créé les groupes, on va effectuer un `group_by` puis un `summarise`:
 
 ```{r}
 martinique_agg <- martinique %>%
-  dplyr::mutate(group = P13_POP<2000) %>%
+  dplyr::mutate(group = (P13_POP < 2000)) %>%
   dplyr::group_by(group) %>%
   dplyr::summarise(P13_POP = sum(P13_POP))
 
