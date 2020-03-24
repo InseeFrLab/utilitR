@@ -95,18 +95,28 @@ Il y a principalement deux méthodes pour mettre des données sous forme d'un `d
 
 ## Quelques opérations de base avec `data.table`
 
-### Tri
+On va illustrer les opérations de base en `data.table` avec le jeu de données `iris`, qu'on transforme en `data.table` pour l'occasion.
 
 ```{r}
 iris_dt <- data.table::as.data.table(iris)
 ```
 
-Pour trier une table, on utilisera donc
+### Tri
+
+**On peut trier un `data.table` avec la fonction `order()`.** On trie `iris_dt` dans l'ordre croissant de `Sepal.Length` et dans l'ordre décroissant de la variable `Sepal.Width`.
+
 ```{r}
-iris_dt[order(Sepal.Length,-Sepal.Width)]
+iris_dt[order(Sepal.Length, -Sepal.Width)]
 ```
 
-On trie dans l'ordre croissant de `Sepal.Length` et dans l'ordre décroissant de la variable `Sepal.Width`.
+### Sélection de lignes
+
+**On peut sélectionner des lignes dans un `data.table` avec `dt[i]`.** Exemple: on séléctionne les lignes de `iris_dt` correspondant à l'espèce Setosa:
+```{r}
+selection <- iris_dt[Species == "setosa"]
+```
+
+Un point important (et difficile à comprendre au début): **lorsqu'on souhaite conserver toutes les lignes d'un `data.table`, il faut laisser vide l'emplacement pour `i`, sans oublier la virgule.** Par exemple, pour connaître le nombre de lignes de `iris_dt`, on écrit: `iris_dt[ , .N]`.  Notez bien l'emplacement vide et la virgule après `[`.
 
 ### Sélection de colonnes
 
