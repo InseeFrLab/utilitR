@@ -20,14 +20,16 @@ dt
 
 **La forme générale de la fonction `[...]` est la suivante: `DT[i, j, by]`**. Si on fait un parallèle avec `SQL`, `i` correspond au `WHERE`, `j` au `SELECT` et `by` au `GROUP BY`. Cet appel de fonction peut se lire comme ceci: "on part du `data.table` `DT`, on sélectionne certaines lignes avec `i`, puis on calcule `j` pour chaque groupe défini par `by`. La fonction `[...]` présente deux grands avantages:
 
-- Il n'est pas nécessaire d'utiliser le préfixe `DT$` pour se référer aux variables à l'intérieur de `[...]`. 
-- Le code est très concis, ce qui aide à rendre le code lisible.
+- Il n'est pas nécessaire d'utiliser le préfixe `DT$` pour se référer aux variables à l'intérieur de `[...]`;
+- Le code est très concis, ce qui aide à le rendre lisible.
 
-Voici un exemple simple. A partir des données générées ci-dessus, on veut calculer la moyenne de `y` par groupe défini par `z`, uniquement sur les observations pour lesquelles `x` est supérieur à 3. Voici comment on peut réaliser cette opération avec `Base R`, `dplyr` et `data.table`.
+Voici un exemple simple. A partir des données générées ci-dessus, on veut calculer la moyenne de `y` par groupe défini par `z`, uniquement sur les observations pour lesquelles `x` est supérieur à 3. Voici comment on peut réaliser cette opération avec `Base R`, `dplyr` et `data.table`. Vous pouvez juger vous-même de la concision du code.
 
 ```{r, echo = FALSE}
 dt <- dt[order(z)]
 ```
+
+<!-- Lino: il faudrait mettre un filtre ici: le code ci-dessous, c'est pour le html, et plus bas pour le LaTeX -->
 
 <table class='table'>
 <tr> <th>`Base R`</th> <th>`dplyr`</th> <th>`data.table`</th> <tr>
@@ -56,14 +58,16 @@ dt[x > 3, sum(y), by = z]
 <tr>
 </table>
 
+<!-- Lino: jusqu'ici c'est pour le html, et ci-dessous pour le LaTeX -->
 
+**`Base R`**
 ```{r, eval = FALSE}
-aggregate(dt[dt[["x"]] > 3]$y,                # Specify data column
-          by = list(dt[dt[["x"]] > 3]$z),              # Specify group indicator
+aggregate(dt[dt[["x"]] > 3]$y,           
+          by = list(dt[dt[["x"]] > 3]$z),
           FUN = sum)
 ```
 
-
+**`dplyr`**
 ```{r, eval = FALSE}
 dt %>%
   dplyr::filter(x > 3) %>%
@@ -71,13 +75,12 @@ dt %>%
   dplyr::summarise(sum(y))
 ```
 
-alors qu'en `data.table`, la requête équivalente s'écrit:
-
-```{r}
+**`data.table`**
+```{r, eval = FALSE}
 dt[x > 3, sum(y), by = z]
 ```
 
-Les 5 verbes du `tidyverse` ont une traduction en `data.table`, plus adaptée pour ces objets. 
+<!-- Lino: fin du code pour le LaTeX -->
 
 ### Comment mettre des données dans un `data.table`?
 
@@ -88,19 +91,19 @@ Il y a principalement deux méthodes pour mettre des données sous forme d'un `d
 
 ### Quelles fonctions peut-on utiliser avec un `data.table`?
 
-Les `data.table` héritant de caractéristiques des `data.frames`, on peut normalement leur appliquer toutes les méthodes qui s'appliquent aux `data.frames` de base. En particulier, on peut appliquer les fonctions de maniement des données du `tidyverse` aux `data.tables`: on peut utiliser `stringr` pour le maniement de caractères, `lubridate` pour des colonnes temporelles, etc. Avant d'appliquer une fonction du `tidyverse` à un `data.table`, il est néanmoins utile de vérifier qu'il n'existe pas un équivalent déjà proposé par le package `data.table`. Par exemple, plutôt que d'utiliser la fonction `stringr::str_split_fixed()` pour séparer une colonne en fonction d'un caractère, on utilisera `data.table::tstrsplit()`
+**Les `data.tables` sont simplement des `data.frames` particuliers, donc on peut normalement leur appliquer toutes les méthodes valables pour les `data.frames`.** En particulier, on peut utiliser avec `data.table` toutes les fonctions des *packages* habituellement associés à `dplyr`: `stringr` pour le maniement de chaînes de caractères, `lubridate` pour les colonnes temporelles, `forcats` pour les colonnes de type `factor`, etc. Toutefois, il est utile de vérifier que le *package* `data.table` ne propose pas déjà une fonction adaptée. Par exemple, plutôt que d'utiliser la fonction `stringr::str_split_fixed()` pour séparer une colonne en fonction d'un caractère, on utilisera `data.table::tstrsplit()`.
 
-## Quelques opérations de base sur les tables de données
+## Quelques opérations de base avec `data.table`
 
 ### Tri
 
 ```{r}
-table <- data.table::as.data.table(iris)
+iris_dt <- data.table::as.data.table(iris)
 ```
 
 Pour trier une table, on utilisera donc
 ```{r}
-table[order(Sepal.Length,-Sepal.Width)]
+iris_dt[order(Sepal.Length,-Sepal.Width)]
 ```
 
 On trie dans l'ordre croissant de `Sepal.Length` et dans l'ordre décroissant de la variable `Sepal.Width`.
@@ -110,8 +113,8 @@ On trie dans l'ordre croissant de `Sepal.Length` et dans l'ordre décroissant de
 Pour sélectionner les colonnes d'un `data.table` et renvoyer un `data.table`, il existe plusieurs méthodes. La première consiste à indiquer sous forme de liste les colonnes à choisir:
 
 ```{r}
-table[,list(Petal.Width, Species)]
-table[,.(Petal.Width, Species)]
+iris_dt[ , list(Petal.Width, Species)]
+iris_dt[ , .(Petal.Width, Species)]
 ```
 
 La notation `.()` est un alias pour `list()` qui est assez pratique en `data.table`. 
@@ -119,7 +122,7 @@ La notation `.()` est un alias pour `list()` qui est assez pratique en `data.tab
 La deuxième méthode consiste à utiliser un mot clé de `data.table`, `.SD` qui signifie `Subset of Data`: 
 
 ```{r}
-table[,.SD,.SDcols = c("Petal.Width", "Species")]
+iris_dt[ , .SD, .SDcols = c("Petal.Width", "Species")]
 ```
 
 On indique les colonnes qui seront aliasées par `.SD` avec la dimension `.SDcols`. 
@@ -128,14 +131,14 @@ On indique les colonnes qui seront aliasées par `.SD` avec la dimension `.SDcol
 
 Pour calculer en j sur un `data.table`, par exemple le nombre de lignes pour lesquelles une condition est vraie:
 ```{r}
-ans <- table[,sum(Sepal.Length>0)]
+ans <- iris_dt[ , sum(Sepal.Length > 0)]
 ans # ou plus simplement
-table[,sum(Sepal.Length>0)]
+iris_dt[ , sum(Sepal.Length > 0)]
 ```
 
 Calculer une moyenne pour un groupe particulier:
 ```{r}
-ans <- table[Species == "setosa",.(moyenne = mean(Sepal.Length))]
+ans <- iris_dt[Species == "setosa", .(moyenne = mean(Sepal.Length))]
 ans
 ```
 
@@ -145,7 +148,7 @@ Premièrement, on subset en i (pour `Species == "setosa"`), ensuite on sélectio
 
 Cela permet de calculer le nombre d'observations dans le groupes défini en i.
 ```{r}
-ans <- table[Species == "setosa",.N]
+ans <- iris_dt[Species == "setosa", .N]
 ans
 ```
 
@@ -154,7 +157,7 @@ ans
 Toutes les opérations précédentes pouvaient être croisées avec une ou plusieurs variables de groupe. C'est l'équivalent du `dplyr::group_by`.  Par exemple pour compter le nombre de lignes par groupe
 
 ```{r}
-ans <- table[,.N,by = "Species"]
+ans <- iris_dt[ , .N, by = "Species"]
 ans 
 ```
 
@@ -166,9 +169,9 @@ ans
 Jusqu'à présent, nous n'avons pas créé de nouvelles colonnes à un `data.table` existant. La spécificité du `data.table` par rapport au `tibble` ou à un `data.frame` traditionnel est qu'il ne **faut pas réassigner l'objet lorsqu'on modifie une de ses colonnes**. `data.table` repose sur le passage par référence qui permet d'actualiser une colonne sans créer de copie (pour plus de détail, vous pouvez consulter [ce lien](https://gitlab.com/linogaliana/bigr/-/blob/master/04-datatable.Rmd)). C'est le rôle de l'opérateur `:=` qui actualise par référence le `data.table`. On peut considérer l'opérateur `:=` comme traduction du `dplyr::mutate` dans la grammaire `data.table` mais dont le comportement diffère (`:=` est beaucoup plus efficient). Par exemple, pour créer une nouvelle colonne, on adopte la syntaxe suivante:
 
 ```{r}
-table
-table[, "nouvelle_colonne" := Petal.Width*10]
-table
+iris_dt
+iris_dt[, "nouvelle_colonne" := Petal.Width*10]
+iris_dt
 ``` 
 
 Le `data.table` est ainsi modifié par référence, sans avoir besoin d'être réassigné avec le symbole `<-`. C'est ce comportement qui permet à `data.table` d'être très rapide et très peu gourmand en RAM, rendant son usage approprié pour des données de taille importante. 
@@ -176,15 +179,15 @@ Le `data.table` est ainsi modifié par référence, sans avoir besoin d'être r�
 Pour supprimer une colonne, on fait
 
 ```{r}
-table[,'nouvelle_colonne' := NULL]
+iris_dt[,'nouvelle_colonne' := NULL]
 ```
 
 
 Pour créer les variables colA, colB et leur assigner les valeurs valA et valB:
 ```{r eval = F}
-table[, c("colA", "colB") := list(Sepal.Length*5, Sepal.Width*5)]
+iris_dt[, c("colA", "colB") := list(Sepal.Length*5, Sepal.Width*5)]
 # syntaxe qui produit le même résultat mais est plus préférable
-table[, `:=`("colA" = get('Sepal.Length')*5, 
+iris_dt[, `:=`("colA" = get('Sepal.Length')*5, 
           "colB" = get('Sepal.Width')*5)]
 ```
 
@@ -195,7 +198,7 @@ Attention, lorsque l'on crée plusieurs variables ainsi, elles se créent en mê
 L'opérateur `:=` peut être utilisé pour actualiser certaines lignes seulement, en fonction d'une condition logique. C'est beaucoup plus efficient qu'un terme `dplyr::if_else` ou `dplyr::case_when`. Imaginons qu'on désire créer une colonne x qui vale `Petal.Length` sauf pour les lignes où `Species` est `setosa` où elle vaut `NA`. Dans ce cas, le code `dplyr` serait:
 
 ```{r, eval = FALSE}
-table %>% dplyr::mutate(x = dplyr::case_when(
+iris_dt %>% dplyr::mutate(x = dplyr::case_when(
     Species ~ "setosa" == NA_real_,
     TRUE ~ Petal.Length
 ))
@@ -204,8 +207,8 @@ table %>% dplyr::mutate(x = dplyr::case_when(
 et le code équivalent en `data.table`, nécessitant beaucoup moins de RAM:
 
 ```{r}
-table[, "x" := Petal.Length]
-table[Species == "setosa", x := NA_real_]
+iris_dt[, "x" := Petal.Length]
+iris_dt[Species == "setosa", x := NA_real_]
 ```
 
 ## .SD et lapply
