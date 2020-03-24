@@ -27,8 +27,8 @@ L’utilisateur souhaite traiter avec `R` des données spatiales (données géol
 
 Les données spatiales rassemblent classiquement deux types de données :
 
-1. des **données géographiques**: objets géométriques tels que des points, des vecteurs, des polygones, ou des maillages (*raster*). Exemple: la forme de chaque chaque commune, les coordonnées d'un bâtiment;
-2. des **données attributaires**: des mesures et des caractéristiques associés aux objets géométriques. Exemple: la population de chaque commune, le nombre de fenêtres et le nombre d'étages d'un bâtiment.
+1. des **données géographiques** (ou géométries): objets géométriques tels que des points, des vecteurs, des polygones, ou des maillages (*raster*). Exemple: la forme de chaque chaque commune, les coordonnées d'un bâtiment;
+2. des **données attributaires** (ou attributs): des mesures et des caractéristiques associés aux objets géométriques. Exemple: la population de chaque commune, le nombre de fenêtres et le nombre d'étages d'un bâtiment.
 
 **Les données spatiales sont fréquemment traitées à l'aide d'un système d'information géographique (SIG)**, c'est-à-dire un système capable de stocker, d'organiser et de présenter des données alphanumériques spatialement référencées par des coordonnées dans un système de référence (CRS). `R` dispose de fonctionnalités lui permettant de réaliser les mêmes tâches qu'un SIG (traitement de données spatiales, représentations cartographiques).
 
@@ -38,7 +38,7 @@ Les données spatiales rassemblent classiquement deux types de données :
 * `4326`: WGS 84 ou système de pseudo-Mercator. C'est le système de projection des données GPS.
 * `27572`: Lambert II étendu. Il s'agit de l'ancien système de projection officiel. Les données spatiales anciennes peuvent être dans ce format.
 
-## Comment utiliser le *package `sf`*
+## Comment utiliser le *package* `sf`
 
 <!--- Lino: plus besoin car `sf::st_distance` fonctionne
 * `fields` pour calculer la distance entre 2 points ; ---->
@@ -51,7 +51,7 @@ Les fonctions de `sf` sont pour la plupart préfixées par `st_` et permettent n
 * A COMPLETER
 * A COMPLETER
 
-**Le *package* `sf` introduit un objet géographique particulier: la table de données spatiale appelée `sf`. Un `sf` est simplement une table de données (`data.frame`) `R` traditionnelle, enrichie d'une colonne supplémentaire `geometry` qui contient l'information géographique.** Par conséquent, toutes les fonctions qui s'appliquent à un `data.frame` s'appliquent exactement de la même façon aux objets `sf`.
+**Le *package* `sf` introduit un objet géographique particulier: la table de données spatiale appelée `sf`. Un `sf` est simplement une table de données `R` traditionnelle (`data.frame`), enrichie d'une colonne supplémentaire `geometry` qui contient l'information géographique.** Par conséquent, toutes les fonctions qui s'appliquent à un `data.frame` s'appliquent exactement de la même façon aux attributs des objets `sf`.
 
 ::: {.remarque data-latex=""}
 **Remarque**
@@ -68,6 +68,7 @@ La fonction **`sf::st_read()`** permet de lire différents formats de données g
 * `crs`, pour définir le système de projection. Ce paramètre est facultatif A COMPLETER cf LE COMMENTAIRE.
 
 CommOM 1: qu'est-ce qui existe comme formats de données géographiques? des .shp et quoi d'autres? Faire une section là-dessus?
+
 CommOM 2: est-ce que `sf::st_read()` repère automatiquement le système de projection? Est-ce codé dans la source de données?
 
 ```{r}
@@ -87,16 +88,18 @@ Pour revenir à un `dataframe` traditionnel, c'est-à-dire sans la dimension gé
 
 CommOM: si j'importe un fichier .csv avec fread (exemple: Fideli avec les coordonnées des logements), comment je fais pour déclarer que x et y sont les coordonnées, et pour préciser la projection? J'imagine que c'est la fonction `sf::st_set_geometry`. 
 
-On peut produire très rapidement une représentation cartographique d'une données attributaire avec la fonction `plot()`:
+On peut produire très rapidement une représentation cartographique d'un attribut avec la fonction `plot()`:
 
 ```{r}
 # Produire une carte de la population par commune
 plot(martinique['P13_POP'])
 ```
   
-### Effectuer des opérations sur les données d'un objet géographique
+### Effectuer des opérations sur un objet `sf`
 
-Il est possible d'appliquer aux objets `sf` les fonctions de la grammaire `dplyr` comme si l'objet n'était pas un objet géographique. On peut ainsi sélectionner un sous-champ de la base avec `dplyr::filter`, faire du tri avec `dplyr::arrange` et créer de nouvelles variables avec `dplyr::mutate`:
+#### Effectuer des opérations les attributs
+
+Il est possible d'appliquer aux attributs des objets `sf` les fonctions de la grammaire `dplyr` comme si l'objet n'était pas un objet géographique. On peut ainsi sélectionner un sous-champ de la base avec `dplyr::filter()`, faire du tri avec `dplyr::arrange()` et créer de nouvelles variables avec `dplyr::mutate()`:
 
 ```{r}
 grandes_villes_martinique <- martinique %>% 
@@ -105,40 +108,40 @@ grandes_villes_martinique <- martinique %>%
   dplyr::mutate(log_pop = log(P13_POP))
 ```
 
-On peut également appliquer des fonctions de statistiques descriptives avec `dplyr::summarise` et construire des groupes avec `dplyr::group_by`. Le `group_by` sur un objet spatial va également agréger les géométries: il va créer une nouvelle géométrie recoupant l'ensemble des points, des lignes ou des polygones appartenant au groupe. Par exemple, on peut construire très facilement une géométrie région par somme des géométries des départements. 
+On peut également appliquer des fonctions de statistiques descriptives avec `dplyr::summarise()` et construire des groupes avec `dplyr::group_by()`. Le `group_by()` sur un objet spatial va également agréger les géométries: il va créer une nouvelle géométrie recoupant l'ensemble des points, des lignes ou des polygones appartenant au groupe. Par exemple, on peut construire très facilement une géométrie plus agrégée par regroupement des géométries plus fines. Par exemple, imaginons que la table de données sur la Martinique comprend deux groupes: les villes de plus de 10 000 habitants et celles de moins de 10 000 habitants. On désire faire la somme de la variable `P13_POP` pour chaque groupe. Dans ce cas, après avoir créé les groupes, on va effectuer un `group_by()` puis un `summarise()`:
 
 CommOM: Oh my God, ça c'est un truc de ouf!
 
-Par exemple, imaginons que la table de données sur la Martinique comprend deux groupes: les villes de plus de 2000 habitants et celles de moins de 2000 habitants. On désire faire la somme de la variable `P13_POP` pour chaque groupe. Dans ce cas, après avoir créé les groupes, on va effectuer un `group_by` puis un `summarise`:
-
 ```{r}
 martinique_agg <- martinique %>%
-  dplyr::mutate(group = (P13_POP < 2000)) %>%
+  dplyr::mutate(group = (P13_POP < 10000)) %>%
   dplyr::group_by(group) %>%
   dplyr::summarise(P13_POP = sum(P13_POP))
 
 head(martinique_agg)
 ```
 
-Le résultat est analogue à celui qu'on obtiendrait avec un *dataframe*, à l'exception de la colonne `geometry`. On obtient une colonne de format `MULTIPOLYGON` qui agrège des polygones. La représentation graphique rend plus évidente cette agrégation (cf. fiche cartographie):
-
-
-::: {.conseil data-latex=""}
-**Conseil**
-Les manipulations de données sur un `sf` sont nettement plus lentes que sur un `dataframe` traditionnel (car `R` doit gérer les informations géographiques pendant la manipulation des données). Lorsque vous manipulez des données de grandes dimensions, il peut être préférable d'effectuer les opérations sur les données *avant* de joindre une géométrie à celui-ci.
-:::
+Le résultat est analogue à celui qu'on obtiendrait avec un *dataframe*, à l'exception de la colonne `geometry`. L'agrégation d'une géométrie de nature `POLYGON` aboutit à une colonne de format `MULTIPOLYGON` qui agrège des polygones. La représentation graphique rend plus évidente cette agrégation:
 
 ```{r}
 plot(martinique['P13_POP'])
+
 plot(martinique_agg['P13_POP'])
 ```
+ 
+::: {.conseil data-latex=""}
+**Conseil**
 
+Les manipulations de données sur un `sf` sont nettement plus lentes que sur un `dataframe` traditionnel (car `R` doit gérer les informations géographiques pendant la manipulation des données). Lorsque vous manipulez des données de grandes dimensions, il peut être préférable d'effectuer les opérations sur les données *avant* de joindre une géométrie à celui-ci.
+:::
 
 ### Effectuer des opérations sur les géométries d'un objet géométrique
 
-`sf` propose de nombreuses fonctions pour manier la dimension spatiale. On en trouve un certain nombre [ici](https://r-spatial.github.io/sf/reference/geos_unary.html) et [ici](https://r-spatial.github.io/sf/reference/geos_binary_ops.html).
+`sf` propose de nombreuses fonctions pour manipuler la dimension spatiale. On en trouve un certain nombre [ici](https://r-spatial.github.io/sf/reference/geos_unary.html) et [ici](https://r-spatial.github.io/sf/reference/geos_binary_ops.html).
 
-Par exemple, on peut calculer la superficie d'un polygone avec `sf::st_area`. Si l'unité ne convient pas, il est possible de convertir cette superficie en $km^2$:
+CommOM: je mettrais bien ici un petit tableau avec quelques fonctions, leurs arguments et la description de ce qu'elles font.
+
+Par exemple, on peut calculer la superficie d'un polygone avec `sf::st_area()`. Si l'unité ne convient pas, il est possible de convertir cette superficie en $km^2$:
 
 ```{r}
 martinique %>%
