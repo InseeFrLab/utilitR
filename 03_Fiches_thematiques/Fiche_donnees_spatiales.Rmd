@@ -1,5 +1,9 @@
 # Traiter des données spatiales en `R` {#spatdata}
 
+```{r, echo = FALSE}
+library(magrittr)
+```
+
 ## Tâches concernées et recommandations
 
 L’utilisateur souhaite traiter avec `R` des données spatiales (données géolocalisées, polygones...). Si vous ne savez pas si cette fiche répond à votre besoin, les données spatiales sont définies dans le paragraphe [Définition des données spatiales].
@@ -15,7 +19,7 @@ L’utilisateur souhaite traiter avec `R` des données spatiales (données géol
 
 ## Définition des données spatiales
 
-**Le terme "données spatiales" désigne les données qui portent sur les caractéristiques géographiques des objets (localisation, forme, limites)**. Les caractéristiques géographiques des objets sont décrites à l'aide d'un **système de coordonnées** qui permettent une représentation dans un espace euclidien ($(x,y)$). Le passage de l'espace réel (la Terre, qui est une sphère) à l'espace plan et le calcul des coordonnées se fait grâce à une **méthode de projection**. Voici quelques exemples de données spatiales:
+**Le terme "données spatiales" désigne les données qui portent sur les caractéristiques géographiques des objets (localisation, forme, limites)**. Les caractéristiques géographiques des objets sont décrites à l'aide d'un **système de coordonnées** qui permettent une représentation dans un espace euclidien ($(x,y)$). Le passage de l'espace réel (la Terre, qui est une sphère) à l'espace plan et le calcul des coordonnées se fait grâce à un **système de projection**. Voici quelques exemples de données spatiales:
 
 * Une table décrivant des bâtiments, avec les coordonnées géographiques de chaque bâtiment;
 * Le découpage communal du territoire, avec la forme du territoire de chaque commune;
@@ -26,14 +30,14 @@ Les données spatiales rassemblent classiquement deux *types* de données :
 1. des **données géographiques**: objets géométriques tels que des points, des vecteurs, des polygones, ou des maillages (*raster*). Exemple: la forme de chaque chaque commune, les coordonnées d'un bâtiment;
 2. des **données attributaires**: des mesures à représenter sur les cartes. Exemple: la surface et la population de chaque commune, la surface et le nombre de fenêtres d'un bâtiment.
 
-**Les données spatiales sont fréquemment traitées à l'aide d'un système d'information géographique (SIG)**, c'est-à-dire un système capable de stocker, d'organiser et de présenter des données alphanumériques spatialement référencées par des coordonnées dans un système de référence (CRS). `R` dispose de fonctionnalités lui permettant de réaliser les mêmes tâches qu'un SIG (traitement de données spatiales, représentations cartographiques). Une table de données spatiale est, en `R`, une table de données traditionnelle (de type `data.frame`) enrichie d'une géométrie qui rassemble les informations géographiques sous la forme de points, de polygones, etc. 
+**Les données spatiales sont fréquemment traitées à l'aide d'un système d'information géographique (SIG)**, c'est-à-dire un système capable de stocker, d'organiser et de présenter des données alphanumériques spatialement référencées par des coordonnées dans un système de référence (CRS). `R` dispose de fonctionnalités lui permettant de réaliser les mêmes tâches qu'un SIG (traitement de données spatiales, représentations cartographiques). Une table de données spatiale est, en `R`, une table de données traditionnelle (de type `data.frame`) enrichie d'une géométrie qui rassemble les informations géographiques sous la forme de points, de polygones, de vecteurs... 
 
 ## Introduction au *package `sf`*
 
 <!--- Lino: plus besoin car `sf::st_distance` fonctionne
 * `fields` pour calculer la distance entre 2 points ; ---->
 
-Le package `sf` est une extension de `dplyr` pour les objets géographiques. On peut donc utiliser le *pipe* (`%>%`) pour chaîner des opérations. A COMPLETER AVEC UNE REFERENCE AU GUIDE DE BONNES PRATIQUES, PARTIE PIPE
+Le *package* `sf` est une boîte à outils conçue pour faciliter la manipulation de données spatiales. Il s'agit d'une extension de `dplyr` pour les objets géographiques. On peut donc utiliser le *pipe* (`%>%`) pour chaîner des opérations. A COMPLETER AVEC UNE REFERENCE AU GUIDE DE BONNES PRATIQUES, PARTIE PIPE
 
 Le *package* `sf` repose sur le standard ISO 19125 [*simple feature access*](https://en.wikipedia.org/wiki/Simple_Features) défini conjointement par l'*Open Geospatial Consortium (OGC)* et l'*International Organization for Standardization (ISO)*. Les systèmes de projection sont définis par des codes dits *codes EPSG*. Ce [site](https://epsg.io/) est une bonne aide mémoire. Les plus fréquents, pour les utilisateurs français, sont les suivants:
 
@@ -52,19 +56,6 @@ Tableau synthèse des [SRC usités en France](https://geodesie.ign.fr/contenu/fi
 | La Réunion	| RGR92					| 2975			|
 | Mayotte			| RGM04					| 4471			|
 
-
-
-
-
-
-
-Pour exécuter cette fiche, il est nécessaire d'importer le *package* `magrittr`:
-
-```{r}
-library(magrittr)
-```
-
-Il est également nécessaire d'avoir installé le package `sf` mais il n'est pas nécessaire de l'importer pour pouvoir exécuter le code ci-dessous.
 
 ## Importer des données géographiques
 
