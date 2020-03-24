@@ -120,16 +120,65 @@ ans
 
 ## Opérations par groupe
 
-Toutes les opérations précédentes pouvaient être croisées avec une ou plusieurs variables de groupe. C'est l'équivalent du `dplyr::group_by`. 
+Toutes les opérations précédentes pouvaient être croisées avec une ou plusieurs variables de groupe. C'est l'équivalent du `dplyr::group_by`.  Par exemple pour compter le nombre de lignes par groupe
 
 ```{r}
-ans <- table[,.(.N),by = "Species"]
+ans <- table[,.N,by = "Species"]
 ans 
 ```
+
+<!---On peut, en utilisant de manière conjointe `lapply` et `.SD` effectuer des opérations vraiment poussées, éventuellement par groupe--->
 
 
 ## L'opérateur `:=`
 
-Jusqu'à présent, nous n'avons pas créé de nouvelles colonnes à un `data.table` existant.
+Jusqu'à présent, nous n'avons pas créé de nouvelles colonnes à un `data.table` existant. La spécificité du `data.table` par rapport au `tibble` ou à un `data.frame` traditionnel est qu'il ne **faut pas réassigner l'objet lorsqu'on modifie une de ses colonnes*. `data.table` repose sur le passage par référence qui permet d'actualiser une colonne sans créer de copie (pour plus de détail, vous pouvez consulter [ce lien](https://gitlab.com/linogaliana/bigr/-/blob/master/04-datatable.Rmd)). C'est le rôle de l'opérateur `:=` qui actualise par référence le `data.table`. On peut considérer l'opérateur `:=` comme traduction du `dplyr::mutate` dans la grammaire `data.table` mais dont le comportement diffère (`:=` est beaucoup plus efficient). Par exemple, pour créer une nouvelle colonne, on adopte la syntaxe suivante:
 
+```{r}
+table
+table[, "nouvelle_colonne" := Petal.Width*10]
+table
+``` 
+
+Le `data.table` est ainsi modifié par référence, sans avoir besoin d'être réassigné avec le symbole `<-`. C'est ce comportement qui permet à `data.table` d'être très rapide et très peu gourmand en RAM, rendant son usage approprié pour des données de taille importante. 
+
+Pour supprimer une colonne, on fait
+
+```{r}
+table[,'nouvelle_colonne' := NULL]
+```
+
+
+Pour créer les variables colA, colB et leur assigner les valeurs valA et valB:
+```{r eval = F}
+table[, c("colA", "colB") := list(Sepal.Length*5, Sepal.Width*5)]
+# syntaxe qui produit le même résultat mais est plus préférable
+table[, `:=`("colA" = get('Sepal.Length')*5, 
+          "colB" = get('Sepal.Width')*5)]
+```
+
+Attention, lorsque l'on crée plusieurs variables ainsi, elles se créent en même temps. Si on crée des variables qui dépendent d'autres variables créées, il faut séparer l'opération en deux. 
+
+L'opérateur `:=` peut être utilisé pour actualiser certaines lignes seulement, en fonction d'une condition logique. C'est beaucoup plus efficient qu'un terme `dplyr::if_else` ou `dplyr::case_when`. Imaginons qu'on désire créer une colonne x qui vale `Petal.Length` sauf pour les lignes où `Species` est `setosa` où elle vaut `NA`. Dans ce cas, le code `dplyr` serait:
+
+```{r}
+table %>% dplyr::mutate(x = dplyr::case_when(
+    Species ~ "setosa" == NA_real_,
+    TRUE ~ Petal.Length
+))
+```
+
+et le code équivalent en `data.table`, nécessitant beaucoup moins de RAM:
+
+```{r}
+table[, "x" := Petal.Length]
+table[Species == "setosa", x := NA_real_]
+```
+
+## .SD et lapply
+
+## Fonctions modifiant un `data.table`
+
+Il est très facile de créer des fonctions génériques modifiant un `data.table`
+vs difficle en dplyr
 
