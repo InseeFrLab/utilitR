@@ -1,0 +1,135 @@
+# Manipuler des données avec `data.table`
+
+Cette fiche vise à présenter le package `data.table` qui offre une alternative au `tidyverse` pour manier des données. C'est une solution plus adaptée pour des bases de données de plus de 1Go que `dplyr` mais il s'agit d'un package qui peut aussi être utilisé sur des données plus petites. Un cours plus complet peut être trouvé [ici](https://gitlab.com/linogaliana/bigr/-/blob/master/04-datatable.Rmd) <!----lien temporaire en attendant la formation déployée ----> et les vignettes sont disponibles [sur ce lien](https://github.com/Rdatatable/data.table/wiki/Getting-started).
+
+
+## Présentation de `data.table`
+
+### Principe
+
+Le package `data.table` propose une version améliorée du `data.frame` de base: le `data.table`. La visualisation est améliorée par rapport à un `data.frame` standard:
+
+```{r}
+dt <- data.table::data.table(x = runif(1e4), y = runif(1e3))
+dt
+```
+
+Pour importer des données en format `data.table`, on utilisera la fonction `data.table::fread`. On peut aussi convertir un objet en `data.table` en utilisant `data.table::setDT` ou `data.table::as.data.table()`. 
+
+Dans un `data.frame` de base, on peut utiliser les crochets `df[...]` uniquement pour sélectionner des lignes ou des colonnes. Dans un `data.table`, on peut faire beaucoup plus de choses avec les crochets `dt[...]`. En fait, les instructions à l'intérieur des crochets peuvent être conçues comme des requêtes `SQL` mises en forme différemment. 
+
+La forme générale est la suivante:
+```{r eval = F}
+DT[i, j, by]
+
+##   R:                 i                 j        by
+## SQL:  where | order by   select | update  group by
+
+```
+
+A l'intérieur du i, on n'a pas besoin d'utiliser le préfixe `DT$` pour se référer aux variables. Cela est assez pratique, entre autres pour la lisibilité du code. Par exemple, pour effectuer une filtre et une moyenne par groupe sur les données d'exemple ci-dessous,
+
+```{r}
+# DATAFRAME D'EXEMPLE
+dt <- data.table::data.table(x = exp(rnorm(1000L)),
+                             y = rnorm(1000L),
+                             z = sample(seq_len(3L), size = 1000L,
+                                        replace = TRUE))
+dt
+```
+
+en `dplyr` on va exécuter la commande suivante:
+
+```{r}
+dt %>%
+  dplyr::filter(x > 3) %>%
+  dplyr::group_by(z) %>%
+  dplyr::summarise(sum(y))
+```
+
+alors qu'en `data.table`, la requête équivalente s'écrit:
+
+```{r}
+dt[x > 3, sum(y), by = z]
+```
+
+Les 5 verbes du `tidyverse` ont une traduction en `data.table`, plus adaptée pour ces objets. 
+
+### Quelles fonctions peut-on utiliser avec un `data.table`?
+
+Les `data.table` héritant de caractéristiques des `data.frames`, on peut normalement leur appliquer toutes les méthodes qui s'appliquent aux `data.frames` de base. En particulier, on peut appliquer les fonctions de maniement des données du `tidyverse` aux `data.tables`: on peut utiliser `stringr` pour le maniement de caractères, `lubridate` pour des colonnes temporelles, etc. Avant d'appliquer une fonction du `tidyverse` à un `data.table`, il est néanmoins utile de vérifier qu'il n'existe pas un équivalent déjà proposé par le package `data.table`. Par exemple, plutôt que d'utiliser la fonction `stringr::str_split_fixed()` pour séparer une colonne en fonction d'un caractère, on utilisera `data.table::tstrsplit()`
+
+## Quelques opérations de base sur les tables de données
+
+### Tri
+
+```{r}
+table <- data.table::as.data.table(iris)
+```
+
+Pour trier une table, on utilisera donc
+```{r}
+table[order(Sepal.Length,-Sepal.Width)]
+```
+
+On trie dans l'ordre croissant de `Sepal.Length` et dans l'ordre décroissant de la variable `Sepal.Width`.
+
+### Sélection de colonnes
+
+Pour sélectionner les colonnes d'un `data.table` et renvoyer un `data.table`, il existe plusieurs méthodes. La première consiste à indiquer sous forme de liste les colonnes à choisir:
+
+```{r}
+table[,list(Petal.Width, Species)]
+table[,.(Petal.Width, Species)]
+```
+
+La notation `.()` est un alias pour `list()` qui est assez pratique en `data.table`. 
+
+La deuxième méthode consiste à utiliser un mot clé de `data.table`, `.SD` qui signifie `Subset of Data`: 
+
+```{r}
+table[,.SD,.SDcols = c("Petal.Width", "Species")]
+```
+
+On indique les colonnes qui seront aliasées par `.SD` avec la dimension `.SDcols`. 
+
+### Opérations sur les colonnes
+
+Pour calculer en j sur un `data.table`, par exemple le nombre de lignes pour lesquelles une condition est vraie:
+```{r}
+ans <- table[,sum(Sepal.Length>0)]
+ans # ou plus simplement
+table[,sum(Sepal.Length>0)]
+```
+
+Calculer une moyenne pour un groupe particulier:
+```{r}
+ans <- table[Species == "setosa",.(moyenne = mean(Sepal.Length))]
+ans
+```
+
+Premièrement, on subset en i (pour `Species == "setosa"`), ensuite on sélectionne en j et on calcule en j en même temps. 
+
+### Le symbole `.N` 
+
+Cela permet de calculer le nombre d'observations dans le groupes défini en i.
+```{r}
+ans <- table[Species == "setosa",.N]
+ans
+```
+
+## Opérations par groupe
+
+Toutes les opérations précédentes pouvaient être croisées avec une ou plusieurs variables de groupe. C'est l'équivalent du `dplyr::group_by`. 
+
+```{r}
+ans <- table[,.(.N),by = "Species"]
+ans 
+```
+
+
+## L'opérateur `:=`
+
+Jusqu'à présent, nous n'avons pas créé de nouvelles colonnes à un `data.table` existant.
+
+
