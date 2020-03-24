@@ -25,37 +25,30 @@ L’utilisateur souhaite traiter avec `R` des données spatiales (données géol
 * Le découpage communal du territoire, avec la forme du territoire de chaque commune;
 * Les couloirs aériens, avec les coordonnées décrivant leur parcours.
 
-Les données spatiales rassemblent classiquement deux *types* de données :
+Les données spatiales rassemblent classiquement deux types de données :
 
 1. des **données géographiques**: objets géométriques tels que des points, des vecteurs, des polygones, ou des maillages (*raster*). Exemple: la forme de chaque chaque commune, les coordonnées d'un bâtiment;
 2. des **données attributaires**: des mesures à représenter sur les cartes. Exemple: la surface et la population de chaque commune, la surface et le nombre de fenêtres d'un bâtiment.
 
 **Les données spatiales sont fréquemment traitées à l'aide d'un système d'information géographique (SIG)**, c'est-à-dire un système capable de stocker, d'organiser et de présenter des données alphanumériques spatialement référencées par des coordonnées dans un système de référence (CRS). `R` dispose de fonctionnalités lui permettant de réaliser les mêmes tâches qu'un SIG (traitement de données spatiales, représentations cartographiques). Une table de données spatiale est, en `R`, une table de données traditionnelle (de type `data.frame`) enrichie d'une géométrie qui rassemble les informations géographiques sous la forme de points, de polygones, de vecteurs... 
 
+**Les systèmes de projection font l'objet de standards internationaux et sont désignés par des codes dits *codes EPSG* **. Ce [site](https://epsg.io/) est une bonne aide-mémoire. Les plus fréquents, pour les utilisateurs français, sont les suivants (plus d'infos [ici](https://geodesie.ign.fr/contenu/fichiers/documentation/SRCfrance.pdf)):
+
+* `2154`: système de projection Lambert 93. Il s'agit du système de projection officiel: la plupart des données diffusées par l'administration pour la métropole sont accessibles à partir de ce format.
+* `4326`: WGS 84 ou système de pseudo-Mercator. C'est le système de projection des données GPS.
+* `27572`: Lambert II étendu. Il s'agit de l'ancien système de projection officiel. Les données spatiales anciennes peuvent être dans ce format.
+
 ## Comment utiliser le *package `sf`*
 
 <!--- Lino: plus besoin car `sf::st_distance` fonctionne
 * `fields` pour calculer la distance entre 2 points ; ---->
 
-Le *package* `sf` est une boîte à outils conçue pour faciliter la manipulation de données spatiales. Il s'agit d'une extension de `dplyr` pour les objets géographiques. On peut donc utiliser le *pipe* (`%>%`) pour chaîner des opérations. A COMPLETER AVEC UNE REFERENCE AU GUIDE DE BONNES PRATIQUES, PARTIE PIPE
+Le *package* `sf` est une boîte à outils conçue pour faciliter la manipulation de données spatiales. 
 
-Le *package* `sf` repose sur le standard ISO 19125 [*simple feature access*](https://en.wikipedia.org/wiki/Simple_Features) défini conjointement par l'*Open Geospatial Consortium (OGC)* et l'*International Organization for Standardization (ISO)*. Les systèmes de projection sont définis par des codes dits *codes EPSG*. Ce [site](https://epsg.io/) est une bonne aide mémoire. Les plus fréquents, pour les utilisateurs français, sont les suivants:
 
-* `2154`: système de projection Lambert 93. Il s'agit du système de projection officiel: la plupart des données diffusées par l'administration pour la métropole sont accessibles à partir de ce format.
-* `4326`: WGS 84 ou système de pseudo-Mercator. C'est le système de représentation utilisé par les données GPS.
-* `27572`: Lambert II étendu. Il s'agit de l'ancien système de projection officiel. Les données spatiales anciennes peuvent être dans ce format.
+Il s'agit d'une extension de `dplyr` pour les objets géographiques. On peut donc utiliser le *pipe* (`%>%`) pour chaîner des opérations. A COMPLETER AVEC UNE REFERENCE AU GUIDE DE BONNES PRATIQUES, PARTIE PIPE
 
-Tableau synthèse des [SRC usités en France](https://geodesie.ign.fr/contenu/fichiers/documentation/SRCfrance.pdf) ?
-
-|   Région    | Système				| code epsg |
-|-------------|---------------|-----------|
-| Métropole		| RGF93					| 2154			|
-| Guadeloupe	| RGAF09				| 5490			|
-| Martinique	| RGAF09				| 5490			|
-| Guyane			| RGFG95				| 2972			|
-| La Réunion	| RGR92					| 2975			|
-| Mayotte			| RGM04					| 4471			|
-
+Le *package* `sf` repose sur le standard ISO 19125 [*simple feature access*](https://en.wikipedia.org/wiki/Simple_Features) défini conjointement par l'*Open Geospatial Consortium (OGC)* et l'*International Organization for Standardization (ISO)*.
 
 ### Importer des données géographiques
 
