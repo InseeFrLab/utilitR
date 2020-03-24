@@ -32,7 +32,7 @@ Les données spatiales rassemblent classiquement deux *types* de données :
 
 **Les données spatiales sont fréquemment traitées à l'aide d'un système d'information géographique (SIG)**, c'est-à-dire un système capable de stocker, d'organiser et de présenter des données alphanumériques spatialement référencées par des coordonnées dans un système de référence (CRS). `R` dispose de fonctionnalités lui permettant de réaliser les mêmes tâches qu'un SIG (traitement de données spatiales, représentations cartographiques). Une table de données spatiale est, en `R`, une table de données traditionnelle (de type `data.frame`) enrichie d'une géométrie qui rassemble les informations géographiques sous la forme de points, de polygones, de vecteurs... 
 
-## Introduction au *package `sf`*
+## Comment utiliser le *package `sf`*
 
 <!--- Lino: plus besoin car `sf::st_distance` fonctionne
 * `fields` pour calculer la distance entre 2 points ; ---->
@@ -57,7 +57,7 @@ Tableau synthèse des [SRC usités en France](https://geodesie.ign.fr/contenu/fi
 | Mayotte			| RGM04					| 4471			|
 
 
-## Importer des données géographiques
+### Importer des données géographiques
 
 `sf` propose un ensemble de fonctions, la plupart préfixées par `st_`
 
@@ -86,11 +86,8 @@ Pour revenir à un `dataframe` traditionnel, c'est-à-dire sans la dimension gé
 ```{r}
 martinique %>% sf::st_set_geometry(NULL) %>% head()
 ```
-
-## Où trouver des *shapefiles* ?
-
   
-## Effectuer des opérations sur les données d'un objet géographique
+### Effectuer des opérations sur les données d'un objet géographique
 
 Avec le *package* `sf`, il est possible d'appliquer les 6 verbes de la grammaire `dplyr` comme si l'objet n'était pas un objet géographique. Attention toutefois aux temps d'exécution qui sont plus lent que pour un `dataframe` traditionnel: pour des données de grande dimension, il peut être préférable d'effectuer les opérations avant de joindre une géométrie à celui-ci. 
 
@@ -128,7 +125,7 @@ plot(martinique_agg['P13_POP'])
 ```
 
 
-## Effectuer des opérations sur les géométries d'un objet géométrique
+### Effectuer des opérations sur les géométries d'un objet géométrique
 
 `sf` propose de nombreuses fonctions pour manier la dimension spatiale. On en trouve un certain nombre [ici](https://r-spatial.github.io/sf/reference/geos_unary.html) et [ici](https://r-spatial.github.io/sf/reference/geos_binary_ops.html).
 
@@ -142,15 +139,15 @@ martinique %>%
 ```
 
 
-## Joindre des données géographiques et attributaires
+### Joindre des données géographiques et attributaires
 
-### Jointure sur des attributs
-
-
-### Jointure à partir de la géométrie
+#### Jointure sur des attributs
 
 
-## Gérer le système de projection
+#### Jointure à partir de la géométrie
+
+
+### Gérer le système de projection
 
 Le système de projection est fondamental pour que la dimension spatiale soit bien interprétée par `R`. Si un système de projection est défini, il s'affiche lorsqu'on affiche un objet dans la console à la ligne `epsg (SRID):`
 
@@ -166,10 +163,10 @@ sf::st_crs(martinique)
 
 Les deux principales fonctions pour définir le système de projection utilisé sont:
 
-* `sf::st_set_crs`: il s'agit de définir la manière dont les points *(x,y)* sont reliés à la surface terrestre. **Cette commande ne doit pas être utilisée pour changer de système de coordonnées**. 
-* `sf::st_transform`: il s'agit de projeter les points d'une géométrie à une autre. Par exemple, si on désire produire une carte avec un fond `openstreetmaps` ou une carte dynamique `leaflet`, il est nécessaire de re-projecter les données dans le système WGS 84 (code crs 4326)
+* `sf::st_set_crs`: cette commande sert à préciser quel est le système de projection utilisé, c'est-à-dire comment les coordonnées *(x,y)* sont reliées à la surface terrestre. **Cette commande ne doit pas être utilisée pour changer de système de coordonnées**. 
+* `sf::st_transform`: cette commande sert à projeter les points d'une géométrie dans une autre, c'est-à-dire à recalculer les coordonnées selon un autre système de projection. Par exemple, si on désire produire une carte avec un fond `openstreetmaps` ou une carte dynamique `leaflet` à partir de données projetées en Lambert 93, il est nécessaire de re-projecter les données dans le système WGS 84 (code crs 4326).
 
-La (re)définition du système de projection se fait de la manière suivante:
+La définition du système de projection se fait de la manière suivante:
 
 ```{r}
 martinique <- martinique %>% sf::st_set_crs(32620)
@@ -205,6 +202,7 @@ Quelques conseils généraux sur la façon de s'y prendre.
 
 ## Ressources
 
+Où trouver des *shapefiles* ? NE PAS OUBLIER DE METTRE UNE REFERENCE DANS LE TEXTE
 
 L'Insee propose un outil pour sélectionner et télécharger des données géographiques : [Créacarte](http://creacartes.insee.fr/).
 
