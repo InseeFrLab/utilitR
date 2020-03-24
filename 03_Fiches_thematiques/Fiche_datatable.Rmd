@@ -10,33 +10,59 @@ Cette fiche vise à présenter le package `data.table` qui offre une alternative
 Le *package* `data.table` propose une version améliorée du `data.frame` de base: le `data.table`. La visualisation est améliorée par rapport à un `data.frame` standard:
 
 ```{r}
-dt <- data.table::data.table(x = runif(1e4), y = runif(1e3))
+dt <- data.table::data.table(x = exp(rnorm(1e4)),
+                             y = runif(1e4),
+                             z = sample(1:4, 1e4, replace = TRUE))
 dt
 ```
 
-La fonction fondamentale de `data.table` est la fonction `[]` (crochets). Dans un `data.frame` de base, les crochets `df[...]` servent uniquement à sélectionner des lignes ou des colonnes. Dans un `data.table`, les crochets `dt[...]` permettent de faire beaucoup plus de choses (quasiment tout, en pratique). En fait, les instructions à l'intérieur des crochets peuvent être envisagées comme des requêtes `SQL` mises en forme différemment. 
+**La fonction fondamentale de `data.table` est la fonction `[...]` (crochets).** Dans un `data.frame` de base, les crochets `df[...]` servent uniquement à sélectionner des lignes ou des colonnes. Dans un `data.table`, les crochets `dt[...]` permettent de faire beaucoup plus de choses (quasiment tout, en pratique). En fait, les instructions à l'intérieur des crochets peuvent être envisagées comme des requêtes `SQL` mises en forme différemment. 
 
-La forme générale est la suivante:
-```{r eval = F}
-DT[i, j, by]
+**La forme générale de la fonction `[...]` est la suivante: `DT[i, j, by]`**. Si on fait un parallèle avec `SQL`, `i` correspond au `WHERE`, `j` au `SELECT` et `by` au `GROUP BY`. Cet appel de fonction peut se lire comme ceci: "on part du `data.table` `DT`, on sélectionne certaines lignes avec `i`, puis on calcule `j` pour chaque groupe défini par `by`. La fonction `[...]` présente deux grands avantages:
 
-##   R:                 i                 j        by
-## SQL:  where | order by   select | update  group by
+- Il n'est pas nécessaire d'utiliser le préfixe `DT$` pour se référer aux variables à l'intérieur de `[...]`. 
+- Le code est très concis, ce qui aide à rendre le code lisible.
 
+Voici un exemple simple. A partir des données générées ci-dessus, on veut calculer la moyenne de `y` par groupe défini par `z`, uniquement sur les observations pour lesquelles `x` est supérieur à 3. Voici comment on peut réaliser cette opération avec `Base R`, `dplyr` et `data.table`.
+
+```{r, echo = FALSE}
+dt <- dt[order(z)]
 ```
 
-A l'intérieur du i, on n'a pas besoin d'utiliser le préfixe `DT$` pour se référer aux variables. Cela est assez pratique, entre autres pour la lisibilité du code. Par exemple, pour effectuer une filtre et une moyenne par groupe sur les données d'exemple ci-dessous,
+<table class='table'>
+<tr> <th>`Base R`</th> <th>`dplyr`</th> <th>`data.table`</th> <tr>
+<tr>
+<td>
+```{r, eval = FALSE}
+aggregate(
+dt[dt[["x"]] > 3]$y,
+by = list(dt[dt[["x"]] > 3]$z),
+FUN = sum)
+```
+</td>
+<td>
+```{r, eval = FALSE}
+dt %>%
+dplyr::filter(x > 3) %>%
+dplyr::group_by(z) %>%
+dplyr::summarise(sum(y))
+```
+</td>
+<td>
+```{r, eval = FALSE}
+dt[x > 3, sum(y), by = z]
+```
+</td>
+<tr>
+</table>
 
-```{r}
-# DATAFRAME D'EXEMPLE
-dt <- data.table::data.table(x = exp(rnorm(1000L)),
-                             y = rnorm(1000L),
-                             z = sample(seq_len(3L), size = 1000L,
-                                        replace = TRUE))
-dt
+
+```{r, eval = FALSE}
+aggregate(dt[dt[["x"]] > 3]$y,                # Specify data column
+          by = list(dt[dt[["x"]] > 3]$z),              # Specify group indicator
+          FUN = sum)
 ```
 
-en `dplyr` on va exécuter la commande suivante:
 
 ```{r, eval = FALSE}
 dt %>%
