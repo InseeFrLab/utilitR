@@ -51,7 +51,7 @@ Les fonctions de `sf` sont pour la plupart préfixées par `st_` et permettent n
 * A COMPLETER
 * A COMPLETER
 
-**Le *package* `sf` introduit un objet particulier: la table de données spatiale appelée `sf`. Un `sf` est simplement une table de données (`data.frame`) `R` traditionnelle, enrichie d'une colonne supplémentaire `geometry` qui contient l'information géographique.**
+**Le *package* `sf` introduit un objet géographique particulier: la table de données spatiale appelée `sf`. Un `sf` est simplement une table de données (`data.frame`) `R` traditionnelle, enrichie d'une colonne supplémentaire `geometry` qui contient l'information géographique.** Par conséquent, toutes les fonctions qui s'appliquent à un `data.frame` s'appliquent exactement de la même façon aux objets `sf`.
 
 ::: {.remarque data-latex=""}
 **Remarque**
@@ -67,7 +67,8 @@ La fonction `sf::st_read()` permet de lire différents formats de données géog
 * `layer`, le nom de la couche. Ce paramètre est facultatif si les données ne contiennent qu'une seule couche;
 * `crs`, pour définir le système de projection. Ce paramètre est facultatif A COMPLETER cf LE COMMENTAIRE.
 
-CommOM: est-ce que `sf::st_read()` repère automatiquement le système de projection? Est-ce codé dans la source de données?
+CommOM 1: qu'est-ce qui existe comme formats de données géographiques? des .shp?
+CommOM 2: est-ce que `sf::st_read()` repère automatiquement le système de projection? Est-ce codé dans la source de données?
 
 ```{r}
 # Charger les données sur la Martinique
@@ -82,16 +83,7 @@ La commande `head()` fait apparaître la structure du `sf` `martinique`. L'en-t�
 head(martinique)
 ```
 
-
-
-
-
-Pour revenir à un `dataframe` traditionnel, c'est-à-dire sans la dimension géographique, la manière la plus simple est de rendre nulle la géométrie grâce à la commande `sf::st_set_geometry`:
-
-```{r}
-martinique %>% sf::st_set_geometry(NULL) %>% head(4)
-```
-
+Pour revenir à un `dataframe` traditionnel, c'est-à-dire sans la dimension géographique, la manière la plus simple est de rendre nulle la géométrie grâce à la commande `sf::st_set_geometry`. Exemple: `martinique <- martinique %>% sf::st_set_geometry(NULL)`.
 
 ```{r}
 # Produire une représentation cartographique
@@ -117,7 +109,7 @@ martinique %>% dplyr::select(P13_POP) %>% dplyr::mutate(lpop = log(P13_POP)) %>%
 
 On peut appliquer des fonctions de statistiques descriptives avec `dplyr::summarise` et construire des groupes avec `dplyr::group_by`. Le `group_by` sur un objet spatial va également agréger les géométries: il va créer une nouvelle géométrie recoupant l'ensemble des points, des lignes ou des polygones appartenant au groupe. Par exemple, il va construire une géométrie région par somme des géométries des départements. 
 
-Par exemple, imaginons que la base précédente recoupe 2 groupes: les villes de plus de 2000 habitants et celles de moins. On désire faire la somme de la variable `P13_POP` par groupe. Dans ce cas, après avoir créé les groupes, on va effectuer un `group_by` puis un `summarise`:
+Par exemple, imaginons que la base précédente recoupe deux groupes: les villes de plus de 2000 habitants et celles de moins de 2000 habitants. On désire faire la somme de la variable `P13_POP` par groupe. Dans ce cas, après avoir créé les groupes, on va effectuer un `group_by` puis un `summarise`:
 
 ```{r}
 martinique_agg <- martinique %>%
