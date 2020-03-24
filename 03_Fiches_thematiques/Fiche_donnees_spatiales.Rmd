@@ -11,7 +11,7 @@ L’utilisateur souhaite traiter avec `R` des données spatiales (données géol
 ::: {.recommandation data-latex=""}
 **Recommandations de l'Insee**
 
-* **Il est recommandé d'utiliser le *package* `sf` qui couvre les principaux besoins** (lecture des formats de données géographiques, traitements des données spatiales, représentations graphiques);
+* **Il est recommandé d'utiliser le *package* `sf` qui couvre les principaux besoins** (lecture des formats de données géographiques, traitements des données spatiales, représentations graphiques et cartographiques);
 * **Sauf cas particuliers, il est recommandé de ne pas utiliser le *package* `sp`, qui est rendu obsolète par `sf`**;
 * Selon le besoin exact, plusieurs autres *packages* proposent des fonctionnalités complémentaires (voir section [Pour aller plus loin]).
 :::
@@ -19,7 +19,7 @@ L’utilisateur souhaite traiter avec `R` des données spatiales (données géol
 
 ## Définition des données spatiales
 
-**Le terme "données spatiales" désigne les données qui portent sur les caractéristiques géographiques des objets (localisation, forme, limites)**. Les caractéristiques géographiques des objets sont décrites à l'aide d'un **système de coordonnées** qui permettent une représentation dans un espace euclidien ($(x,y)$). Le passage de l'espace réel (la Terre, qui est une sphère) à l'espace plan et le calcul des coordonnées se fait grâce à un **système de projection**. Voici quelques exemples de données spatiales:
+**Le terme "données spatiales" désigne les données qui portent sur les caractéristiques géographiques des objets (localisation, forme, limites)**. Les caractéristiques géographiques des objets sont décrites à l'aide d'un **système de coordonnées** qui permettent une représentation dans un espace euclidien ($(x,y)$). Le passage de l'espace réel (la Terre, qui est une sphère) à l'espace plan se fait grâce à un **système de projection**. Voici quelques exemples de données spatiales:
 
 * Une table décrivant des bâtiments, avec les coordonnées géographiques de chaque bâtiment;
 * Le découpage communal du territoire, avec la forme du territoire de chaque commune;
@@ -28,7 +28,7 @@ L’utilisateur souhaite traiter avec `R` des données spatiales (données géol
 Les données spatiales rassemblent classiquement deux types de données :
 
 1. des **données géographiques**: objets géométriques tels que des points, des vecteurs, des polygones, ou des maillages (*raster*). Exemple: la forme de chaque chaque commune, les coordonnées d'un bâtiment;
-2. des **données attributaires**: des mesures à représenter sur les cartes. Exemple: la surface et la population de chaque commune, la surface et le nombre de fenêtres d'un bâtiment.
+2. des **données attributaires**: des mesures et des caractéristiques associés aux objets géométriques. Exemple: la population de chaque commune, le nombre de fenêtres et le nombre d'étages d'un bâtiment.
 
 **Les données spatiales sont fréquemment traitées à l'aide d'un système d'information géographique (SIG)**, c'est-à-dire un système capable de stocker, d'organiser et de présenter des données alphanumériques spatialement référencées par des coordonnées dans un système de référence (CRS). `R` dispose de fonctionnalités lui permettant de réaliser les mêmes tâches qu'un SIG (traitement de données spatiales, représentations cartographiques).
 
@@ -51,7 +51,7 @@ Les fonctions de `sf` sont pour la plupart préfixées par `st_` et permettent n
 * A COMPLETER
 * A COMPLETER
 
-Le *package* `sf` introduit un objet particulier: la table de données spatiale appelée `sf`. Un `sf` est simplement une table de données (`data.frame`) `R` traditionnelle, enrichie d'une colonne supplémentaire `geometry` qui contient l'information géographique.
+**Le *package* `sf` introduit un objet particulier: la table de données spatiale appelée `sf`. Un `sf` est simplement une table de données (`data.frame`) `R` traditionnelle, enrichie d'une colonne supplémentaire `geometry` qui contient l'information géographique.**
 
 ::: {.remarque data-latex=""}
 **Remarque**
@@ -63,8 +63,11 @@ Le *package* `sf` est une extension du *package* `dplyr` pour les objets géogra
 
 La fonction `sf::st_read()` permet de lire différents formats de données géographiques. Les paramètres attendus par la fonction sont :
 
-* `dsn`, le nom de la source de donnée (nom du fichier ou chemin vers le répertoire contenant les données géo);
-* `layer`, le nom de la couche. Ce paramètre est facultatif si les données ne contiennent qu'une seule couche.
+* `dsn`, le nom de la source de donnée (nom du fichier ou chemin vers le répertoire contenant les données géographiques);
+* `layer`, le nom de la couche. Ce paramètre est facultatif si les données ne contiennent qu'une seule couche;
+* `crs`, pour définir le système de projection. Ce paramètre est facultatif A COMPLETER cf LE COMMENTAIRE.
+
+CommOM: est-ce que `sf::st_read()` repère automatiquement le système de projection? Est-ce codé dans la source de données?
 
 ```{r}
 # Charger les données sur la Martinique
@@ -76,7 +79,7 @@ martinique <- sf::st_read(
 plot(martinique['P13_POP'])
 ```
 
-Il est possible également de définir le système de projection dès l'import, via l'argument `crs`. Un objet `sf` correspond en fait à un `dataframe` avec une colonne `geometry` adoptée au type d'objet, par exemple des polygones :
+Il est possible également de définir le système de projection dès l'import, via l'argument `crs`. Un objet `sf` correspond en fait à un `dataframe` avec une colonne `geometry` adoptée au type d'objet, par exemple des polygones:
 
 ```{r}
 head(martinique)
