@@ -40,7 +40,7 @@ dt
 
 en `dplyr` on va exécuter la commande suivante:
 
-```{r}
+```{r, eval = FALSE}
 dt %>%
   dplyr::filter(x > 3) %>%
   dplyr::group_by(z) %>%
@@ -132,7 +132,7 @@ ans
 
 ## L'opérateur `:=`
 
-Jusqu'à présent, nous n'avons pas créé de nouvelles colonnes à un `data.table` existant. La spécificité du `data.table` par rapport au `tibble` ou à un `data.frame` traditionnel est qu'il ne **faut pas réassigner l'objet lorsqu'on modifie une de ses colonnes*. `data.table` repose sur le passage par référence qui permet d'actualiser une colonne sans créer de copie (pour plus de détail, vous pouvez consulter [ce lien](https://gitlab.com/linogaliana/bigr/-/blob/master/04-datatable.Rmd)). C'est le rôle de l'opérateur `:=` qui actualise par référence le `data.table`. On peut considérer l'opérateur `:=` comme traduction du `dplyr::mutate` dans la grammaire `data.table` mais dont le comportement diffère (`:=` est beaucoup plus efficient). Par exemple, pour créer une nouvelle colonne, on adopte la syntaxe suivante:
+Jusqu'à présent, nous n'avons pas créé de nouvelles colonnes à un `data.table` existant. La spécificité du `data.table` par rapport au `tibble` ou à un `data.frame` traditionnel est qu'il ne **faut pas réassigner l'objet lorsqu'on modifie une de ses colonnes**. `data.table` repose sur le passage par référence qui permet d'actualiser une colonne sans créer de copie (pour plus de détail, vous pouvez consulter [ce lien](https://gitlab.com/linogaliana/bigr/-/blob/master/04-datatable.Rmd)). C'est le rôle de l'opérateur `:=` qui actualise par référence le `data.table`. On peut considérer l'opérateur `:=` comme traduction du `dplyr::mutate` dans la grammaire `data.table` mais dont le comportement diffère (`:=` est beaucoup plus efficient). Par exemple, pour créer une nouvelle colonne, on adopte la syntaxe suivante:
 
 ```{r}
 table
@@ -159,9 +159,11 @@ table[, `:=`("colA" = get('Sepal.Length')*5,
 
 Attention, lorsque l'on crée plusieurs variables ainsi, elles se créent en même temps. Si on crée des variables qui dépendent d'autres variables créées, il faut séparer l'opération en deux. 
 
+### Remplacement conditionnel
+
 L'opérateur `:=` peut être utilisé pour actualiser certaines lignes seulement, en fonction d'une condition logique. C'est beaucoup plus efficient qu'un terme `dplyr::if_else` ou `dplyr::case_when`. Imaginons qu'on désire créer une colonne x qui vale `Petal.Length` sauf pour les lignes où `Species` est `setosa` où elle vaut `NA`. Dans ce cas, le code `dplyr` serait:
 
-```{r}
+```{r, eval = FALSE}
 table %>% dplyr::mutate(x = dplyr::case_when(
     Species ~ "setosa" == NA_real_,
     TRUE ~ Petal.Length
