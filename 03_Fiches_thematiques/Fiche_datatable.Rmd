@@ -111,7 +111,7 @@ iris_dt[order(Sepal.Length, -Sepal.Width)]
 
 ### Sélection de lignes
 
-**On peut sélectionner des lignes dans un `data.table` avec `dt[i]`.** Exemple: on séléctionne les lignes de `iris_dt` correspondant à l'espèce Setosa:
+**On peut sélectionner des lignes dans un `data.table` avec `dt[i]`.** Exemple: on séléctionne les lignes de `iris_dt` correspondant à l'espèce "Setosa":
 ```{r}
 selection <- iris_dt[Species == "setosa"]
 ```
@@ -120,22 +120,20 @@ Un point important (et difficile à comprendre au début): **lorsqu'on souhaite 
 
 ### Sélection de colonnes
 
-Pour sélectionner les colonnes d'un `data.table` et renvoyer un `data.table`, il existe plusieurs méthodes. La première consiste à indiquer sous forme de liste les colonnes à choisir:
+**On peut sélectionner des colonnes dans un `data.table` et renvoyer un `data.table` de plusieurs façons**. 
 
-```{r}
-iris_dt[ , list(Petal.Width, Species)]
-iris_dt[ , .(Petal.Width, Species)]
-```
+- La première consiste à indiquer les colonnes à conserver sous forme de liste. La notation `.()` est un alias pour `list()` qui est assez pratique en `data.table`. 
 
-La notation `.()` est un alias pour `list()` qui est assez pratique en `data.table`. 
+  ```{r, eval = FALSE}
+  iris_dt[ , list(Petal.Width, Species)]
+  iris_dt[ , .(Petal.Width, Species)]
+  ```
 
-La deuxième méthode consiste à utiliser un mot clé de `data.table`, `.SD` qui signifie `Subset of Data`: 
+- La deuxième méthode consiste à utiliser un mot-clé de `data.table`, `.SD` qui signifie `Subset of Data`. On indique les colonnes qui seront aliasées par `.SD` avec la dimension `.SDcols`. 
 
-```{r}
-iris_dt[ , .SD, .SDcols = c("Petal.Width", "Species")]
-```
-
-On indique les colonnes qui seront aliasées par `.SD` avec la dimension `.SDcols`. 
+  ```{r, eval = FALSE}
+  iris_dt[ , .SD, .SDcols = c("Petal.Width", "Species")]
+  ```
 
 ### Opérations sur les colonnes
 
