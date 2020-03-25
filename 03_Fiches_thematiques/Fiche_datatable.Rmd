@@ -207,7 +207,7 @@ ans
 <!---On peut, en utilisant de manière conjointe `lapply` et `.SD` effectuer des opérations vraiment poussées, éventuellement par groupe--->
 
 
-## La fonction `:=`
+## La fonction d'assignation par référence (ou `:=`)
 
 Jusqu'à présent, mous avons manipulé un `data.table` existant, mais nous ne lui avons pas ajouté de nouvelles colonnes. Pour ce faire, nous allons utiliser la fonction `:=` (qui s'appelle "*assignation par référence*" et qui peut également s'écrire `` `:=`() ``). Voici comment on crée une nouvelle colonne dans `iris_dt`:
 
@@ -216,14 +216,17 @@ iris_dt[ , nouvelle_colonne :=  Petal.Width * 10]
 head(iris_dt)
 ``` 
 
-### La spécificité de `:=`: la modification par référence
+### La spécificité de `data.table`: la modification par référence
 
-**A première vue, on peut penser que la fonction `:=` est l'équivalent de la fonction `dplyr::mutate()` dans la grammaire `data.table`.** C'est vrai dans la mesure où elle permet de faire des choses similaires, mais il faut garder en tête que son fonctionnement est complètement différent de celui de `mutate()`. En effet, **la grande spécificité de `data.table` par rapport à `dplyr` est que l'utilisation de la fonction `:=` modifie directement la table de données**, car  `data.table` fonctionne sur le principe de la modification par référence (pour plus de détails, vous pouvez consulter [ce lien](https://gitlab.com/linogaliana/bigr/-/blob/master/04-datatable.Rmd)). Cela signifie en pratique qu'**il ne faut pas réassigner l'objet lorsqu'on modifie une de ses colonnes**. Voici un exemple qui compare `dplyr` et `data.table`:
+**A première vue, on peut penser que la fonction `:=` est l'équivalent de la fonction `dplyr::mutate()` dans la grammaire `data.table`.** C'est vrai dans la mesure où elle permet de faire des choses similaires, mais il faut garder en tête que son fonctionnement est complètement différent de celui de `mutate()`. En effet, **la grande spécificité de `data.table` par rapport à `dplyr` est que l'utilisation de la fonction `:=` modifie directement la table de données**, car  `data.table` fonctionne sur le principe de la modification par référence (voir [ce lien](https://gitlab.com/linogaliana/bigr/-/blob/master/04-datatable.Rmd)
+pour plus de détails). Cela signifie en pratique qu'**il ne faut pas réassigner l'objet lorsqu'on modifie une de ses colonnes**. C'est ce comportement qui permet à `data.table` d'être très rapide et très économe en mémoire vive, rendant son usage approprié pour des données volumineuses. 
+
+Pour créer une colonne, on écrit donc directement `dt[ , nouvelle_colonne := une_formule]` et non `dt <- dt[ , nouvelle_colonne := une_formule]`. Voici un exemple qui compare `dplyr` et `data.table`:
 
 <!-- Lino: il faudrait mettre un filtre ici: le code ci-dessous, c'est pour le html, et plus bas pour le LaTeX -->
 
 <table class='table'>
-<tr> <th>`dplyr`</th> <th>`data.table`</th> <tr>
+<tr> <th>`dplyr` : Il faut une assignation (`<-`) pour modifier `iris`</th> <th>`data.table`: Il ne faut pas d'assignation pour modifier `iris_dt`</th> <tr>
 <tr>
 <td>
 ```{r, eval = FALSE}
@@ -237,25 +240,22 @@ iris_dt[ , nouvelle_colonne :=  Petal.Width * 10]
 ```
 </td>
 </tr>
-<tr> <th>Il faut une assignation (`<-`) pour modifier `iris` </th> <th>Il ne faut pas d'assignation pour modifier `iris_dt`</th> <tr>
 </table>
 
 <!-- Lino: jusqu'ici c'est pour le html, et ci-dessous pour le LaTeX -->
 
-**`dplyr`**
+**`dplyr`: Il faut une assignation (`<-`) pour modifier `iris`**
 ```{r, eval = FALSE}
 iris <- iris %>%
   dplyr::mutate(nouvelle_colonne =  Petal.Width * 10)
 ```
 
-**`data.table`**
+**`data.table`: Il ne faut pas d'assignation pour modifier `iris_dt`**
 ```{r, eval = FALSE}
 iris_dt[ , nouvelle_colonne :=  Petal.Width * 10]
 ```
 
 <!-- Lino: fin du code pour le LaTeX -->
-
-On peut voir que pour créer une colonne, on écrit: `dt[ , nouvelle_colonne := une_formule]` et non `dt <- dt[ , nouvelle_colonne := une_formule]`. Le `data.table` est ainsi modifié par référence, sans avoir besoin d'être réassigné avec le symbole `<-`. C'est ce comportement qui permet à `data.table` d'être très rapide et très économe en mémoire vive, rendant son usage approprié pour des données volumineuses. 
 
 
 ### Les usages de `:=`
@@ -277,9 +277,9 @@ Voici comment créer plusieurs variables à la fois avec `:=`, en utilisant une 
 #### Supprimer une colonne
 
 On peut facilement supprimer une colonne en lui assignant la valeur `NULL` (c'est hyper rapide!). Voici un exemple:
-  ```{r}
-  iris_dt[ , colonne_existante := NULL]
-  ```
+```{r, eval = FALSE}
+iris_dt[ , colonne_existante := NULL]
+```
 
 
 #### Faire un remplacement conditionnel
@@ -305,11 +305,12 @@ iris_dt[Species == "setosa", x := NA_real_]
 
 L'utilisation de la fonction `:=` est déroutante lorsqu'on découvre `data.table`. Voici trois remarques qui vous feront gagner du temps:
 
-- Vous pouvez faire appel à d'autres fonctions à l'intérieur de la fonction `:=`. Par exemple, si on veut mettre la variable `name` en minuscules, on peut utiliser la fonction `str_to_lower` du package `stringr`. On écrit alors: 
+- **Vous pouvez faire appel à d'autres fonctions à l'intérieur de la fonction `:=`.** Par exemple, si on veut mettre la variable `name` en minuscules, on peut utiliser la fonction `str_to_lower()` du package `stringr`. On écrit alors: 
   ```{r, eval = FALSE}
   library(stringr)
   dt[ , name_minuscule := str_to_lower(name)]
   ```
+
 - Lorsque l'on crée plusieurs variables avec la fonction `:=`, elles sont créées en même temps. **On ne peut donc pas faire appel dans une formule à une variable qu'on crée dans le même appel à la fonction `:=`.** Par exemple, le code suivant _ne fonctionne pas_:
   ```{r, eval = FALSE}
   dt[ , `:=`(nouvelle_colonne1 =  Petal.Width * 10,
@@ -319,7 +320,8 @@ L'utilisation de la fonction `:=` est déroutante lorsqu'on découvre `data.tabl
   ```{r, eval = FALSE}
   dt[ , `:=`(nouvelle_colonne1 :=  Petal.Width * 10][ , nouvelle_colonne2 =  nouvelle_colonne1 + 5)]
   ```
-  - **Un mauvais usage de la fonction `:=` peut vous amener à écraser par erreur vos données.** En effet, si vous exécuter par erreur la commande `dt[ , ma_variable_importante := 0]`, vous écrasez la variable `ma_variable_importante`. Vous devez alors recharger vos données... Il faut donc bien réfléchir à ce que vous voulez faire avant de remplacer une variable avec la fonction `:=`.
+
+- **Un mauvais usage de la fonction `:=` peut vous amener à écraser par erreur vos données.** En effet, si vous exécuter par erreur la commande `dt[ , ma_variable_importante := 0]`, vous écrasez la variable `ma_variable_importante`. Vous devez alors recharger vos données... Il faut donc bien réfléchir à ce que vous voulez faire avant de remplacer une variable avec la fonction `:=`.
 
 ## Enchaîner les opérations en `data.table`
 
@@ -332,7 +334,7 @@ ans <- iris_dt[ , .(moyenne = mean(Sepal.Length, na.rm = TRUE)), by = Species][o
 ans
 ```
 
-### mais il faut que le code reste lisible
+### ... mais il faut que le code reste lisible
 
 Le problème avec l'enchaînement d'opérations multiples est qu'on aboutit rapidement à des lignes de codes extrèmement longues. C'est pourquoi **il est préférable de revenir régulièrement à la ligne, de façon à garder un code qui reste lisible.** Il y a évidemment plusieurs façons d'organiser le code. Le seul principe est que le crochet qui commence une nouvelle opération doit être accolé au crochet qui termine l'opération précédente (`...][...`). Voici une organisation possible: 
 
@@ -363,14 +365,51 @@ resultat
 ```
 
 
-::: {.conseil data-latex=""}
+::: {.remarque data-latex=""}
 **Remarque**
 
-L'nchaînement des opérations en `data.table` est puissant, mais peut aboutir à des résultats non désirés si on ne fait pas attention. Voici deux exemples proches qui aboutissent à des résultats très différents:
+**L'enchaînement des opérations en `data.table` est puissant, mais peut aboutir à des résultats non désirés si on ne fait pas attention.** Voici deux exemples proches qui aboutissent à des résultats très différents. Le premier exemple ne conserve qu'une partie de la table `dt` puis crée une variable, tandis que le second crée une variable avec une valeur non manquante pour une partie de la table uniquement.
+
+<!-- Lino: il faudrait mettre un filtre ici: le code ci-dessous, c'est pour le html, et plus bas pour le LaTeX -->
+
+<table class='table'>
+<tr> <th> </th> <th>Exemple 1</th> <th>Exemple 2</th> <tr>
+<tr>
+<td>
+**Code**
+</td>
+<td>
+```{r, eval = FALSE}
+dt[x > 3][ , newvar := 1]
+```
+</td>
+<td>
+```{r, eval = FALSE}
+dt[x > 3, newvar := 1]
+```
+</td>
+</tr>
+<tr> 
+<th>Signification </th> 
+<th>Partir de `dt`, conserver uniquement les observations pour lesquelles `x > 3`, et créer une nouvelle variable `newvar` qui vaut 1 partout </th> 
+<th>Partir de `dt`, créer une nouvelle variable `newvar` qui vaut 1 pour les observations pour lesquelles `x > 3` et `NA` ailleurs</th> <tr>
+</table>
+
+<!-- Lino: jusqu'ici c'est pour le html, et ci-dessous pour le LaTeX -->
+
+**Exemple 1**: Partir de `dt`, conserver uniquement les observations pour lesquelles `x > 3`, et créer une nouvelle variable `newvar` qui vaut 1 partout
+```{r, eval = FALSE}
+dt[x > 3][ , newvar := 1]
+```
+
+**Exemple 2**: Partir de `dt`, créer une nouvelle variable `newvar` qui vaut 1 pour les observations pour lesquelles `x > 3` et `NA` ailleurs
+```{r, eval = FALSE}
+dt[x > 3, newvar := 1]
+```
+
+<!-- Lino: fin du code pour le LaTeX -->
 
 
-
-bien dire que `dt[x > 3][ , newvar := 1]` et `dt[x > 3, newvar := 1]` c'est complètement différent!
 
 
 :::
