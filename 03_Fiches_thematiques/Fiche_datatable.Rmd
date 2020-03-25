@@ -209,10 +209,10 @@ ans
 
 ## L'opérateur `:=`
 
-Jusqu'à présent, mous avons manipulé un `data.table` existant, mais nous ne lui avons pas ajouté de nouvelles colonnes. Pour ce faire, nous allons utiliser l'opérateur `:=`. Voici comment on crée une nouvelle colonne dans `iris_dt`:
+Jusqu'à présent, mous avons manipulé un `data.table` existant, mais nous ne lui avons pas ajouté de nouvelles colonnes. Pour ce faire, nous allons utiliser l'opérateur `:=` (qui peut également s'écrire `` `:=`() ``). Voici comment on crée une nouvelle colonne dans `iris_dt`:
 
 ```{r}
-iris_dt[, nouvelle_colonne :=  Petal.Width * 10]
+iris_dt[ , nouvelle_colonne :=  Petal.Width * 10]
 head(iris_dt)
 ``` 
 
@@ -233,7 +233,7 @@ iris <- iris %>%
 </td>
 <td>
 ```{r, eval = FALSE}
-iris_dt[, nouvelle_colonne :=  Petal.Width * 10]
+iris_dt[ , nouvelle_colonne :=  Petal.Width * 10]
 ```
 </td>
 </tr>
@@ -250,7 +250,7 @@ iris <- iris %>%
 
 **`data.table`**
 ```{r, eval = FALSE}
-iris_dt[, nouvelle_colonne :=  Petal.Width * 10]
+iris_dt[ , nouvelle_colonne :=  Petal.Width * 10]
 ```
 
 <!-- Lino: fin du code pour le LaTeX -->
@@ -260,17 +260,27 @@ On peut voir que pour créer une colonne, on écrit: `dt[ , nouvelle_colonne := 
 ::: {.remarque data-latex=""}
 **Remarque importante**
 
-**L'utilisation de l'opérateur `:=` peut vous amener à écraser par erreur vos données.** En effet, si vous exécuter par erreur la commande `dt[, ma_variable_importante := 0]`, vous écrasez la variable `ma_variable_importante`. Vous devez alors recharger vos données... Il faut donc bien réfléchir à ce que vous voulez faire avant de remplacer une variable avec l'opérateur `:=`.
+**L'utilisation de l'opérateur `:=` peut vous amener à écraser par erreur vos données.** En effet, si vous exécuter par erreur la commande `dt[ , ma_variable_importante := 0]`, vous écrasez la variable `ma_variable_importante`. Vous devez alors recharger vos données... Il faut donc bien réfléchir à ce que vous voulez faire avant de remplacer une variable avec l'opérateur `:=`.
 :::
 
+### Comment se servir efficacement de `:=`
 
+On peut se servir de l'opérateur `:=` de multiples façons, et avec plusieurs notations.
 
-
-Pour supprimer une colonne, on fait
-
-```{r}
-iris_dt[,'nouvelle_colonne' := NULL]
-```
+* **Créer plusieurs variables à la fois**, en utilisant une notation vectorielle:
+  ```{r, eval = FALSE}
+  iris_dt[ , `:=`(nouvelle_colonne1 =  Petal.Width * 10,
+                 nouvelle_colonne2 =  Petal.Length * 20)]
+  ```
+  On peut faire exactement la même chose en utilisant la notation `` `:=`() ``.** Attention, si vous utilisez `` `:=`() ``, alors il faut utiliser uniquement `=` pour créer les variables, et non `:=`. Voici le même exemple écrit avec `` `:=`() ``.
+  ```{r, eval = FALSE}
+  iris_dt[ , c("nouvelle_colonne1", "nouvelle_colonne2") :=  list(Petal.Width * 10, Petal.Length * 20)]
+  ```
+  
+* **Supprimer une colonne**. On peut facilement supprimer une colonne en lui assignant la valeur `NULL` (c'est hyper rapide!). Voici un exemple:
+  ```{r}
+  iris_dt[ ,'nouvelle_colonne' := NULL]
+  ```
 
 ::: {.remarque data-latex=""}
 **Remarque**
@@ -282,9 +292,9 @@ Blabla
 
 Pour créer les variables colA, colB et leur assigner les valeurs valA et valB:
 ```{r eval = F}
-iris_dt[, c("colA", "colB") := list(Sepal.Length*5, Sepal.Width*5)]
+iris_dt[ , c("colA", "colB") := list(Sepal.Length*5, Sepal.Width*5)]
 # syntaxe qui produit le même résultat mais est plus préférable
-iris_dt[, `:=`("colA" = get('Sepal.Length')*5, 
+iris_dt[ , `:=`("colA" = get('Sepal.Length')*5, 
           "colB" = get('Sepal.Width')*5)]
 ```
 
@@ -304,7 +314,7 @@ iris_dt %>% dplyr::mutate(x = dplyr::case_when(
 et le code équivalent en `data.table`, nécessitant beaucoup moins de RAM:
 
 ```{r}
-iris_dt[, "x" := Petal.Length]
+iris_dt[ , "x" := Petal.Length]
 iris_dt[Species == "setosa", x := NA_real_]
 ```
 
@@ -312,7 +322,7 @@ iris_dt[Species == "setosa", x := NA_real_]
 
 ## Enchaîner les opérations en `data.table`
 
-bien dire que `dt[x > 3][, newvar := 1]` et `dt[x > 3, newvar := 1]` c'est complètement différent!
+bien dire que `dt[x > 3][ , newvar := 1]` et `dt[x > 3, newvar := 1]` c'est complètement différent!
 
 ## Fonctions modifiant un `data.table`
 
