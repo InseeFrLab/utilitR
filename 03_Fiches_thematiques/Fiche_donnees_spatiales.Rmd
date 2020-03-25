@@ -40,9 +40,6 @@ Les données spatiales rassemblent classiquement deux types de données :
 
 ## Comment utiliser le *package* `sf`
 
-<!--- Lino: plus besoin car `sf::st_distance` fonctionne
-* `fields` pour calculer la distance entre 2 points ; ---->
-
 Le *package* `sf` est une boîte à outils conçue pour faciliter la manipulation de données spatiales. **La grande force de `sf` est qu'il permet de manipuler des données spatiales comme s'il s'agissait de données traditionnelles**, car il repose sur le standard ISO 19125 [*simple feature access*](https://en.wikipedia.org/wiki/Simple_Features) défini conjointement par l'*Open Geospatial Consortium (OGC)* et l'*International Organization for Standardization (ISO)*. Cette fiche illustre l'usage de `sf` avec le jeu de données `martinique` du package `cartography`.
 
 Les fonctions de `sf` sont pour la plupart préfixées par `st_` et permettent notamment de:
@@ -63,13 +60,9 @@ Le *package* `sf` est une extension du *package* `dplyr` pour les objets géogra
 
 La fonction **`sf::st_read()`** permet de lire différents formats de données géographiques. Les paramètres attendus par la fonction sont :
 
-* `dsn`, le nom de la source de donnée (nom du fichier ou chemin vers le répertoire contenant les données géographiques);
+* `dsn`, le nom de la source de donnée (nom du fichier ou chemin vers le répertoire contenant les données géographiques). Le format le plus commun est le `.shp` mais `sf` peut lire d'autres formats (`.map`, `.geojson`...);
 * `layer`, le nom de la couche. Ce paramètre est facultatif si les données ne contiennent qu'une seule couche;
-* `crs`, pour définir le système de projection. Ce paramètre est facultatif A COMPLETER cf LE COMMENTAIRE.
-
-CommOM 1: qu'est-ce qui existe comme formats de données géographiques? des .shp et quoi d'autres? Faire une section là-dessus?
-
-CommOM 2: est-ce que `sf::st_read()` repère automatiquement le système de projection? Est-ce codé dans la source de données?
+* `crs`, pour définir le système de projection. Ce paramètre est facultatif. Si le système de projection a été défini à l'écriture du fichier, `sf` peut le repérer automatiquement à la lecture. Sinon, il faut le définir à la lecture avec l'argument `crs`.
 
 ```{r}
 # Charger les données sur la Martinique
@@ -86,7 +79,13 @@ head(martinique)
 
 Pour revenir à un `dataframe` traditionnel, c'est-à-dire sans la dimension géographique, la manière la plus simple est de rendre nulle la géométrie grâce à la commande **`sf::st_set_geometry`**. Exemple: `martinique <- martinique %>% sf::st_set_geometry(NULL)`.
 
-CommOM: si j'importe un fichier .csv avec fread (exemple: Fideli avec les coordonnées des logements), comment je fais pour déclarer que x et y sont les coordonnées, et pour préciser la projection? J'imagine que c'est la fonction `sf::st_set_geometry`. 
+Un fichier `.csv` importé dans `R` (via `data.table::fread`, par exemple) peut être transformé en objet `sf` grâce à la commande `sf::st_set_geometry`. Par exemple, si les variables `lon` et `lat` contiennent des données GPS (code epsg `4326`) alors on peut faire:
+
+```{r, eval = FALSE}
+df_spatial <- sf::st_as_sf(x = df,                         
+           coords = c("lon", "lat"),
+           crs = 4326)
+```
 
 On peut produire très rapidement une représentation cartographique d'un attribut avec la fonction `plot()`:
 
@@ -109,8 +108,6 @@ grandes_villes_martinique <- martinique %>%
 ```
 
 On peut également appliquer des fonctions de statistiques descriptives avec `dplyr::summarise()` et construire des groupes avec `dplyr::group_by()`. Le `group_by()` sur un objet spatial va également agréger les géométries: il va créer une nouvelle géométrie recoupant l'ensemble des points, des lignes ou des polygones appartenant au groupe. Par exemple, on peut construire très facilement une géométrie plus agrégée par regroupement des géométries plus fines. Par exemple, imaginons que la table de données sur la Martinique comprend deux groupes: les villes de plus de 10 000 habitants et celles de moins de 10 000 habitants. On désire faire la somme de la variable `P13_POP` pour chaque groupe. Dans ce cas, après avoir créé les groupes, on va effectuer un `group_by()` puis un `summarise()`:
-
-CommOM: Oh my God, ça c'est un truc de ouf!
 
 ```{r}
 martinique_agg <- martinique %>%
@@ -139,7 +136,7 @@ Les manipulations de données sur un `sf` sont nettement plus lentes que sur un 
 
 `sf` propose de nombreuses fonctions pour manipuler la dimension spatiale. On en trouve un certain nombre [ici](https://r-spatial.github.io/sf/reference/geos_unary.html) et [ici](https://r-spatial.github.io/sf/reference/geos_binary_ops.html).
 
-CommOM: je mettrais bien ici un petit tableau avec quelques fonctions, leurs arguments et la description de ce qu'elles font.
+<!---CommOM: je mettrais bien ici un petit tableau avec quelques fonctions, leurs arguments et la description de ce qu'elles font.--->
 
 Par exemple, on peut calculer la superficie d'un polygone avec `sf::st_area()`. Si l'unité ne convient pas, il est possible de convertir cette superficie en $km^2$:
 
@@ -155,6 +152,7 @@ martinique %>%
 
 #### Jointure sur des attributs
 
+`dplyr::_*join` family
 
 #### Jointure à partir de la géométrie
 
@@ -187,16 +185,14 @@ martinique <- martinique %>% sf::st_transform(4326)
 
 ## Pour aller plus loin
 
-CommOM: à compléter.
-
 Selon le besoin exact, plusieurs autres *packages* proposent des fonctionnalités complémentaires:
 
 * le *package* `raster` pour gérer le format de données de type maillage;
 * les *packages* pour l'analyse statistique spatiale:
-  * `spdep` pour l'économétrie spatiale : relations de voisinage entre objets spatiaux, indices d'autocorrélation spatiale, ... ;
-  * `spatstat` pour ...
-  * `gstat` et `geoR` pour la géostatistique;
-  * `btb` pour du lissage;
+* `spdep` pour l'économétrie spatiale : relations de voisinage entre objets spatiaux, indices d'autocorrélation spatiale, ... ;
+* `spatstat` pour l'économétrie spatiale
+* `gstat` et `geoR` pour la géostatistique;
+* `btb` (produit par l'Insee) pour du lissage;
 * le *package* `rpostgis` pour interfacer `R` à une base de données `PostGIS`.
 
 ## Où trouver des données géographiques/*shapefiles* ? NE PAS OUBLIER DE METTRE UNE REFERENCE DANS LE TEXTE
@@ -210,4 +206,4 @@ L'Insee propose un outil pour sélectionner et télécharger des données géogr
 * les formations proposées par l'Insee;
 * les formations/tutoriels disponibles sur internet.
 
-Dans la mesure du possible, il faut veiller à proposer des ressources en français.
+<!---Dans la mesure du possible, il faut veiller à proposer des ressources en français.--->
