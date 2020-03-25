@@ -152,9 +152,22 @@ martinique %>%
 
 #### Jointure sur des attributs
 
-`dplyr::_*join` family
+On peut effectuer une jointure sur un objet (ou deux) objet(s) `sf` en fonction d'une ou plusieurs variables communes. Dans ce cas, on parle de jointure attributaire. Ces opérations peuvent être effectuées comme si les objets `sf` étaient des `dataframes` traditionnels avec les fonctions `dplyr::_*join`. 
 
 #### Jointure à partir de la géométrie
+
+Deux objets géométriques peuvent également être associés en fonction de leur dimension spatiale. Par exemple, les fonctions ci-dessous renvoient des `TRUE`/`FALSE` pour chaque couple de géométrie des bases `x` et `y`:
+
+| Fonction  | Opération |
+|-----------|----------|
+| `st_intersects` | Quelles géométries de `x` intersectent celles de `y` ? |
+| `st_contains`   | Quelles géométries de `x` contiennent celles de `y` ?  |
+| `st_disjoint`   | Quelles géométries de `x` sont disjointes à celles de `y` ?  |
+| `st_is_within_distance`   | Quelles géométries de `x` est à moins de $X$ m/km de celles de `y` ?  |
+
+La fonction `sf::st_join` permet d'appliquer ces fonctions pour ne sélectionner que les conditions `TRUE` et ainsi réaliser la jointure à partir de la dimension spatiale. On utilise l'argument `left` si on désire effectuer une jointure sur la gauche (autrement un `inner join` est effectué). 
+
+La [vignette du package](https://r-spatial.github.io/sf/articles/sf4.html#joining-two-feature-sets-based-on-attributes) permet d'aller plus loin sur le sujet.
 
 
 ### Gérer le système de projection
