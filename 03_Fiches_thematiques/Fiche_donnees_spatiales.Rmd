@@ -56,7 +56,11 @@ Les fonctions de `sf` sont pour la plupart préfixées par `st_` et permettent n
 Le *package* `sf` est une extension du *package* `dplyr` pour les objets géographiques. On peut donc utiliser le *pipe* (`%>%`) pour chaîner des opérations avec `sf`, ce qui est souvent pratique (voir LIEN VERS BONNES PRATIQUES, PARTIE PIPE).
 :::
 
-### Importer des données géographiques
+### Créer une table de données spatiales
+
+Créer une table de données spatiales avec `sf` est très simple. Il y a deux méthodes, selon que les données spatiales sont directement disponibles dans un format de données géographiques (par un exemple un fichier `shapefile`) ou dans un fichier de données brutes (par exemple un fichier `.csv`).
+
+#### Importer des données géographiques
 
 La fonction **`sf::st_read()`** permet de lire différents formats de données géographiques. Les paramètres attendus par la fonction sont :
 
@@ -71,21 +75,27 @@ martinique <- sf::st_read(
   quiet = TRUE)
 ```
 
+#### Importer des données
+
+Il peut arrive que les données géographiques ne soient pas stockées dans un format spécifique. Par exemple, vous pouvez disposer d'un fichier `.csv` qui contient une table géolocalisées de logements avec leur caractéristiques. En ce cas, vous pouvez créer une table de donnée géographiques en deux temps:
+
+- Importer les données brute dans `R` voir la fiche [Importer des fichiers plats (`.csv`, `.tsv`, `.txt`)];
+- Transformer le `data.frame` en objet `sf` grâce à la commande `sf::st_set_geometry()`. Par exemple, si les variables `lon` et `lat` contiennent des données GPS (code epsg `4326`) alors on peut faire:
+  ```{r, eval = FALSE}
+  df_spatial <- sf::st_as_sf(x = df,                         
+             coords = c("lon", "lat"),
+             crs = 4326)
+  ```
+
+### Structure d'un objet `sf`
+
 La commande `head()` fait apparaître la structure du `sf` `martinique`. L'en-tête précise le type de `geometry` (`polygon`, en l'occurrence le contour des communes), et le système de projection (`32620`). La table de données contient la liste des communes avec leurs caractéristiques (nom, population...). Enfin, la dernière colonne (`geometry`) contient l'information géographique (le contour des communes).
 
 ```{r}
-head(martinique)
+head(martinique, 3)
 ```
 
 Pour revenir à un `dataframe` traditionnel, c'est-à-dire sans la dimension géographique, la manière la plus simple est de rendre nulle la géométrie grâce à la commande **`sf::st_set_geometry`**. Exemple: `martinique <- martinique %>% sf::st_set_geometry(NULL)`.
-
-Un fichier `.csv` importé dans `R` (via `data.table::fread()`, par exemple) peut être transformé en objet `sf` grâce à la commande `sf::st_set_geometry()`. Par exemple, si les variables `lon` et `lat` contiennent des données GPS (code epsg `4326`) alors on peut faire:
-
-```{r, eval = FALSE}
-df_spatial <- sf::st_as_sf(x = df,                         
-           coords = c("lon", "lat"),
-           crs = 4326)
-```
 
 On peut produire très rapidement une représentation cartographique d'un attribut avec la fonction `plot()`:
 
