@@ -162,22 +162,29 @@ La seconde méthode peut vous sembler inutilement complexe. C'est vrai dans l'ex
 :::
 
 
-### Manipuler des colonnes
+### Calculer des statistiques
 
-Pour calculer en `j` sur un `data.table`, par exemple le nombre de lignes pour lesquelles une condition est vraie:
+**La méthode pour sélectionner des colonnes est également valable pour calculer des statistiques, car `data.table` accepte également les expressions dans `j`.** Ainsi, pour calculer la moyenne de la variable `Sepal.Length`, on écrit:
 ```{r}
-ans <- iris_dt[ , sum(Sepal.Length > 0)]
-ans # ou plus simplement
-iris_dt[ , sum(Sepal.Length > 0)]
+ans <- iris_dt[ , sum(Sepal.Length, na.rm = TRUE)]
+ans 
+# ou plus simplement
+iris_dt[ , sum(Sepal.Length, na.rm = TRUE)]
 ```
 
-Calculer une moyenne pour un groupe particulier:
+Si on veut calculer à la fois la moyenne et l'écart-type, on peut utiliser la notation `.()` dans `j`, et on peut donner des noms aux variables:
 ```{r}
-ans <- iris_dt[Species == "setosa", .(moyenne = mean(Sepal.Length))]
+ans <- iris_dt[ , .(sd = sd(Sepal.Length, na.rm = TRUE), moyenne = sum(Sepal.Length, na.rm = TRUE))]
+ans 
+# ou plus simplement
+iris_dt[ , .(sd = sd(Sepal.Length, na.rm = TRUE), moyenne = sum(Sepal.Length, na.rm = TRUE))]
+```
+
+On peut évidemment combiner `i` et `j` pour calculer la moyenne pour un groupe particulier. Dans l'exemple suivant, on sélectionne l'espèce "setosa" (avec `i`), ensuite on sélectionne et on calcule en même temps (avec `j`). 
+```{r}
+ans <- iris_dt[Species == "setosa", .(moyenne = sum(Sepal.Length, na.rm = TRUE))]
 ans
 ```
-
-Premièrement, on subset en i (pour `Species == "setosa"`), ensuite on sélectionne en j et on calcule en j en même temps. 
 
 ### Le symbole `.N` 
 
