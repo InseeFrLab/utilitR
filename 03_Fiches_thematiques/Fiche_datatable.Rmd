@@ -31,9 +31,9 @@ dt <- data.table::data.table(x = exp(rnorm(1e4)),
 dt
 ```
 
-**La fonction fondamentale de `data.table` est la fonction `[...]` (crochets).** Dans un `data.frame` de base, les crochets `df[...]` servent uniquement à sélectionner des lignes ou des colonnes. Dans un `data.table`, les crochets `dt[...]` permettent de faire beaucoup plus de choses (quasiment tout, en pratique). En fait, les instructions à l'intérieur des crochets peuvent être envisagées comme des requêtes `SQL` mises en forme différemment. 
+**La fonction fondamentale de `data.table` est l'opérateur `[...]` (crochets).** Dans un `data.frame` de base, les crochets `df[...]` servent uniquement à sélectionner des lignes ou des colonnes. Dans un `data.table`, les crochets `dt[...]` permettent de faire beaucoup plus de choses (quasiment tout, en pratique). En fait, les instructions à l'intérieur des crochets peuvent être envisagées comme des requêtes `SQL` mises en forme différemment. 
 
-**La forme générale de la fonction `[...]` est la suivante: `DT[i, j, by]`**. Si on fait un parallèle avec `SQL`, `i` correspond au `WHERE`, `j` au `SELECT` et `by` au `GROUP BY`. Cet appel de fonction peut se lire comme ceci: "on part du `data.table` `DT`, on sélectionne certaines lignes avec `i`, puis on calcule `j` pour chaque groupe défini par `by`. La fonction `[...]` présente deux grands avantages:
+**La forme générale de l'opérateur `[...]` est la suivante: `DT[i, j, by]`**. Si on fait un parallèle avec `SQL`, `i` correspond au `WHERE`, `j` au `SELECT` et `by` au `GROUP BY`. Cette manipulation peut se lire comme ceci: "on part du `data.table` `DT`, on sélectionne certaines lignes avec `i`, puis on calcule `j` pour chaque groupe défini par `by`. La fonction `[...]` présente deux grands avantages:
 
 - Il n'est pas nécessaire d'utiliser le préfixe `DT$` pour se référer aux variables à l'intérieur de `[...]`;
 - Le code est très concis, ce qui aide à le rendre lisible.
@@ -188,7 +188,7 @@ ans
 
 ### Opérations par groupe
 
-**Toutes les opérations précédentes peuvent être réalisées par groupe.** il suffit d'ajouter le nom des variables de groupe dans `by` (c'est l'équivalent du `dplyr::group_by`). Lorsqu'il y a plusieurs variables de groupe, il faut écrire `by = .(var1, var2, var3)`. Par exemple, on peut calculer la moyenne de la variable `Sepal.Length` par espèce de fleur:
+**Toutes les opérations précédentes peuvent être réalisées par groupe.** il suffit d'ajouter le nom des variables de groupe dans `by` (c'est l'équivalent du `dplyr::group_by()`). Lorsqu'il y a plusieurs variables de groupe, il faut écrire `by = .(var1, var2, var3)`. Par exemple, on peut calculer la moyenne de la variable `Sepal.Length` par espèce de fleur:
 
 ```{r}
 ans <- iris_dt[ , .(moyenne = sum(Sepal.Length, na.rm = TRUE)), by = Species]
@@ -209,13 +209,15 @@ ans
 
 ## L'opérateur `:=`
 
-Jusqu'à présent, nous n'avons pas créé de nouvelles colonnes à un `data.table` existant. La spécificité du `data.table` par rapport au `tibble` ou à un `data.frame` traditionnel est qu'il ne **faut pas réassigner l'objet lorsqu'on modifie une de ses colonnes**. `data.table` repose sur le passage par référence qui permet d'actualiser une colonne sans créer de copie (pour plus de détail, vous pouvez consulter [ce lien](https://gitlab.com/linogaliana/bigr/-/blob/master/04-datatable.Rmd)). C'est le rôle de l'opérateur `:=` qui actualise par référence le `data.table`. On peut considérer l'opérateur `:=` comme traduction du `dplyr::mutate` dans la grammaire `data.table` mais dont le comportement diffère (`:=` est beaucoup plus efficient). Par exemple, pour créer une nouvelle colonne, on adopte la syntaxe suivante:
+Jusqu'à présent, mous avons manipulé un `data.table` existant, mais nous ne lui avons pas ajouté de nouvelles colonnes. Pour ce faire, nous allons utiliser l'opérateur `:=`. Voici comment on crée une nouvelle colonne dans `iris_dt`:
 
 ```{r}
 iris_dt
-iris_dt[, "nouvelle_colonne" := Petal.Width*10]
+iris_dt[, nouvelle_colonne :=  Petal.Width * 10]
 iris_dt
 ``` 
+
+On peut considérer l'opérateur `:=` comme la traduction de la fonction `dplyr::mutate()` dans la grammaire `data.table`. Mais il faut garder en tête que son fonctionnement est complètement différent (et beaucoup plus rapide), car  Par exemple, pour créer une nouvelle colonne, on adopte la syntaxe suivante:
 
 Le `data.table` est ainsi modifié par référence, sans avoir besoin d'être réassigné avec le symbole `<-`. C'est ce comportement qui permet à `data.table` d'être très rapide et très peu gourmand en RAM, rendant son usage approprié pour des données de taille importante. 
 
@@ -224,6 +226,13 @@ Pour supprimer une colonne, on fait
 ```{r}
 iris_dt[,'nouvelle_colonne' := NULL]
 ```
+
+::: {.remarque data-latex=""}
+**Remarque**
+
+Blabla
+:::
+
 
 
 Pour créer les variables colA, colB et leur assigner les valeurs valA et valB:
@@ -267,7 +276,6 @@ vs difficle en dplyr
 
 ## Références
 
-
 - la [documentation officielle](https://www.rdocumentation.org/packages/data.table) de `data.table` (en anglais);
 - les [vignettes](https://github.com/Rdatatable/data.table/wiki/Getting-started) de `data.table`;
     - [Introduction à `data.table`](https://cloud.r-project.org/web/packages/data.table/vignettes/datatable-intro.html) (en anglais);
@@ -276,6 +284,3 @@ vs difficle en dplyr
 - une [_cheatsheet_](https://s3.amazonaws.com/assets.datacamp.com/blog_assets/datatable_Cheat_Sheet_R.pdf) sur `data.table` (en anglais);
 - une [introduction à l'utilisation de l'opérateur `[...]`](https://stt4230.rbind.io/tutoriels_etudiants/hiver_2017/data.table) (en français);
 - Un [excellent cours sur `data.table`](https://gitlab.com/linogaliana/bigr/-/blob/master/04-datatable.Rmd) (en français).
-
-
-
