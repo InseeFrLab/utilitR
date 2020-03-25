@@ -46,7 +46,8 @@ Les fonctions de `sf` sont pour la plupart préfixées par `st_` et permettent n
 
 * Calculer des distances et des surfaces;
 * Agréger rapidement des zonages (regrouper les communes en département par exemple);
-* Trouver dans quelle commune se trouve un bâtiment à partir de ses coordonnées géographiques.
+* Trouver dans quelle commune se trouve un bâtiment à partir de ses coordonnées géographiques;
+* Recalculer des coordonnées dans un autre système de projection.
 
 **Le *package* `sf` introduit un objet géographique particulier: la table de données spatiale appelée `sf`. Un `sf` est simplement une table de données `R` traditionnelle (un `data.frame`), enrichie d'une colonne supplémentaire `geometry` qui contient l'information géographique.** Par conséquent, toutes les fonctions qui s'appliquent à un `data.frame` s'appliquent exactement de la même façon aux attributs des objets `sf`.
 
@@ -157,7 +158,6 @@ martinique %>%
   head()
 ```
 
-
 ### Joindre des données géographiques et attributaires
 
 #### Jointure sur des attributs
@@ -166,18 +166,29 @@ On peut effectuer une jointure sur un objet (ou deux) objet(s) `sf` en fonction 
 
 #### Jointure à partir de la géométrie
 
-Deux objets géométriques peuvent également être associés en fonction de leur dimension spatiale. Par exemple, les fonctions ci-dessous renvoient des `TRUE`/`FALSE` pour chaque couple de géométrie des bases `x` et `y`:
+Deux objets géométriques peuvent également être associés en fonction de leur dimension spatiale. Par exemple, les fonctions ci-dessous renvoient des `TRUE`/`FALSE` pour chaque couple de géométrie des bases `x` et `y` (il y en a beaucoup d'autres, voir `?sf::geos_binary_pred`):
 
-| Fonction  | Opération |
-|-----------|----------|
-| `st_intersects` | Quelles géométries de `x` intersectent celles de `y` ? |
-| `st_contains`   | Quelles géométries de `x` contiennent celles de `y` ?  |
-| `st_disjoint`   | Quelles géométries de `x` sont disjointes à celles de `y` ?  |
-| `st_is_within_distance`   | Quelles géométries de `x` est à moins de $X$ m/km de celles de `y` ?  |
+| Fonction                   | Opération                                                                        |
+|----------------------------|----------------------------------------------------------------------------------|
+| `st_intersects()`          | Quelles géométries de `x` intersectent celles de `y` ?                           |
+| `st_contains()`            | Quelles géométries de `x` contiennent celles de `y` ?                            |
+| `st_disjoint()`            | Quelles géométries de `x` sont disjointes à celles de `y` ?                      |
+| `st_is_within_distance()`  | Quelles géométries de `x` est à moins de $X$ m/km de celles de `y` ?             |
 
-La fonction `sf::st_join` permet d'appliquer ces fonctions pour ne sélectionner que les conditions `TRUE` et ainsi réaliser la jointure à partir de la dimension spatiale. On utilise l'argument `left` si on désire effectuer une jointure sur la gauche (autrement un `inner join` est effectué). 
+La fonction `sf::st_join()` permet d'appliquer ces fonctions pour réaliser la jointure à partir de la dimension spatiale. Deux arugments sont importants:
+
+* l'argument `join = ` indique la méthode à utiliser pour la jointure. Par défaut, la méthode est `st_intersects`, ce qui signifie que la table de sortie contient une observation pour chaque couple de géométrie qui ont une intersection non vide;
+* On utilise l'argument `left = TRUE` si on désire effectuer une jointure sur la gauche (par défaut, un `inner join` est effectué). 
 
 La [vignette du package](https://r-spatial.github.io/sf/articles/sf4.html#joining-two-feature-sets-based-on-attributes) permet d'aller plus loin sur le sujet.
+
+::: {.conseil data-latex=""}
+**Conseils**
+Les jointures spatiales nécessitent la réalisation d'un produit cartésien (croiser toutes les géométries de `x` avec toutes les géométries de `y`), ce qui peut saturer l'ordinateur sur lequel vous travaillez. Voici deux conseils qui peuvent vous aider:
+
+- Il est préférable de tester les jointures géographiques sur un petit échantillon de données, pour estimer le temps et les ressources nécessaires à la réalisation de la jointure.
+- Il est parfois possible d'écrire une fonction qui réduit la taille du problème. Exemple: vous voulez déterminer dans quelle commune se situe un logement dont vous connaissez les coordonnées et le département; vous pouvez écrire une fonction qui réalise pour chaque département une jointure spatiale entre les logements situés dans ce département et les communes de ce département, puis empiler les 101 tables de sorties.
+:::
 
 
 ### Gérer le système de projection
