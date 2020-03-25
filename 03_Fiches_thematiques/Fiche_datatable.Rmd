@@ -216,7 +216,9 @@ iris_dt[, nouvelle_colonne :=  Petal.Width * 10]
 head(iris_dt)
 ``` 
 
-**A première vue, on peut penser que l'opérateur `:=` est l'équivalent de la fonction `dplyr::mutate()` dans la grammaire `data.table`.** C'est en partie vrai, mais il faut garder en tête que son fonctionnement est complètement différent. En effet, **la grande spécificité de `data.table` par rapport à `dplyr` ou à `Base R` est que l'utilisation de l'opérateur `:=` modifie directement la table de données**, car  `data.table` fonctionne sur le principe de la modification par référence (pour plus de détails, vous pouvez consulter [ce lien](https://gitlab.com/linogaliana/bigr/-/blob/master/04-datatable.Rmd)). Cela signifie en pratique qu'**il ne faut pas réassigner l'objet lorsqu'on modifie une de ses colonnes**. On écrit: `dt[ , nouvelle_colonne := une_formule]` et non `dt <- dt[ , nouvelle_colonne := une_formule]`. Voici un exemple qui compare `dplyr` et `data.table`:
+### La spécificité de `:=`: la modification par référence
+
+**A première vue, on peut penser que l'opérateur `:=` est l'équivalent de la fonction `dplyr::mutate()` dans la grammaire `data.table`.** C'est en partie vrai, mais il faut garder en tête que son fonctionnement est complètement différent. En effet, **la grande spécificité de `data.table` par rapport à `dplyr` est que l'utilisation de l'opérateur `:=` modifie directement la table de données**, car  `data.table` fonctionne sur le principe de la modification par référence (pour plus de détails, vous pouvez consulter [ce lien](https://gitlab.com/linogaliana/bigr/-/blob/master/04-datatable.Rmd)). Cela signifie en pratique qu'**il ne faut pas réassigner l'objet lorsqu'on modifie une de ses colonnes**. Voici un exemple qui compare `dplyr` et `data.table`:
 
 <!-- Lino: il faudrait mettre un filtre ici: le code ci-dessous, c'est pour le html, et plus bas pour le LaTeX -->
 
@@ -226,7 +228,7 @@ head(iris_dt)
 <td>
 ```{r, eval = FALSE}
 iris <- iris %>%
-  dplyr::mutate(ouvelle_colonne =  Petal.Width * 10)
+  dplyr::mutate(nouvelle_colonne =  Petal.Width * 10)
 ```
 </td>
 <td>
@@ -234,7 +236,8 @@ iris <- iris %>%
 iris_dt[, nouvelle_colonne :=  Petal.Width * 10]
 ```
 </td>
-<tr>
+</tr>
+<tr> <th>Il faut une assignation (`<-`) pour modifier `iris` </th> <th>Il ne faut pas d'assignation pour modifier `iris_dt`</th> <tr>
 </table>
 
 <!-- Lino: jusqu'ici c'est pour le html, et ci-dessous pour le LaTeX -->
@@ -252,12 +255,16 @@ iris_dt[, nouvelle_colonne :=  Petal.Width * 10]
 
 <!-- Lino: fin du code pour le LaTeX -->
 
+On peut voir que pour créer une colonne, on écrit: `dt[ , nouvelle_colonne := une_formule]` et non `dt <- dt[ , nouvelle_colonne := une_formule]`. Le `data.table` est ainsi modifié par référence, sans avoir besoin d'être réassigné avec le symbole `<-`. C'est ce comportement qui permet à `data.table` d'être très rapide et très économe en mémoire vive, rendant son usage approprié pour des données volumineuses. 
+
+::: {.remarque data-latex=""}
+**Remarque importante**
+
+**L'utilisation de l'opérateur `:=` peut vous amener à écraser par erreur vos données.** En effet, si vous exécuter par erreur la commande `dt[, ma_variable_importante := 0]`, vous écrasez la variable `ma_variable_importante`. Vous devez alors recharger vos données... Il faut donc bien réfléchir à ce que vous voulez faire avant de remplacer une variable avec l'opérateur `:=`.
+:::
 
 
 
-Par exemple, pour créer une nouvelle colonne, on adopte la syntaxe suivante:
-
-Le `data.table` est ainsi modifié par référence, sans avoir besoin d'être réassigné avec le symbole `<-`. C'est ce comportement qui permet à `data.table` d'être très rapide et très peu gourmand en RAM, rendant son usage approprié pour des données de taille importante. 
 
 Pour supprimer une colonne, on fait
 
