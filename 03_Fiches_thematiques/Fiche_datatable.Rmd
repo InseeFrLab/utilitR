@@ -321,11 +321,57 @@ L'utilisation de la fonction `:=` est déroutante lorsqu'on découvre `data.tabl
   ```
   - **Un mauvais usage de la fonction `:=` peut vous amener à écraser par erreur vos données.** En effet, si vous exécuter par erreur la commande `dt[ , ma_variable_importante := 0]`, vous écrasez la variable `ma_variable_importante`. Vous devez alors recharger vos données... Il faut donc bien réfléchir à ce que vous voulez faire avant de remplacer une variable avec la fonction `:=`.
 
-### Enchaîner les opérations en `data.table`
+## Enchaîner les opérations en `data.table`
+
+**Il est facile d'enchaîner des opérations avec `data.table`: il suffit d'accoler les opérateurs `[]`.** Votre code `data.table` prendra alors la forme suivante: `dt[opération 1][opération 2][opération 3][...]`. Voici un exemple simple, dans lequel on calcule la moyenne d'une variable par groupe, puis on trie la table.
+
+```{r}
+ans <- iris_dt[ , .(moyenne = mean(Sepal.Length, na.rm = TRUE)), by = Species][order(moyenne)]
+ans
+```
+
+Le problème avec l'enchaînement d'opérations multiples est qu'on aboutit rapidement à des lignes de codes extrèmement longues. C'est pourquoi il est préférable de revenir régulièrement à la ligne. Voici 
+qu'il est préférable
 
 
 
-bien dire que `dt[x > 3][ , newvar := 1]` et `dt[x > 3, newvar := 1]` c'est complètement différent!
+```{r}
+ans <- iris_dt[ , `:=`(Total.Length = Sepal.Length + Petal.Length, 
+                       Total.Width  = Sepal.Width  + Petal.Width)][ , .(moyenne = mean(Total.Length, na.rm = TRUE)), by = Species][order(moyenne)]
+ans
+```
+
+::: {.conseil data-latex=""}
+**Conseil**
+
+**Il est important de choisir une organisation du code `data.table` qui reste lisible.** Il y a évidemment plusieurs possibilités. Voici une organisation possible: 
+
+```{r, eval = FALSE}
+resultat <- 
+  dt[i = ...,
+     j = ...,
+     by = ...
+     ][i = ...,
+       j = ...,
+       by = ...
+       ]
+```
+
+Voici ce que cela donne sur un exemple:
+
+```{r}
+resultat <- 
+  iris_dt[ ,
+           `:=`(Total.Length = Sepal.Length + Petal.Length, 
+                Total.Width  = Sepal.Width  + Petal.Width)
+           ][ , 
+              .(moyenne = mean(Total.Length, na.rm = TRUE)), by = Species
+              ][
+                order(moyenne)
+                ]
+resultat
+```
+:::
 
 
 ## .SD et lapply
