@@ -12,7 +12,7 @@ L'utilisateur souhaite manipuler des données stucturées sous forme de `data.fr
 :::
 
 ::: {.conseil data-latex=""}
-**Remarque**
+**Conseil**
 
 L'utilisation du *package* `data.table` peut paraître plus déroutante pour les débutants que l'utilisation de `dplyr`. Toutefois, l'apprentissage de `data.table` est particulièrement recommandé si vous avez l'intention d'utiliser `R` avec des données volumineuses car `data.table` est _beaucoup_ plus rapide et puissant que `dplyr`. Des remarques et conseils sont présents dans cette fiche pour vous aider à vous familiariser avec la syntaxe de `data.table`.
 :::
@@ -323,6 +323,8 @@ L'utilisation de la fonction `:=` est déroutante lorsqu'on découvre `data.tabl
 
 ## Enchaîner les opérations en `data.table`
 
+### Le principe est simple...
+
 **Il est facile d'enchaîner des opérations avec `data.table`: il suffit d'accoler les opérateurs `[]`.** Votre code `data.table` prendra alors la forme suivante: `dt[opération 1][opération 2][opération 3][...]`. Voici un exemple simple, dans lequel on calcule la moyenne d'une variable par groupe, puis on trie la table.
 
 ```{r}
@@ -330,21 +332,9 @@ ans <- iris_dt[ , .(moyenne = mean(Sepal.Length, na.rm = TRUE)), by = Species][o
 ans
 ```
 
-Le problème avec l'enchaînement d'opérations multiples est qu'on aboutit rapidement à des lignes de codes extrèmement longues. C'est pourquoi il est préférable de revenir régulièrement à la ligne. Voici 
-qu'il est préférable
+### mais il faut que le code reste lisible
 
-
-
-```{r}
-ans <- iris_dt[ , `:=`(Total.Length = Sepal.Length + Petal.Length, 
-                       Total.Width  = Sepal.Width  + Petal.Width)][ , .(moyenne = mean(Total.Length, na.rm = TRUE)), by = Species][order(moyenne)]
-ans
-```
-
-::: {.conseil data-latex=""}
-**Conseil**
-
-**Il est important de choisir une organisation du code `data.table` qui reste lisible.** Il y a évidemment plusieurs possibilités. Voici une organisation possible: 
+Le problème avec l'enchaînement d'opérations multiples est qu'on aboutit rapidement à des lignes de codes extrèmement longues. C'est pourquoi **il est préférable de revenir régulièrement à la ligne, de façon à garder un code qui reste lisible.** Il y a évidemment plusieurs façons d'organiser le code. Le seul principe est que le crochet qui commence une nouvelle opération doit être accolé au crochet qui termine l'opération précédente (`...][...`). Voici une organisation possible: 
 
 ```{r, eval = FALSE}
 resultat <- 
@@ -357,21 +347,38 @@ resultat <-
        ]
 ```
 
-Voici ce que cela donne sur un exemple:
+Comme vu précédemment, `i`, `j` et `by` ne sont pas forcément présents dans toutes les étapes. Voici ce que cette organisation du code donne sur un exemple légèrement plus complexe que le précédent:
 
 ```{r}
 resultat <- 
   iris_dt[ ,
-           `:=`(Total.Length = Sepal.Length + Petal.Length, 
-                Total.Width  = Sepal.Width  + Petal.Width)
+           Total.Length := Sepal.Length + Petal.Length
            ][ , 
-              .(moyenne = mean(Total.Length, na.rm = TRUE)), by = Species
+              .(moyenne = mean(Total.Length, na.rm = TRUE)), 
+              by = Species
               ][
                 order(moyenne)
                 ]
 resultat
 ```
+
+
+::: {.conseil data-latex=""}
+**Remarque**
+
+L'nchaînement des opérations en `data.table` est puissant, mais peut aboutir à des résultats non désirés si on ne fait pas attention. Voici deux exemples proches qui aboutissent à des résultats très différents:
+
+
+
+bien dire que `dt[x > 3][ , newvar := 1]` et `dt[x > 3, newvar := 1]` c'est complètement différent!
+
+
 :::
+
+
+
+
+
 
 
 ## .SD et lapply
