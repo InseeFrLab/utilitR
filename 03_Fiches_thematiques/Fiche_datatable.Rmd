@@ -207,9 +207,9 @@ ans
 <!---On peut, en utilisant de manière conjointe `lapply` et `.SD` effectuer des opérations vraiment poussées, éventuellement par groupe--->
 
 
-## L'opérateur `:=`
+## La fonction `:=`
 
-Jusqu'à présent, mous avons manipulé un `data.table` existant, mais nous ne lui avons pas ajouté de nouvelles colonnes. Pour ce faire, nous allons utiliser l'opérateur `:=` (qui peut également s'écrire `` `:=`() ``). Voici comment on crée une nouvelle colonne dans `iris_dt`:
+Jusqu'à présent, mous avons manipulé un `data.table` existant, mais nous ne lui avons pas ajouté de nouvelles colonnes. Pour ce faire, nous allons utiliser la fonction `:=` (qui s'appelle "*assignation par référence*" et qui peut également s'écrire `` `:=`() ``). Voici comment on crée une nouvelle colonne dans `iris_dt`:
 
 ```{r}
 iris_dt[ , nouvelle_colonne :=  Petal.Width * 10]
@@ -218,7 +218,7 @@ head(iris_dt)
 
 ### La spécificité de `:=`: la modification par référence
 
-**A première vue, on peut penser que l'opérateur `:=` est l'équivalent de la fonction `dplyr::mutate()` dans la grammaire `data.table`.** C'est en partie vrai, mais il faut garder en tête que son fonctionnement est complètement différent. En effet, **la grande spécificité de `data.table` par rapport à `dplyr` est que l'utilisation de l'opérateur `:=` modifie directement la table de données**, car  `data.table` fonctionne sur le principe de la modification par référence (pour plus de détails, vous pouvez consulter [ce lien](https://gitlab.com/linogaliana/bigr/-/blob/master/04-datatable.Rmd)). Cela signifie en pratique qu'**il ne faut pas réassigner l'objet lorsqu'on modifie une de ses colonnes**. Voici un exemple qui compare `dplyr` et `data.table`:
+**A première vue, on peut penser que la fonction `:=` est l'équivalent de la fonction `dplyr::mutate()` dans la grammaire `data.table`.** C'est en partie vrai, mais il faut garder en tête que son fonctionnement est complètement différent. En effet, **la grande spécificité de `data.table` par rapport à `dplyr` est que l'utilisation de la fonction `:=` modifie directement la table de données**, car  `data.table` fonctionne sur le principe de la modification par référence (pour plus de détails, vous pouvez consulter [ce lien](https://gitlab.com/linogaliana/bigr/-/blob/master/04-datatable.Rmd)). Cela signifie en pratique qu'**il ne faut pas réassigner l'objet lorsqu'on modifie une de ses colonnes**. Voici un exemple qui compare `dplyr` et `data.table`:
 
 <!-- Lino: il faudrait mettre un filtre ici: le code ci-dessous, c'est pour le html, et plus bas pour le LaTeX -->
 
@@ -245,7 +245,7 @@ iris_dt[ , nouvelle_colonne :=  Petal.Width * 10]
 **`dplyr`**
 ```{r, eval = FALSE}
 iris <- iris %>%
-  dplyr::mutate(ouvelle_colonne =  Petal.Width * 10)
+  dplyr::mutate(nouvelle_colonne =  Petal.Width * 10)
 ```
 
 **`data.table`**
@@ -258,48 +258,58 @@ iris_dt[ , nouvelle_colonne :=  Petal.Width * 10]
 On peut voir que pour créer une colonne, on écrit: `dt[ , nouvelle_colonne := une_formule]` et non `dt <- dt[ , nouvelle_colonne := une_formule]`. Le `data.table` est ainsi modifié par référence, sans avoir besoin d'être réassigné avec le symbole `<-`. C'est ce comportement qui permet à `data.table` d'être très rapide et très économe en mémoire vive, rendant son usage approprié pour des données volumineuses. 
 
 
-### Comment se servir efficacement de `:=`
+### Les usages de `:=`
 
-On peut se servir de l'opérateur `:=` de multiples façons, et avec plusieurs notations.
+On peut se servir de la fonction `:=` de multiples façons, et avec plusieurs notations.
 
 * **Créer plusieurs variables à la fois**, en utilisant une notation vectorielle:
+  ```{r, eval = FALSE}
+  iris_dt[ , c("nouvelle_colonne1", "nouvelle_colonne2") :=  list(Petal.Width * 10, Petal.Length * 20)]
+  ```
+  On peut faire exactement la même chose en utilisant la notation `` `:=`() ``.** Attention, si vous utilisez `` `:=`() ``, alors il faut utiliser uniquement `=` pour créer les variables, et non `:=`. Voici le même exemple écrit avec `` `:=`() ``.
   ```{r, eval = FALSE}
   iris_dt[ , `:=`(nouvelle_colonne1 =  Petal.Width * 10,
                  nouvelle_colonne2 =  Petal.Length * 20)]
   ```
-  On peut faire exactement la même chose en utilisant la notation `` `:=`() ``.** Attention, si vous utilisez `` `:=`() ``, alors il faut utiliser uniquement `=` pour créer les variables, et non `:=`. Voici le même exemple écrit avec `` `:=`() ``.
-  ```{r, eval = FALSE}
-  iris_dt[ , c("nouvelle_colonne1", "nouvelle_colonne2") :=  list(Petal.Width * 10, Petal.Length * 20)]
-  ```
   
 * **Supprimer une colonne**. On peut facilement supprimer une colonne en lui assignant la valeur `NULL` (c'est hyper rapide!). Voici un exemple:
   ```{r}
-  iris_dt[ ,'nouvelle_colonne' := NULL]
+  iris_dt[ , colonne_existante := NULL]
   ```
+
+
+
+
 
 
 ::: {.remarque data-latex=""}
 **Remarques importantes sur l'utilisation de `:=`**
 
-L'utilisation de l'opérateur `:=` est déroutante lorsqu'on découvre `data.table`. Voici deux remarques qui vous feront gagner du temps:
+L'utilisation de la fonction `:=` est déroutante lorsqu'on découvre `data.table`. Voici trois remarques qui vous feront gagner du temps:
 
-- **Un mauvais usage de l'opérateur `:=` peut vous amener à écraser par erreur vos données.** En effet, si vous exécuter par erreur la commande `dt[ , ma_variable_importante := 0]`, vous écrasez la variable `ma_variable_importante`. Vous devez alors recharger vos données... Il faut donc bien réfléchir à ce que vous voulez faire avant de remplacer une variable avec l'opérateur `:=`.
-- Lorsque l'on crée plusieurs variables avec l'opérateur `:=`, elles sont créées en même temps. **On ne peut donc pas faire appel dans une formule à une variable qu'on crée dans le même appel à l'opérateur `:=`.** Par exemple, le code suivant _ne fonctionne pas_:
+- Vous pouvez faire appel à d'autres fonctions à l'intérieur de la fonction `:=`. Par exemple, si on veut mettre la variable `name` en minuscules, on peut utiliser la fonction `str_to_lower` du package `stringr`. On écrit alors: 
+  ```{r, eval = FALSE}
+  library(stringr)
+  dt[ , name_minuscule := str_to_lower(name)]
+  ```
+- Lorsque l'on crée plusieurs variables avec la fonction `:=`, elles sont créées en même temps. **On ne peut donc pas faire appel dans une formule à une variable qu'on crée dans le même appel à la fonction `:=`.** Par exemple, le code suivant _ne fonctionne pas_:
   ```{r, eval = FALSE}
   dt[ , `:=`(nouvelle_colonne1 =  Petal.Width * 10,
              nouvelle_colonne2 =  nouvelle_colonne1 + 5)]
   ```
-  En effet, au moment où l'opérateur `:=` est exécuté, la colonne `nouvelle_colonne1` n'existe pas encore, donc la formule `nouvelle_colonne2 =  nouvelle_colonne1 + 5` n'a pas de sens. Si vous créez des variables en chaîne, il faut décomposer l'opération en plusieurs étapes enchaînées. Voici le code qui permet de créer les deux colonnes à la suite:
+  En effet, au moment où la fonction `:=` est exécutée, la colonne `nouvelle_colonne1` n'existe pas encore, donc la formule `nouvelle_colonne2 =  nouvelle_colonne1 + 5` n'a pas encore de sens. Si vous créez des variables en chaîne, il faut décomposer l'opération en plusieurs étapes enchaînées. Voici le code qui permet de créer les deux colonnes à la suite:
   ```{r, eval = FALSE}
   dt[ , `:=`(nouvelle_colonne1 :=  Petal.Width * 10][ , nouvelle_colonne2 =  nouvelle_colonne1 + 5)]
   ```
+  - **Un mauvais usage de la fonction `:=` peut vous amener à écraser par erreur vos données.** En effet, si vous exécuter par erreur la commande `dt[ , ma_variable_importante := 0]`, vous écrasez la variable `ma_variable_importante`. Vous devez alors recharger vos données... Il faut donc bien réfléchir à ce que vous voulez faire avant de remplacer une variable avec la fonction `:=`.
+
 :::
 
 
 
 ### Remplacement conditionnel
 
-L'opérateur `:=` peut être utilisé pour actualiser certaines lignes seulement, en fonction d'une condition logique. C'est beaucoup plus efficient qu'un terme `dplyr::if_else` ou `dplyr::case_when`. Imaginons qu'on désire créer une colonne x qui vale `Petal.Length` sauf pour les lignes où `Species` est `setosa` où elle vaut `NA`. Dans ce cas, le code `dplyr` serait:
+L'opérateur `:=` peut être utilisé pour actualiser certaines lignes seulement, en fonction d'une condition logique. C'est beaucoup plus efficient qu'un terme `dplyr::if_else()` ou `dplyr::case_when()`. Imaginons qu'on désire créer une colonne x qui vale `Petal.Length` sauf pour les lignes où `Species` est `setosa` où elle vaut `NA`. Dans ce cas, le code `dplyr` serait:
 
 ```{r, eval = FALSE}
 iris_dt %>% dplyr::mutate(x = dplyr::case_when(
