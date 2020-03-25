@@ -180,11 +180,21 @@ ans
 iris_dt[ , .(sd = sd(Sepal.Length, na.rm = TRUE), moyenne = sum(Sepal.Length, na.rm = TRUE))]
 ```
 
-On peut évidemment combiner `i` et `j` pour calculer la moyenne pour un groupe particulier. Dans l'exemple suivant, on sélectionne l'espèce "setosa" (avec `i`), ensuite on sélectionne et on calcule en même temps (avec `j`). 
+**On peut évidemment combiner `i` et `j` pour calculer la moyenne pour un groupe particulier.** Dans l'exemple suivant, on sélectionne l'espèce "setosa" (avec `i`), ensuite on sélectionne et on calcule en même temps (avec `j`). 
 ```{r}
 ans <- iris_dt[Species == "setosa", .(moyenne = sum(Sepal.Length, na.rm = TRUE))]
 ans
 ```
+
+### Opérations par groupe
+
+**Toutes les opérations précédentes pouvaient être réalisées par groupe.** il suffit d'ajouter le nom des variables de groupe dans `by` (c'est l'équivalent du `dplyr::group_by`). Lorsqu'il y a plusieurs variables de groupe, il faut écrire `by = .(var1, var2, var3)`. Par exemple, on peut calculer la moyenne de la variable `Sepal.Length` par espèce:
+
+```{r}
+ans <- iris_dt[ , .(moyenne = sum(Sepal.Length, na.rm = TRUE)), by = Species]
+ans 
+```
+
 
 ### Le symbole `.N` 
 
@@ -192,15 +202,6 @@ Cela permet de calculer le nombre d'observations dans le groupes défini en i.
 ```{r}
 ans <- iris_dt[Species == "setosa", .N]
 ans
-```
-
-## Opérations par groupe
-
-Toutes les opérations précédentes pouvaient être croisées avec une ou plusieurs variables de groupe. C'est l'équivalent du `dplyr::group_by`. Par exemple pour compter le nombre de lignes par groupe
-
-```{r}
-ans <- iris_dt[ , .N, by = "Species"]
-ans 
 ```
 
 <!---On peut, en utilisant de manière conjointe `lapply` et `.SD` effectuer des opérations vraiment poussées, éventuellement par groupe--->
