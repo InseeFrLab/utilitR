@@ -7,8 +7,8 @@ L'utilisateur souhaite manipuler des données stucturées sous forme de `data.fr
 ::: {.recommandation data-latex=""}
 **Recommandations de l'Insee**
 
-* Pour des tables de données de taille petite et moyenne (inférieure à 1 Go ou un million d'observations), il est recommandé d'utiliser le package `dplyr`;
-* Pour des tables de données de grande taille (plus de 1 Go ou plus un million d'observations), il est recommandé d'utiliser le package `data.table` qui fait l'objet d'une autre fiche. REFERENCE A COMPLETER A TERME.
+* Pour des tables de données de taille petite et moyenne (inférieure à 1 Go ou moins d'un million d'observations), il est recommandé d'utiliser le package `dplyr`;
+* Pour des tables de données de grande taille (plus de 1 Go ou plus d'un million d'observations), il est recommandé d'utiliser le package `data.table` qui fait l'objet d'une autre fiche. REFERENCE A COMPLETER A TERME.
 :::
 
 ::: {.conseil data-latex=""}
@@ -22,7 +22,7 @@ L'utilisation du *package* `data.table` peut paraître plus déroutante pour les
 
 ### Principe
 
-Le *package* `data.table` propose une version améliorée du `data.frame` de base: le `data.table`. La visualisation est améliorée par rapport à un `data.frame` standard:
+**Le *package* `data.table` propose une version améliorée du `data.frame` de base: le `data.table`.** La visualisation est améliorée par rapport à un `data.frame` standard:
 
 ```{r}
 dt <- data.table::data.table(x = exp(rnorm(1e4)),
@@ -97,20 +97,20 @@ dt[x > 3, sum(y), by = z]
 
 <!-- Lino: fin du code pour le LaTeX -->
 
-### Comment mettre des données dans un `data.table`?
+### Quelles fonctions peut-on utiliser avec un `data.table`?
+
+**Les `data.tables` sont simplement des `data.frames` particuliers, donc on peut normalement leur appliquer toutes les méthodes valables pour les `data.frames`.** En particulier, on peut utiliser avec `data.table` toutes les fonctions des *packages* habituellement associés à `dplyr`: `stringr` pour le maniement de chaînes de caractères, `lubridate` pour les colonnes temporelles, `forcats` pour les colonnes de type `factor`, etc. Toutefois, il est utile de vérifier que le *package* `data.table` ne propose pas déjà une fonction adaptée. Par exemple, plutôt que d'utiliser la fonction `stringr::str_split_fixed()` pour séparer une colonne en fonction d'un caractère, on utilisera `data.table::tstrsplit()`.
+
+## Manipuler un `data.table`
+
+### Mettre des données dans un `data.table`
 
 Il y a principalement deux méthodes pour mettre des données sous forme d'un `data.table`:
 
 - la fonction `data.table::fread()` importe un fichier plat comme les `.csv` (voir la fiche [Importer des fichiers plats (`.csv`, `.tsv`, `.txt`)]);
 - Les fonctions `data.table::setDT()` et `data.table::as.data.table()` convertissent un `data.frame` en `data.table`.
 
-### Quelles fonctions peut-on utiliser avec un `data.table`?
-
-**Les `data.tables` sont simplement des `data.frames` particuliers, donc on peut normalement leur appliquer toutes les méthodes valables pour les `data.frames`.** En particulier, on peut utiliser avec `data.table` toutes les fonctions des *packages* habituellement associés à `dplyr`: `stringr` pour le maniement de chaînes de caractères, `lubridate` pour les colonnes temporelles, `forcats` pour les colonnes de type `factor`, etc. Toutefois, il est utile de vérifier que le *package* `data.table` ne propose pas déjà une fonction adaptée. Par exemple, plutôt que d'utiliser la fonction `stringr::str_split_fixed()` pour séparer une colonne en fonction d'un caractère, on utilisera `data.table::tstrsplit()`.
-
-## Quelques opérations de base avec `data.table`
-
-On va illustrer les opérations de base en `data.table` avec le jeu de données `iris`, qu'on transforme en `data.table` pour l'occasion.
+Dans la suite de cette section, on va illustrer les opérations de base en `data.table` avec le jeu de données `iris`, qu'on transforme en `data.table` pour l'occasion.
 
 ```{r}
 iris_dt <- data.table::as.data.table(iris)
