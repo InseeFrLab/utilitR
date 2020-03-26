@@ -12,4 +12,4 @@ colorize <- function(x, color) {
 
 
 import::from("magrittr","%>%")
-knitr::opts_chunk$set(out.width='75%') 
+knitr::opts_chunk$set(out.width='75%', fig.align='center') 
