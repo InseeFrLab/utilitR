@@ -188,15 +188,13 @@ ans
 
 ### Opérations par groupe
 
-**Toutes les opérations précédentes peuvent être réalisées par groupe.** il suffit d'ajouter le nom des variables de groupe dans `by` (c'est l'équivalent du `dplyr::group_by()`). Lorsqu'il y a plusieurs variables de groupe, il faut écrire `by = .(var1, var2, var3)`. Par exemple, on peut calculer la moyenne de la variable `Sepal.Length` par espèce de fleur:
+**Toutes les opérations précédentes peuvent être réalisées par groupe.** il suffit d'ajouter le nom des variables de groupe dans `by` (c'est l'équivalent du `dplyr::group_by()`). Lorsqu'il y a plusieurs variables de groupe, il faut écrire `by = c("var1", "var2", "var3")`. Par exemple, on peut calculer la moyenne de la variable `Sepal.Length` par espèce de fleur:
 
 ```{r}
-ans <- iris_dt[ , .(moyenne = sum(Sepal.Length, na.rm = TRUE)), by = Species]
+ans <- iris_dt[ , .(moyenne = sum(Sepal.Length, na.rm = TRUE)), by = "Species"]
 ans 
 ```
 
-
-<!---On peut, en utilisant de manière conjointe `lapply` et `.SD` effectuer des opérations vraiment poussées, éventuellement par groupe--->
 
 
 ## La fonction d'assignation par référence (ou `:=`)
@@ -210,7 +208,7 @@ head(iris_dt)
 
 ### La spécificité de `data.table`: la modification par référence
 
-**A première vue, on peut penser que la fonction `:=` est l'équivalent de la fonction `dplyr::mutate()` dans la grammaire `data.table`.** C'est vrai dans la mesure où elle permet de faire des choses similaires, mais il faut garder en tête que son fonctionnement est complètement différent de celui de `mutate()`. En effet, **la grande spécificité de `data.table` par rapport à `dplyr` est que l'utilisation de la fonction `:=` modifie directement la table de données**, car  `data.table` fonctionne sur le principe de la modification par référence (voir [ce lien](https://gitlab.com/linogaliana/bigr/-/blob/master/04-datatable.Rmd)
+**A première vue, on peut penser que la fonction `:=` est l'équivalent de la fonction `dplyr::mutate()` dans la grammaire `data.table`.** C'est vrai dans la mesure où elle permet de faire des choses similaires, mais il faut garder en tête que son fonctionnement est complètement différent de celui de `dplyr::mutate()`. En effet, **la grande spécificité de `data.table` par rapport à `dplyr` est que l'utilisation de la fonction `:=` modifie directement la table de données**, car  `data.table` fonctionne sur le principe de la modification par référence (voir [ce lien](https://gitlab.com/linogaliana/bigr/-/blob/master/04-datatable.Rmd)
 pour plus de détails). Cela signifie en pratique qu'**il ne faut pas réassigner l'objet lorsqu'on modifie une de ses colonnes**. C'est ce comportement qui permet à `data.table` d'être très rapide et très économe en mémoire vive, rendant son usage approprié pour des données volumineuses. 
 
 Pour créer une colonne, on écrit donc directement `dt[ , nouvelle_colonne := une_formule]` et non `dt <- dt[ , nouvelle_colonne := une_formule]`. Voici un exemple qui compare `dplyr` et `data.table`:
@@ -257,14 +255,16 @@ On peut se servir de la fonction `:=` de multiples façons, et avec plusieurs no
 #### Créer plusieurs variables à la fois
 
 Voici comment créer plusieurs variables à la fois avec `:=`, en utilisant une notation vectorielle:
-  ```{r, eval = FALSE}
-  iris_dt[ , c("nouvelle_colonne1", "nouvelle_colonne2") :=  list(Petal.Width * 10, Petal.Length * 20)]
-  ```
-  On peut faire exactement la même chose en utilisant la notation `` `:=`() ``.** Attention, si vous utilisez `` `:=`() ``, alors il faut utiliser uniquement `=` pour créer les variables, et non `:=`. Voici le même exemple écrit avec `` `:=`() ``.
-  ```{r, eval = FALSE}
-  iris_dt[ , `:=`(nouvelle_colonne1 =  Petal.Width * 10,
-                 nouvelle_colonne2 =  Petal.Length * 20)]
-  ```
+```{r, eval = FALSE}
+iris_dt[ , c("nouvelle_colonne1", "nouvelle_colonne2") :=  list(Petal.Width * 10, Petal.Length * 20)]
+```
+
+On peut faire exactement la même chose en utilisant la notation `` `:=`() ``.**Attention, si vous utilisez `` `:=`() ``, alors il faut utiliser uniquement `=` pour créer les variables, et non `:=` **. Voici le même exemple écrit avec `` `:=`() ``.
+
+```{r, eval = FALSE}
+iris_dt[ , `:=`(nouvelle_colonne1 =  Petal.Width * 10,
+               nouvelle_colonne2 =  Petal.Length * 20)]
+```
   
 #### Supprimer une colonne
 
@@ -297,11 +297,10 @@ iris_dt[Species == "setosa", x := NA_real_]
 
 L'utilisation de la fonction `:=` est déroutante lorsqu'on découvre `data.table`. Voici trois remarques qui vous feront gagner du temps:
 
-- **Vous pouvez faire appel à d'autres fonctions à l'intérieur de la fonction `:=`.** Par exemple, si on veut mettre la variable `name` en minuscules, on peut utiliser la fonction `str_to_lower()` du package `stringr`. On écrit alors: 
-  ```{r, eval = FALSE}
-  library(stringr)
-  dt[ , name_minuscule := str_to_lower(name)]
-  ```
+- **Vous pouvez faire appel à d'autres fonctions à l'intérieur de la fonction `:=`.** Par exemple, si on veut mettre la variable `name` en minuscules, on peut utiliser la fonction `tolower()`. On écrit alors: 
+```{r, eval = FALSE}
+dt[ , name_minuscule := tolower(name)]
+```
 
 - Lorsque l'on crée plusieurs variables avec la fonction `:=`, elles sont créées en même temps. **On ne peut donc pas faire appel dans une formule à une variable qu'on crée dans le même appel à la fonction `:=`.** Par exemple, le code suivant _ne fonctionne pas_:
   ```{r, eval = FALSE}
