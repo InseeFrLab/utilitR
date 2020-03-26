@@ -231,6 +231,107 @@ Pour savoir si `un data.table` est déjà indexé, on peut exécuter la commande
 **L'exécution de la fonction `data.table::setkey()` peut prendre un peu de temps** (parfois quelques minutes sur une table de plus de 10 millions de lignes), car `data.table` trie toute la table en fonction des variables-clé. Toutefois, c'est une étape vraiment utile car elle accélère considérablement les opérations ultérieures sur les lignes. Il est vivement recommandé de l'utiliser si une ou plusieurs variables vont régulièrement servir à filtrer ou combiner des données. Pour aller plus loin, voir cette [vignette](https://cran.r-project.org/web/packages/data.table/vignettes/datatable-keys-fast-subset.html).
 :::
 
+## Enchaîner les opérations en `data.table`
+
+### Le principe est simple...
+
+**Il est facile d'enchaîner des opérations avec `data.table`: il suffit d'accoler les opérateurs `[]`.** Votre code `data.table` prendra alors la forme suivante: `dt[opération 1][opération 2][opération 3][...]`. Voici un exemple simple, dans lequel on calcule la moyenne d'une variable par groupe, puis on trie la table.
+
+```{r}
+# En chaînant
+ans <- iris_dt[ , .(moyenne = mean(Sepal.Length, na.rm = TRUE)), by = Species][order(moyenne)]
+ans
+```
+
+### ... mais il faut que le code reste lisible
+
+Le problème avec l'enchaînement d'opérations multiples est qu'on aboutit rapidement à des lignes de codes extrèmement longues. C'est pourquoi **il est préférable de revenir régulièrement à la ligne, de façon à garder un code qui reste lisible.** Il y a évidemment plusieurs façons d'organiser le code. Le seul principe est que le crochet qui commence une nouvelle opération doit être accolé au crochet qui termine l'opération précédente (`...][...`). Voici une organisation possible: 
+
+```{r, eval = FALSE}
+resultat <- 
+  dt[i = ...,
+     j = ...,
+     by = ...
+     ][i = ...,
+       j = ...,
+       by = ...
+       ]
+```
+
+Ce n'est néanmoins pas très lisible. Il est préférable de faire:
+
+```{r, eval = FALSE}
+resultat <- dt[i = ...,
+               j = ...,
+               by = ...
+               ]
+resultat <- resultat[i = ...,
+                     j = ...,
+                     by = ...
+                     ]
+```
+
+
+Comme vu précédemment, `i`, `j` et `by` ne sont pas forcément présents dans toutes les étapes. Voici ce que cette organisation du code donne sur un exemple légèrement plus complexe que le précédent:
+
+```{r}
+iris_dt[ , Total.Length := Sepal.Length + Petal.Length]
+
+resultat <- iris_dt[ ,.(moyenne = mean(Total.Length, na.rm = TRUE)),
+              by = Species]
+resultat <- resultat[order(moyenne)]
+resultat
+```
+
+
+::: {.remarque data-latex=""}
+**Remarque**
+
+**L'enchaînement des opérations en `data.table` est puissant, mais peut aboutir à des résultats non désirés si on ne fait pas attention.** Les exemples de cet encadré utilisent la fonction `:=`; si vous ne la connaissez pas encore, il est conseillé de lire la section [La fonction d'assignation par référence (ou `:=`)] avant de poursuivre la lecture. 
+
+Voici deux exemples d'opérations enchaînées en `data.table` dont le code est très proche et qui aboutissent à des résultats très différents. Le premier exemple ne conserve qu'une partie de la table `dt` puis crée une variable, tandis que le second crée une variable avec une valeur non manquante pour une partie de la table uniquement.
+
+<!-- Lino: il faudrait mettre un filtre ici: le code ci-dessous, c'est pour le html, et plus bas pour le LaTeX -->
+
+<table class='table'>
+<tr> <th> </th> <th>Exemple 1</th> <th>Exemple 2</th> <tr>
+<tr>
+<td>
+**Code**
+</td>
+<td>
+```{r, eval = FALSE}
+dt[x > 3][ , newvar := 1]
+```
+</td>
+<td>
+```{r, eval = FALSE}
+dt[x > 3, newvar := 1]
+```
+</td>
+</tr>
+<tr> 
+<th>Signification </th> 
+<th>Partir de `dt`, conserver uniquement les observations pour lesquelles `x > 3`, et créer une nouvelle variable `newvar` qui vaut 1 partout </th> 
+<th>Partir de `dt`, créer une nouvelle variable `newvar` qui vaut 1 pour les observations pour lesquelles `x > 3` et `NA` ailleurs</th> <tr>
+</table>
+
+<!-- Lino: jusqu'ici c'est pour le html, et ci-dessous pour le LaTeX -->
+
+**Exemple 1**: Partir de `dt`, conserver uniquement les observations pour lesquelles `x > 3`, et créer une nouvelle variable `newvar` qui vaut 1 partout
+```{r, eval = FALSE}
+dt[x > 3][ , newvar := 1]
+```
+
+**Exemple 2**: Partir de `dt`, créer une nouvelle variable `newvar` qui vaut 1 pour les observations pour lesquelles `x > 3` et `NA` ailleurs
+```{r, eval = FALSE}
+dt[x > 3, newvar := 1]
+```
+
+<!-- Lino: fin du code pour le LaTeX -->
+:::
+
+
 ## La fonction d'assignation par référence (ou `:=`)
 
 Jusqu'à présent, mous avons manipulé un `data.table` existant, mais nous ne lui avons pas ajouté de nouvelles colonnes. Pour ce faire, nous allons utiliser la fonction `:=` (qui s'appelle "*assignation par référence*" et qui peut également s'écrire `` `:=`() ``). Voici comment on crée une nouvelle colonne dans `iris_dt`:
@@ -300,7 +401,6 @@ iris_dt[ , `:=`(nouvelle_colonne1 =  Petal.Width * 10,
                 nouvelle_colonne2 =  Petal.Length * 20)]
 ```
 
-
 ::: {.remarque data-latex=""}
 **Remarque**
 
@@ -366,105 +466,7 @@ L'utilisation de la fonction `:=` est déroutante lorsqu'on découvre `data.tabl
     return(dt_copy)
   }
   ```
-
-## Enchaîner les opérations en `data.table`
-
-### Le principe est simple...
-
-**Il est facile d'enchaîner des opérations avec `data.table`: il suffit d'accoler les opérateurs `[]`.** Votre code `data.table` prendra alors la forme suivante: `dt[opération 1][opération 2][opération 3][...]`. Voici un exemple simple, dans lequel on calcule la moyenne d'une variable par groupe, puis on trie la table.
-
-```{r}
-# En chaînant
-ans <- iris_dt[ , .(moyenne = mean(Sepal.Length, na.rm = TRUE)), by = Species][order(moyenne)]
-ans
-```
-
-### ... mais il faut que le code reste lisible
-
-Le problème avec l'enchaînement d'opérations multiples est qu'on aboutit rapidement à des lignes de codes extrèmement longues. C'est pourquoi **il est préférable de revenir régulièrement à la ligne, de façon à garder un code qui reste lisible.** Il y a évidemment plusieurs façons d'organiser le code. Le seul principe est que le crochet qui commence une nouvelle opération doit être accolé au crochet qui termine l'opération précédente (`...][...`). Voici une organisation possible: 
-
-```{r, eval = FALSE}
-resultat <- 
-  dt[i = ...,
-     j = ...,
-     by = ...
-     ][i = ...,
-       j = ...,
-       by = ...
-       ]
-```
-
-Ce n'est néanmoins pas très lisible. Il est préférable de faire:
-
-```{r, eval = FALSE}
-resultat <- dt[i = ...,
-               j = ...,
-               by = ...
-               ]
-resultat <- resultat[i = ...,
-                     j = ...,
-                     by = ...
-                     ]
-```
-
-
-Comme vu précédemment, `i`, `j` et `by` ne sont pas forcément présents dans toutes les étapes. Voici ce que cette organisation du code donne sur un exemple légèrement plus complexe que le précédent:
-
-```{r}
-iris_dt[ , Total.Length := Sepal.Length + Petal.Length]
-
-resultat <- iris_dt[ ,.(moyenne = mean(Total.Length, na.rm = TRUE)),
-              by = Species]
-resultat <- resultat[order(moyenne)]
-resultat
-```
-
-
-::: {.remarque data-latex=""}
-**Remarque**
-
-**L'enchaînement des opérations en `data.table` est puissant, mais peut aboutir à des résultats non désirés si on ne fait pas attention.** Voici deux exemples proches qui aboutissent à des résultats très différents. Le premier exemple ne conserve qu'une partie de la table `dt` puis crée une variable, tandis que le second crée une variable avec une valeur non manquante pour une partie de la table uniquement.
-
-<!-- Lino: il faudrait mettre un filtre ici: le code ci-dessous, c'est pour le html, et plus bas pour le LaTeX -->
-
-<table class='table'>
-<tr> <th> </th> <th>Exemple 1</th> <th>Exemple 2</th> <tr>
-<tr>
-<td>
-**Code**
-</td>
-<td>
-```{r, eval = FALSE}
-dt[x > 3][ , newvar := 1]
-```
-</td>
-<td>
-```{r, eval = FALSE}
-dt[x > 3, newvar := 1]
-```
-</td>
-</tr>
-<tr> 
-<th>Signification </th> 
-<th>Partir de `dt`, conserver uniquement les observations pour lesquelles `x > 3`, et créer une nouvelle variable `newvar` qui vaut 1 partout </th> 
-<th>Partir de `dt`, créer une nouvelle variable `newvar` qui vaut 1 pour les observations pour lesquelles `x > 3` et `NA` ailleurs</th> <tr>
-</table>
-
-<!-- Lino: jusqu'ici c'est pour le html, et ci-dessous pour le LaTeX -->
-
-**Exemple 1**: Partir de `dt`, conserver uniquement les observations pour lesquelles `x > 3`, et créer une nouvelle variable `newvar` qui vaut 1 partout
-```{r, eval = FALSE}
-dt[x > 3][ , newvar := 1]
-```
-
-**Exemple 2**: Partir de `dt`, créer une nouvelle variable `newvar` qui vaut 1 pour les observations pour lesquelles `x > 3` et `NA` ailleurs
-```{r, eval = FALSE}
-dt[x > 3, newvar := 1]
-```
-
-<!-- Lino: fin du code pour le LaTeX -->
-:::
-
+  
 ## Les fonctions statistiques utiles de `data.table`
 
 
