@@ -298,33 +298,33 @@ iris_dt[Species == "setosa", x := NA_real_]
 L'utilisation de la fonction `:=` est déroutante lorsqu'on découvre `data.table`. Voici trois remarques qui vous feront gagner du temps:
 
 - **Vous pouvez faire appel à d'autres fonctions à l'intérieur de la fonction `:=`.** Par exemple, si on veut mettre la variable `name` en minuscules, on peut utiliser la fonction `tolower()`. On écrit alors: 
-```{r, eval = FALSE}
-dt[ , name_minuscule := tolower(name)]
-```
+  ```{r, eval = FALSE}
+  dt[ , name_minuscule := tolower(name)]
+  ```
 
 - Lorsque l'on crée plusieurs variables avec la fonction `:=`, elles sont créées en même temps. **On ne peut donc pas faire appel dans une formule à une variable qu'on crée dans le même appel à la fonction `:=`.** Par exemple, le code suivant _ne fonctionne pas_:
-```{r, eval = FALSE}
-dt[ , `:=`(nouvelle_colonne1 =  Petal.Width * 10,
-           nouvelle_colonne2 =  nouvelle_colonne1 + 5)]
-```
+  ```{r, eval = FALSE}
+  dt[ , `:=`(nouvelle_colonne1 =  Petal.Width * 10,
+             nouvelle_colonne2 =  nouvelle_colonne1 + 5)]
+  ```
 
-En effet, au moment où la fonction `:=` est exécutée, la colonne `nouvelle_colonne1` n'existe pas encore, donc la formule `nouvelle_colonne2 =  nouvelle_colonne1 + 5` n'a pas encore de sens. Si vous créez des variables en chaîne, il faut décomposer l'opération en plusieurs étapes enchaînées. Voici le code qui permet de créer les deux colonnes à la suite:
-
-```{r, eval = FALSE}
-dt[ , `:=`(nouvelle_colonne1 :=  Petal.Width * 10]
-dt[ , nouvelle_colonne2 :=  nouvelle_colonne1 + 5)]
-```
+  En effet, au moment où la fonction `:=` est exécutée, la colonne `nouvelle_colonne1` n'existe pas encore, donc la formule `nouvelle_colonne2 =  nouvelle_colonne1 + 5` n'a pas encore de sens. Si vous créez des variables en chaîne, il faut décomposer l'opération en plusieurs étapes enchaînées. Voici le code qui permet de créer les deux colonnes à la suite:
+  
+  ```{r, eval = FALSE}
+  dt[ , `:=`(nouvelle_colonne1 :=  Petal.Width * 10]
+  dt[ , nouvelle_colonne2 :=  nouvelle_colonne1 + 5)]
+  ```
 
 - **Un mauvais usage de la fonction `:=` peut vous amener à écraser par erreur vos données.** En effet, si vous exécuter par erreur la commande `dt[ , ma_variable_importante := 0]`, vous écrasez la variable `ma_variable_importante`. Vous devez alors recharger vos données... Il faut donc bien réfléchir à ce que vous voulez faire avant de remplacer une variable avec la fonction `:=`. Si vous modifiez un `data.table` dans une fonction, un filet de sécurité consiste à d'abord copier le `data.table` initial et ainsi faire les modifications sur le nouvel objet, de la manière suivante:
 
-```{r, eval = FALSE}
-modif_variable <- function(dt, variable = "x"){
-  dt_copy <- data.table::copy(dt)
-  # On utilise get() lorsqu'on utilise un nom de variable avec des quotes 
-  dt_copy[,c(variable) := get(variable) + 1] 
-  return(dt_copy)
-}
-```
+  ```{r, eval = FALSE}
+  modif_variable <- function(dt, variable = "x"){
+    dt_copy <- data.table::copy(dt)
+    # On utilise get() lorsqu'on utilise un nom de variable avec des quotes 
+    dt_copy[,c(variable) := get(variable) + 1] 
+    return(dt_copy)
+  }
+  ```
 
 ## Enchaîner les opérations en `data.table`
 
