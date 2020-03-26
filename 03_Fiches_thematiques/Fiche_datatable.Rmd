@@ -52,17 +52,17 @@ dt <- dt[order(z)]
 <td>
 ```{r, eval = FALSE}
 aggregate(
-dt[dt[["x"]] > 3]$y,
-by = list(dt[dt[["x"]] > 3]$z),
-FUN = sum)
+  dt[dt[["x"]] > 3]$y,
+  by = list(dt[dt[["x"]] > 3]$z),
+  FUN = sum)
 ```
 </td>
 <td>
 ```{r, eval = FALSE}
 dt %>%
-dplyr::filter(x > 3) %>%
-dplyr::group_by(z) %>%
-dplyr::summarise(sum(y))
+  dplyr::filter(x > 3) %>%
+  dplyr::group_by(z) %>%
+  dplyr::summarise(sum(y))
 ```
 </td>
 <td>
@@ -263,9 +263,9 @@ On peut faire exactement la même chose en utilisant la notation `` `:=`() ``.**
 
 ```{r, eval = FALSE}
 iris_dt[ , `:=`(nouvelle_colonne1 =  Petal.Width * 10,
-               nouvelle_colonne2 =  Petal.Length * 20)]
+                nouvelle_colonne2 =  Petal.Length * 20)]
 ```
-  
+
 #### Supprimer une colonne
 
 On peut facilement supprimer une colonne en lui assignant la valeur `NULL` (c'est hyper rapide!). Voici un exemple:
@@ -315,7 +315,15 @@ dt[ , `:=`(nouvelle_colonne1 :=  Petal.Width * 10]
 dt[ , nouvelle_colonne2 :=  nouvelle_colonne1 + 5)]
 ```
 
-- **Un mauvais usage de la fonction `:=` peut vous amener à écraser par erreur vos données.** En effet, si vous exécuter par erreur la commande `dt[ , ma_variable_importante := 0]`, vous écrasez la variable `ma_variable_importante`. Vous devez alors recharger vos données... Il faut donc bien réfléchir à ce que vous voulez faire avant de remplacer une variable avec la fonction `:=`.
+- **Un mauvais usage de la fonction `:=` peut vous amener à écraser par erreur vos données.** En effet, si vous exécuter par erreur la commande `dt[ , ma_variable_importante := 0]`, vous écrasez la variable `ma_variable_importante`. Vous devez alors recharger vos données... Il faut donc bien réfléchir à ce que vous voulez faire avant de remplacer une variable avec la fonction `:=`. Si vous modifiez un `data.table` dans une fonction, un filet de sécurité consiste à d'abord copier le `data.table` initial et ainsi faire les modifications sur le nouvel objet, de la manière suivante:
+
+```{r, eval = FALSE}
+modif_variable <- function(dt, variable = "x"){
+  dt_copy <- data.table::copy(dt)
+  dt_copy[,c(variable) := get(variable) + 1] #On utilise get() lorsqu'on utilise un nom de variable avec des quotes 
+  return(dt_copy)
+}
+```
 
 ## Enchaîner les opérations en `data.table`
 
@@ -324,6 +332,7 @@ dt[ , nouvelle_colonne2 :=  nouvelle_colonne1 + 5)]
 **Il est facile d'enchaîner des opérations avec `data.table`: il suffit d'accoler les opérateurs `[]`.** Votre code `data.table` prendra alors la forme suivante: `dt[opération 1][opération 2][opération 3][...]`. Voici un exemple simple, dans lequel on calcule la moyenne d'une variable par groupe, puis on trie la table.
 
 ```{r}
+# En chaînant
 ans <- iris_dt[ , .(moyenne = mean(Sepal.Length, na.rm = TRUE)), by = Species][order(moyenne)]
 ans
 ```
@@ -343,18 +352,28 @@ resultat <-
        ]
 ```
 
+Ce n'est néanmoins pas très lisible. Il est préférable de faire:
+
+```{r, eval = FALSE}
+resultat <- dt[i = ...,
+               j = ...,
+               by = ...
+               ]
+resultat <- resultat[i = ...,
+                     j = ...,
+                     by = ...
+                     ]
+```
+
+
 Comme vu précédemment, `i`, `j` et `by` ne sont pas forcément présents dans toutes les étapes. Voici ce que cette organisation du code donne sur un exemple légèrement plus complexe que le précédent:
 
 ```{r}
-resultat <- 
-  iris_dt[ ,
-           Total.Length := Sepal.Length + Petal.Length
-           ][ , 
-              .(moyenne = mean(Total.Length, na.rm = TRUE)), 
-              by = Species
-              ][
-                order(moyenne)
-                ]
+iris_dt[ , Total.Length := Sepal.Length + Petal.Length]
+
+resultat <- iris_dt[ ,.(moyenne = mean(Total.Length, na.rm = TRUE)),
+              by = Species]
+resultat <- resultat[order(moyenne)]
 resultat
 ```
 
@@ -433,9 +452,9 @@ vs difficle en dplyr
 
 - la [documentation officielle](https://www.rdocumentation.org/packages/data.table) de `data.table` (en anglais);
 - les [vignettes](https://github.com/Rdatatable/data.table/wiki/Getting-started) de `data.table`;
-    - [Introduction à `data.table`](https://cloud.r-project.org/web/packages/data.table/vignettes/datatable-intro.html) (en anglais);
-    - [Modification par référence](https://cloud.r-project.org/web/packages/data.table/vignettes/datatable-reference-semantics.html) (en anglais);
-    - [la foire aux questions de `data.table`](https://cran.r-project.org/web/packages/data.table/vignettes/datatable-faq.html) (en anglais);
+- [Introduction à `data.table`](https://cloud.r-project.org/web/packages/data.table/vignettes/datatable-intro.html) (en anglais);
+- [Modification par référence](https://cloud.r-project.org/web/packages/data.table/vignettes/datatable-reference-semantics.html) (en anglais);
+- [la foire aux questions de `data.table`](https://cran.r-project.org/web/packages/data.table/vignettes/datatable-faq.html) (en anglais);
 - une [_cheatsheet_](https://s3.amazonaws.com/assets.datacamp.com/blog_assets/datatable_Cheat_Sheet_R.pdf) sur `data.table` (en anglais);
 - une [introduction à l'utilisation de l'opérateur `[...]`](https://stt4230.rbind.io/tutoriels_etudiants/hiver_2017/data.table) (en français);
 - Un [excellent cours sur `data.table`](https://gitlab.com/linogaliana/bigr/-/blob/master/04-datatable.Rmd) (en français).
