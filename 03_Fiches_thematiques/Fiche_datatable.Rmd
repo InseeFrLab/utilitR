@@ -45,6 +45,12 @@ dt <- dt[order(z)]
 ```
 
 <!-- Lino: il faudrait mettre un filtre ici: le code ci-dessous, c'est pour le html, et plus bas pour le LaTeX -->
+<!-- <html> -->
+<!-- <head> -->
+<!--    <style> -->
+<!--    table {border-collapse:collapse; table-layout:fixed; width:310px;} -->
+<!--    </style> -->
+<!-- </head> -->
 
 <table class='table'>
 <tr> <th>`Base R`</th> <th>`dplyr`</th> <th>`data.table`</th> <tr>
@@ -116,7 +122,7 @@ Dans la suite de cette section, on va illustrer les opérations de base en `data
 iris_dt <- data.table::as.data.table(iris)
 ```
 
-### Trier une table
+### Trier un `data.table`
 
 **On peut trier un `data.table` avec la fonction `order()`.** On trie `iris_dt` dans l'ordre croissant de `Sepal.Length` et dans l'ordre décroissant de la variable `Sepal.Width`.
 
@@ -136,7 +142,6 @@ selection <- iris_dt[Species == "setosa"]
 
 **Lorsqu'on souhaite conserver toutes les lignes d'un `data.table`, il faut laisser vide l'emplacement pour `i`, sans oublier la virgule.** Par exemple, pour connaître le nombre de lignes de `iris_dt`, on écrit: `iris_dt[ , .N]`.  Notez bien l'emplacement vide et la virgule après `[`.
 :::
-
 
 ### Sélectionner des colonnes
 
@@ -164,7 +169,7 @@ La seconde méthode peut vous sembler inutilement complexe. C'est vrai dans l'ex
 
 ### Calculer des statistiques
 
-**La méthode pour sélectionner des colonnes est également valable pour calculer des statistiques, car `data.table` accepte également les expressions dans `j`.** Ainsi, pour calculer la moyenne de la variable `Sepal.Length`, on écrit:
+**La méthode pour sélectionner des colonnes est également valable pour calculer des statistiques, car `data.table` accepte les expressions dans `j`.** Ainsi, pour calculer la moyenne de la variable `Sepal.Length`, on écrit:
 ```{r}
 ans <- iris_dt[ , sum(Sepal.Length, na.rm = TRUE)]
 ans 
@@ -172,12 +177,14 @@ ans
 iris_dt[ , sum(Sepal.Length, na.rm = TRUE)]
 ```
 
-Si on veut calculer à la fois la moyenne et l'écart-type, on peut utiliser la notation `.()` dans `j`, et on peut donner des noms aux variables:
+Si on veut calculer plusieurs statistiques à la fois (par exemple la moyenne et l'écart-type), on peut utiliser la notation `.()` dans `j`, et on peut donner des noms aux variables:
 ```{r}
-ans <- iris_dt[ , .(sd = sd(Sepal.Length, na.rm = TRUE), moyenne = sum(Sepal.Length, na.rm = TRUE))]
+ans <- iris_dt[ , .(sd = sd(Sepal.Length, na.rm = TRUE), 
+                    moyenne = sum(Sepal.Length, na.rm = TRUE))]
 ans 
 # ou plus simplement
-iris_dt[ , .(sd = sd(Sepal.Length, na.rm = TRUE), moyenne = sum(Sepal.Length, na.rm = TRUE))]
+iris_dt[ , .(sd = sd(Sepal.Length, na.rm = TRUE), 
+             moyenne = sum(Sepal.Length, na.rm = TRUE))]
 ```
 
 **On peut évidemment combiner `i` et `j` pour calculer la moyenne pour un groupe particulier.** Dans l'exemple suivant, on sélectionne l'espèce "setosa" (avec `i`), ensuite on sélectionne et on calcule en même temps (avec `j`). 
@@ -214,7 +221,6 @@ pour plus de détails). Cela signifie en pratique qu'**il ne faut pas réassigne
 Pour créer une colonne, on écrit donc directement `dt[ , nouvelle_colonne := une_formule]` et non `dt <- dt[ , nouvelle_colonne := une_formule]`. Voici un exemple qui compare `dplyr` et `data.table`:
 
 <!-- Lino: il faudrait mettre un filtre ici: le code ci-dessous, c'est pour le html, et plus bas pour le LaTeX -->
-
 <table class='table'>
 <tr> <th>`dplyr` : Il faut une assignation (`<-`) pour modifier `iris`</th> <th>`data.table`: Il ne faut pas d'assignation pour modifier `iris_dt`</th> <tr>
 <tr>
