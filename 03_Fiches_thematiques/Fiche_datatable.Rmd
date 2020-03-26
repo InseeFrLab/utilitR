@@ -168,6 +168,7 @@ La seconde méthode peut vous sembler inutilement complexe. C'est vrai dans l'ex
 ```{r}
 iris_dt[order(Sepal.Length, -Sepal.Width)]
 ```
+
 ### Calculer des statistiques
 
 **La méthode pour sélectionner des colonnes est également valable pour calculer des statistiques, car `data.table` accepte les expressions dans `j`.** Ainsi, pour calculer la moyenne de la variable `Sepal.Length`, on écrit:
@@ -194,6 +195,21 @@ ans <- iris_dt[Species == "setosa", .(moyenne = sum(Sepal.Length, na.rm = TRUE))
 ans
 ```
 
+### Les fonctions statistiques utiles de `data.table`
+
+Vous pouvez utiliser toutes les fonctions statistiques de `R` avec `data.table`. Le *package* `data.table` propose par ailleurs quelqdesues fonctions optimisées qui peuvent vous être utiles. En voici quelques-unes:
+
+| Fonction        | Opération                                         | Exemple     |
+|-----------------|---------------------------------------------------|-------------------------------------------------------------|
+|`.N`             | Nombre d'observations                             | `dt[ , .N, by = 'group_var']` |
+|`uniqueN()`      | Nombre d'observations uniques de la variable `x`  | `dt[ , uniqueN(x)]` ; `dt[ , uniqueN(x), by = 'group_var']` |
+|`%in%`           | Nombre dans la liste                              | `dt[x %in% 1:5]` |
+|`%chin%`         | Mot dans la liste                                 | `dt[x %chin% c("a", "b")]` |
+|`%between%`      | Valeur entre deux nombres                         | `dt[x %between% c(5,13)]` |
+| `%like%`        | Reconnaissance d'une chaîne de caractères         | `dt[departement %like% "^Haute"]`
+
+
+
 ### Opérations par groupe
 
 **Toutes les opérations précédentes peuvent être réalisées par groupe.** il suffit d'ajouter le nom des variables de groupe dans `by` (c'est l'équivalent du `dplyr::group_by()`). Lorsqu'il y a plusieurs variables de groupe, il faut écrire `by = c("var1", "var2", "var3")`. Par exemple, on peut calculer la moyenne de la variable `Sepal.Length` par espèce de fleur:
@@ -202,8 +218,6 @@ ans
 ans <- iris_dt[ , .(moyenne = sum(Sepal.Length, na.rm = TRUE)), by = "Species"]
 ans 
 ```
-
-
 
 ### Joindre des tables avec `data.table`
 
@@ -466,21 +480,6 @@ L'utilisation de la fonction `:=` est déroutante lorsqu'on découvre `data.tabl
     return(dt_copy)
   }
   ```
-  
-## Les fonctions statistiques utiles de `data.table`
-
-
-CommOM: Je propose de faire un petit tableau avec le symbole `.N`, uniqueN, etc, et de donner quelques exemples.
-
-| Fonction | Opération | Exemple     |
-|----------|-----------|-------------|
-|`.N`       | Nombre d'observations | `dt[,.N]` ; `dt[,.N,by = 'group_var']` |
-|`uniqueN`       | Nombre d'observations unique de la variable `x` | `dt[,uniqueN(x)]` ; `dt[,uniqueN(x),by = 'group_var']` |
-|`%in%`       | Nombre la liste | `dt[x %in% 1:5]` |
-|`%chin%`       | Mot la liste | `dt[x %chin% 1:5]` |
-|`%between%`       | Valeur entre deux nombres | `dt[x %between% c(5,13)]` |
-| `%like%` | Reconnaissance d'une chaîne de caractère | `dt[departement %like% "^Haute"]`
-
 
 ## .SD et lapply
 
