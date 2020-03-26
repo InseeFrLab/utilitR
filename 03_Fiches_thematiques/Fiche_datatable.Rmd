@@ -450,24 +450,26 @@ vs difficle en dplyr
 
 ## Joindre des tables avec `data.table`
 
-Pour joindre des données, `data.table` propose une fonction `merge` plus rapide que la fonction de base. On utilisera :
+Pour joindre des données, `data.table` propose une fonction `merge()` plus rapide que la fonction de base. La syntaxe générale est `z <- merge(x, y, [options])`. Voici une liste des principales options:
 
-| Commande | Type de jointure |
-|----------|------------------|
-| `merge(x,y)` | *Inner join* |
-|`merge(x,y, all.x = TRUE)` | *Left join* |
-|`merge(x,y, all.y = TRUE)` | *Right join* |
-|`merge(x,y, all = TRUE)` | *Full join* |
+| **Option**                                | **Signification**                                                        |
+|-------------------------------------------|--------------------------------------------------------------------------|
+| `by = var_jointure`                       | Joindre sur la variable `var_jointure` (présente dans `x` et dans `y`)   |
+| `by.x = "identx", by.y = "identy"`        | Joindre sur la condition `identx == identy`                              |
+|`all.x = TRUE`                             | *Left join* (garder toutes les lignes de `x`)                            |
+|`all.y = TRUE`                             | *Right join* (garder toutes les lignes de `y`)                           |
+|`all = TRUE`                               | *Full join* (garder toutes les lignes de `x` et de `y`)                  |
 
-Il existe d'autres manières de faire des jointures, plus poussées, présentées dans la [ici](https://rstudio-pubs-static.s3.amazonaws.com/52230_5ae0d25125b544caab32f75f0360e775.html).
+Les autres options sont visibles avec `?data.table::merge`. Il existe d'autres manières de faire des jointures, plus poussées, présentées dans la [ici](https://rstudio-pubs-static.s3.amazonaws.com/52230_5ae0d25125b544caab32f75f0360e775.html).
 
+## Indexer une table avec `data.table`
+
+**L'indexation est une fonctionalité très puissante pour accélérer les opérations sur les lignes (filtres, jointures, etc. ) en `data.table`**. Pour indexer une table il faut déclarer les variables faisant office de clé (appelées `key`). C'est possible de la manière suivante: `data.table::setkey(dt, a)`  ou `data.table::setkeyv(dt, "a")`. Le `data.table` sera réordonné en fonction de cette variable et l'algorithme de recherche sur les lignes sera ainsi beaucoup plus efficace. Lorsqu'il y a plusieurs variables-clé, on écrit `data.table::setkey(dt, a, b)` ou `data.table::setkeyv(dt, c("a","b"))`.
 
 ::: {.conseil data-latex=""}
 **Conseil**
 
-Une fonctionalité **très puissante** pour accélérer les opérations sur les lignes (filtres, *merge*, etc. ) en `data.table` est l'**indexation**. Il s'agit de déclarer des variables faisant office de clé. C'est possible de la manière suivante: `data.table::setkey(dt, a, b))`  ou `data.table::setkeyv(dt, c("a","b"))`. Le `data.table` sera réordonné en fonction de cette variable et l'algorithme de recherche sur les lignes sera ainsi beaucoup plus efficace.
-
-La fonction `data.table::setkey`, lorsqu'elle est appelée, met un peu de temps mais accélèrera grandement les opérations ultérieures sur les lignes. Il est vivement recommandé de l'utiliser si une ou plusieurs variables vont régulièrement servir à filtrer ou combiner des données. Pour aller plus [loin](https://cran.r-project.org/web/packages/data.table/vignettes/datatable-keys-fast-subset.html)
+**L'exécution de la fonction `data.table::setkey()` peut prendre un peu de temps** (parfois quelques minutes sur une table de plus de 10 millions de lignes), car `data.table` trie toute la table en fonction des variables-clé. Toutefois, c'est une étape vraiment utile car elle accélère considérablement les opérations ultérieures sur les lignes. Il est vivement recommandé de l'utiliser si une ou plusieurs variables vont régulièrement servir à filtrer ou combiner des données. Pour aller plus loin, voir cette [vignette](https://cran.r-project.org/web/packages/data.table/vignettes/datatable-keys-fast-subset.html).
 :::
 
 ## Références
