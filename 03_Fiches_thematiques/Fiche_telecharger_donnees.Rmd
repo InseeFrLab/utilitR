@@ -1,25 +1,28 @@
 # Télécharger des données depuis R
 
-Plusieurs approches pour télécharger des données depuis `R`.
+Il est possible de télécharger des données depuis `R` de différentes façons. Selon les besoins, il peut s'agir :
+
+* de récupérer un fichier hébergé sur un site internet,
+* d'utiliser un protocole standard tel que le SDMX ;
+* d'extraire de l'information répartie sur plusieurs pages internet (moissonnage, ou *web scraping*).
 
 ::: recommandation
 **Recommandations de l'Insee**
 
-* **Il est recommandé d'utiliser le *package* `Rvest` pour scrapper des données ? `xml2` pour parser des fichiers xml, `rsdmx` pour récupérer des données *via* ce standard** 
+* **Il est recommandé d'utiliser le *package* `rvest` pour *scraper* des données, `xml2` pour *parser* des fichiers xml et html, `readsdmx` pour récupérer des données *via* le standard `SDMX`. 
 :::
 
 ## Données ponctuelles
 
-
-Ici, il s'agit de télécharger des données ponctuellement. Les fichiers cibles sont disponibles sur des sites internet.
+Ici, il s'agit de télécharger des données ponctuellement. Les fichiers cibles (souvent de format `Excel`, `csv`) sont disponibles sur des sites internet. 
 
 ### *via* la fonction `download.file`
 
-Pour cela, nous pouvons utiliser la fonction `download.file
+Pour cela, nous devons connaitre l'*URL* (l'adresse internet) des données à collecter.
 
 ```{r, eval=FALSE}
 
-filepath <- "url_vers_fichier.zip"
+filepath <- "http://www.url_vers_fichier.zip"
 
 download.file(url = filepath,
               mode = "wb",
@@ -27,55 +30,54 @@ download.file(url = filepath,
 )
 ```
 
-Si le fichier téléchargé est un zip, il faut extraire les éléments de l'archive :
+Si le fichier téléchargé est une archive (fichier `zip` par exemple), il faut extraire les éléments qui la compose :
 
 ```{r, eval=FALSE}
 unzip(zipfile = "mon_repertoire_destination/fichier.zip"), 
       exdir = "mon_repertoire_extraction")
 ```
 
-
 Après cela, il ne reste qu'à lire les données téléchargées (voir fiche "importer des données" #refQuiVaBien)
 Si les données sont de type `csv` :
 
 ```{r, eval=FALSE}
-monfichier <- read.csv("mon_repertoire_extraction/monfichier.csv")
-# montrer un exemple avec des données insee.fr ?
+monfichier <- readr::read_csv("mon_repertoire_extraction/monfichier.csv")
+# montrer un exemple avec des données insee.fr ? autres ?
 ```
 
 ### *via* le standard [`sdmx`](https://sdmx.org/)
 
-pour cela, il faut utiliser le package `rsdmx` (à ajouter aux dépendances ?)
+SDMX (*Statistical Data and Metadata eXchange*) est une initiative menée conjointement par plusieurs organisations (BRI, BCE, Eurostat, FMI, OCDE, ONU et Banque mondiale), dont le but est de fournir des standards d'échange d'informations statistiques.
+
+Le package `readsdmx` permet de collecter des données chez les fournisseurs (*providers*) qui proposent ce service (voir https://db.nomics.world/).
+
+La collecte se réalise grâce à la fonction `read_sdmx`, la transformation en `data.frame` *via* `as.data.frame` :
 
 ```{r, eval=FALSE}
 urlPibHab <- "https://stats.oecd.org/restsdmx/sdmx.ashx/GetData/SNA_TABLE1/ZAF+SAU+ARG+AUS+BRA+CAN+CHN+KOR+USA+IND+IDN+JPN+MEX+RUS+TUR+EU28.B1_GE.HCPC/all?startTime=2016&endTime=2019"
-sdmxPibHab <- rsdmx::readSDMX(urlPibHab)
+sdmxPibHab <- readsdmx::read_sdmx(urlPibHab)
 pibHab <- as.data.frame(sdmxPibHab)
-# NB : certaines données de la BDM sont accessibles via `sdmx`.
+# NB : certaines données de la BDM sont accessibles *via* `sdmx`.
 # ex : "https://bdm.insee.fr/series/sdmx/data/SERIES_BDM/010565710?detail=dataonly"
+# mettre un exemple ?
 ```
 
-## Données "réparties"
+## Données "réparties" (sur plusieurs pages internet)
 
-Il s'agit ici de montrer comment "moissonner" des sites web
 
-### Les différentes licences de données
+Le *web scraping* est une technique d'extraction automatisée du contenu d’un site Web, à l'aide d'un script ou d'un programme. La litérature distingue parfois le *crawling* du *scraping*.
 
-* etalab
+Avant de se lancer dans une opération de *web scraping*, il est **impératif** de se renseigner sur les aspects réglementaires d'une telle opération.
 
-* ODbL
+A DEVELOPPER
 
-* CC
+### Quelques notions indispensables
 
-* Autres
+* html
+* xml
+* xpath
 
-### Quelques notions d'HTML / XML / regex
-
-TODO
-
-### Le langage `xpath`
-
-TODO
+Cette documentation n'a pas vocation à aborder ces concepts dans le détail. Le lecteur est encouragé à se référer à [W3C Schools](https://www.w3schools.com/) pour se familiariser avec ces langages, indispensables pour le *web scraping*.
 
 ### Exemple de webscrapping simple
 
@@ -83,12 +85,24 @@ TODO
 
 ## Ressources {#RessourcesWebScraping}
 
-On trouve sur internet de la doc relative à la collecte de données depuis `R`.
-
 * un [article sur le blog de Thinkr](https://thinkr.fr/rvest/) en français
+
+* un [article de towards data science sur `rvest`](https://towardsdatascience.com/tidy-web-scraping-in-r-tutorial-and-resources-ac9f72b4fe47)
 
 * le [wiki EduTech](http://edutechwiki.unige.ch/fr/Web_scraping_avec_R) en français
 
 * de l'info sur [les regex en R](https://stat.ethz.ch/R-manual/R-devel/library/base/html/regex.html)
 
+* [Loi n°2016-1321 du 7 octobre 2016 pour une République numérique (dite LRN)](https://www.legifrance.gouv.fr/affichTexte.do?cidTexte=JORFTEXT000033202746&dateTexte=&categorieLien=id)
 
+* [Wikipédia : Loi pour une République Numérique](https://fr.wikipedia.org/wiki/Loi_pour_une_R%C3%A9publique_num%C3%A9rique#Notes_et_références)
+
+* [article sur les aspects réglementaires du *web scraping*](https://hal-paris1.archives-ouvertes.fr/hal-02125245/document)
+
+### SDMX
+
+* [iso 17369](https://www.iso.org/fr/standard/52500.html)
+
+* [service SDMX d'Eurostat](https://ec.europa.eu/eurostat/fr/web/sdmx-web-services/sdmx)
+
+* [espace d'information d'Eurostat sur le SDMX](https://ec.europa.eu/eurostat/fr/web/sdmx-infospace/welcome)
