@@ -2,29 +2,55 @@
 
 ## Gestion des conflits entre *packages*
 
-**Lorsqu'on utilise une fonction issue d'un *package*, il est recommandé de mettre le nom du *package* suivi de `::`.** Cela alourdit quelque peu le code mais permet à la personne reprenant celui-ci de comprendre quelle fonction issue de quel *package* est utilisée. En effet, cela permet d'être certain que l'on exécute le même script que la personne ayant écrit le code, indépendamment de son environnement. Par exemple : 
+**Lorsqu'on utilise une fonction issue d'un *package*, il est recommandé de mettre le nom du *package* suivi de `::`.** Cela alourdit quelque peu le code mais permet à la personne reprenant celui-ci de comprendre quelle fonction issue de quel *package* est utilisée. En effet, cela permet d'être certain que l'on exécute le même script que la personne ayant écrit le code, indépendamment de son environnement. Par exemple, le code suivant:
+
+```{r include = FALSE, eval = TRUE}
+try(detach("package:MASS", unload=TRUE))
+try(detach("package:dplyr", unload=TRUE))
+```
 
 <div class="fold o">
-```{r eval = TRUE, error=TRUE, message = FALSE}
+```{r eval = FALSE, error=TRUE, message = FALSE}
 library(dplyr)
 library(MASS)
 cars %>% select(dist) %>% head()
 ```
 </div>
-produira une erreur alors que : 
+produira l'erreur suivante:
 <div class="fold o">
-```{r eval = TRUE, message = FALSE}
-# On detache les *packages* pour repartir d'un environnement propre
-detach("package:MASS", unload=TRUE)
-detach("package:dplyr", unload=TRUE)
+```{r eval = TRUE, error=TRUE, message = FALSE, echo = FALSE}
+library(dplyr)
+library(MASS)
+cars %>% select(dist) %>% head()
+```
+</div>
 
+alors que le code suivant:
+
+```{r include = FALSE, eval = TRUE}
+try(detach("package:MASS", unload=TRUE))
+try(detach("package:dplyr", unload=TRUE))
+```
+
+<div class="fold o">
+```{r eval = FALSE, message = FALSE}
 # On attache les *packages* dans ce sens
 library(MASS)
 library(dplyr)
 cars %>% select(dist) %>% head()
 ```
 </div>
-fonctionnera bien. Dans les deux cas, le code est le même à l'exception des *packages* qui sont chargés dans un ordre différent. Pour éviter cela, la syntaxe avec `::` est préférable:
+fonctionnera bien. 
+<div class="fold o">
+```{r eval = TRUE, message = FALSE, echo = FALSE}
+# On attache les *packages* dans ce sens
+library(MASS)
+library(dplyr)
+cars %>% select(dist) %>% head()
+```
+</div>
+
+Le code est le même dans les deux cas à l'exception de l'ordre dans lequel les *packages* sont chargés. Pour éviter cela, la syntaxe avec `::` est préférable:
 <div class="fold o">
 ```{r eval = T}
 cars %>% dplyr::select(dist)  %>% head()
