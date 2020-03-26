@@ -107,7 +107,7 @@ dt[x > 3, sum(y), by = z]
 
 **Les `data.tables` sont simplement des `data.frames` particuliers, donc on peut normalement leur appliquer toutes les méthodes valables pour les `data.frames`.** En particulier, on peut utiliser avec `data.table` toutes les fonctions des *packages* habituellement associés à `dplyr`: `stringr` pour le maniement de chaînes de caractères, `lubridate` pour les colonnes temporelles, `forcats` pour les colonnes de type `factor`, etc. Toutefois, il est utile de vérifier que le *package* `data.table` ne propose pas déjà une fonction adaptée. Par exemple, plutôt que d'utiliser la fonction `stringr::str_split_fixed()` pour séparer une colonne en fonction d'un caractère, on utilisera `data.table::tstrsplit()`.
 
-## Manipuler un `data.table`
+## Manipuler des données avec `data.table`
 
 ### Mettre des données dans un `data.table`
 
@@ -122,13 +122,6 @@ Dans la suite de cette section, on va illustrer les opérations de base en `data
 iris_dt <- data.table::as.data.table(iris)
 ```
 
-### Trier un `data.table`
-
-**On peut trier un `data.table` avec la fonction `order()`.** On trie `iris_dt` dans l'ordre croissant de `Sepal.Length` et dans l'ordre décroissant de la variable `Sepal.Width`.
-
-```{r}
-iris_dt[order(Sepal.Length, -Sepal.Width)]
-```
 
 ### Sélectionner des lignes
 
@@ -167,6 +160,14 @@ La seconde méthode peut vous sembler inutilement complexe. C'est vrai dans l'ex
 :::
 
 
+
+### Trier un `data.table`
+
+**On peut trier un `data.table` avec la fonction `order()`.** On trie `iris_dt` dans l'ordre croissant de `Sepal.Length` et dans l'ordre décroissant de la variable `Sepal.Width`.
+
+```{r}
+iris_dt[order(Sepal.Length, -Sepal.Width)]
+```
 ### Calculer des statistiques
 
 **La méthode pour sélectionner des colonnes est également valable pour calculer des statistiques, car `data.table` accepte les expressions dans `j`.** Ainsi, pour calculer la moyenne de la variable `Sepal.Length`, on écrit:
@@ -203,6 +204,32 @@ ans
 ```
 
 
+
+### Joindre des tables avec `data.table`
+
+Pour joindre des données, `data.table` propose une fonction `merge()` plus rapide que la fonction de base. La syntaxe générale est `z <- merge(x, y, [options])`. Voici une liste des principales options:
+
+| **Option**                                | **Signification**                                                        |
+|-------------------------------------------|--------------------------------------------------------------------------|
+| `by = var_jointure`                       | Joindre sur la variable `var_jointure` (présente dans `x` et dans `y`)   |
+| `by.x = "identx", by.y = "identy"`        | Joindre sur la condition `identx == identy`                              |
+|`all.x = TRUE`                             | *Left join* (garder toutes les lignes de `x`)                            |
+|`all.y = TRUE`                             | *Right join* (garder toutes les lignes de `y`)                           |
+|`all = TRUE`                               | *Full join* (garder toutes les lignes de `x` et de `y`)                  |
+
+Les autres options sont visibles avec `?data.table::merge`. Il existe d'autres manières de faire des jointures, plus poussées, présentées dans la [ici](https://rstudio-pubs-static.s3.amazonaws.com/52230_5ae0d25125b544caab32f75f0360e775.html).
+
+### Indexer une table avec `data.table`
+
+**L'indexation est une fonctionalité très puissante pour accélérer les opérations sur les lignes (filtres, jointures, etc.) en `data.table`**. Pour indexer une table il faut déclarer les variables faisant office de clé (appelées `key`). C'est possible de la manière suivante: `data.table::setkey(dt, a)`  ou `data.table::setkeyv(dt, "a")`. Le `data.table` sera réordonné en fonction de cette variable et l'algorithme de recherche sur les lignes sera ainsi beaucoup plus efficace. 
+Lorsqu'il y a plusieurs variables-clé, on écrit `data.table::setkey(dt, a, b)` ou `data.table::setkeyv(dt, c("a","b"))`.
+Pour savoir si `un data.table` est déjà indexé, on peut exécuter la commande `key(dt)` qui renvoie le nom des clés s'il y en a, et `NULL` sinon.
+
+::: {.conseil data-latex=""}
+**Conseil**
+
+**L'exécution de la fonction `data.table::setkey()` peut prendre un peu de temps** (parfois quelques minutes sur une table de plus de 10 millions de lignes), car `data.table` trie toute la table en fonction des variables-clé. Toutefois, c'est une étape vraiment utile car elle accélère considérablement les opérations ultérieures sur les lignes. Il est vivement recommandé de l'utiliser si une ou plusieurs variables vont régulièrement servir à filtrer ou combiner des données. Pour aller plus loin, voir cette [vignette](https://cran.r-project.org/web/packages/data.table/vignettes/datatable-keys-fast-subset.html).
+:::
 
 ## La fonction d'assignation par référence (ou `:=`)
 
@@ -452,33 +479,6 @@ CommOM: Je propose de faire un petit tableau avec le symbole `.N`, uniqueN, etc,
 
 Il est très facile de créer des fonctions génériques modifiant un `data.table`
 vs difficle en dplyr
-
-
-## Joindre des tables avec `data.table`
-
-Pour joindre des données, `data.table` propose une fonction `merge()` plus rapide que la fonction de base. La syntaxe générale est `z <- merge(x, y, [options])`. Voici une liste des principales options:
-
-| **Option**                                | **Signification**                                                        |
-|-------------------------------------------|--------------------------------------------------------------------------|
-| `by = var_jointure`                       | Joindre sur la variable `var_jointure` (présente dans `x` et dans `y`)   |
-| `by.x = "identx", by.y = "identy"`        | Joindre sur la condition `identx == identy`                              |
-|`all.x = TRUE`                             | *Left join* (garder toutes les lignes de `x`)                            |
-|`all.y = TRUE`                             | *Right join* (garder toutes les lignes de `y`)                           |
-|`all = TRUE`                               | *Full join* (garder toutes les lignes de `x` et de `y`)                  |
-
-Les autres options sont visibles avec `?data.table::merge`. Il existe d'autres manières de faire des jointures, plus poussées, présentées dans la [ici](https://rstudio-pubs-static.s3.amazonaws.com/52230_5ae0d25125b544caab32f75f0360e775.html).
-
-## Indexer une table avec `data.table`
-
-**L'indexation est une fonctionalité très puissante pour accélérer les opérations sur les lignes (filtres, jointures, etc.) en `data.table`**. Pour indexer une table il faut déclarer les variables faisant office de clé (appelées `key`). C'est possible de la manière suivante: `data.table::setkey(dt, a)`  ou `data.table::setkeyv(dt, "a")`. Le `data.table` sera réordonné en fonction de cette variable et l'algorithme de recherche sur les lignes sera ainsi beaucoup plus efficace. 
-Lorsqu'il y a plusieurs variables-clé, on écrit `data.table::setkey(dt, a, b)` ou `data.table::setkeyv(dt, c("a","b"))`.
-Pour savoir si `un data.table` est déjà indexé, on peut exécuter la commande `key(dt)` qui renvoie le nom des clés s'il y en a, et `NULL` sinon.
-
-::: {.conseil data-latex=""}
-**Conseil**
-
-**L'exécution de la fonction `data.table::setkey()` peut prendre un peu de temps** (parfois quelques minutes sur une table de plus de 10 millions de lignes), car `data.table` trie toute la table en fonction des variables-clé. Toutefois, c'est une étape vraiment utile car elle accélère considérablement les opérations ultérieures sur les lignes. Il est vivement recommandé de l'utiliser si une ou plusieurs variables vont régulièrement servir à filtrer ou combiner des données. Pour aller plus loin, voir cette [vignette](https://cran.r-project.org/web/packages/data.table/vignettes/datatable-keys-fast-subset.html).
-:::
 
 ## Références
 
