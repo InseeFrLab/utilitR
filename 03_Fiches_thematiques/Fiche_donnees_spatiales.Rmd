@@ -61,7 +61,7 @@ Le *package* `sf` est une extension du *package* `dplyr` pour les objets géogra
 
 Créer une table de données spatiales avec `sf` est très simple. Il y a deux méthodes, selon que les données spatiales sont directement disponibles dans un format de données géographiques (par un exemple un fichier `shapefile`) ou dans un fichier de données brutes (par exemple un fichier `.csv`).
 
-#### Importer des données géographiques
+#### Importer des fichiers de données géographiques
 
 La fonction **`sf::st_read()`** permet de lire différents formats de données géographiques. Les paramètres attendus par la fonction sont :
 
@@ -76,13 +76,12 @@ martinique <- sf::st_read(
   quiet = TRUE)
 ```
 
-#### Importer des données
+#### Reconstituer des données géographiques à partir de données brutes
 
-Il peut arrive que les données géographiques ne soient pas stockées dans un format spécifique. Par exemple, vous pouvez disposer d'un fichier `.csv` qui contient une table géolocalisées de logements avec leur caractéristiques. En ce cas, vous pouvez créer une table de donnée géographiques en deux temps:
+Il peut arrive que les données géographiques ne soient pas stockées dans un format adapté. Par exemple, vous pouvez disposer d'un fichier `.csv` qui contient une table géolocalisées de logements avec leur caractéristiques. En ce cas, vous pouvez créer une table de donnée géographiques en deux temps:
 
 - Importer les données brute dans `R` voir la fiche [Importer des fichiers plats (`.csv`, `.tsv`, `.txt`)];
 - Transformer le `data.frame` en objet `sf` grâce à la commande `sf::st_set_geometry()`. Par exemple, si les variables `lon` et `lat` contiennent des données GPS (code epsg `4326`) alors on peut faire:
-
   ```{r, eval = FALSE}
   df_spatial <- sf::st_as_sf(x = df,                         
                coords = c("lon", "lat"),
