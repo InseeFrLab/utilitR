@@ -291,32 +291,44 @@ head(mtcars_dt_melted)
 La fonction `dcast()` réorganise les donnée dans un format large. Elle prend les arguments suivants:
 
 * `data`: les données;
-* `formula`: 
-* `fun.aggregate`:
-*  `value.var`:
-* 
+* `formula`: une formule de la forme `var_ligne ~ var_colonne` qui définit la structure de la nouvelle table; 
+    - s'il y a plusieurs variables, la formule prend la forme `var1 + var2 ~ var3`;
+    - `dcast()` conserve une ligne par valeur de la partie gauche, et crée (au moins) une colonne par valeur de la partie droite;
+* `fun.aggregate`: une liste contenant la ou les fonction(s) utilisées pour agréger les données le cas échéant; exemple: `list(mean, sum, sd)`;
+*  `value.var`: un vecteur contenant le nom de la ou des colonne(s) dont les valeurs vont être transposées; exemple: `c("var1", "var2")`
 
-Dans l'exemple qui suit, on réorganise la table `mtcars_dt` de façon à obtenir une table qui contient une ligne par valeur de `gear` et une colonne par valeur de `cyl`. Ces colonnes vont contenir 
+Dans l'exemple qui suit, on réorganise la table `mtcars_dt` de façon à obtenir une table qui contient une ligne par valeur de `gear` et une colonne par valeur de `cyl`. Ces colonnes vont contenir la moyenne de la variable `disp`.
+```{r}
+mtcars_dt_casted <-   dcast(mtcars_dt, 
+                            gear ~ cyl, 
+                            value.var = "disp", 
+                            fun.aggregate = mean)
+head(mtcars_dt_casted)
+```
 
-La première colonne 
-
-les colonnes `cyl` et `gear`, et comprend une ligne pour chacune des variables `mpg`, `disp`, `hp` et `wt`. Le nom et la valeur de chaque variable sont renseignées dans les colonnes `nom_de_variable` et `valeur_de_variable`.
-
+Il est possible d'utiliser `dcast()` avec plusieurs variables à transposer et plusieurs fonctions pour transposer. Dans l'exemple qui suit, on obtient une colonne par valeur de `cyl`, par variable transposée (`disp` et `mpg`) et par fonction d'agrégation (`mean` et `sum`).
 
 ```{r}
-mtcars_dt_casted <- dcast(mtcars_dt[, cyl2 := stringr::str_c("cyl",cyl)], gear ~ cyl, value.var = "disp", fun.aggregate = mean)
-head(mtcars_dt_casted)
+# On ne conserve que cyl == 4 pour réduire le nombre de colonnes créées
+mtcars_dt_casted2 <-   
+  dcast(mtcars_dt[cyl == 4], 
+        gear ~ cyl, 
+        value.var = c("disp", "mpg"), 
+        fun.aggregate = list(mean, sum))
+head(mtcars_dt_casted2)
 ```
 
 ::: {.conseil data-latex=""}
 **Conseils**
 
-* La fonction `dcast()` crée une colonne par n-uplet de valeurs des variables utilisées dans la partie droite de la formule. Dans l'exemple qui précède, `dcast` crée trois colonnes car la variable `cyl` prend trois valeurs (4, 6 et 8). **Il faut donc faire attention à ce que les variables utilisées dans la partie droite de la formule aient un nombre limité de valeurs**, pour ne pas obtenir une table *extrêmement* large. Pour ce faire, on peut éventuellement discrétiser les variables continues, ou regrouper les modalités avant d'utiliser `dcast()`.
-* Lorsqu'on utilise `dcast()` avec une seule colonne et une seule fonction d'agrégation, on peut obtenir une table avec des noms de colonnes peu significatif si les valeurs de la variable de transposition sont numériques. On obtient des variables qui s'appellent `4`, `6`, `8` dans l'exemple précédent. Il est conseillé de modifier légèrement la partie droite de la formule pour obtenir des noms plus significatifs. Voici un exemple:
-
-```{r}
-head(mtcars_dt_casted2 <- dcast(mtcars_dt, gear ~ paste0("cyl", cyl), value.var = "disp", fun.aggregate = mean))
-```
+* La fonction `dcast()` crée une colonne par valeur des variables utilisées dans la partie droite de la formule (trois colonnes pour les trois valeurs de `cyl` dans l'exemple qui précède). **Il faut donc faire attention à ce que ces variables aient un nombre limité de valeurs**, pour ne pas obtenir une table *extrêmement* large. On peut éventuellement discrétiser les variables continues, ou regrouper les modalités avant d'utiliser `dcast()`.
+* On peut obtenir des **noms de colonnes peu significatifs** lorsqu'on utilise `dcast()` avec une colonne numérique et une fonction d'agrégation (`4`, `6`, `8` dans l'exemple précédent). Il est conseillé de modifier légèrement la partie droite de la formule pour obtenir des noms plus significatifs. Voici un exemple:
+  ```{r}
+  head(mtcars_dt_casted2 <- dcast(mtcars_dt, 
+                                  gear ~ paste0("cyl", cyl), 
+                                  value.var = "disp", 
+                                  fun.aggregate = mean))
+  ```
 :::
 
 
