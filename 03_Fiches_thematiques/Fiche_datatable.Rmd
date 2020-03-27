@@ -208,8 +208,6 @@ Vous pouvez utiliser toutes les fonctions statistiques de `R` avec `data.table`.
 |`%between%`      | Valeur entre deux nombres                         | `dt[x %between% c(5,13)]` |
 | `%like%`        | Reconnaissance d'une chaîne de caractères         | `dt[departement %like% "^Haute"]`
 
-
-
 ### Opérations par groupe
 
 **Toutes les opérations précédentes peuvent être réalisées par groupe.** il suffit d'ajouter le nom des variables de groupe dans `by` (c'est l'équivalent du `dplyr::group_by()`). Lorsqu'il y a plusieurs variables de groupe, il faut écrire `by = c("var1", "var2", "var3")`. Par exemple, on peut calculer la moyenne de la variable `Sepal.Length` par espèce de fleur:
@@ -221,7 +219,7 @@ ans
 
 ### Joindre des tables avec `data.table`
 
-Pour joindre des données, `data.table` propose une fonction `merge()` plus rapide que la fonction de base. La syntaxe générale est `z <- merge(x, y, [options])`. Voici une liste des principales options:
+Pour joindre des données, `data.table` propose une fonction `merge()` plus rapide que la fonction de base. La syntaxe générale est `z <- merge(x, y, [options])`. Voici une liste des principales options (les autres options sont visibles avec `?data.table::merge`):
 
 | **Option**                                | **Signification**                                                        |
 |-------------------------------------------|--------------------------------------------------------------------------|
@@ -231,7 +229,7 @@ Pour joindre des données, `data.table` propose une fonction `merge()` plus rapi
 |`all.y = TRUE`                             | *Right join* (garder toutes les lignes de `y`)                           |
 |`all = TRUE`                               | *Full join* (garder toutes les lignes de `x` et de `y`)                  |
 
-Les autres options sont visibles avec `?data.table::merge`. Il existe d'autres manières de faire des jointures, plus poussées, présentées dans la [vignette sur le sujet](https://rstudio-pubs-static.s3.amazonaws.com/52230_5ae0d25125b544caab32f75f0360e775.html).
+Enfin, il est possible de réalier des jointures plus sophistiquées avec `data.table`. Ces méthodes sont présentées dans la [vignette sur le sujet](https://rstudio-pubs-static.s3.amazonaws.com/52230_5ae0d25125b544caab32f75f0360e775.html).
 
 ### Indexer une table avec `data.table`
 
@@ -249,10 +247,10 @@ Pour savoir si `un data.table` est déjà indexé, on peut exécuter la commande
 
 **Le *package* `data.table` permet de réorganiser facilement une table de données avec les fonctions `dcast()` et `melt()`.** La fonction `melt()` réorganise les donnée dans un format long. La fonction `melt()` réorganise les donnée dans un format large.
 
-| **`dcast()`**                                    | **`melt()`**                                         |
-| :----------------------------------------------: | :--------------------------------------------------: |
-| Réorganise les donnée dans un format large       | Réorganiser les donnée dans un format long           |
-|![](./pics/datatable/longtowide.png){width=62%}  |![](./pics/datatable/widetolong.png){width=55%}      |
+| **`melt()`**                                         | **`dcast()`**                                    |
+| :--------------------------------------------------: | :----------------------------------------------: |
+| Réorganiser les donnée dans un format long           | Réorganise les donnée dans un format large       |
+|![](./pics/datatable/widetolong.png){width=55%}       |![](./pics/datatable/longtowide.png){width=62%}   |
 
 L'utilisation de ces fonctions est illustrée avec la table `mtcars`, transformée en `data.table`.
 
@@ -260,6 +258,21 @@ L'utilisation de ces fonctions est illustrée avec la table `mtcars`, transform�
 DT <- data.table(mtcars)
 head(DT)
 ```
+#### Réorganiser les données en format long (*Long to wide*)
+
+La fonction `melt()` réorganise les donnée dans un format large. Elle prend les arguments suivants:
+* `data`: les données;
+* `id.vars`:
+*  `measure.vars`:
+* 
+
+
+```r
+melt(DT, c("cyl", "gear"), measure = patterns("^d", "e"))
+```
+
+
+
 
 #### Réorganiser les données en format large (*long to wide*)
 
@@ -270,21 +283,6 @@ Elle prend les arguments suivants:
 * `id.vars`:
 *  `measure.vars`:
 * 
-
-```r
-melt(DT, c("cyl", "gear"), measure = patterns("^d", "e"))
-```
-
-
-#### Réorganiser les données en format long (_Long to wide_)
-
-La fonction `melt()` réorganise les donnée dans un format large. Elle prend les arguments suivants:
-* `data`: les données;
-* `id.vars`:
-*  `measure.vars`:
-* 
-
-
 
 ```r
 dcast(DT, gear ~ cyl, value.var = c("disp", "hp"), fun = list(mean, sum))
