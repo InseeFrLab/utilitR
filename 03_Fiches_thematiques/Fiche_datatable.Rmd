@@ -20,14 +20,20 @@ L'utilisation du *package* `data.table` peut paraître plus déroutante pour les
 
 ## Présentation de `data.table`
 
+Ne pas oublier de charger le *package* avec `library(data.table)`.
+
+```{r, echo = FALSE}
+library(data.table)
+```
+
 ### Principe
 
 **Le *package* `data.table` propose une version améliorée du `data.frame` de base: le `data.table`.** La visualisation est améliorée par rapport à un `data.frame` standard:
 
 ```{r}
-dt <- data.table::data.table(x = exp(rnorm(1e4)),
-                             y = runif(1e4),
-                             z = sample(1:4, 1e4, replace = TRUE))
+dt <- data.table(x = exp(rnorm(1e4)),
+                 y = runif(1e4),
+                 z = sample(1:4, 1e4, replace = TRUE))
 dt
 ```
 
@@ -250,11 +256,11 @@ Pour savoir si `un data.table` est déjà indexé, on peut exécuter la commande
 | **`melt()`**                                         | **`dcast()`**                                    |
 | :--------------------------------------------------: | :----------------------------------------------: |
 | Réorganiser les donnée dans un format long           | Réorganise les donnée dans un format large       |
-|![](./pics/datatable/widetolong.png){width=55%}       |![](./pics/datatable/longtowide.png){width=62%}   |
+|![](../pics/datatable/widetolong.png){width=55%}       |![](../pics/datatable/longtowide.png){width=62%}   |
 
 L'utilisation de ces fonctions est illustrée avec la table `mtcars`, transformée en `data.table`.
 
-```r
+```{r}
 mtcars_dt <- data.table(mtcars)
 head(mtcars_dt)
 ```
@@ -270,30 +276,55 @@ La fonction `melt()` réorganise les donnée dans un format long. Elle prend les
 
 Dans l'exemple qui suit, on réorganise la table `mtcars_dt` de façon à obtenir une table qui garde inchangées les colonnes `cyl` et `gear`, et comprend une ligne pour chacune des variables `mpg`, `disp`, `hp` et `wt`. Le nom et la valeur de chaque variable sont renseignées dans les colonnes `nom_de_variable` et `valeur_de_variable`.
 
-```r
-melt(mtcars_dt, 
+```{r}
+mtcars_dt_melted <- melt(mtcars_dt, 
   c("cyl", "gear"), 
   measure.vars = c("mpg", "disp", "hp", "wt"),
   variable.name = "nom_de_variable",
   value.name    = "valeur_de_variable"
   )
+head(mtcars_dt_melted)
 ```
 
 #### Réorganiser les données en format large (*long to wide*)
 
-La fonction `dcast()` réorganise les donnée dans un format large. 
+La fonction `dcast()` réorganise les donnée dans un format large. Elle prend les arguments suivants:
 
-Elle prend les arguments suivants:
 * `data`: les données;
-* `id.vars`:
-*  `measure.vars`:
+* `formula`: 
+* `fun.aggregate`:
+*  `value.var`:
 * 
 
-```r
-dcast(DT, gear ~ cyl, value.var = c("disp", "hp"), fun = list(mean, sum))
+Dans l'exemple qui suit, on réorganise la table `mtcars_dt` de façon à obtenir une table qui contient une ligne par valeur de `gear` et une colonne par valeur de `cyl`. Ces colonnes vont contenir 
+
+La première colonne 
+
+les colonnes `cyl` et `gear`, et comprend une ligne pour chacune des variables `mpg`, `disp`, `hp` et `wt`. Le nom et la valeur de chaque variable sont renseignées dans les colonnes `nom_de_variable` et `valeur_de_variable`.
+
+
+```{r}
+mtcars_dt_casted <- dcast(mtcars_dt[, cyl2 := stringr::str_c("cyl",cyl)], gear ~ cyl, value.var = "disp", fun.aggregate = mean)
+head(mtcars_dt_casted)
 ```
 
+::: {.conseil data-latex=""}
+**Conseils**
 
+* La fonction `dcast()` crée une colonne par n-uplet de valeurs des variables utilisées dans la partie droite de la formule. Dans l'exemple qui précède, `dcast` crée trois colonnes car la variable `cyl` prend trois valeurs (4, 6 et 8). **Il faut donc faire attention à ce que les variables utilisées dans la partie droite de la formule aient un nombre limité de valeurs**, pour ne pas obtenir une table *extrêmement* large. Pour ce faire, on peut éventuellement discrétiser les variables continues, ou regrouper les modalités avant d'utiliser `dcast()`.
+* Lorsqu'on utilise `dcast()` avec une seule colonne et une seule fonction d'agrégation, on peut obtenir une table avec des noms de colonnes peu significatif si les valeurs de la variable de transposition sont numériques. On obtient des variables qui s'appellent `4`, `6`, `8` dans l'exemple précédent. Il est conseillé de modifier légèrement la partie droite de la formule pour obtenir des noms plus significatifs. Voici un exemple:
+
+```{r}
+head(mtcars_dt_casted2 <- dcast(mtcars_dt, gear ~ paste0("cyl", cyl), value.var = "disp", fun.aggregate = mean))
+```
+:::
+
+
+```{r}
+dcast(mtcars_dt, gear ~ cyl, value.var = c("disp", "hp"), fun = list(mean, sum))
+
+
+```
 
 
 
