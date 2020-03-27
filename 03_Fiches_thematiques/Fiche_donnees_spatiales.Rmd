@@ -19,7 +19,7 @@ L’utilisateur souhaite traiter avec `R` des données spatiales (données géol
 
 ## Définition des données spatiales
 
-**Le terme "données spatiales" désigne les données qui portent sur les caractéristiques géographiques des objets (localisation, contours, liens)**. Les caractéristiques géographiques des objets sont décrites à l'aide d'un **système de coordonnées** qui permettent une représentation dans un espace euclidien ($(x,y)$). Le passage de l'espace réel (la Terre, qui est une sphère) à l'espace plan se fait grâce à un **système de projection**. Voici quelques exemples de données spatiales:
+**Le terme "données spatiales" désigne les données qui portent sur les caractéristiques géographiques des objets (localisation, contours, liens)**. Les caractéristiques géographiques des objets sont décrites à l'aide d'un **système de coordonnées** qui permetent une représentation dans un espace euclidien ($(x,y)$). Le passage de l'espace réel (la Terre, qui est une sphère) à l'espace plan se fait grâce à un **système de projection**. Voici quelques exemples de données spatiales:
 
 * Une table décrivant des bâtiments, avec les coordonnées géographiques de chaque bâtiment;
 * Le découpage communal du territoire, avec le contour du territoire de chaque commune;
@@ -32,10 +32,11 @@ Les données spatiales rassemblent classiquement deux types de données :
 
 **Les données spatiales sont fréquemment traitées à l'aide d'un système d'information géographique (SIG)**, c'est-à-dire un système d'information capable de stocker, d'organiser et de présenter des données alphanumériques spatialement référencées par des coordonnées dans un système de référence (CRS). `R` dispose de fonctionnalités lui permettant de réaliser les mêmes tâches qu'un SIG (traitement de données spatiales, représentations cartographiques).
 
-**Les systèmes de projection font l'objet de standards internationaux et sont désignés par des codes dits *codes EPSG* **. Ce [site](https://epsg.io/) est une bonne aide-mémoire. Les plus fréquents, pour les utilisateurs français, sont les suivants (plus d'infos [ici](https://geodesie.ign.fr/contenu/fichiers/documentation/SRCfrance.pdf)):
+**Les systèmes de projection font l'objet de standards internationaux et sont souvent désignés par des codes dits *codes EPSG* **. Ce [site](https://epsg.io/) est un bon aide-mémoire. Les plus fréquents, pour les utilisateurs français, sont les suivants (plus d'infos [ici](https://geodesie.ign.fr/contenu/fichiers/documentation/SRCfrance.pdf)):
 
-* `2154`: système de projection Lambert 93. Il s'agit du système de projection officiel: la plupart des données diffusées par l'administration pour la métropole sont accessibles à partir de ce format.
+* `2154`: système de projection Lambert 93. Il s'agit du système de projection officiel: la plupart des données diffusées par l'administration pour la métropole sont disponibles dans ce système de projection. 
 * `4326`: WGS 84 ou système de pseudo-Mercator. C'est le système de projection des données GPS.
+<!-- est ce vraiment un système de projecton ? -->
 * `27572`: Lambert II étendu. Il s'agit de l'ancien système de projection officiel. Les données spatiales anciennes peuvent être dans ce format.
 
 ## Comment utiliser le *package* `sf`
@@ -59,7 +60,7 @@ Le *package* `sf` est une extension du *package* `dplyr` pour les objets géogra
 
 ### Créer une table de données spatiales
 
-Créer une table de données spatiales avec `sf` est très simple. Il y a deux méthodes, selon que les données spatiales sont directement disponibles dans un format de données géographiques (par un exemple un fichier `shapefile`) ou dans un fichier de données brutes (par exemple un fichier `.csv`).
+Créer une table de données spatiales avec `sf` est très simple. Il y a deux méthodes, selon que les données spatiales sont directement disponibles dans un format de données géographiques (par un exemple un fichier `shapefile`) ou dans un fichier de données tabulées (par exemple un fichier `.csv`).
 
 #### Importer des fichiers de données géographiques
 
@@ -78,9 +79,9 @@ martinique <- sf::st_read(
 
 #### Reconstituer des données géographiques à partir de données brutes
 
-Il peut arrive que les données géographiques ne soient pas stockées dans un format adapté. Par exemple, vous pouvez disposer d'un fichier `.csv` qui contient une table géolocalisées de logements avec leur caractéristiques. En ce cas, vous pouvez créer une table de donnée géographiques en deux temps:
+Il peut arrive que les données géographiques ne soient pas stockées dans un format adapté. Par exemple, vous pouvez disposer d'un fichier `.csv` qui contient une table géolocalisées de logements avec leurs caractéristiques. En ce cas, vous pouvez créer une table de donnée géographiques en deux temps:
 
-- Importer les données brute dans `R` voir la fiche [Importer des fichiers plats (`.csv`, `.tsv`, `.txt`)];
+- Importer les données brutes (ou tabulées, cf + haut) dans `R` voir la fiche [Importer des fichiers plats (`.csv`, `.tsv`, `.txt`)];
 - Transformer le `data.frame` en objet `sf` grâce à la commande `sf::st_set_geometry()`. Par exemple, si les variables `lon` et `lat` contiennent des données GPS (code epsg `4326`) alors on peut faire:
   ```{r, eval = FALSE}
   df_spatial <- sf::st_as_sf(x = df,                         
@@ -90,7 +91,7 @@ Il peut arrive que les données géographiques ne soient pas stockées dans un f
 
 ### Structure d'un objet `sf`
 
-La commande `head()` fait apparaître la structure du `sf` `martinique`. L'en-tête précise le type de `geometry` (`polygon`, en l'occurrence le contour des communes), et le système de projection (`32620`). La table de données contient la liste des communes avec leurs caractéristiques (nom, population...). Enfin, la dernière colonne (`geometry`) contient l'information géographique (le contour des communes).
+La commande `head()` fait apparaître la structure de l'objet `sf` `martinique`. L'en-tête précise le type de `geometry` (`polygon`, en l'occurrence le contour des communes), et le système de projection (`32620`). La table de données contient la liste des communes avec leurs caractéristiques (nom, population...). Enfin, la dernière colonne (`geometry`) contient l'information géographique (le contour des communes).
 
 ```{r}
 head(martinique, 3)
@@ -118,7 +119,7 @@ grandes_villes_martinique <- martinique %>%
   dplyr::mutate(log_pop = log(P13_POP))
 ```
 
-On peut également appliquer des fonctions de statistiques descriptives avec `dplyr::summarise()` et construire des groupes avec `dplyr::group_by()`. Le `group_by()` sur un objet spatial va également agréger les géométries: il va créer une nouvelle géométrie recoupant l'ensemble des points, des lignes ou des polygones appartenant au groupe. Par exemple, on peut construire très facilement une géométrie plus agrégée par regroupement des géométries plus fines. Par exemple, imaginons que la table de données sur la Martinique comprend deux groupes: les villes de plus de 10 000 habitants et celles de moins de 10 000 habitants. On désire faire la somme de la variable `P13_POP` pour chaque groupe. Dans ce cas, après avoir créé les groupes, on va effectuer un `group_by()` puis un `summarise()`:
+On peut également appliquer des fonctions de statistiques descriptives avec `dplyr::summarise()` et construire des groupes avec `dplyr::group_by()`. Le `group_by()` sur un objet spatial va également agréger les géométries: il va créer une nouvelle géométrie recoupant l'ensemble des points, des lignes ou des polygones appartenant au groupe. Par exemple, on peut construire très facilement une géométrie plus agrégée par regroupement des géométries plus fines. Imaginons que la table de données sur la Martinique comprend deux groupes: les villes de plus de 10 000 habitants et celles de moins de 10 000 habitants. On désire faire la somme de la variable `P13_POP` pour chaque groupe. Dans ce cas, après avoir créé les groupes, on va effectuer un `group_by()` puis un `summarise()`:
 
 ```{r}
 martinique_agg <- martinique %>%
@@ -129,7 +130,7 @@ martinique_agg <- martinique %>%
 head(martinique_agg)
 ```
 
-Le résultat est analogue à celui qu'on obtiendrait avec un *dataframe*, à l'exception de la colonne `geometry`. L'agrégation d'une géométrie de nature `POLYGON` aboutit à une colonne de format `MULTIPOLYGON` qui agrège des polygones. La représentation graphique rend plus évidente cette agrégation:
+Le résultat est analogue à celui qu'on obtiendrait avec un *data.frame*, à l'exception de la colonne `geometry`. L'agrégation d'une géométrie de nature `POLYGON` aboutit à une colonne de format `MULTIPOLYGON` qui agrège des polygones. La représentation graphique rend plus évidente cette agrégation:
 
 ```{r}
 plot(martinique['P13_POP'])
@@ -140,7 +141,7 @@ plot(martinique_agg['P13_POP'])
 ::: {.conseil data-latex=""}
 **Conseil**
 
-Les manipulations de données sur un `sf` sont nettement plus lentes que sur un `dataframe` traditionnel (car `R` doit gérer les informations géographiques pendant la manipulation des données). Lorsque vous manipulez des données de grandes dimensions, il peut être préférable d'effectuer les opérations sur les données *avant* de joindre une géométrie à celui-ci.
+Les manipulations de données sur un `sf` sont nettement plus lentes que sur un `data.frame` traditionnel (car `R` doit gérer les informations géographiques pendant la manipulation des données). Lorsque vous manipulez des données de grandes dimensions, il peut être préférable d'effectuer les opérations sur les données *avant* de joindre une géométrie à celles-ci.
 :::
 
 ### Effectuer des opérations sur les géométries d'un objet géométrique
@@ -162,7 +163,7 @@ martinique %>%
 
 #### Jointure sur des attributs
 
-On peut effectuer une jointure sur un objet (ou deux) objet(s) `sf` en fonction d'une ou plusieurs variables communes. Dans ce cas, on parle de jointure attributaire. Ces opérations peuvent être effectuées comme si les objets `sf` étaient des `dataframes` traditionnels avec les fonctions `dplyr::_*join`. 
+On peut effectuer une jointure sur un objet (ou deux) objet(s) `sf` en fonction d'une ou plusieurs variables communes. Dans ce cas, on parle de jointure attributaire. Ces opérations peuvent être effectuées comme si les objets `sf` étaient des `data.frames` traditionnels avec les fonctions `dplyr::_*join`. 
 
 #### Jointure à partir de la géométrie
 
@@ -175,9 +176,9 @@ Deux objets géométriques peuvent également être associés en fonction de leu
 | `st_disjoint()`            | Quelles géométries de `x` sont disjointes à celles de `y` ?                      |
 | `st_is_within_distance()`  | Quelles géométries de `x` est à moins de $X$ m/km de celles de `y` ?             |
 
-La fonction `sf::st_join()` permet d'appliquer ces fonctions pour réaliser la jointure à partir de la dimension spatiale. Deux arugments sont importants:
+La fonction `sf::st_join()` permet d'appliquer ces fonctions pour réaliser la jointure à partir de la dimension spatiale. Deux arguments sont importants:
 
-* l'argument `join = ` indique la méthode à utiliser pour la jointure. Par défaut, la méthode est `st_intersects`, ce qui signifie que la table de sortie contient une observation pour chaque couple de géométrie qui ont une intersection non vide;
+* l'argument `join = ` indique la méthode à utiliser pour la jointure. Par défaut, la méthode est `st_intersects`, ce qui signifie que la table de sortie contient une observation pour chaque couple de géométrie qui a une intersection non vide;
 * On utilise l'argument `left = TRUE` si on désire effectuer une jointure sur la gauche (par défaut, un `inner join` est effectué). 
 
 La [vignette du package](https://r-spatial.github.io/sf/articles/sf4.html#joining-two-feature-sets-based-on-attributes) permet d'aller plus loin sur le sujet.
@@ -201,7 +202,7 @@ sf::st_crs(martinique)
 Les deux principales fonctions pour définir le système de projection utilisé sont:
 
 * **`sf::st_set_crs`**: cette commande sert à préciser quel est le système de projection utilisé, c'est-à-dire comment les coordonnées *(x,y)* sont reliées à la surface terrestre. **Cette commande ne doit pas être utilisée pour transformer le système de coordonnées, seulement pour le définir**. 
-* **`sf::st_transform`**: **cette commande sert à projeter les points d'une géométrie dans une autre, c'est-à-dire à recalculer les coordonnées selon un autre système de projection.** Par exemple, si on désire produire une carte avec un fond `openstreetmaps` ou une carte dynamique `leaflet` à partir de données projetées en Lambert 93, il est nécessaire de re-projecter les données dans le système WGS 84 (code crs 4326).
+* **`sf::st_transform`**: **cette commande sert à projeter les points d'une géométrie dans une autre, c'est-à-dire à recalculer les coordonnées selon un autre système de projection.** Par exemple, si on désire produire une carte avec un fond `openstreetmaps` ou une carte dynamique `leaflet` à partir de données projetées en Lambert 93, il est nécessaire de re-projeter les données dans le système WGS 84 (code EPSG 4326).
 
 La définition du système de projection se fait de la manière suivante:
 
