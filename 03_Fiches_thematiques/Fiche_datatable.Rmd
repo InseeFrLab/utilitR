@@ -245,9 +245,33 @@ Pour savoir si `un data.table` est déjà indexé, on peut exécuter la commande
 **L'exécution de la fonction `data.table::setkey()` peut prendre un peu de temps** (parfois quelques minutes sur une table de plus de 10 millions de lignes), car `data.table` trie toute la table en fonction des variables-clé. Toutefois, c'est une étape vraiment utile car elle accélère considérablement les opérations ultérieures sur les lignes. Il est vivement recommandé de l'utiliser si une ou plusieurs variables vont régulièrement servir à filtrer ou combiner des données. Pour aller plus loin, voir cette [vignette](https://cran.r-project.org/web/packages/data.table/vignettes/datatable-keys-fast-subset.html).
 :::
 
-### Faire des `reashape` en `data.table`
+### Réorganiser les données en `data.table`
 
-`dcast` et `melt`. A COMPLETER
+Le *package* `data.table` permet de réorganiser facilement une table de données avec les fonctions `dcast()` et `melt()`. L'utilisation de ces fonctions est illustrée avec la table `mtcars`, transformée en `data.table`.
+
+```r
+DT <- data.table(mtcars)
+head(DT)
+```
+
+#### Réorganiser les données en format large (*long to wide*)
+
+La fonction `melt()` réorganise les donnée dans un format large.
+
+```r
+melt(DT, c("cyl", "gear"), measure = patterns("^d", "e"))
+```
+
+
+#### Réorganiser les données en format long (_Long to wide_)
+
+La fonction `dcast()` réorganise les 
+
+```r
+dcast(DT, gear ~ cyl, value.var = c("disp", "hp"), fun = list(mean, sum))
+```
+
+
 
 
 ### Enchaîner les opérations en `data.table`
