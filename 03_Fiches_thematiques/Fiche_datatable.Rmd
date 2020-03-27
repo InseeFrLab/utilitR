@@ -255,24 +255,29 @@ Pour savoir si `un data.table` est déjà indexé, on peut exécuter la commande
 L'utilisation de ces fonctions est illustrée avec la table `mtcars`, transformée en `data.table`.
 
 ```r
-DT <- data.table(mtcars)
-head(DT)
+mtcars_dt <- data.table(mtcars)
+head(mtcars_dt)
 ```
 #### Réorganiser les données en format long (*Long to wide*)
 
-La fonction `melt()` réorganise les donnée dans un format large. Elle prend les arguments suivants:
-* `data`: les données;
-* `id.vars`:
-*  `measure.vars`:
-* 
+La fonction `melt()` réorganise les donnée dans un format long. Elle prend les arguments suivants:
 
+* `data`: les données;
+* `id.vars`: les variables qui identifient les lignes de table d'arrivée; elles restent inchangées
+*  `measure.vars`: les variables qui sont transposées;
+* `variable.name`: le nom de la nouvelle colonne qui contient le nom des variables transposées;
+* `value.name`: le nom de la nouvelle colonne qui contient la valeur des variables transposées.
+
+Dans l'exemple qui suit, on réorganise la table `mtcars_dt` de façon à obtenir une table qui garde inchangées les colonnes `cyl` et `gear`, et comprend une ligne pour chacune des variables `mpg`, `disp`, `hp` et `wt`. Le nom et la valeur de chaque variable sont renseignées dans les colonnes `nom_de_variable` et `valeur_de_variable`.
 
 ```r
-melt(DT, c("cyl", "gear"), measure = patterns("^d", "e"))
+melt(mtcars_dt, 
+  c("cyl", "gear"), 
+  measure.vars = c("mpg", "disp", "hp", "wt"),
+  variable.name = "nom_de_variable",
+  value.name    = "valeur_de_variable"
+  )
 ```
-
-
-
 
 #### Réorganiser les données en format large (*long to wide*)
 
