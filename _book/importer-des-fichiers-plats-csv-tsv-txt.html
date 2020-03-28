@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 4 Importer des fichiers plats (.csv, .tsv, .txt) | InseeR: comment travailler avec R à l’Insee?</title>
+  <meta name="description" content="Documentation R à l’usage des agents de l’Insee" />
+  <meta name="generator" content="bookdown 0.17 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 4 Importer des fichiers plats (.csv, .tsv, .txt) | InseeR: comment travailler avec R à l’Insee?" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="Documentation R à l’usage des agents de l’Insee" />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 4 Importer des fichiers plats (.csv, .tsv, .txt) | InseeR: comment travailler avec R à l’Insee?" />
+  
+  <meta name="twitter:description" content="Documentation R à l’usage des agents de l’Insee" />
+  
+
+<meta name="author" content="Insee" />
+
+
+<meta name="date" content="2020-03-11" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="travailler-avec-r-à-linsee.html"/>
+<link rel="next" href="importer-des-données-depuis-sas-vers-r.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+
+
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+<link rel="stylesheet" href="css\style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">A Minimal Book Example</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> A compléter</a></li>
+<li class="chapter" data-level="2" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>2</b> Introduction</a><ul>
+<li class="chapter" data-level="2.1" data-path="intro.html"><a href="intro.html#informations-issues-de-la-doc-de-bookdown"><i class="fa fa-check"></i><b>2.1</b> Informations issues de la doc de <code>bookdown</code></a></li>
+</ul></li>
+<li class="part"><span><b>I Travailler avec <code>R</code> et <code>Rstudio</code> à l’Insee</b></span></li>
+<li class="chapter" data-level="3" data-path="travailler-avec-r-à-linsee.html"><a href="travailler-avec-r-à-linsee.html"><i class="fa fa-check"></i><b>3</b> Travailler avec <code>R</code> à l’Insee</a><ul>
+<li class="chapter" data-level="3.1" data-path="travailler-avec-r-à-linsee.html"><a href="travailler-avec-r-à-linsee.html#fiche-démarrage-rapide"><i class="fa fa-check"></i><b>3.1</b> Fiche démarrage rapide</a></li>
+<li class="chapter" data-level="3.2" data-path="travailler-avec-r-à-linsee.html"><a href="travailler-avec-r-à-linsee.html#présentation-de-lenvironnement-logiciel"><i class="fa fa-check"></i><b>3.2</b> Présentation de l’environnement logiciel</a></li>
+<li class="chapter" data-level="3.3" data-path="travailler-avec-r-à-linsee.html"><a href="travailler-avec-r-à-linsee.html#comment-utiliser-r-et-rstudio-à-linsee"><i class="fa fa-check"></i><b>3.3</b> Comment utiliser <code>R</code> et <code>Rstudio</code> à l’Insee?</a><ul>
+<li class="chapter" data-level="3.3.1" data-path="travailler-avec-r-à-linsee.html"><a href="travailler-avec-r-à-linsee.html#où-faire-du-r-à-linsee"><i class="fa fa-check"></i><b>3.3.1</b> Où faire du <code>R</code> à l’Insee</a></li>
+<li class="chapter" data-level="3.3.2" data-path="travailler-avec-r-à-linsee.html"><a href="travailler-avec-r-à-linsee.html#comment-personnaliser-sa-configuration-r-et-rstudio-sous-aus"><i class="fa fa-check"></i><b>3.3.2</b> Comment personnaliser sa configuration <code>R</code> et <code>Rstudio</code> sous AUS?</a></li>
+<li class="chapter" data-level="3.3.3" data-path="travailler-avec-r-à-linsee.html"><a href="travailler-avec-r-à-linsee.html#comment-installer-des-packages"><i class="fa fa-check"></i><b>3.3.3</b> Comment installer des <code>packages</code>?</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="travailler-avec-r-à-linsee.html"><a href="travailler-avec-r-à-linsee.html#comment-utiliser-git-avec-r"><i class="fa fa-check"></i><b>3.4</b> Comment utiliser <code>Git</code> avec <code>R</code>?</a><ul>
+<li class="chapter" data-level="3.4.1" data-path="travailler-avec-r-à-linsee.html"><a href="travailler-avec-r-à-linsee.html#des-bases-de-git"><i class="fa fa-check"></i><b>3.4.1</b> Des bases de <code>Git</code></a></li>
+<li class="chapter" data-level="3.4.2" data-path="travailler-avec-r-à-linsee.html"><a href="travailler-avec-r-à-linsee.html#où-mettre-son-dépôt-local-git"><i class="fa fa-check"></i><b>3.4.2</b> Où mettre son dépôt local <code>Git</code></a></li>
+<li class="chapter" data-level="3.4.3" data-path="travailler-avec-r-à-linsee.html"><a href="travailler-avec-r-à-linsee.html#utiliser-git-linterface-rstudio"><i class="fa fa-check"></i><b>3.4.3</b> Utiliser <code>Git</code> l’interface <code>Rstudio</code></a></li>
+</ul></li>
+<li class="chapter" data-level="3.5" data-path="travailler-avec-r-à-linsee.html"><a href="travailler-avec-r-à-linsee.html#comment-travailler-à-plusieurs-avec-gitlab"><i class="fa fa-check"></i><b>3.5</b> Comment travailler à plusieurs avec Gitlab?</a><ul>
+<li class="chapter" data-level="3.5.1" data-path="travailler-avec-r-à-linsee.html"><a href="travailler-avec-r-à-linsee.html#présentation-du-gitlab-interne"><i class="fa fa-check"></i><b>3.5.1</b> Présentation du Gitlab interne</a></li>
+<li class="chapter" data-level="3.5.2" data-path="travailler-avec-r-à-linsee.html"><a href="travailler-avec-r-à-linsee.html#configurer-son-accès-à-gitlab-ssh-putty-etc."><i class="fa fa-check"></i><b>3.5.2</b> Configurer son accès à Gitlab (SSH, Putty etc.)</a></li>
+<li class="chapter" data-level="3.5.3" data-path="travailler-avec-r-à-linsee.html"><a href="travailler-avec-r-à-linsee.html#travailler-avec-gitlab"><i class="fa fa-check"></i><b>3.5.3</b> Travailler avec Gitlab</a></li>
+<li class="chapter" data-level="3.5.4" data-path="travailler-avec-r-à-linsee.html"><a href="travailler-avec-r-à-linsee.html#les-bonnes-pratiques-avec-git-et-gitlab"><i class="fa fa-check"></i><b>3.5.4</b> Les bonnes pratiques avec <code>Git</code> et Gitlab</a></li>
+</ul></li>
+<li class="chapter" data-level="3.6" data-path="travailler-avec-r-à-linsee.html"><a href="travailler-avec-r-à-linsee.html#dautres-idées-plus-avancées"><i class="fa fa-check"></i><b>3.6</b> D’autres idées plus avancées</a></li>
+</ul></li>
+<li class="part"><span><b>II Fiches de documentation</b></span></li>
+<li class="chapter" data-level="4" data-path="importer-des-fichiers-plats-csv-tsv-txt.html"><a href="importer-des-fichiers-plats-csv-tsv-txt.html"><i class="fa fa-check"></i><b>4</b> Importer des fichiers plats (<code>.csv</code>, <code>.tsv</code>, <code>.txt</code>)</a><ul>
+<li class="chapter" data-level="4.1" data-path="importer-des-fichiers-plats-csv-tsv-txt.html"><a href="importer-des-fichiers-plats-csv-tsv-txt.html#tâches-concernées-et-recommandations"><i class="fa fa-check"></i><b>4.1</b> Tâches concernées et recommandations</a></li>
+<li class="chapter" data-level="4.2" data-path="importer-des-fichiers-plats-csv-tsv-txt.html"><a href="importer-des-fichiers-plats-csv-tsv-txt.html#importer-des-fichiers-plats-de-taille-limitée-le-package-readr"><i class="fa fa-check"></i><b>4.2</b> Importer des fichiers plats de taille limitée: le <em>package</em> <code>readr</code></a><ul>
+<li class="chapter" data-level="4.2.1" data-path="importer-des-fichiers-plats-csv-tsv-txt.html"><a href="importer-des-fichiers-plats-csv-tsv-txt.html#utiliser-lassistant-dimportation-rstudio"><i class="fa fa-check"></i><b>4.2.1</b> Utiliser l’assistant d’importation <code>Rstudio</code></a></li>
+<li class="chapter" data-level="4.2.2" data-path="importer-des-fichiers-plats-csv-tsv-txt.html"><a href="importer-des-fichiers-plats-csv-tsv-txt.html#utiliser-read_csv-et-read_csv2"><i class="fa fa-check"></i><b>4.2.2</b> Utiliser <code>read_csv()</code> et <code>read_csv2()</code></a></li>
+<li class="chapter" data-level="4.2.3" data-path="importer-des-fichiers-plats-csv-tsv-txt.html"><a href="importer-des-fichiers-plats-csv-tsv-txt.html#utiliser-la-fonction-read_delim"><i class="fa fa-check"></i><b>4.2.3</b> Utiliser la fonction <code>read_delim()</code></a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="importer-des-fichiers-plats-csv-tsv-txt.html"><a href="importer-des-fichiers-plats-csv-tsv-txt.html#importer-des-fichiers-plats-de-grande-taille-la-fonction-fread-du-package-data.table"><i class="fa fa-check"></i><b>4.3</b> Importer des fichiers plats de grande taille: la fonction <code>fread()</code> du <em>package</em> <code>data.table</code></a></li>
+<li class="chapter" data-level="4.4" data-path="importer-des-fichiers-plats-csv-tsv-txt.html"><a href="importer-des-fichiers-plats-csv-tsv-txt.html#bonnes-pratiques"><i class="fa fa-check"></i><b>4.4</b> Bonnes pratiques</a></li>
+<li class="chapter" data-level="4.5" data-path="importer-des-fichiers-plats-csv-tsv-txt.html"><a href="importer-des-fichiers-plats-csv-tsv-txt.html#ressources"><i class="fa fa-check"></i><b>4.5</b> Ressources</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="importer-des-données-depuis-sas-vers-r.html"><a href="importer-des-données-depuis-sas-vers-r.html"><i class="fa fa-check"></i><b>5</b> Importer des données depuis SAS vers <code>R</code></a><ul>
+<li class="chapter" data-level="5.1" data-path="importer-des-données-depuis-sas-vers-r.html"><a href="importer-des-données-depuis-sas-vers-r.html#tâches-concernées-et-recommandations-1"><i class="fa fa-check"></i><b>5.1</b> Tâches concernées et recommandations</a></li>
+<li class="chapter" data-level="5.2" data-path="importer-des-données-depuis-sas-vers-r.html"><a href="importer-des-données-depuis-sas-vers-r.html#quelques-détails-sur-les-packages-recommandés"><i class="fa fa-check"></i><b>5.2</b> Quelques détails sur les packages recommandés</a></li>
+<li class="chapter" data-level="5.3" data-path="importer-des-données-depuis-sas-vers-r.html"><a href="importer-des-données-depuis-sas-vers-r.html#comment-utiliser-haven"><i class="fa fa-check"></i><b>5.3</b> Comment utiliser <code>haven</code>?</a></li>
+<li class="chapter" data-level="5.4" data-path="importer-des-données-depuis-sas-vers-r.html"><a href="importer-des-données-depuis-sas-vers-r.html#comment-procéder-en-deux-temps"><i class="fa fa-check"></i><b>5.4</b> Comment procéder en deux temps?</a></li>
+<li class="chapter" data-level="5.5" data-path="importer-des-données-depuis-sas-vers-r.html"><a href="importer-des-données-depuis-sas-vers-r.html#pour-aller-plus-loin"><i class="fa fa-check"></i><b>5.5</b> Pour aller plus loin</a></li>
+<li class="chapter" data-level="5.6" data-path="importer-des-données-depuis-sas-vers-r.html"><a href="importer-des-données-depuis-sas-vers-r.html#quelques-conseils"><i class="fa fa-check"></i><b>5.6</b> Quelques conseils</a></li>
+<li class="chapter" data-level="5.7" data-path="importer-des-données-depuis-sas-vers-r.html"><a href="importer-des-données-depuis-sas-vers-r.html#références"><i class="fa fa-check"></i><b>5.7</b> Références</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="fiches-de-documentation.html"><a href="fiches-de-documentation.html"><i class="fa fa-check"></i><b>6</b> Fiches de documentation</a><ul>
+<li class="chapter" data-level="6.1" data-path="fiches-de-documentation.html"><a href="fiches-de-documentation.html#manipuler-des-données-dplyr-et-data.table"><i class="fa fa-check"></i><b>6.1</b> Manipuler des données (<code>dplyr</code> et <code>data.table</code>)</a></li>
+<li class="chapter" data-level="6.2" data-path="fiches-de-documentation.html"><a href="fiches-de-documentation.html#créer-ses-propres-fonctions"><i class="fa fa-check"></i><b>6.2</b> Créer ses propres fonctions</a></li>
+<li class="chapter" data-level="6.3" data-path="fiches-de-documentation.html"><a href="fiches-de-documentation.html#ecrire-des-tables-intermédiaires-en-r-fst"><i class="fa fa-check"></i><b>6.3</b> Ecrire des tables intermédiaires en <code>R</code> (<code>fst</code>)</a></li>
+<li class="chapter" data-level="6.4" data-path="fiches-de-documentation.html"><a href="fiches-de-documentation.html#exporter-des-données-quels-packages"><i class="fa fa-check"></i><b>6.4</b> Exporter des données (quels packages?)</a></li>
+<li class="chapter" data-level="6.5" data-path="fiches-de-documentation.html"><a href="fiches-de-documentation.html#faire-des-graphiques-ggplot2"><i class="fa fa-check"></i><b>6.5</b> Faire des graphiques (<code>ggplot2</code>)</a></li>
+<li class="chapter" data-level="6.6" data-path="fiches-de-documentation.html"><a href="fiches-de-documentation.html#traiter-des-données-textuelles-stringr-et-une-introduction-aux-regex-en-r"><i class="fa fa-check"></i><b>6.6</b> Traiter des données textuelles (<code>stringr</code> et une introduction aux <code>regex</code> en <code>R</code>)</a></li>
+<li class="chapter" data-level="6.7" data-path="fiches-de-documentation.html"><a href="fiches-de-documentation.html#utiliser-un-sgbd-en-r-dbi-et-autres-drivers"><i class="fa fa-check"></i><b>6.7</b> Utiliser un SGBD en <code>R</code> (<code>DBI</code> et autres drivers)</a></li>
+<li class="chapter" data-level="6.8" data-path="fiches-de-documentation.html"><a href="fiches-de-documentation.html#réaliser-des-cartes"><i class="fa fa-check"></i><b>6.8</b> Réaliser des cartes</a><ul>
+<li class="chapter" data-level="6.8.1" data-path="fiches-de-documentation.html"><a href="fiches-de-documentation.html#tâches-concernées-et-recommandations-2"><i class="fa fa-check"></i><b>6.8.1</b> Tâches concernées et recommandations</a></li>
+<li class="chapter" data-level="6.8.2" data-path="fiches-de-documentation.html"><a href="fiches-de-documentation.html#introduction-à-la-cartographie-avec-r-et-sfsple-bon-package"><i class="fa fa-check"></i><b>6.8.2</b> Introduction à la cartographie avec <code>R</code> et <code>sf</code>/<code>sp</code>/<code>le bon package</code></a></li>
+<li class="chapter" data-level="6.8.3" data-path="fiches-de-documentation.html"><a href="fiches-de-documentation.html#bonnes-pratiques-1"><i class="fa fa-check"></i><b>6.8.3</b> Bonnes pratiques</a></li>
+<li class="chapter" data-level="6.8.4" data-path="fiches-de-documentation.html"><a href="fiches-de-documentation.html#ressources-1"><i class="fa fa-check"></i><b>6.8.4</b> Ressources</a></li>
+</ul></li>
+<li class="chapter" data-level="6.9" data-path="fiches-de-documentation.html"><a href="fiches-de-documentation.html#rédiger-des-documents-en-r-rmarkdown"><i class="fa fa-check"></i><b>6.9</b> Rédiger des documents en <code>R</code> (<code>Rmarkdown</code>)</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">InseeR: comment travailler avec <code>R</code> à l’Insee?</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="importer-des-fichiers-plats-.csv-.tsv-.txt" class="section level1">
+<h1><span class="header-section-number">Chapter 4</span> Importer des fichiers plats (<code>.csv</code>, <code>.tsv</code>, <code>.txt</code>)</h1>
+<div id="tâches-concernées-et-recommandations" class="section level2">
+<h2><span class="header-section-number">4.1</span> Tâches concernées et recommandations</h2>
+<p>L’utilisateur souhaite importer dans <code>R</code> des données stockées sous forme de fichiers plats (formats <code>.txt</code>, <code>.csv</code>, <code>.tsv</code>).</p>
+<p>::: recommandation <strong>Recommandations de l’Insee</strong></p>
+<ul>
+<li>Pour importer des données de taille réduite (jusqu’à 1 Go), <strong>il est recommandé d’utiliser les fonctions <code>read_csv()</code> et <code>read_delim()</code> du <em>package</em> <code>readr</code></strong>;</li>
+<li>Pour importer des données de taille plus importante (supérieure à 1 Go), <strong>il est recommandé d’utiliser la fonction <code>fread()</code> du <em>package</em> <code>data.table</code></strong>.</li>
+<li><strong>L’usage du <em>package</em> <code>csvread</code> est déconseillé</strong>, de même que l’utilisation des fonctions natives de <code>R</code> <code>read.csv()</code> et <code>read.delim()</code>. :::</li>
+</ul>
+</div>
+<div id="importer-des-fichiers-plats-de-taille-limitée-le-package-readr" class="section level2">
+<h2><span class="header-section-number">4.2</span> Importer des fichiers plats de taille limitée: le <em>package</em> <code>readr</code></h2>
+<p>Le <em>package</em> <code>readr</code> propose plusieurs fonctions adaptées pour importer des fichiers plats de taille limitée (moins de 1 Go):</p>
+<ul>
+<li><code>read_csv()</code> : lecture d’un csv délimité par des virgules, avec un point comme marqueur décimal;</li>
+<li><code>read_csv2()</code> : lecture d’un csv séparé par des points-virgules, avec une virgule comme marqueur décimal;</li>
+<li><code>read_delim()</code> : fonction plus générale et paramétrable, pour lire des fichiers délimités.</li>
+</ul>
+<p>Il faut charger le <em>package</em> <code>readr</code> pour utiliser ces fonctions:</p>
+<p><code>{r} library(readr)</code>.</p>
+<p>::: conseil <strong>Conseils</strong></p>
+<ul>
+<li>Si vous êtes débutants en <code>R</code>, il est recommandé d’utiliser l’utilitaire d’importation de <code>Rstudio</code>. Une fois que les données sont correctement importées, vous pouvez copier-coller le code dans votre script <code>R</code>.</li>
+<li>Si vous connaissez déjà <code>R</code>, vous pouvez utiliser directement les fonctions du <em>package</em> <code>readr</code>, de préférence <code>read_csv()</code> ou <code>read_csv2()</code>. :::</li>
+</ul>
+<p>::: remarque <strong>Remarque</strong></p>
+<p>Les fonctions du <em>package</em> <code>readr</code> importent toutes les colonnes d’un fichier plat. Elles ne permettent donc pas d’importer uniquement certaines colonnes. Si vous avez besoin de pouvoir sélectionner les colonnes, utilisez plutôt <code>data.table</code>. :::</p>
+<div id="utiliser-lassistant-dimportation-rstudio" class="section level3">
+<h3><span class="header-section-number">4.2.1</span> Utiliser l’assistant d’importation <code>Rstudio</code></h3>
+<p>Pour les utilisateurs débutants, <code>Rstudio</code> propose une interface graphique très commode pour importer des fichiers plats avec <code>readr</code>. On y accède avec: <code>File &gt; Import Dataset &gt; From text (readr)...</code>. On obtient la fenêtre suivante. En cliquant sur <code>Browse</code> (rectangle rouge), on peut définir le chemin du fichier que l’on souhaite importer.</p>
+<div class="figure">
+<img src="pics/Importer_csv/Interface_readr1-1.png" style="width:100.0%" />
+
+</div>
+<p>Une fois que le fichier à importer a été sélectionné, un aperçu des premières lignes du fichier s’affiche dans la fenêtre. Dans l’exemple ci-dessous, on essaie d’importer le fichier des communes du Code Officiel Géographique (version 2019). La fenêtre comprend deux panneaux très utiles:</p>
+<ul>
+<li>Un panneau qui permet de définir les <strong>options d’importation</strong> (rectangle orange);</li>
+<li>Un panneau qui donne le <strong>code qui réalise l’importation demandée</strong> (rectangle vert).</li>
+</ul>
+<div class="figure">
+<img src="pics/Importer_csv/Interface_readr2-1.png" style="width:100.0%" />
+
+</div>
+<p>Les principales options d’importation comprennent notamment:</p>
+<ul>
+<li><code>Name</code>: Le nom du <code>data.frame</code> dans lequel les donnée seront stockées;</li>
+<li><code>First Row as Names</code>: à cocher si la première ligne contient les noms de colonnes;</li>
+<li><code>Delimiter</code>: Indique le délimiteur des données. Pour mémoire: <code>Comma</code> = virgule, <code>Semicolon</code> = point virgule, <code>Tab</code> = tabulation, <code>Whitespace</code> = espace, <code>Other...</code> = autre (à définir);</li>
+<li><code>Locale...</code>: définit les options locales d’importation, notamment l’encodage et le marqueur décimal qui sont des sources récurrentes de problèmes;</li>
+<li><code>NA</code>: indique la valeur retenue lorsqu’une valeur est manquante.</li>
+</ul>
+<p>Enfin, il est possible de modifier le type des données en cliquant sur la petite flèches à côté de l’en-tête de colonne (flèches noires).</p>
+</div>
+<div id="utiliser-read_csv-et-read_csv2" class="section level3">
+<h3><span class="header-section-number">4.2.2</span> Utiliser <code>read_csv()</code> et <code>read_csv2()</code></h3>
+<p>Les fonctions <code>read_csv()</code> et <code>read_csv2()</code> sont des fonctions d’importation spécialement conçues pour les fichiers <code>.csv</code>. Ces deux fonctions sont identiques, sauf sur deux points:</p>
+<ul>
+<li>la fonction <code>read_csv()</code> suppose par défaut que le séparateur est une virgule, et que le marqueur décimal est un point.</li>
+<li>La fonction <code>read_csv2()</code> suppose par défaut que le séparateur est un point-virgule, et que le marqueur décimal est une virgule.</li>
+</ul>
+<p>Voici les principales options de <code>read_csv()</code> et de <code>read_csv2()</code>:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Argument</th>
+<th>Valeur par défaut</th>
+<th>Fonction</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>file</code></td>
+<td>Aucune</td>
+<td>Le chemin du fichier à importer</td>
+</tr>
+<tr class="even">
+<td><code>col_names</code></td>
+<td><code>TRUE</code></td>
+<td>La première ligne contient-elle les noms de colonne?</td>
+</tr>
+<tr class="odd">
+<td><code>col_types</code></td>
+<td><code>NULL</code></td>
+<td>Définir le type des variables</td>
+</tr>
+<tr class="even">
+<td><code>skip</code></td>
+<td><code>0</code></td>
+<td>Sauter les n premières lignes (0 par défaut)</td>
+</tr>
+<tr class="odd">
+<td><code>n_max</code></td>
+<td><code>Inf</code></td>
+<td>Nombre maximum de lignes à importer (pas de limite par défaut)</td>
+</tr>
+<tr class="even">
+<td><code>locale</code></td>
+<td></td>
+<td>Réglages locaux (encodage, marqueur décimal…)</td>
+</tr>
+</tbody>
+</table>
+<p>Par défaut, la fonction <code>read_csv()</code> tente de deviner le type des variables (<em>integer</em> pour les nombres entiers, <em>double</em> pour les nombres décimaux, <em>character</em> pour les chaînes de caractères…). Toutefois, il peut arriver que vous souhaitiez préciser le type des variables lorsque le comportement par défaut ne convient pas. Pour cela, il faut utiliser l’option <code>col_types</code> et construire donnant le type de la variable considérée. On écrit: <code>nom_variable1 = col_integer()</code> pour imposer le type <em>integer</em>, <code>nom_variable2 = col_character()</code> pour impose le type <em>character</em>, etc.</p>
+<p>Dans l’exemple qui suit, on veut importer le fichier des communes du code officiel géographique (version 2019, <a href="https://www.insee.fr/fr/information/3720946">disponible ici</a>), en déclarant que le fichier est encodé en UTF-8 et en imposant que le code commune soit lu comme une chaîne de caractères et le code région comme un nombre entier. On écrit le code suivant:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(readr)
+communes &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;D:/K2KFED/communes-01012019.csv&quot;</span>, 
+                     <span class="dt">locale =</span> <span class="kw">locale</span>(<span class="dt">encoding =</span><span class="st">&quot;UTF-8&quot;</span>),
+                     <span class="dt">col_types =</span> <span class="kw">c</span>(<span class="dt">com =</span> <span class="kw">col_character</span>(),
+                                   <span class="dt">reg =</span> <span class="kw">col_integer</span>())
+                     )</code></pre></div>
+</div>
+<div id="utiliser-la-fonction-read_delim" class="section level3">
+<h3><span class="header-section-number">4.2.3</span> Utiliser la fonction <code>read_delim()</code></h3>
+<p>La fonction <code>read_delim()</code> est faite pour lire toutes sortes de fichiers plats, et propose de nombreuses options pour l’adapter au fichier considéré. Elle est puissante, mais plus difficile à utiliser que les fonctions <code>read_csv()</code> et <code>read_csv2()</code>, qui sont des versions simplifiées de <code>read_delim()</code>. En pratique, ces deux fonctions sont le plus souvent suffisantes, et il est rare d’avoir vraiment besoin d’utiliser <code>read_delim()</code>.</p>
+<p>La fonction <code>read_delim()</code> propose les mêmes options que <code>read_csv()</code> et <code>read_csv2()</code>, avec deux ajouts principaux:</p>
+<ul>
+<li><code>delim</code>: le délimiteur du fichier plat;</li>
+<li><code>escape_backslash</code> (<code>TRUE</code>/<code>FALSE</code>): les caractères spéciaux du fichier plat ont-ils un échappement (<code>\</code>)?</li>
+</ul>
+<p>Pour en savoir plus sur <code>read_delim()</code>, il suffit de consulter l’aide avec <code>?read_delim</code>.</p>
+</div>
+</div>
+<div id="importer-des-fichiers-plats-de-grande-taille-la-fonction-fread-du-package-data.table" class="section level2">
+<h2><span class="header-section-number">4.3</span> Importer des fichiers plats de grande taille: la fonction <code>fread()</code> du <em>package</em> <code>data.table</code></h2>
+<p>Le <em>package</em> <code>data.table</code> permet d’importer des fichiers plats avec la fonction <code>fread()</code>. Cette fonction présente trois avantages:</p>
+<ul>
+<li>Elle est très rapide (nettement plus que les fonctions du <em>package</em> <code>readr</code>);</li>
+<li>Elle permet de sélectionner les colonnes qu’on veut importer (option <code>select</code>);</li>
+<li>Elle propose un grand nombre d’options, adaptées pour les usages avancées.</li>
+</ul>
+<p>Pour utiliser <code>fread()</code>, il faut charger le <em>package</em> <code>data.table</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(data.table)</code></pre></div>
+<p>Les principales options de <code>fread()</code> sont les suivantes:</p>
+<table>
+<colgroup>
+<col width="13%" />
+<col width="33%" />
+<col width="52%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Argument</th>
+<th>Valeur par défaut</th>
+<th>Fonction</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>file</code></td>
+<td>Aucune</td>
+<td>Le chemin du fichier à importer</td>
+</tr>
+<tr class="even">
+<td><code>sep</code></td>
+<td>Le caractère le plus fréquent parmi <code>,\t |;:</code></td>
+<td>Le délimiteur du fichier</td>
+</tr>
+<tr class="odd">
+<td><code>header</code></td>
+<td><code>fread()</code> essaie de deviner</td>
+<td>La première ligne contient-elle les noms de colonnes?</td>
+</tr>
+<tr class="even">
+<td><code>nrows</code></td>
+<td><code>Inf</code></td>
+<td>Nombre maximum de lignes à importer (pas de limite par défaut)</td>
+</tr>
+<tr class="odd">
+<td><code>skip</code></td>
+<td><code>0</code></td>
+<td>Sauter les n premières lignes (0 par défaut)</td>
+</tr>
+<tr class="even">
+<td><code>stringsAsFactors</code></td>
+<td><code>FALSE</code></td>
+<td>Les chaînes de caractères sont-elles traitées comme des facteurs?</td>
+</tr>
+<tr class="odd">
+<td><code>select</code></td>
+<td><code>NULL</code></td>
+<td>Sélectionner les colonnes à importer</td>
+</tr>
+<tr class="even">
+<td><code>drop</code></td>
+<td><code>NULL</code></td>
+<td>Sélectionner les colonnes à ne pas importer</td>
+</tr>
+<tr class="odd">
+<td><code>colClasses</code></td>
+<td><code>fread()</code> essaie de deviner</td>
+<td>Définir le type des variables</td>
+</tr>
+<tr class="even">
+<td><code>encoding</code></td>
+<td><code>&quot;unknown&quot;</code></td>
+<td>Définir l’encodage du fichier (<code>&quot;UTF-8&quot;</code> ou <code>&quot;Latin-1&quot;</code>)</td>
+</tr>
+<tr class="odd">
+<td><code>dec</code></td>
+<td>Le point</td>
+<td>Définir le marqueur décimal</td>
+</tr>
+<tr class="even">
+<td><code>data.table</code></td>
+<td><code>TRUE</code></td>
+<td><code>fread</code> renvoie un <code>data.table</code> si <code>TRUE</code>, un <code>data.frame</code> si <code>FALSE</code></td>
+</tr>
+<tr class="odd">
+<td><code>showProgress</code></td>
+<td><code>TRUE</code></td>
+<td>Indiquer la progression de l’importation</td>
+</tr>
+</tbody>
+</table>
+<p>Quelques remarques sur les options:</p>
+<ul>
+<li>l’option <code>select</code> doit être égale à un vecteur de noms. Exemple: <code>select = c(&quot;var1&quot;, &quot;var2&quot;, &quot;var4&quot;)</code>;</li>
+<li>l’option <code>colClasses</code> doit égale à un vecteur dont chaque élément est de la forme <code>nom_variable = &quot;type&quot;</code>. Exemple: <code>colClasses = c(var1 = &quot;character&quot;, var2 = &quot;logical&quot;, var4 = &quot;double&quot;)</code>;</li>
+<li>l’option <code>stringsAsFactors = TRUE</code> peut ralentir sensiblement l’importation des données; il faut l’utiliser avec circonspection.</li>
+</ul>
+<p>Exemple 1: on veut à nouveau importer le fichier des communes du code officiel géographique, en déclarant que le fichier est encodé en UTF-8 et en imposant que le code commune soit lu comme une chaîne de caractères et le code région comme un nombre entier. On écrit le code suivant:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">communes &lt;-<span class="st"> </span><span class="kw">fread</span>(<span class="st">&quot;D:/K2KFED/communes-01012019.csv&quot;</span>,
+                  <span class="dt">colClasses =</span> <span class="kw">c</span>(<span class="dt">com =</span> <span class="st">&quot;character&quot;</span>,
+                                 <span class="dt">reg =</span> <span class="st">&quot;integer&quot;</span>),
+                  <span class="dt">encoding =</span> <span class="st">&quot;UTF-8&quot;</span>)</code></pre></div>
+<p>Exemple 2: on veut réaliser la même importation que précédemment, mais en sélectionnant uniquement le code commune, le nom de la commune et la région. On écrit le code suivant:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">communes &lt;-<span class="st"> </span><span class="kw">fread</span>(<span class="st">&quot;D:/K2KFED/communes-01012019.csv&quot;</span>,
+                  <span class="dt">select =</span> <span class="kw">c</span>(<span class="st">&quot;com&quot;</span>, <span class="st">&quot;libelle&quot;</span>, <span class="st">&quot;reg&quot;</span>),
+                  <span class="dt">colClasses =</span> <span class="kw">c</span>(<span class="dt">com =</span> <span class="st">&quot;character&quot;</span>,
+                                 <span class="dt">reg =</span> <span class="st">&quot;integer&quot;</span>),
+                  <span class="dt">encoding =</span> <span class="st">&quot;UTF-8&quot;</span>)</code></pre></div>
+</div>
+<div id="bonnes-pratiques" class="section level2">
+<h2><span class="header-section-number">4.4</span> Bonnes pratiques</h2>
+<p>Voici quelques conseils à avoir en tête pour importer des données:</p>
+<ul>
+<li><strong>Vérifier que votre machine peut charger les données</strong>: <code>R</code> importe les données dans la mémoire vive de la machine. Si les fichiers que vous voulez importer sont d’une taille supérieure à celle de la mémoire vive, vous ne pourrez pas les importer intégralement.</li>
+<li><strong>Tester votre code d’importation avec quelques lignes</strong>: il faut souvent tâtonner pour bien importer des données. Il est donc recommandé de commencer par importer quelques centaines ou milliers de lignes (en utilisant l’option <code>n_max</code> des fonctions du <em>package</em> <code>readr</code> ou <code>nrows</code> de <code>fread()</code>) pour vérifier que le code est correct.</li>
+<li>Il est important d’<strong>importer un nombre réduit de colonnes</strong>. Bien sélectionner les colonnes permet souvent de réduire significativement la taille des données et de résoudre le problème mentionné au point précédent. Toutefois, seule la fonction <code>fread()</code> de <code>data.table</code> permet de sélectionner les colonnes (option <code>select</code>).</li>
+<li>Vous pouvez choisir le <em>package</em> que vous utilisez en fonction du format des données que vous souhaitez utiliser: les fonctions de <code>readr</code> renvoient un objet <code>tibble</code> tandis que <code>fread()</code> renvoie un objet <code>data.table</code>. Si vous prévoyez d’utiliser des <em>packages</em> du <em>tidyverse</em> (notamment <code>tidyr</code> et <code>dplyr</code>), il est préférable d’utiliser <code>readr</code>. Si vous prévoyez d’utiliser <code>data.table</code>, il est préférable d’utiliser <code>fread()</code>.</li>
+<li>Bien choisir le format des colonnes.</li>
+</ul>
+</div>
+<div id="ressources" class="section level2">
+<h2><span class="header-section-number">4.5</span> Ressources</h2>
+<ul>
+<li>doc de fread</li>
+<li>doc de data.table</li>
+<li>éventuelle fiche sur les types de données en R.</li>
+</ul>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="travailler-avec-r-à-linsee.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="importer-des-données-depuis-sas-vers-r.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["DocumentationR.pdf", "DocumentationR.epub"],
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>
