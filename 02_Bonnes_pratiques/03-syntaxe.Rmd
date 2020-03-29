@@ -1,0 +1,124 @@
+# Comment rédiger un script `R`?
+
+## Longueur des lignes
+
+**La longueur maximale recommandée d'une ligne est 80 caractères**. Il faut penser à retourner à la ligne pour que le code soit lisible. Par exemple,
+
+```{r, eval = FALSE}
+# Bien
+do_something_very_complicated(
+  something = "that",
+  requires = many,
+  arguments = "some of which may be long"
+)
+
+# Pas bien
+do_something_very_complicated("that", requires, many, arguments,
+                              "some of which may be long")
+```
+
+## Indentation
+
+Contrairement à `Python`, `R` ne provoque pas d'erreur en cas de mauvaise indentation ou d'absence d'indentation. Néanmoins, un code bien indenté est plus facile à lire et à faire évoluer. 
+
+Par défaut, dans `Tools > Global Options > code`, la case `Insert spaces for tab` est cochée (vous pouvez vérifier). Cela signifie que l'on peut utiliser la touche tab, mais qu'elle sera remplacée par des espaces. Lorsque l'on navigue dans le code, ces espaces se comportent comme des tabulations. 
+
+Le raccourci <span style="color:DarkBlue">`Ctrl+I`</span> permet de réindenter les lignes de code sélectionnées. Ce raccourci est très utile lorsqu'on vient de réorganiser une partie de code.
+
+```{r, eval = FALSE}
+# Pas bien: difficile a lire
+if (a>0){
+b <- a^2
+if (b>4){
+c <- log(b)
+}else{
+c <- exp(b)
+}
+}else{
+b <- -a^2 + 3
+c <- NULL
+}
+
+# Bien: lisible (suffit de faire CTRL+I)
+if (a>0){
+  b <- a^2
+  if (b>4){
+    c <- log(b)
+  }else{
+    c <- exp(b)
+  }
+}else{
+  b <- -a^2 + 3
+  c <- NULL
+}
+```
+
+## Espacement
+
+* **Les opérateurs binaires qui lient des objets entre eux (: `=`, `+`, `-`, `<-`, etc.) sont entourés d'espaces avant et après pour plus de lisibilité**. Exemple: on écrit `1 + 1 = 2` et non `1+1=2`;
+* **En revanche, les opérateurs qui modifient un objet ou sélectionnent une partie d'un objet (`:`, `::` et `:::`, `!!`, `$`, `@`, `[` et `]` pour les listes `[[` et `]]` pour les listes) ne sont pas entourés d'espace**. Exemples: on écrit `package::function()` et non `package :: function()`; on écrit `dataframe$colonne` et non `dataframe $ colonne`;
+* **Placer un espace après les virgules, pas avant** (comme en français, en fait);
+
+```{r, eval = FALSE}
+# Good
+x[, 1]
+
+# Bad
+x[,1]
+x[ ,1]
+x[ , 1]
+```
+
+* **Ne pas mettre d'espace avant ou après les parenthèses**;
+
+```{r, eval = FALSE}
+# Good
+mean(x, na.rm = TRUE)
+
+# Bad
+mean (x, na.rm = TRUE)
+mean( x, na.rm = TRUE )
+```
+
+* **Les opérateurs de comparaison doivent être entourés d'espace pour ne pas être mal-interprétés par `R`**.
+
+```{r, error = TRUE}
+# ESPACE: COMPARAISON COMPRISE
+3 < -5
+
+# PAS D'ESPACE: R CROIT A UNE ASSIGNATION
+3 <-5
+```
+
+## Accolades
+
+La ligne contenant une commande `if` doit posséder une accolade ouvrante <span style="color:DarkBlue">« { »</span>.	La commande `else` doit toujours être entourée d’une accolade fermante et d’une accolade ouvrante. Cela permet de ne pas générer de *bug* lors d'une exécution ligne à ligne. 
+
+```{r, error = TRUE}
+nombre1 <- 3
+nombre2 <- 5
+if (nombre1 > nombre2) {
+  print("hello")
+} else {
+  print("world")
+}
+```
+
+
+## Affectation
+
+Dans beaucoup de contextes, les opérateurs d'assignation `<-` et `=` produisent le même résultat. Néanmoins, **il est recommandé d'utiliser `<-` qui est plus cohérent et moins ambigü en `R`.** L'opérateur `=` est réservé pour les expressions booléennes, les définitions d'arguments à l'intérieur d'une fonction, etc.
+
+## Règle concernant l'usage des `pipes`
+
+**Il est recommandé d'aller à la ligne systématiquement après chaque pipe (`%>%`) pour plus de lisibilité.** Dans l'exemple suivant, on calcule la moyenne de la variable `mpg` par nombre de cylindres (`cyl`) de la table `mtcars`.
+
+```{r, eval = FALSE}
+# Pas bien: code difficile a lire
+stats <- mtcars %>% group_by(cyl) %>% summarise(mean_mpg = mean(mpg, na.rm = TRUE))
+
+# Bien: code lisible
+stats <- mtcars %>%
+  group_by(cyl) %>%
+  summarise(mean_mpg = mean(mpg, na.rm = TRUE))
+```
