@@ -193,8 +193,10 @@
 \usepackage{fancyhdr} % Required for header and footer configuration
 
 \pagestyle{fancy}
-\renewcommand{\chaptermark}[1]{\markboth{\sffamily\normalsize\bfseries\chaptername\ \thechapter.\ #1}{}} % Chapter text font settings
-  \renewcommand{\sectionmark}[1]{\markright{\sffamily\normalsize\thesection\hspace{5pt}#1}{}} % Section text font settings
+\titleformat{\chapter}[hang] 
+{\normalfont\LARGE\bfseries}{\thechapter.}{0.5em}{} 
+
+  \renewcommand{\sectionmark}[1]{\markright{\normalfont\normalsize\thesection\hspace{5pt}#1}{}} % Section text font settings
     \fancyhf{} \fancyhead[LE,RO]{\sffamily\normalsize\thepage} % Font setting for the page number in the header
     \fancyhead[LO]{\rightmark} % Print the nearest section name on the left side of odd pages
     \fancyhead[RE]{\leftmark} % Print the current chapter name on the right side of even pages
@@ -212,6 +214,15 @@
       \thispagestyle{empty}
       \newpage
       \fi}
+
+% Autoriser les fiches à commencer sur n'importe quelle page
+\makeatletter
+\renewcommand\chapter{\clearpage
+                    \thispagestyle{plain}%
+                    \global\@topnum\z@
+                    \@afterindentfalse
+                    \secdef\@chapter\@schapter}
+\makeatother
 
 %----------------------------------------------------------------------------------------
 %	DEFINITION DES BOITES COLOREES
