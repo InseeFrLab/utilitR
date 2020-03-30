@@ -583,17 +583,17 @@ L'utilisation de la fonction `:=` est déroutante lorsqu'on découvre `data.tabl
 
 Le mot clé `.SD` signifie *Subset of Data*. Les colonnes sur lequel il s'applique sont contrôlées par l'argument `.SDcols` (par défaut toutes). Il permet d'appliquer sur plusieurs colonnes la même opération. Il est ainsi régulièrement appliqué en conjonction avec la fonction `lapply`. Un usage classique de ce duo `lapply`+`.SD` consiste à écrire des fonctions de statistiques descriptives. Par exemple, imaginons qu'on désire, pour de nombreuses colonnes, calculer une moyenne, une variance et des quantiles (P25, P50 et P75). On désire faire cela par groupe (variable `Species`). On peut alors définir la fonction suivante:
 
-```{r}
-mes_statistiques <- function(x) return(c(mean(x), var(x), quantile(x, probs = c(.25,.5,.75))))
-```
+  ```{r}
+  mes_statistiques <- function(x) return(c(mean(x), var(x), quantile(x, probs = c(.25,.5,.75))))
+  ```
 
 et l'appliquer à chaque colonne, par groupe, de la manière suivante:
 
-```{r}
-data_agregee <- iris_dt[,lapply(.SD, mes_statistiques), by = "Species", .SDcols = c("Petal.Width","Petal.Length")]
-data_agregee[, 'stat' := c("moyenne","variance","P25","P50","P75"), by = "Species"]
-data_agregee
-```
+  ```{r}
+  data_agregee <- iris_dt[,lapply(.SD, mes_statistiques), by = "Species", .SDcols = c("Petal.Width","Petal.Length")]
+  data_agregee[, 'stat' := c("moyenne","variance","P25","P50","P75"), by = "Species"]
+  data_agregee
+  ```
 
 Cette syntaxe, très puissante, permet également d'avoir des codes assez compacts, ce qui les rend plus lisible.
 
@@ -637,4 +637,4 @@ Lorsqu'on définit des fonctions pour effectuer des traitements génériques, il
 - une [introduction à l'utilisation de l'opérateur `[...]`](https://stt4230.rbind.io/tutoriels_etudiants/hiver_2017/data.table) (en français);
 - Ce [cours complet sur `data.table`](https://gitlab.com/linogaliana/bigr/-/blob/master/04-datatable.Rmd) (en français).
 - Cette [présentation des fonctionalités du package](https://dreamrs.github.io/talks/20180528_RAddicts_datatable.pdf) (en français).
-
+- Ce [post sur les fonctions utilisant data.table](https://linogaliana.netlify.com/post/datatable/datatable-nse/) 
