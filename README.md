@@ -10,16 +10,19 @@ Code source pour le `cookbook R`. Le livre est déployé à l'adresse [suivante]
 
 # Objectif de la documentation
 
-Cette documentation est conçue pour aider **tous les agents de l'Insee (et plus généralement du secteur public) à utiliser le logiciel `R` pour réaliser des traitements statistiques et/ou produire des sorties (graphiques, cartes, documents)**. Elle s'adresse spécifiquement aux agents qui sont débutants ou de niveau intermédiaire en `R`. En revanche, cette documentation ne s'adresse pas ni aux développeurs *stricto sensu*, ni aux utilisateurs avancés de `R`.
+**Cette documentation s'adresse à tous les agents de l'Insee dans le cadre d'un usage courant de `R`.** Elle est conçue pour aider les agents à réaliser des traitements statistiques usuels avec `R` et à produire des sorties (graphiques, cartes, documents). Cette documentation présente les outils les plus adaptés à ces tâches. En revanche, elle n'aborde pas les outils les plus avancés, notamment ceux utilisés dans un cadre de développement logiciel.
 
 Cette documentation a pour ambition de répondre à trois questions générales:
 
 * Comment travailler avec `R` à l'Insee?
 * Quelles sont les bonnes pratiques à respecter pour bien utiliser `R`?
-* Comment réaliser des tâches standards avec `R` (importer des données, faire un graphique, etc.)?
+* Comment réaliser des tâches standards avec `R`?
 
-**Cette documentation recommande d'utilise `R` avec `Rstudio`**, qui apparaît comme la solution la plus simple et la plus complète pour les utilisateurs débutants et intermédiaires.
+Deux points importants sont à noter:
+
+* **Cette documentation recommande les outils et les *packages* les plus adaptés au contexte d'utilisation de `R` à l'Insee**. Ces recommandations ne sont pas nécessairement adaptées à d'autres contextes, et pourront évoluer lorsque ce contexte évoluera.
+* **Cette documentation recommande d'utiliser `R` avec `Rstudio`**, qui apparaît comme la solution la plus simple et la plus complète pour un usage courant de `R`.
 
 # Comment contribuer à la documentation?
 
-Toutes les personnes volontaires peuvent contribuer à la documentation. Un guide détaillé pour les contributeurs est disponible dans le fichier `CONTRIBUTING.md`.
+**Toutes les personnes volontaires peuvent contribuer à la documentation.** Un guide détaillé pour les contributeurs est disponible dans le fichier `CONTRIBUTING.md`.
