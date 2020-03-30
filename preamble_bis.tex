@@ -161,29 +161,29 @@
 %	MAIN TABLE OF CONTENTS
 %----------------------------------------------------------------------------------------
   
-  \usepackage{titletoc} % Required for manipulating the table of contents
+\usepackage{titletoc} % Required for manipulating the table of contents
 
-\contentsmargin{0cm} % Removes the default margin
-% Chapter text styling
-\titlecontents{chapter}[1.25cm] % Indentation
-{\addvspace{15pt}\large\sffamily\bfseries} % Spacing and font options for chapters
-{\color{ForestGreen!60}\contentslabel[\Large\thecontentslabel]{1.25cm}\color{ForestGreen}} % Chapter number
-{}  
-{\color{ForestGreen!60}\normalsize\sffamily\bfseries\;\titlerule*[.5pc]{.}\;\thecontentspage} % Page number
-% Section text styling
-\titlecontents{section}[1.25cm] % Indentation
-{\addvspace{5pt}\sffamily\bfseries} % Spacing and font options for sections
-{\contentslabel[\thecontentslabel]{1.25cm}} % Section number
-{}
-{\sffamily\hfill\color{black}\thecontentspage} % Page number
-[]
-% Subsection text styling
-\titlecontents{subsection}[1.25cm] % Indentation
-{\addvspace{1pt}\sffamily\small} % Spacing and font options for subsections
-{\contentslabel[\thecontentslabel]{1.25cm}} % Subsection number
-{}
-{\sffamily\;\titlerule*[.5pc]{.}\;\thecontentspage} % Page number
-[] 
+  \contentsmargin{0cm} % Removes the default margin
+  % Chapter text styling
+  \titlecontents{chapter}[1.25cm] % Indentation
+  {\addvspace{15pt}\large\normalfont\bfseries} % Spacing and font options for chapters
+  {\color{Black}\contentslabel[\Large\thecontentslabel]{1.25cm}\color{Black}} % Chapter number
+  {}  
+  {\color{Black}\normalsize\normalfont\bfseries\;\titlerule*[.5pc]{.}\;\thecontentspage} % Page number
+  % Section text styling
+  \titlecontents{section}[1.25cm] % Indentation
+  {\addvspace{5pt}\normalfont\bfseries} % Spacing and font options for sections
+  {\contentslabel[\thecontentslabel]{1.25cm}} % Section number
+  {}
+  {\normalfont\hfill\color{black}\thecontentspage} % Page number
+  []
+  % Subsection text styling
+  \titlecontents{subsection}[1.25cm] % Indentation
+  {\addvspace{1pt}\normalfont\small} % Spacing and font options for subsections
+  {\contentslabel[\thecontentslabel]{1.25cm}} % Subsection number
+  {}
+  {\normalfont\;\titlerule*[.5pc]{.}\;\thecontentspage} % Page number
+  [] 
 
 
 %----------------------------------------------------------------------------------------
@@ -197,7 +197,7 @@
 {\normalfont\LARGE\bfseries}{\thechapter.}{0.5em}{} 
 
   \renewcommand{\sectionmark}[1]{\markright{\normalfont\normalsize\thesection\hspace{5pt}#1}{}} % Section text font settings
-    \fancyhf{} \fancyhead[LE,RO]{\sffamily\normalsize\thepage} % Font setting for the page number in the header
+    \fancyhf{} \fancyhead[LE,RO]{\normalfont\normalsize\thepage} % Font setting for the page number in the header
     \fancyhead[LO]{\rightmark} % Print the nearest section name on the left side of odd pages
     \fancyhead[RE]{\leftmark} % Print the current chapter name on the right side of even pages
     \renewcommand{\headrulewidth}{0.5pt} % Width of the rule under the header
@@ -215,14 +215,20 @@
       \newpage
       \fi}
 
-% Autoriser les fiches à commencer sur n'importe quelle page
-\makeatletter
-\renewcommand\chapter{\clearpage
-                    \thispagestyle{plain}%
-                    \global\@topnum\z@
-                    \@afterindentfalse
-                    \secdef\@chapter\@schapter}
-\makeatother
+    % Autoriser les fiches à commencer sur n'importe quelle page
+    \makeatletter
+    \renewcommand\chapter{\clearpage
+                        \thispagestyle{plain}%
+                        \global\@topnum\z@
+                        \@afterindentfalse
+                        \secdef\@chapter\@schapter}
+    \makeatother
+
+    % Modifier les espaces autour des titres de fiches
+    \titlespacing*{\chapter}
+        {0pt}% left
+        {0cm}% before
+        {1cm}% after
 
 %----------------------------------------------------------------------------------------
 %	DEFINITION DES BOITES COLOREES
@@ -322,7 +328,7 @@
 %----------------------------------------------------------------------------------------
   
   \makeatletter
-\renewcommand{\@seccntformat}[1]{\llap{\textcolor{ForestGreen}{\csname the#1\endcsname}\hspace{1em}}}                    
+\renewcommand{\@seccntformat}[1]{\llap{\textcolor{Black}{\csname the#1\endcsname}\hspace{1em}}}                    
   \renewcommand{\section}{\@startsection{section}{1}{\z@}
     {-4ex \@plus -1ex \@minus -.4ex}
     {1ex \@plus.2ex }
@@ -346,5 +352,16 @@
 
 % For an unclear reason, the package should be loaded now and not later
 \usepackage{hyperref}
-\hypersetup{hidelinks,backref=true,pagebackref=true,hyperindex=true,colorlinks=false,breaklinks=true,urlcolor= ForestGreen,bookmarks=true,bookmarksopen=false,pdftitle={Title},pdfauthor={Author}}
-
+\hypersetup{
+  hidelinks,
+  backref=true,
+  pagebackref=true,
+  hyperindex=true,
+  colorlinks=true,
+  breaklinks=true,
+  allcolors= NavyBlue,
+  bookmarks=true,
+  bookmarksopen=false,
+  pdftitle={Title},
+  pdfauthor={Author}
+}
