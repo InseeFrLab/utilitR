@@ -10,7 +10,7 @@ Code source pour le `cookbook R`. Le livre est déployé à l'adresse [suivante]
 
 # Objectif de la documentation
 
-Cette documentation s'adresse à tous les agents de l'Insee, et en particulier à ceux qui sont débutants ou de niveau intermédiaire en `R`. Elle est conçue pour aider les agents **à utiliser le logiciel `R` pour réaliser des traitements statistiques et/ou produire des sorties (graphiques, cartes, documents)**. En revanche, cette documentation n'aborde pas les outils les plus avancés ou réservés aux développeurs *stricto sensu*.
+Cette documentation s'adresse à tous les agents de l'Insee dans le cadre d'un usage courant de `R`. Elle est conçue pour aider les agents **à utiliser le logiciel `R` pour réaliser des traitements statistiques usuels et/ou produire des sorties (graphiques, cartes, documents)**. En revanche, cette documentation n'aborde pas les outils les plus avancés notamment ceux utilisés dans un cadre de développement logiciel.
 
 Cette documentation a pour ambition de répondre à trois questions générales:
 
