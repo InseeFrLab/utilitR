@@ -581,11 +581,48 @@ L'utilisation de la fonction `:=` est déroutante lorsqu'on découvre `data.tabl
 
 ## .SD et lapply
 
+Le mot clé `.SD` signifie *Subset of Data*. Les colonnes sur lequel il s'applique sont contrôlées par l'argument `.SDcols` (par défaut toutes). Il permet d'appliquer sur plusieurs colonnes la même opération. Il est ainsi régulièrement appliqué en conjonction avec la fonction `lapply`. Un usage classique de ce duo `lapply`+`.SD` consiste à écrire des fonctions de statistiques descriptives. Par exemple, imaginons qu'on désire, pour de nombreuses colonnes, calculer une moyenne, une variance et des quantiles (P25, P50 et P75). On désire faire cela par groupe (variable `Species`). On peut alors définir la fonction suivante:
+
+```{r}
+mes_statistiques <- function(x) return(c(mean(x), var(x), quantile(x, probs = c(.25,.5,.75))))
+```
+
+et l'appliquer à chaque colonne, par groupe, de la manière suivante:
+
+```{r}
+data_agregee <- iris_dt[,lapply(.SD, mes_statistiques), by = "Species", .SDcols = c("Petal.Width","Petal.Length")]
+data_agregee[, 'stat' := c("moyenne","variance","P25","P50","P75"), by = "Species"]
+data_agregee
+```
+
 
 ## Fonctions modifiant un `data.table`
 
-Il est très facile de créer des fonctions génériques modifiant un `data.table`
-vs difficle en dplyr
+Il est très facile d'écrire des fonctions génériques en `data.table` faisant appel à des noms de variables en arguments. A l'inverse, cette fonctionnalité est complexe en `dplyr`: il est nécessaire de faire appel à plusieurs fonctionnalités de `rlang` pour être en mesure d'effectuer une opération équivalente. Le lecteur intéressé par la question pourra consulter ce [post](https://linogaliana.netlify.com/post/datatable/datatable-nse/) sur le sujet.
+
+Pour déclarer à `data.table` qu'un nom fait référence à une colonne, la manière la plus simple est d'utiliser la fonction `get`, de la manière suivante:
+
+  ```{r}
+  modif_var <- function(data, nom_variable, nouveau_nom = "x"){
+    data[,c(nouveau_nom) := get(nom_variable)+1]
+  }
+  head(modif_var(iris_dt, "Petal.Width","toto"),2)
+  ```
+
+`c(nouveau_nom)` permet de s'assurer que `data.table` crée une nouvelle colonne avec le nom défini en argument et pas en l'appelant `nouveau_nom`. Le code équivalent en `dplyr` est beaucoup moins lisible et est moins général car il ne permet pas de définir en argument le nouveau nom de la variable :
+
+  ```{r, eval = FALSE}
+  modif_var <- function(data, nom_variable){
+    data %>% dplyr::mutate(, nouveau_nom := !!rlang::sym(nom_variable)+1]
+  }
+  ```
+
+::: {.conseil data-latex=""}
+**Conseil**
+
+Lorsqu'on définit des fonctions pour effectuer des traitements génériques, il est conseillé de privilégier `data.table` sur `dplyr`. Une précaution est néanmoins nécessaire pour ne pas modifier les données en entrée de la fonction si l'opérateur `:=` est utilisée. Il est recommandé dans ce cas de créer une copie du dataframe en entrée (`data.table::copy(df)`) et d'effectuer les traitements sur cette copie. 
+:::
+
 
 ## Références
 
