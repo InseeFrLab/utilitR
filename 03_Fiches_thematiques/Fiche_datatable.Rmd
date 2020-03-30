@@ -579,7 +579,9 @@ L'utilisation de la fonction `:=` est déroutante lorsqu'on découvre `data.tabl
   }
   ```
 
-## `.SD` et `lapply`
+## Programmer des fonctions avec `data.table`
+
+## Utiliser `.SD` et `lapply`
 
 Le mot clé `.SD` (*Subset of Data*) permet d'appliquer la même opération sur plusieurs colonnes. Les colonnes auxquelles l'opération s'applique sont contrôlées par l'argument `.SDcols` (par défaut, toutes les colonnes sont traitées). Le mot clé `.SD` est régulièrement utilisé en conjonction avec la fonction `lapply`.
 **Cette syntaxe, très puissante, permet également d'avoir des codes assez compacts, ce qui les rend plus lisible.**
@@ -602,32 +604,40 @@ data_agregee
 
 Il est très simple d'effectuer des calculs par groupe avec la méthode `lapply`+`.SD`. On peut par facilement adapter le code précédent pour calculer des statistiques descriptives par espèce de fleur (variable `Species`). 
 
-  ```{r, eval = FALSE}
-  data_agregee <- iris_dt[,lapply(.SD, mes_statistiques), by = "Species", .SDcols = c("Petal.Width","Petal.Length")]
-  data_agregee[, 'stat' := c("moyenne","variance","P25","P50","P75"), by = "Species"]
-  data_agregee
-  ```
+```{r, eval = FALSE}
+data_agregee <- iris_dt[ ,
+                         lapply(.SD, mes_statistiques), 
+                         by = "Species", 
+                         .SDcols = c("Petal.Width","Petal.Length")]
+data_agregee[, 'stat' := c("moyenne","variance","P25","P50","P75"), by = "Species"]
+data_agregee
+```
 
-## Fonctions modifiant un `data.table`
+### Définir des fonctions modifiant un `data.table`
 
-Il est très facile d'écrire des fonctions génériques en `data.table` faisant appel à des noms de variables en arguments. A l'inverse, cette fonctionnalité est complexe en `dplyr`: il est nécessaire de faire appel à plusieurs fonctionnalités de `rlang` pour être en mesure d'effectuer une opération équivalente. Le lecteur intéressé par la question pourra consulter ce [post](https://linogaliana.netlify.com/post/datatable/datatable-nse/) sur le sujet.
+**Il est très facile d'écrire avec `data.table` des fonctions génériques faisant appel à des noms de variables en arguments.** Pour déclarer à `data.table` qu'un nom fait référence à une colonne, la manière la plus simple est d'utiliser la fonction `get`. Dans l'exemple suivant, on définit la fonction `creation_var` qui crée dans la table `data` une nouvelle variable (dont le nom est l'argument `nouveau_nom`) égale à une autre variable incrémentée (dont le nom est l'argument `nom_variable`) de 1. L'utilisation de `get` permet d'indiquer à `data.table` que la chaîne de caractères `nom_variable` désigne une colonne de la table `data`.
 
-Pour déclarer à `data.table` qu'un nom fait référence à une colonne, la manière la plus simple est d'utiliser la fonction `get`, de la manière suivante:
-
-  ```{r}
-  modif_var <- function(data, nom_variable, nouveau_nom = "x"){
-    data[,c(nouveau_nom) := get(nom_variable)+1]
-  }
-  head(modif_var(iris_dt, "Petal.Width","toto"),2)
-  ```
+```{r}
+creation_var <- function(data, nom_variable, nouveau_nom = "x"){
+  data[,c(nouveau_nom) := get(nom_variable)+1]
+}
+head(creation_var(iris_dt, "Petal.Width","toto"),2)
+```
 
 `c(nouveau_nom)` permet de s'assurer que `data.table` crée une nouvelle colonne avec le nom défini en argument et pas en l'appelant `nouveau_nom`. Le code équivalent en `dplyr` est beaucoup moins lisible et est moins général car il ne permet pas de définir en argument le nouveau nom de la variable :
 
-  ```{r, eval = FALSE}
-  modif_var <- function(data, nom_variable){
-    data %>% dplyr::mutate(, nouveau_nom := !!rlang::sym(nom_variable)+1]
-  }
-  ```
+::: {.remarque data-latex=""}
+**Remarque**
+
+Il est particulièrement complexe d'écrire avec `dplyr` des fonctions génériques faisant appel à des noms de variables en arguments: il est nécessaire de faire appel à plusieurs fonctionnalités de `rlang` pour être en mesure d'effectuer une opération équivalente. Voici pour information la version `dplyr` de l'exemple précédent:
+
+```{r, eval = FALSE}
+modif_var <- function(data, nom_variable){
+  data %>% dplyr::mutate(nouveau_nom = !!rlang::sym(nom_variable)+1]
+}
+```
+C'est l'une des raisons pour lesquelles il est préférable d'utiliser `data.table` lorsqu'on souhaite manipuler fréquemment des données à l'aide de fonctions. Le lecteur intéressé par la question pourra consulter ce [post](https://linogaliana.netlify.com/post/datatable/datatable-nse/) sur le sujet.
+:::
 
 ::: {.conseil data-latex=""}
 **Conseil**
