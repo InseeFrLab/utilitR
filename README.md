@@ -20,13 +20,7 @@ ou les  fichiers `html` pour les consulter hors-connexion en cliquant
 # Objectif de la documentation
 
 **Cette documentation s'adresse à tous les agents de l'Insee dans le cadre d'un usage courant de `R`.** 
-Elle est conçue pour aider les agents à réaliser des traitements statistiques 
-usuels avec `R` et à produire des sorties (graphiques, cartes, documents). 
-Cette documentation présente les outils les plus adaptés à ces tâches. 
-
-En revanche, elle ne cherche pas à être exhaustive mais pratique. En particulier, elle 
-n'aborde pas les outils les plus avancés, notamment ceux utilisés 
-dans un cadre de développement logiciel.
+Elle est conçue pour aider les agents à réaliser des traitements statistiques usuels avec `R` et à produire des sorties (graphiques, cartes, documents). Cette documentation présente succinctement les outils les plus adaptés à ces tâches, et oriente les agents vers les ressources documentaires pertinentes. En revanche, elle n'aborde pas les outils les plus avancés, notamment ceux utilisés dans un cadre de développement logiciel.
 
 Cette documentation a pour ambition de répondre à trois questions générales:
 
