@@ -1,16 +1,26 @@
-# `cookbook R` pour l'Insee 
+# `UtilitR` : Documentation `R` à l'usage des agents de l'Insee 
 
 <!-- badges: start -->
 [![pipeline status](https://gitlab.com/linogaliana/documentationR/badges/master/pipeline.svg)](https://gitlab.com/linogaliana/documentationR/-/commits/master)
 <!-- badges: end -->
 
  
-Code source pour le `cookbook R`. Le livre est déployé à l'adresse [suivante](https://linogaliana.gitlab.io/documentationR/index.html). Il est également possible de télécharger le fichier au format `pdf` ou les  fichiers `html` pour les consulter hors-connexion en cliquant [ici](https://gitlab.com/linogaliana/documentationR/-/jobs/artifacts/master/download?job=buildbookdown)
+Code source pour le projet `UtilitR`, documentation collaborative `R` 
+à l'usage des agents de l'Insee. Elle a vocation à être validée annuellement 
+afin de produire un guide des bonnes pratiques et des fiches techniques.
+
+Elle prend la forme d'un livre qui est pour l'instant déployé à l'adresse 
+[suivante](https://linogaliana.gitlab.io/documentationR/index.html). 
+
+Il est également possible de télécharger le fichier au format `pdf` 
+ou les  fichiers `html` pour les consulter hors-connexion en cliquant
+[ici](https://gitlab.com/linogaliana/documentationR/-/jobs/artifacts/master/download?job=buildbookdown)
 
 
 # Objectif de la documentation
 
-**Cette documentation s'adresse à tous les agents de l'Insee dans le cadre d'un usage courant de `R`.** Elle est conçue pour aider les agents à réaliser des traitements statistiques usuels avec `R` et à produire des sorties (graphiques, cartes, documents). Cette documentation présente les outils les plus adaptés à ces tâches. En revanche, elle n'aborde pas les outils les plus avancés, notamment ceux utilisés dans un cadre de développement logiciel.
+**Cette documentation s'adresse à tous les agents de l'Insee dans le cadre d'un usage courant de `R`.** 
+Elle est conçue pour aider les agents à réaliser des traitements statistiques usuels avec `R` et à produire des sorties (graphiques, cartes, documents). Cette documentation présente succinctement les outils les plus adaptés à ces tâches, et oriente les agents vers les ressources documentaires pertinentes. En revanche, elle n'aborde pas les outils les plus avancés, notamment ceux utilisés dans un cadre de développement logiciel.
 
 Cette documentation a pour ambition de répondre à trois questions générales:
 
