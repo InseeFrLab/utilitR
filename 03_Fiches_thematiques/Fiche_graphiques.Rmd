@@ -1,88 +1,99 @@
-# Produire des graphiques
+# Produire des graphiques en `ggplot2`
 
-## Tâches concernées et recommandations
+Cette fiche est une introduction au *package* `ggplot2` d'[Hadley Wickham](http://hadley.nz/). Pour des formations plus détaillées, se référer à {#ggplot2Ressources}
 
-Quelques détails sur la tâche dont il s'agit
+## Introduction
 
-::: {.recommandation data-latex=""}
-**Recommandations de l'Insee**
+::: remarque
+Le *package* `ggplot2` est basé sur la notion de **grammaire graphique** de [Leland Wilkinson](https://www.jstatsoft.org/index.php/jss/article/view/v017b03/v17b03.pdf), qui décompose chaque graphique en un ensemble d'éléments paramétrables :
 
-Dire en 4-5 lignes comment il est recommandé de procéder:
+1. les données
+2. les géométries (*layers*) : barres, lignes, polygones, ...
+3. les éléments d'échelle et de systèmes de coordonnées
+4. les élements d'apparence (titre, thèmes, ...).
 
-* le ou les *package*(*s*) dont l'usage est recommandé; si on recommande plusieurs *packages*, expliquer comment choisir lequel (en fonction de la taille des données, du format...)
-* les *packages* dont l'usage est déconseillé; 
-* les autres points de méthode essentiels.
-
+Il est possible de tracer des graphiques à partir d'un fichier détail ou de données agrégées.
 :::
 
-## Quelques détails sur comment réaliser la tâche avec les outils recommandés
+La construction d'un graphique repose sur le principe de couches successives :
 
-::: {.conseil data-latex=""}
-**Conseil**
+La fonction `ggplot2::ggplot()` permet de déclarer la table de données à représenter (argument `data`) et les variables à représenter (argument `mapping` et fonction `aes()`).
 
-Cette boîte colorée sert à donner un conseil. Son usage n'est évidemment pas obligatoire.
+Les différentes couches graphiques se superposent et s'enchainent grâce à l'opérateur `+`, comme un pipe.
 
-:::
+## Les différentes façons de faire du `ggplot2`
 
-::: {.remarque data-latex=""}
-**Remarque**
+Plusieurs solutions s'offrent à l'utilisateur de `ggplot2` :
 
-Cette boîte colorée sert à faire une remarque. Son usage n'est évidemment pas obligatoire.
+1. saisir des instructions dans un script
+2. utiliser [`ggformula`](https://cran.r-project.org/web/packages/ggformula/vignettes/ggformula-blog.html), surcouche à `ggplot2` qui *simplifie* légèrement la syntaxe
+3. [`esquisse`](https://cran.r-project.org/web/packages/esquisse/readme/README.html), *add-in* qui permet de réaliser des graphiques en *drag and drop*.
 
-:::
+## Mon premier graphique
 
-### Réaliser la tâche, cas 1
+Nous utiliserons le *set* de données `diamonds`, qui contient des mesures de 54 000 diamants (carat, taille, couleur, clarté, prix, ...).
 
-Lorsqu'on est débutant, il faut utiliser la fonction `super_fonction()` du *package* `super_package`.
-
-La fonction `super_fonction()` fonctionne comme ceci par défaut: blabla.
-
-La fonction `super_fonction()` propose beaucoup d'options:
-
-* `option1`: blabla;
-* `option2`: blabla;
-* `option3`: blabla.
-
-Voici un premier exemple de code (le plus simple possible, en utilisant des données facilement disponibles sur le site de l'Insee):
-
-```{r, eval = FALSE}
-library(super_package)
-output <- super_fonction(arguments)
+```{r, eval=TRUE}
+library("ggplot2")
+data("diamonds")
+str(diamonds)
 ```
 
-Ne pas oublier d'expliquer ce qu'on obtient comme output.
+Un aperçu des données :
 
-Voici un second exemple de code, avec des options un peu plus avancées:
-
-```{r, eval = FALSE}
-output <- super_fonction(arguments et options)
+```{r, eval=TRUE}
+knitr::kable(head(diamonds))
 ```
 
+Dans un premier temps, nous souhaitons représenter, sous forme de diagramme en barre, le nombre de diamant par clarté (variable `clarity`)
+```{r, eval=TRUE}
+ggplot2::ggplot(data = diamonds, mapping = aes(x = clarity)) +
+	geom_bar()
+```
 
-### Réaliser la tâche, cas 2
+A noter que l'instruction peut également s'écrire ainsi :
 
-Lorsqu'on est plus avancé, on peut utiliser la fonction `hyper_fonction()` du *package* `hyper_package`.
+```{r, eval=FALSE}
+ggplot2::ggplot() +
+	geom_bar(data = diamonds, mapping = aes(x = clarity))
 
-* Comportement par défaut;
-* Principales options;
-* Exemples de code.
+# ou
 
-## Quelques bonnes pratiques
+ggplot2::ggplot(data = diamonds) +
+	geom_bar(mapping = aes(x = clarity)
+```
 
-Quelques conseils généraux sur la façon de s'y prendre.
+La fonction `aes()` (*aesthetic mappings*) permet d'identifier les variables à représenter, et de modifier l'apparence du graphique en fonction de celles-ci (taille, couleur, forme, ...).
 
-* Faut-il préprocesser les données avant de réaliser la tâche;
-* Comment minimiser les temps de calculs/la charge en RAM.
+Nous voulons maintenant représenter dans un nuage de point les diamants par carat et prix. La couleur des points dépendra de la variable clarté
+```{r, eval=TRUE}
+ggplot2::ggplot(data = diamonds) +
+	geom_point(mapping = aes(x = carat, y = price, colour = clarity))
+```
 
-## Sources
+## Les principales formes géométriques
 
-Si le rédacteur de la fiche a réutilisé des ressources externes en français disponible en licence libre, il faut indiquer ici l'URL des ressources, le nom des auteurs et la licence de réutilisation de ces ressources.
+* le nuage de point (`geom_point()`) ;
+* le diagramme en barre (`geom_bar` avec l'argument `position = dodge, fill, stack`) ;
+* les histogrammes (`geom_histogram()`) ;
+* les courbes (`geom_line()`) ;
+* les boites à moustache (`geom_boxplot()`).
 
-## Ressources
+## Créer un graphique par modalité d'une variable
 
-* la documentation des *packages*;
-* les vignettes et *cheatsheets* si elles existent;
-* les formations proposées par l'Insee;
-* les formations/tutoriels disponibles sur internet.
+La fonction `facet_wrap()` permet de représenter des données *en facettes*, c'est à dire décomposées par une variable de croisement.
 
-Dans la mesure du possible, il faut veiller à proposer des ressources en français.
+```{r, eval=TRUE}
+ggplot2::ggplot(data = diamonds) +
+	geom_point(mapping = aes(x = carat, y = price)) +
+	facet_wrap(~cut)
+```
+
+## Ressources {#ggplot2Ressources}
+
+		- le [site internet de `ggplot2`](https://ggplot2.tidyverse.org/)
+		- la [refcard](https://github.com/rstudio/cheatsheets/blob/master/data-visualization-2.1.pdf)
+		- la [formation de Martin Chevalier](https://teaching.slmc.fr/perf/index.html#r%C3%A9aliser_des_graphiques_avec_r)
+		- le [site de Julien Barnier](https://juba.github.io/tidyverse/08-ggplot2.html)
+		- les [formations du MTES](https://mtes-mct.github.io/parcours-r/m5/package-ggplot2.html)
+    - plein d'autres ...
