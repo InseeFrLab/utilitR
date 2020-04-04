@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=rocker/geospatial
+ARG BASE_IMAGE=rocker/geospatial:3.6.1
 # Use a multi-stage build to install packages
 
 # First step: copy the DESCRIPTION file and install packages 
