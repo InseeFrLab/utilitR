@@ -13,3 +13,15 @@ colorize <- function(x, color) {
 
 import::from("magrittr","%>%")
 knitr::opts_chunk$set(out.width='75%', fig.align='center') 
+
+
+print_html_only <- function(x){
+  if (knitr::is_html_output()) return(x)
+  return("")
+}
+
+print_latex_only <- function(x){
+  if (knitr::is_latex_output()) return(x)
+  return("")
+}
+
