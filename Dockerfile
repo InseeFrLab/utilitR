@@ -5,8 +5,8 @@ ARG BASE_IMAGE=rocker/geospatial:3.6.1
 FROM $BASE_IMAGE AS install_packages
 COPY ./DESCRIPTION /tmp/build_image/
 RUN Rscript -e "remotes::install_deps('/tmp/build_image', dependencies = TRUE, upgrade = FALSE)"
-RUN apt-get install -y texlive-lang-base
-RUN apt-get install -y texlive-lang-recommended
+RUN apt-get install -y texlive-base
+RUN apt-get install -y texlive-recommended
 RUN apt-get install -y texlive-lang-european
 
 # Second step: use the installed packages directory
