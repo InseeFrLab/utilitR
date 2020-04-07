@@ -191,13 +191,26 @@ Par exemple on peut utiliser les fonctions `scale_x_log10()` et `scale_y_log10()
 
 ```{r}
 ggplot(iris) + 
-  geom_point(aes(x = Petal.Width, y = Petal.Length)) +
+  geom_point(aes(x = Petal.Width, y = Petal.Length, color = Species)) +
   scale_x_log10() +
   scale_y_log10()
 ```
 
 #### Modifier la légende
 
+Les fonctions `guide()` et `guides()` permettent de modifier finement la légende. Les guides peuvent être spécifiés dans chaque scale_* ou dans une instruction `guides()`. Voici un exemple:
+
+```{r}
+ggplot(iris) + 
+  geom_point(aes(x = Petal.Width, y = Petal.Length, color = Species)) +
+  guides(color=guide_legend(direction="horizontal",
+                           order=1,
+                           title.position="top",
+                           title.hjust=0.5,
+                           nrow=1,
+                           label.position="bottom"))+
+  theme(legend.position = "bottom")
+```
 
 ### Utiliser un thème
 
