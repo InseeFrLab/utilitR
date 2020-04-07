@@ -135,6 +135,18 @@ ggplot(iris, aes(x = Petal.Width, y = Petal.Length)) +
 ```
 :::
 
+
+### Créer un graphique par modalité d'une variable
+
+La fonction `facet_wrap()` permet de représenter des données *en facettes*, c'est à dire décomposées par une variable de croisement.
+
+```{r, eval=TRUE}
+ggplot2::ggplot(data = diamonds) +
+	geom_point(mapping = aes(x = carat, y = price)) +
+	facet_wrap(~cut)
+```
+
+
 ## Comment personnaliser un graphique
 
 Il est possible de personnaliser un graphique `ggplot2` de deux façons:
@@ -148,16 +160,14 @@ Il est possible de personnaliser un graphique `ggplot2` de deux façons:
 
 Chaque nouvel élément graphique est à rajouter sous forme de layer. Ici, nous utilisons la fonction **labs** qui permet de définir les titres de tous les éléments possibles de l'aesthétic, ainsi que le titre général du graphique (*title*), le sous-titre (*subtitle*) et le bas de page (*caption*). À noter qu'il existe plusieurs autres façons de spécifier ces élèments par des couches spécifiques: `ggtitle`, `xlab`, `ylab`,...
 
-```{r fg6_1, echo=T,eval=F,fig.height=5,fig.width=10}
-ggplot(graphique1) +
-  geom_point(aes(x=log(Gross_Domestic_Product_GDP),
-                 y=log(Maternal_mortality_ratio),
-                 color=Continent))+
-  labs(title="Mortalité maternelle en fonction du PIB par habitant",
-       subtitle="En 2015",
-       x="PIB",
-       y="Taux de mortalité de la mère \n(pour 100 000 naissances)",
-       caption="Source : ODD / ONU")
+```{r}
+ggplot(iris) +
++ 
+  geom_point(aes(x = Petal.Width, y = Petal.Length, color = Species)) +
+  labs(title="Longueur des pétales en fonction de la largeur des pétales",
+       x="Largeur des pétales ",
+       y="Longueur des pétales ",
+       caption="Source : iris")
 ```
 
 #### Utilisation des _scales_
@@ -178,17 +188,19 @@ distiller|utiliser une palette de couleur brewer (variable continue)
 gradient|utiliser un gradient de 2 couleurs
 gradient2|utiliser un gradient divergent de 3 couleurs
 
+Par exemple on peut utiliser les fonctions `scale_x_log10()` et `scale_y_log10()` pour définir des échelles logarithmiques.
 
-
-### Créer un graphique par modalité d'une variable
-
-La fonction `facet_wrap()` permet de représenter des données *en facettes*, c'est à dire décomposées par une variable de croisement.
-
-```{r, eval=TRUE}
-ggplot2::ggplot(data = diamonds) +
-	geom_point(mapping = aes(x = carat, y = price)) +
-	facet_wrap(~cut)
+```{r}
+ggplot(iris) + 
+  geom_point(aes(x = Petal.Width, y = Petal.Length)) +
+  scale_x_log10() +
+  scale_y_log10()
 ```
+
+#### Modifier la légende
+
+
+### Utiliser un thème
 
 
 ## Exporter un graphique
