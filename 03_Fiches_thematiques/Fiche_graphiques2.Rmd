@@ -52,9 +52,11 @@ ggplot(data = <DATA>) +
   <FORME_GEO>(mapping = aes(<MAPPINGS>), ...=<PARAMS>)
 ```
 
-### Comprendre l'utilisation de `aes()`
+### Le *mapping* et l'utilisation d'`aes()`
 
-Le *mapping* désigne le lien logique entre les variables et les éléments visuels représentés sur le graphique. On le déclare grâce à la fonction `aes()` (pour _aesthetic_), qui sert donc à identifier les variables que l'on souhaite représenter sur le graphique. **Les arguments fondamentaux de `aes()` sont les variables représentées sur l'axe des abscisses et l'axe des ordonnées (`x` et `y`).** Par exemple, on écrit `aes(x = Petal.Width, y = Petal.Length)` si l'on souhaite représenter la longueur des pétales (sur l'axe `y`) en fonction de la largeur des pétales (sur l'axe `x`).
+Le *mapping* désigne le lien logique entre les variables et les éléments visuels représentés sur le graphique. Un *mapping*, désigne dans `ggplot2` le lien logique entre un **attribut graphique** de la `geometry` (position, couleur, taille...) et **une variable** du tableau de données. On déclare le *mapping* grâce à la fonction `aes()` (pour _aesthetic_), qui sert donc à identifier les variables que l'on souhaite représenter sur le graphique. 
+
+**Les arguments fondamentaux de `aes()` sont les variables représentées sur l'axe des abscisses et l'axe des ordonnées (`x` et `y`).** Par exemple, on écrit `aes(x = Petal.Width, y = Petal.Length)` si l'on souhaite représenter la longueur des pétales (sur l'axe `y`) en fonction de la largeur des pétales (sur l'axe `x`).
 
 ```{r}
 iris <- iris
@@ -62,7 +64,8 @@ ggplot(data = iris) +
   geom_point(aes(x = Petal.Width, y = Petal.Length))
 ```
 
-Par ailleurs, la fonction `aes()` admet d'autres arguments qui permettent de modifier l'apparence  des éléments visuels selon une troisième variable du jeu de données.
+Par ailleurs, la fonction `aes()` admet d'autres arguments qui permettent de modifier l'apparence  des attributs graphiques selon une troisième variable du jeu de données.
+
 * **`colour`** : la couleur;
 * **`shape`** : la forme;
 * **`size`** : la taille;
@@ -76,7 +79,7 @@ ggplot(data = iris) +
   geom_point(aes(x = Petal.Width, y = Petal.Length, color = Species))
 ```
 
-Il est possible d'utiliser ces mêmes arguments pour définir un élément visuel sans le lier à une variable, mais alors il faut l'indiquer **à l'extérieur de l'aesthetic** (donc à l'extérieur de `aes()`). Voici l'exemple précédent, modifée pour que la couleur des points soit définie "en dur" (rouge), et non en fonction d'une variable. L'argument `color` est donc à l'extérieur de `aes()`.
+Il est également possible d'utiliser ces mêmes arguments pour modifier un attribut graphique sans le lier à une variable. En ce cas, on définit l'attribut **à l'extérieur de l'_aesthetic_** (donc à l'extérieur de `aes()`). Voici l'exemple précédent, modifié pour que tous les points soient (rouge), et non en fonction d'une variable. L'argument `color` est donc à l'extérieur de `aes()`.
 
 ```{r}
 ggplot(data = iris) + 
@@ -84,11 +87,11 @@ ggplot(data = iris) +
 ```
 
 ::: {.remarque data-latex=""}
-**La notion de *mapping* et la double utilisation des paramètres visuels (`colour`, `shape`...) dans et à l'extérieur d'`aes()` sont une des principales difficultés de `ggplot2`.** Il est normal de tâtonner lorsqu'on commence à les utiliser.
+La notion de *mapping* et la double utilisation des paramètres visuels dans et à l'extérieur d'`aes()` sont une des principales difficultés de `ggplot2`. Il est normal de tâtonner lorsqu'on commence à les utiliser. Pour s'y retrouver, il suffit de suivre la règle suivante. **Si on établit un lien entre les valeurs d’une variable et un attribut graphique, on définit un _mapping_, et on le déclare dans `aes()`. Sinon, on modifie l’attribut de la même manière pour tous les points, et on le définit en-dehors de la fonction `aes()`.**
 :::
 
 
-### Présenter quelques geometries
+### Les formes géométriques
 
 Reprendre le 8.3 de source1 et/ou le 6 de source2.
 
