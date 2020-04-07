@@ -22,7 +22,7 @@ L'utilisation du *package* `data.table` peut paraître plus déroutante pour les
 
 Ne pas oublier de charger le *package* avec `library(data.table)`.
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, warning= FALSE, message = FALSE}
 library(data.table)
 ```
 
@@ -50,19 +50,13 @@ Voici un exemple simple. A partir des données générées ci-dessus, on veut ca
 dt <- dt[order(z)]
 ```
 
-<!-- Lino: il faudrait mettre un filtre ici: le code ci-dessous, c'est pour le html, et plus bas pour le LaTeX -->
-<!-- <html> -->
-<!-- <head> -->
-<!--    <style> -->
-<!--    table {border-collapse:collapse; table-layout:fixed; width:310px;} -->
-<!--    </style> -->
-<!-- </head> -->
+<div> <!----Encapsuler dans div permet d'éviter que ce soit dans latex ---->
 
 <table class='table'>
-<tr> <th>`Base R`</th> <th>`dplyr`</th> <th>`data.table`</th> <tr>
+<tr> <th>`r print_html_only("**Base R**")`</th> <th>`r print_html_only("**dplyr**")`</th> <th>`r print_html_only("**data.table**")`</th> <tr>
 <tr>
 <td>
-```{r, eval = FALSE}
+```{r, echo=(knitr::is_html_output()), eval=FALSE}
 aggregate(
   dt[dt[["x"]] > 3]$y,
   by = list(dt[dt[["x"]] > 3]$z),
@@ -70,7 +64,7 @@ aggregate(
 ```
 </td>
 <td>
-```{r, eval = FALSE}
+```{r, echo=(knitr::is_html_output()), eval=FALSE}
 dt %>%
   dplyr::filter(x > 3) %>%
   dplyr::group_by(z) %>%
@@ -78,36 +72,34 @@ dt %>%
 ```
 </td>
 <td>
-```{r, eval = FALSE}
+```{r, echo=(knitr::is_html_output()), eval=FALSE}
 dt[x > 3, sum(y), by = z]
 ```
 </td>
 <tr>
 </table>
 
-<!-- Lino: jusqu'ici c'est pour le html, et ci-dessous pour le LaTeX -->
+</div>
 
-**`Base R`**
-```{r, eval = FALSE}
+`r print_latex_only("**Base R**")`
+```{r, echo=(knitr::is_latex_output()), eval=FALSE}
 aggregate(dt[dt[["x"]] > 3]$y,           
           by = list(dt[dt[["x"]] > 3]$z),
           FUN = sum)
 ```
 
-**`dplyr`**
-```{r, eval = FALSE}
+`r print_latex_only("**dplyr**")`
+```{r, echo=(knitr::is_latex_output()), eval=FALSE}
 dt %>%
   dplyr::filter(x > 3) %>%
   dplyr::group_by(z) %>%
   dplyr::summarise(sum(y))
 ```
 
-**`data.table`**
-```{r, eval = FALSE}
+`r print_latex_only("**data.table**")`
+```{r, echo=(knitr::is_latex_output()), eval=FALSE}
 dt[x > 3, sum(y), by = z]
 ```
-
-<!-- Lino: fin du code pour le LaTeX -->
 
 ### Quelles fonctions peut-on utiliser avec un `data.table`?
 
@@ -165,8 +157,6 @@ iris_dt[ , .SD, .SDcols = c("Petal.Width", "Species")]
 La seconde méthode peut vous sembler inutilement complexe. C'est vrai dans l'exemple donné ci-dessus, mais les fonctions `.SD` et `.SDcols` s'avèrent très puissantes dans un grand nombre de situations (notamment quand on veut programmer des fonctions qui font appel à `data.table`).
 :::
 
-
-
 ### Trier un `data.table`
 
 **On peut trier un `data.table` avec la fonction `order()`.** On trie `iris_dt` dans l'ordre croissant de `Sepal.Length` et dans l'ordre décroissant de la variable `Sepal.Width`.
@@ -208,7 +198,7 @@ Vous pouvez utiliser toutes les fonctions statistiques de `R` avec `data.table`.
 | Fonction        | Opération                                         | Exemple     |
 |-----------------|---------------------------------------------------|-------------------------------------------------------------|
 |`.N`             | Nombre d'observations                             | `dt[ , .N, by = 'group_var']` |
-|`uniqueN()`      | Nombre d'observations uniques de la variable `x`  | `dt[ , uniqueN(x)]` ; `dt[ , uniqueN(x), by = 'group_var']` |
+|`uniqueN()`      | Nombre d'observations uniques de la variable `x`  | `dt[ , uniqueN(x), by = 'group_var']` |
 |`%in%`           | Nombre dans la liste                              | `dt[x %in% 1:5]` |
 |`%chin%`         | Mot dans la liste                                 | `dt[x %chin% c("a", "b")]` |
 |`%between%`      | Valeur entre deux nombres                         | `dt[x %between% c(5,13)]` |
@@ -264,12 +254,12 @@ L'utilisation de ces fonctions est illustrée avec la table `mtcars`, transform�
 mtcars_dt <- data.table(mtcars)
 head(mtcars_dt)
 ```
-#### Réorganiser les données en format long (*Long to wide*)
+#### Réorganiser les données en format long (*wide to long*)
 
 La fonction `melt()` réorganise les donnée dans un format long. Elle prend les arguments suivants:
 
 * `data`: les données;
-* `id.vars`: les variables qui identifient les lignes de table d'arrivée; elles restent inchangées
+* `id.vars`: les variables qui identifient les lignes de table d'arrivée; elles restent inchangées lors de l'utilisation de `melt()`;
 *  `measure.vars`: les variables qui sont transposées;
 * `variable.name`: le nom de la nouvelle colonne qui contient le nom des variables transposées;
 * `value.name`: le nom de la nouvelle colonne qui contient la valeur des variables transposées.
@@ -322,7 +312,7 @@ head(mtcars_dt_casted2)
 **Conseils**
 
 * La fonction `dcast()` crée une colonne par valeur des variables utilisées dans la partie droite de la formule (trois colonnes pour les trois valeurs de `cyl` dans l'exemple qui précède). **Il faut donc faire attention à ce que ces variables aient un nombre limité de valeurs**, pour ne pas obtenir une table *extrêmement* large. On peut éventuellement discrétiser les variables continues, ou regrouper les modalités avant d'utiliser `dcast()`.
-* On peut obtenir des **noms de colonnes peu significatifs** lorsqu'on utilise `dcast()` avec une colonne numérique et une fonction d'agrégation (`4`, `6`, `8` dans l'exemple précédent). Il est conseillé de modifier légèrement la partie droite de la formule pour obtenir des noms plus significatifs. Voici un exemple:
+* On peut obtenir des **noms de colonnes peu significatifs** lorsqu'on utilise `dcast()` avec une colonne numérique et une fonction d'agrégation (`4`, `6`, `8` dans l'exemple précédent). Il est conseillé de modifier légèrement la partie droite de la formule pour obtenir des noms plus significatifs. Voici un exemple où on ajoute le préfixe "cyl":
   ```{r}
   head(mtcars_dt_casted2 <- dcast(mtcars_dt, 
                                   gear ~ paste0("cyl", cyl), 
@@ -352,9 +342,9 @@ ans <- iris_dt[ , .(moyenne = mean(Sepal.Length, na.rm = TRUE)), by = Species][o
 ans
 ```
 
-#### ... mais il faut que le code reste lisible
+#### ... mais il faut que le code reste lisible...
 
-Le problème avec l'enchaînement d'opérations multiples est qu'on aboutit rapidement à des lignes de codes extrèmement longues. C'est pourquoi **il est préférable de revenir régulièrement à la ligne, de façon à garder un code qui reste lisible.** Il y a évidemment plusieurs façons d'organiser le code. Le seul principe est que le crochet qui commence une nouvelle opération doit être accolé au crochet qui termine l'opération précédente (`...][...`). Voici une organisation possible: 
+Le problème avec l'enchaînement d'opérations multiples est qu'on aboutit rapidement à des lignes de codes extrèmement longues. C'est pourquoi **il est préférable de revenir régulièrement à la ligne, de façon à garder un code qui reste lisible.** Il y a évidemment plusieurs façons d'organiser le code. La seule obligation est que le crochet qui commence une nouvelle opération doit être accolé au crochet qui termine l'opération précédente (`...][...`). Voici une organisation possible: 
 
 ```{r, eval = FALSE}
 resultat <- 
@@ -392,54 +382,79 @@ resultat <- resultat[order(moyenne)]
 resultat
 ```
 
+#### ... car on peut facilement faire des erreurs
 
-::: {.remarque data-latex=""}
-**Remarque**
-
-**L'enchaînement des opérations en `data.table` est puissant, mais peut aboutir à des résultats non désirés si on ne fait pas attention.** Les exemples de cet encadré utilisent la fonction `:=`; si vous ne la connaissez pas encore, il est conseillé de lire la section [La fonction d'assignation par référence (ou `:=`)] avant de poursuivre la lecture. 
+**L'enchaînement des opérations en `data.table` est puissant, mais peut aboutir à des résultats non désirés si on ne fait pas attention.** Les exemples de cet encadré utilisent la fonction `:=` ; si vous ne la connaissez pas encore, il est fortement conseillé de lire la section [La fonction d'assignation par référence (ou `:=`)] avant de poursuivre la lecture. 
 
 Voici deux exemples d'opérations enchaînées en `data.table` dont le code est très proche et qui aboutissent à des résultats très différents. Le premier exemple ne conserve qu'une partie de la table `dt` puis crée une variable, tandis que le second crée une variable avec une valeur non manquante pour une partie de la table uniquement.
 
-<!-- Lino: il faudrait mettre un filtre ici: le code ci-dessous, c'est pour le html, et plus bas pour le LaTeX -->
-
+<!-- output html -->
+<div>
 <table class='table'>
-<tr> <th> </th> <th>Exemple 1</th> <th>Exemple 2</th> <tr>
+
+<tr> <th> </th> <th>
+```{asis, eval=(knitr::is_html_output()), echo=TRUE}
+Exemple 1
+```
+</th> 
+<th>
+```{asis, eval=(knitr::is_html_output()), echo=TRUE}
+Exemple 2
+```</th> <tr>
 <tr>
 <td>
+```{asis, eval=(knitr::is_html_output()), echo=TRUE}
 **Code**
+```
 </td>
 <td>
-```{r, eval = FALSE}
+```{r, echo=(knitr::is_html_output()), eval=FALSE}
 dt[x > 3][ , newvar := 1]
 ```
 </td>
 <td>
-```{r, eval = FALSE}
+```{r, echo=(knitr::is_html_output()), eval=FALSE}
 dt[x > 3, newvar := 1]
 ```
 </td>
 </tr>
 <tr> 
-<th>Signification </th> 
-<th>Partir de `dt`, conserver uniquement les observations pour lesquelles `x > 3`, et créer une nouvelle variable `newvar` qui vaut 1 partout </th> 
-<th>Partir de `dt`, créer une nouvelle variable `newvar` qui vaut 1 pour les observations pour lesquelles `x > 3` et `NA` ailleurs</th> <tr>
+<th>
+```{asis, eval=(knitr::is_html_output()), echo=TRUE}
+**Signification**
+```
+</th> 
+<th>
+```{asis, eval=(knitr::is_html_output()), echo=TRUE}
+Partir de `dt`, conserver uniquement les observations pour lesquelles `x > 3`, et créer une nouvelle variable `newvar` qui vaut 1 partout 
+```
+</th> 
+<th>
+```{asis, eval=(knitr::is_html_output()), echo=TRUE}
+Partir de `dt`, créer une nouvelle variable `newvar` qui vaut 1 pour les observations pour lesquelles `x > 3` et `NA` ailleurs</th> 
+```
+<tr>
 </table>
+</div>
 
-<!-- Lino: jusqu'ici c'est pour le html, et ci-dessous pour le LaTeX -->
+<!-- Output LaTeX -->
 
+```{asis, eval=(knitr::is_latex_output()), echo=TRUE}
 **Exemple 1**: Partir de `dt`, conserver uniquement les observations pour lesquelles `x > 3`, et créer une nouvelle variable `newvar` qui vaut 1 partout
-```{r, eval = FALSE}
+```
+
+```{r, echo=(knitr::is_latex_output()), eval=FALSE}
 dt[x > 3][ , newvar := 1]
 ```
 
+```{asis, eval=(knitr::is_latex_output()), echo=TRUE}
 **Exemple 2**: Partir de `dt`, créer une nouvelle variable `newvar` qui vaut 1 pour les observations pour lesquelles `x > 3` et `NA` ailleurs
-```{r, eval = FALSE}
-dt[x > 3, newvar := 1]
 ```
 
-<!-- Lino: fin du code pour le LaTeX -->
-:::
-
+```{r, echo=(knitr::is_latex_output()), eval=FALSE}
+dt[x > 3, newvar := 1]
+```
+<!-- Fin de l'output LaTeX -->
 
 ## La fonction d'assignation par référence (ou `:=`)
 
@@ -457,39 +472,52 @@ pour plus de détails). Cela signifie en pratique qu'**il ne faut pas réassigne
 
 Pour créer une colonne, on écrit donc directement `dt[ , nouvelle_colonne := une_formule]` et non `dt <- dt[ , nouvelle_colonne := une_formule]`. Voici un exemple qui compare `dplyr` et `data.table`:
 
-<!-- Lino: il faudrait mettre un filtre ici: le code ci-dessous, c'est pour le html, et plus bas pour le LaTeX -->
+
+<!-- Output html -->
+<div> 
 <table class='table'>
-<tr> <th>`dplyr` : Il faut une assignation (`<-`) pour modifier `iris`</th> <th>`data.table`: Il ne faut pas d'assignation pour modifier `iris_dt`</th> <tr>
+<tr> <th>
+```{asis, eval=(knitr::is_html_output()), echo=TRUE}
+`dplyr` : Il faut une assignation (`<-`) pour modifier `iris`
+```
+</th> 
+<th>
+```{asis, eval=(knitr::is_html_output()), echo=TRUE}
+`data.table`: Il ne faut pas d'assignation pour modifier `iris_dt`
+```
+</th> <tr>
 <tr>
 <td>
-```{r, eval = FALSE}
+```{r, echo=(knitr::is_html_output()), eval=FALSE}
 iris <- iris %>%
   dplyr::mutate(nouvelle_colonne =  Petal.Width * 10)
 ```
 </td>
 <td>
-```{r, eval = FALSE}
+```{r, echo=(knitr::is_html_output()), eval=FALSE}
 iris_dt[ , nouvelle_colonne :=  Petal.Width * 10]
 ```
 </td>
 </tr>
 </table>
+</div> 
 
-<!-- Lino: jusqu'ici c'est pour le html, et ci-dessous pour le LaTeX -->
+<!-- output LaTeX -->
 
+```{asis, eval=(knitr::is_latex_output()), echo=TRUE}
 **`dplyr`: Il faut une assignation (`<-`) pour modifier `iris`**
-```{r, eval = FALSE}
+```
+```{r, echo=(knitr::is_latex_output()), eval=FALSE}
 iris <- iris %>%
   dplyr::mutate(nouvelle_colonne =  Petal.Width * 10)
 ```
 
+```{asis, eval=(knitr::is_latex_output()), echo=TRUE}
 **`data.table`: Il ne faut pas d'assignation pour modifier `iris_dt`**
-```{r, eval = FALSE}
+```
+```{r, echo=(knitr::is_latex_output()), eval=FALSE}
 iris_dt[ , nouvelle_colonne :=  Petal.Width * 10]
 ```
-
-<!-- Lino: fin du code pour le LaTeX -->
-
 
 ### Les usages de `:=`
 
@@ -581,7 +609,7 @@ L'utilisation de la fonction `:=` est déroutante lorsqu'on découvre `data.tabl
 
 ## Programmer des fonctions avec `data.table`
 
-## Utiliser `.SD` et `lapply`
+### Utiliser `.SD` et `lapply`
 
 Le mot clé `.SD` (*Subset of Data*) permet d'appliquer la même opération sur plusieurs colonnes. Les colonnes auxquelles l'opération s'applique sont contrôlées par l'argument `.SDcols` (par défaut, toutes les colonnes sont traitées). Le mot clé `.SD` est régulièrement utilisé en conjonction avec la fonction `lapply`.
 **Cette syntaxe, très puissante, permet également d'avoir des codes assez compacts, ce qui les rend plus lisible.**
@@ -656,5 +684,5 @@ Lorsqu'on définit des fonctions pour effectuer des traitements génériques, il
 - une [_cheatsheet_](https://github.com/rstudio/cheatsheets/raw/master/datatable.pdf) sur `data.table` (en anglais);
 - une [introduction à l'utilisation de l'opérateur `[...]`](https://stt4230.rbind.io/tutoriels_etudiants/hiver_2017/data.table) (en français);
 - Ce [cours complet sur `data.table`](https://gitlab.com/linogaliana/bigr/-/blob/master/04-datatable.Rmd) (en français).
-- Cette [présentation des fonctionalités du package](https://dreamrs.github.io/talks/20180528_RAddicts_datatable.pdf) (en français).
-- Ce [post sur les fonctions utilisant data.table](https://linogaliana.netlify.com/post/datatable/datatable-nse/) 
+- Cette [présentation des fonctionnalités du package](https://dreamrs.github.io/talks/20180528_RAddicts_datatable.pdf) (en français);
+- Ce [post sur les fonctions utilisant data.table](https://linogaliana.netlify.com/post/datatable/datatable-nse/).
