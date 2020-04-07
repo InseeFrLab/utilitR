@@ -25,21 +25,20 @@ Reprendre le 8.9 de source1.
 
 #### Eventuellement: `ggformula`
 
-## Début de la fiche `ggplot2`
+## Les concepts clefs de `ggplot2`
 
-L'objectif du *package* `ggplot2` est de fournir une approche unique pour produire quasiment toute représentation graphique de données. Cette fiche est une introduction à `ggplot2`. Pour des formations plus détaillées, se référer à {#ggplot2Ressources}.
+L'objectif du *package* `ggplot2` est de fournir une approche unique pour produire quasiment toute représentation graphique de données. Cette fiche est une introduction succincte à `ggplot2`. Pour des formations plus détaillées, se référer à {#ggplot2Ressources}.
 
 ```{r, message = F}
 library(ggplot2)
 ```
 
-
-### Les concepts clefs
+### Introduction
 
 **La fonction essentielle de `ggplot2` est `ggplot()`.** Il faut définir quatre éléments pour construire un graphique avec `ggplot()`: 
 
 - la **table de donnée** ;
-- le ***mapping*** : on définit dans l'_aesthetic_ (ou `aes`) le ***mapping***, c'est à dire ce que l'on veut représenter qui **dépend des variables** (quelle variable sur l'axe `x`, sur l'axe `y`, quelle variable pour définir une graduation de couleurs...) ;
+- le ***mapping*** : on définit dans l'_aesthetic_ (ou `aes`) le lien entre les variables des données et ce que l'on veut représenter sue le graphique (quelle variable sur l'axe `x`, sur l'axe `y`, quelle variable pour définir une graduation de couleurs...) ;
 - la **forme géométrique ou _geometry_ ** : on définit sous quelle représentation graphique on représente les paramètres précédents. Sous `ggplot`, ces fonctions sont de la forme `geom_XX()`;
 - les **paramètres** : on définit les autres paramètres qui dépendent de constantes (par exemple : je veux que toutes mes lignes soient rouges ou de taille 2 pixels).
 
@@ -90,7 +89,6 @@ ggplot(data = iris) +
 La notion de *mapping* et la double utilisation des paramètres visuels dans et à l'extérieur d'`aes()` sont une des principales difficultés de `ggplot2`. Il est normal de tâtonner lorsqu'on commence à les utiliser. Pour s'y retrouver, il suffit de suivre la règle suivante. **Si on établit un lien entre les valeurs d’une variable et un attribut graphique, on définit un _mapping_, et on le déclare dans `aes()`. Sinon, on modifie l’attribut de la même manière pour tous les points, et on le définit en-dehors de la fonction `aes()`.**
 :::
 
-
 ### Les formes géométriques
 
 La forme géométrique ou _geometry_ désigne le type de représentation graphique utilisée (nuage de points, histogrammes...). Pour spécifier le type de représentation que l'on souhaite, il faut utiliser les fonctions de la forme **`geom_[XXX]`**. Le tableau ci-dessous présente quelques représentations graphiques classiques.
@@ -109,10 +107,33 @@ Voici deux exemples d'utilisation.
 A COMPLETER
 
 ::: {.remarque data-latex=""}
-Il existe un grand nombre de formes géométriques dans `ggplot2`. Par ailleurs, de nombreux *packages* proposent encore d'autres formes géométriques pour réaliser des représentations graphiques particulières (cartes avec `ggmap`, arbres généalogiques avec `ggtree` et `ggenealogy`, résultats d'élections avec `ggparliament`...).
+Il existe un grand nombre de formes géométriques dans `ggplot2`. Par ailleurs, de très nombreux *packages* proposent encore d'autres formes géométriques pour réaliser des représentations graphiques particulières (cartes avec `ggmap`, arbres généalogiques avec `ggtree` et `ggenealogy`, résultats d'élections avec `ggparliament`...).
 :::
 
+## Comment personnaliser un graphique
+
+Il est possible de personnaliser un graphique `ggplot2` de deux façons:
+
+- en modifiant les options une à une (titres du graphique et des axes, graduation des axe...);
+- en utilisant un `theme` prédéfini ou en le définissant soi-même.
+
 ### Les options des graphiques
+
+#### Titre et libellé des axes
+
+Chaque nouvel élément graphique est à rajouter sous forme de layer. Ici, nous utilisons la fonction **labs** qui permet de définir les titres de tous les éléments possibles de l'aesthétic, ainsi que le titre général du graphique (*title*), le sous-titre (*subtitle*) et le bas de page (*caption*). À noter qu'il existe plusieurs autres façons de spécifier ces élèments par des couches spécifiques: `ggtitle`, `xlab`, `ylab`,...
+
+```{r fg6_1, echo=T,eval=T,fig.height=5,fig.width=10}
+ggplot(graphique1) +
+  geom_point(aes(x=log(Gross_Domestic_Product_GDP),
+                 y=log(Maternal_mortality_ratio),
+                 color=Continent))+
+  labs(title="Mortalité maternelle en fonction du PIB par habitant",
+       subtitle="En 2015",
+       x="PIB",
+       y="Taux de mortalité de la mère \n(pour 100 000 naissances)",
+       caption="Source : ODD / ONU")
+```
 
 Titre, légendes, axes, scales, xlim/ylim.
 
