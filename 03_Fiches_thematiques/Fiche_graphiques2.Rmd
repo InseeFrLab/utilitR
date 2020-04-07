@@ -29,6 +29,11 @@ Reprendre le 8.9 de source1.
 
 L'objectif du *package* `ggplot2` est de fournir une approche unique pour produire quasiment toute représentation graphique de données. Cette fiche est une introduction à `ggplot2`. Pour des formations plus détaillées, se référer à {#ggplot2Ressources}.
 
+```{r, message = F}
+library(ggplot2)
+```
+
+
 ### Les concepts clefs
 
 **La fonction essentielle de `ggplot2` est `ggplot()`.** Il faut définir quatre éléments pour construire un graphique avec `ggplot()`: 
@@ -42,19 +47,47 @@ L'objectif du *package* `ggplot2` est de fournir une approche unique pour produi
 
 L'écriture type d'un graphique est donc: 
 
-```{r, echo=T,eval=F}
+```{r, echo=T, eval=F}
 ggplot(data = <DATA>) + 
-  <FORME_GEO>(mapping = aes(<MAPPINGS>),...=<PARAMS>)
+  <FORME_GEO>(mapping = aes(<MAPPINGS>), ...=<PARAMS>)
 ```
 
-### Comprendre le *mapping*
+### Comprendre l'utilisation de `aes()`
 
-Remarque: Le *mapping* est la notion la plus complexe de `ggplot2`. 
+Le *mapping* désigne le lien logique entre les variables et les éléments visuels représentés sur le graphique. On le déclare grâce à la fonction `aes()` (pour _aesthetic_), qui sert donc à identifier les variables que l'on souhaite représenter sur le graphique. **Les arguments fondamentaux de `aes()` sont les variables représentées sur l'axe des abscisses et l'axe des ordonnées (`x` et `y`).** Par exemple, on écrit `aes(x = Petal.Width, y = Petal.Length)` si l'on souhaite représenter la longueur des pétales (sur l'axe `y`) en fonction de la largeur des pétales (sur l'axe `x`).
+
+```{r}
+iris <- iris
+ggplot(data = iris) + 
+  geom_point(aes(x = Petal.Width, y = Petal.Length))
+```
+
+Par ailleurs, la fonction `aes()` admet d'autres arguments qui permettent de modifier l'apparence  des éléments visuels selon une troisième variable du jeu de données.
+* **colour** : la couleur;
+* **shape** : la forme;
+* **size** : la taille;
+* **alpha** : la transparence;
+* **fill** : le remplissage.
+
+Dans l'exemple qui suit, on représente la longueur des pétales (sur l'axe `y`) en fonction de la largeur des pétales (sur l'axe `x`), en colorant les points en fonction de l'espèce de fleurs (`color = Species`).
+
+```{r}
+ggplot(data = iris) + 
+  geom_point(aes(x = Petal.Width, y = Petal.Length, color = Species))
+```
+
+
+
+::: {.remarque data-latex=""}
+Cette double utilisation de 
+
+:::
 
 
 
 
-Reprendre le 5 de source2 (sans l'exercice). Bien expliquer la différence entre ce qui est dans `aes()` et en-dehors.
+
+
 
 ### Présenter quelques geometries
 
