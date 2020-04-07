@@ -41,7 +41,7 @@ library(ggplot2)
 - la **table de donnée** ;
 - le ***mapping*** : on définit dans l'_aesthetic_ (ou `aes`) le ***mapping***, c'est à dire ce que l'on veut représenter qui **dépend des variables** (quelle variable sur l'axe `x`, sur l'axe `y`, quelle variable pour définir une graduation de couleurs...) ;
 - la **forme géométrique ou _geometry_ ** : on définit sous quelle représentation graphique on représente les paramètres précédents. Sous `ggplot`, ces fonctions sont de la forme `geom_XX()`;
-- les **paramètres** : on définit les autres paramètres qui dépendent de constantes (par exemple : je veux que toutes mes lignes soient rouge ou de taille 2 pixels).
+- les **paramètres** : on définit les autres paramètres qui dépendent de constantes (par exemple : je veux que toutes mes lignes soient rouges ou de taille 2 pixels).
 
 **La construction d'un graphique repose sur le principe de couches successives.** Les différentes couches graphiques se superposent et s'enchaînent grâce à l'**opérateur `+`**, comme un pipe. Il est possible d'aller à la ligne dans une instruction `ggplot()`, il suffit que l'opérateur `+` figure à la fin de la ligne.
 
@@ -63,11 +63,11 @@ ggplot(data = iris) +
 ```
 
 Par ailleurs, la fonction `aes()` admet d'autres arguments qui permettent de modifier l'apparence  des éléments visuels selon une troisième variable du jeu de données.
-* **colour** : la couleur;
-* **shape** : la forme;
-* **size** : la taille;
-* **alpha** : la transparence;
-* **fill** : le remplissage.
+* **`colour`** : la couleur;
+* **`shape`** : la forme;
+* **`size`** : la taille;
+* **`alpha`** : la transparence;
+* **`fill`** : le remplissage.
 
 Dans l'exemple qui suit, on représente la longueur des pétales (sur l'axe `y`) en fonction de la largeur des pétales (sur l'axe `x`), en colorant les points en fonction de l'espèce de fleurs (`color = Species`).
 
@@ -76,17 +76,16 @@ ggplot(data = iris) +
   geom_point(aes(x = Petal.Width, y = Petal.Length, color = Species))
 ```
 
+Il est possible d'utiliser ces mêmes arguments pour définir un élément visuel sans le lier à une variable, mais alors il faut l'indiquer **à l'extérieur de l'aesthetic** (donc à l'extérieur de `aes()`). Voici l'exemple précédent, modifée pour que la couleur des points soit définie "en dur" (rouge), et non en fonction d'une variable. L'argument `color` est donc à l'extérieur de `aes()`.
 
+```{r}
+ggplot(data = iris) + 
+  geom_point(aes(x = Petal.Width, y = Petal.Length), color = "red")
+```
 
 ::: {.remarque data-latex=""}
-Cette double utilisation de 
-
+**La notion de *mapping* et la double utilisation des paramètres visuels (`colour`, `shape`...) dans et à l'extérieur d'`aes()` sont une des principales difficultés de `ggplot2`.** Il est normal de tâtonner lorsqu'on commence à les utiliser.
 :::
-
-
-
-
-
 
 
 ### Présenter quelques geometries
