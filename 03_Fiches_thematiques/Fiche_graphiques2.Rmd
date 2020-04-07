@@ -65,11 +65,15 @@ ggplot(data = iris) +
 
 Par ailleurs, la fonction `aes()` admet d'autres arguments qui permettent de modifier l'apparence  des attributs graphiques selon une troisième variable du jeu de données.
 
-* **`colour`** : la couleur;
-* **`shape`** : la forme;
-* **`size`** : la taille;
-* **`alpha`** : la transparence;
-* **`fill`** : le remplissage.
+Attribut   |Description
+-----------------|------------------------------------
+**`color`**| Couleur des lignes ou des points
+**`shape`**| Forme des points
+**`size`**| Taille des points
+**`alpha`**| Transparence des points
+**`fill`**| Couleur des surfaces
+**`linetype`**| Type de ligne (continue, pointillée, ...)
+
 
 Dans l'exemple qui suit, on représente la longueur des pétales (sur l'axe `y`) en fonction de la largeur des pétales (sur l'axe `x`), en colorant les points en fonction de l'espèce de fleurs (`color = Species`).
 
@@ -110,6 +114,27 @@ A COMPLETER
 Il existe un grand nombre de formes géométriques dans `ggplot2`. Par ailleurs, de très nombreux *packages* proposent encore d'autres formes géométriques pour réaliser des représentations graphiques particulières (cartes avec `ggmap`, arbres généalogiques avec `ggtree` et `ggenealogy`, résultats d'élections avec `ggparliament`...).
 :::
 
+
+### Combiner plusieurs formes géométriques
+
+On peut représenter plusieurs *geometries* simultanément sur un même graphique, il suffit de les ajouter les unes aux autres avec l’opérateur `+`. Voici un exemple:
+
+```{r}
+ggplot(iris) + 
+  geom_point(aes(x = Petal.Width, y = Petal.Length), alpha = 0.2) + 
+  geom_smooth(aes(x = Petal.Width, y = Petal.Length), method = "lm")
+```
+
+::: {.conseil data-latex=""}
+Lorsqu'on utilise plusieurs fois le même _mapping_ dans plusieurs *geometries*, il est possible de déclarer le _mapping_ dans l’appel à `ggplot()` plutôt que de le répéter chaque *geometry*. Le _mapping_ sera alors valables pour toutes les *geometries* du graphique (sauf si redéfinissent explicitement le *mapping*). Le code suivant produit exactement le même graphique que l'exemple précédent:
+
+```{r}
+ggplot(iris, aes(x = Petal.Width, y = Petal.Length)) + 
+  geom_point(alpha = 0.2) + 
+  geom_smooth(method = "lm")
+```
+:::
+
 ## Comment personnaliser un graphique
 
 Il est possible de personnaliser un graphique `ggplot2` de deux façons:
@@ -139,7 +164,18 @@ Titre, légendes, axes, scales, xlim/ylim.
 
 Reprendre le 7 et le 9 de source2.
 
-### Exporter un graphique
+### Créer un graphique par modalité d'une variable
+
+La fonction `facet_wrap()` permet de représenter des données *en facettes*, c'est à dire décomposées par une variable de croisement.
+
+```{r, eval=TRUE}
+ggplot2::ggplot(data = diamonds) +
+	geom_point(mapping = aes(x = carat, y = price)) +
+	facet_wrap(~cut)
+```
+
+
+## Exporter un graphique
 
 Reprendre le 12 de source2.
 
