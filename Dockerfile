@@ -12,3 +12,5 @@ RUN Rscript -e "remotes::install_deps('/tmp/build_image', dependencies = TRUE, u
 # Second step: use the installed packages directory
 FROM $BASE_IMAGE
 COPY --from=install_packages /usr/local/lib/R/site-library /usr/local/lib/R/site-library
+# TeX Live babel-french is required for pdf compilation
+RUN tlmgr install babel-french
