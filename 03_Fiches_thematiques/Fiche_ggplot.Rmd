@@ -2,18 +2,66 @@
 
 ## Tâches concernées et recommandations
 
-L'utilisateur souhaite réaliser des graphiques avec `R` (nuages de points, histogrammes, densité...) et les personnaliser (légendes, titres, échelles...).
+L'utilisateur souhaite réaliser des graphiques (nuages de points, histogrammes, densité...) et les personnaliser (légendes, titres, échelles...).
 
 
 ::: {.recommandation data-latex=""}
 
 * Il est recommandé d'utiliser le *package* `ggplot2` qui permet de réaliser et de personnaliser un grand nombre de représentations graphiques;
-* Il est conseillé aux utilisateurs débutants d'utiliser l'*add-in* `esquisse` pour se familiariser avec `ggplot2` + EVENTUELLEMENT GGFORMULA, POINT A REDISCUTER.
+* Il est conseillé aux utilisateurs débutants d'utiliser l'*add-in* `esquisse` pour se familiariser avec `ggplot2`.
 :::
+
+## L'add-in `esquisse`
+
+### A quoi sert `esquisse`?
+
+Le _package_ `esquisse` fournit une interface graphique qui facilite la construction de graphiques avec `ggplot2`. L'objectif de ce *package* est de vous aider à construire rapidement un code `ggplot2` pour faire le graphique que vous voulez. En revanche, **l'utilisation d'`esquisse` ne remplace pas l'écriture d'un code `ggplot2`, et cet _add-in_ ne doit pas être utilisé pour réaliser et exporter un graphique sans sauvegarder le code qui le produit** (sinon vous ne pourrez ni reproduire ni modifier votre graphique par la suite).
+
+Vous pouvez en apprendre davantage sur les *add-ins* dans le paragraphe de [présentation des _add-ins_](#presentation_addin).
+
+### Comment utiliser `esquisse`
+
+Pour utiliser `esquisse`, il faut évidemment préalablement installer le *package*:
+
+```{r eval = FALSE}
+install.packages("esquisse")
+```
+
+Pour lancer l'interface, ouvrez le menu *Addins* dans la barre d'outils de RStudio, et cliquez sur *'ggplot2' builder*^[Vous pouvez aussi lancer la commande `esquisse::esquisser()` dans la Console.].
+
+![](./pics/intro_graphiques/esquisse_addin_menu.png)
+
+Une fenêtre s'ouvre: la première étape consiste à choisir un *dataframe* de votre environnement, et éventuellement à ne sélectionner que certaines de ses variables.
+
+![Choix d'un data frame](./pics/intro_graphiques/esquisse_choose_dataset.png)
+Une fois le choix effectué, cliquez sur *Validate imported data*.
+
+::: {.conseil data-latex=""}
+L'interface graphique d'`esquisse` est assez gourmande en ressources, il est donc déconseillé de l'utiliser avec des données volumineuses (plus de 100 000 observations). Si vous êtes dans cette situation, **il est fortement conseillé d'utiliser `esquisse` sur une petite partie de vos données** (les 1000 ou 10000 premières lignes par exemple). Une fois que vous avez construit le code `ggplot2`, vous pouvez le copier-coller dans un script `R` et réaliser le graphique sur l'ensemble des données.
+:::
+
+L'interface principale s'affiche alors. La liste des variables du *dataframe* apparaît en haut, et vous pouvez les faire glisser dans les zones *X*, *Y*, *Fill*, *Color*, *Size* et *Facet* pour créer des mappages. Le graphique se met automatiquement à jour.
+
+
+![](./pics/intro_graphiques/esquisse_plot.png)
+
+Par défaut, `esquisse` sélectionne le type de graphique le plus approprié selon la nature de vos variables. Mais vous pouvez choisir un autre type de graphique à l'aide de l'icône en haut à gauche.
+
+Enfin, une série de menus en bas de l'interface vous permettent de personnaliser les titres, les labels, la présentation ou de filtrer des valeurs de vos variables.
+
+Quand vous avez généré un graphique que vous souhaitez conserver, ouvrez le menu *Export & code*:
+
+![](./pics/intro_graphiques/esquisse_export.png)
+
+Vous y trouverez le code `R` correspondant au graphique actuellement affiché. Vous pouvez dès lors le copier pour le coller dans votre script, ou cliquer sur *Insert code in script* pour l'insérer directement dans votre script à l'endroit où se trouve votre curseur.
+
+`esquisse` ne propose pas (encore) tous les `geom` ou toutes les possibilités de `ggplot2`, mais ça peut être un outil très utile et pratique pour une exploration rapide de données ou lorsqu'on est un peu perdu dans la syntaxe et les fonctions de l'extension.
+
+Pour plus d'informations, vous pouvez vous référer à la [page du projet sur GitHub](https://github.com/dreamRs/esquisse) (en anglais).
 
 ## Les concepts clefs de `ggplot2`
 
-L'objectif du *package* `ggplot2` est de fournir une approche unique pour produire quasiment toute représentation graphique de données. Cette fiche est une introduction succincte à `ggplot2`. Pour des formations plus détaillées, se référer à {#ggplot2Ressources}.
+L'objectif du *package* `ggplot2` est de fournir une approche unique pour produire quasiment toute représentation graphique de données. Ce _package_ propose un grand nombre de fonctions permettant de personnaliser finement les représentations graphiques. Cette fiche n'est donc qu'une introduction succincte à `ggplot2`. Pour des formations plus détaillées, se référer à {#ggplot2Ressources}.
 
 ```{r, message = FALSE}
 library(ggplot2)
@@ -23,7 +71,7 @@ library(ggplot2)
 
 **La fonction essentielle de `ggplot2` est `ggplot()`.** Il faut définir quatre éléments pour construire un graphique avec `ggplot()`: 
 
-- la **table de donnée** ;
+- la **table de données** ;
 - le ***mapping*** : on définit dans l'_aesthetic_ (ou `aes`) le lien entre les variables des données et ce que l'on veut représenter sue le graphique (quelle variable sur l'axe `x`, sur l'axe `y`, quelle variable pour définir une graduation de couleurs...) ;
 - la **forme géométrique ou _geometry_ ** : on définit sous quelle représentation graphique on représente les paramètres précédents. Sous `ggplot`, ces fonctions sont de la forme `geom_XX()`;
 - les **paramètres** : on définit les autres paramètres qui dépendent de constantes (par exemple : je veux que toutes mes lignes soient rouges ou de taille 2 pixels).
