@@ -9,44 +9,34 @@ variables:
 
 stages:
   - install
+  - build
   - deploy
 
-
-
 build_image:
-  image: gitlab/dind
   stage: install
+  image: gitlab/dind
   script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - mkdir -p ${SHARED_PATH}
     - docker build --pull -t $CONTAINER_TEST_IMAGE .
     - docker push $CONTAINER_TEST_IMAGE
 
-pages:
-  stage: deploy
+buildbookdown:  
+  stage: build
   image: $CONTAINER_TEST_IMAGE
   script:
-#    - docker run -v ${SHARED_PATH}:/usr/local/src/project/public $CONTAINER_TEST_IMAGE Rscript -e "bookdown::render_book('./index.Rmd', output_dir = 'public')"
-    - Rscript -e "bookdown::render_book('./index.Rmd', output_dir = 'public')"
+    - Rscript -e "bookdown::render_book('index.Rmd', output_format = 'all', output_dir = '_public')"
+  artifacts:
+    paths:
+      - _public
+  when: always
+
+pages:
+  stage: deploy
+  script:
+    - mv _public public
   artifacts:
     paths:
       - public
   only:
     - master
-
-
-buildbookdown:  
-  stage: deploy
-  image: $CONTAINER_TEST_IMAGE
-  script:
-#    - docker run -v ${SHARED_PATH}:/usr/local/src/project/public $CONTAINER_TEST_IMAGE Rscript -e "bookdown::render_book('index.Rmd', 'bookdown::gitbook')"
-    - Rscript -e "bookdown::render_book('index.Rmd', 'bookdown::gitbook')"
-#    - docker run -v ${SHARED_PATH}:/usr/local/src/project/public $CONTAINER_TEST_IMAGE Rscript -e "bookdown::render_book('index.Rmd', 'bookdown::pdf_book')"
-    - Rscript -e "bookdown::render_book('index.Rmd', 'bookdown::pdf_book')"
-  artifacts:
-    paths:
-      - _book
-  when: always
-
-
-
