@@ -12,7 +12,7 @@ build_image:
   image: gitlab/dind
   script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - echo $CI_SERVER_HOST
+    - if [[ $CI_SERVER_HOST == "gitlab.com" ]]; then export BASE_IMAGE="rocker/geospatial:3.6.1"; else export BASE_IMAGE="git-registry.stable.innovation.insee.eu/innovation/rstudio"; fi
     - if [[ $CI_COMMIT_REF_SLUG == "master" ]]; then export BUILD_BASE_IMAGE=$BASE_IMAGE; else docker pull $BUILD_IMAGE && export BUILD_BASE_IMAGE=$BUILD_IMAGE || export BUILD_BASE_IMAGE=$CI_REGISTRY_IMAGE:master; fi
     - docker build --build-arg BASE_IMAGE=$BUILD_BASE_IMAGE -t $BUILD_IMAGE .
     - docker push $BUILD_IMAGE
