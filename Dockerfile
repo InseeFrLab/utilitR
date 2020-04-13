@@ -13,4 +13,8 @@ RUN Rscript -e "remotes::install_deps('/tmp/build_image', dependencies = TRUE, u
 FROM $BASE_IMAGE
 COPY --from=install_packages /usr/local/lib/R/site-library /usr/local/lib/R/site-library
 # TeX Live babel-french is required for pdf compilation
-RUN tlmgr install babel-french
+RUN  tlmgr install babel-french \
+  # After each tlmgr install as root, change right permissions (see https://github.com/rocker-org/rocker-versioned/issues/104)
+  && chown -R root:staff /opt/TinyTeX \
+  && chmod -R g+w /opt/TinyTeX \
+  && chmod -R g+wx /opt/TinyTeX/bin
