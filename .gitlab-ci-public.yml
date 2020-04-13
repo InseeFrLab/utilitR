@@ -5,24 +5,15 @@ variables:
   DOCKER_HOST: tcp://docker:2375
   DOCKER_DRIVER: overlay2
   CONTAINER_TEST_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
-  SHARED_PATH: /builds/shared/$CI_PROJECT_PATH
-
-stages:
-  - install
-  - build
-  - deploy
 
 build_image:
-  stage: install
-  image: gitlab/dind
+  stage: .pre
   script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - mkdir -p ${SHARED_PATH}
     - docker build --pull -t $CONTAINER_TEST_IMAGE .
     - docker push $CONTAINER_TEST_IMAGE
 
-buildbookdown:  
-  stage: build
+buildbookdown:
   image: $CONTAINER_TEST_IMAGE
   script:
     - Rscript -e "bookdown::render_book('index.Rmd', output_format = 'all', output_dir = '_public')"
