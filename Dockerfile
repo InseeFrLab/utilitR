@@ -57,9 +57,10 @@ RUN git clone https://gitlab.com/linogaliana/documentationr.git ${HOME}/document
 ## Useful to create a setup on binder that is different from a
 ## clone of your repository
 RUN chown -R ${NB_USER} ${HOME} && \
-    chown -R rstudio:staff /opt/TinyTeX && \
-    chmod -R g+w /opt/TinyTeX && \
-    chmod -R g+wx /opt/TinyTeX/bin
+    chown -R ${NB_USER}:staff /opt/TinyTeX && \
+    chmod -R ug+w /opt/TinyTeX && \
+    chmod -R ug+wx /opt/TinyTeX/bin && \
+    chown -R ${NB_USER}:staff /usr/local/bin
 
 ## Become normal user again
 USER ${NB_USER}
