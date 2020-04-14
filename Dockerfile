@@ -1,5 +1,9 @@
 # see the original Dockerfile at https://github.com/rocker-org/binder/blob/master/Dockerfile
-FROM registry.gitlab.com/linogaliana/documentationr:master
+ARG GITLAB=gitlab.com
+ARG REGISTRY=registry.$GITLAB
+ARG REPO=linogaliana/documentationr
+
+FROM $REGISTRY/$REPO:master
 
 ENV NB_USER rstudio
 ENV NB_UID 1000
@@ -45,7 +49,7 @@ CMD jupyter notebook --ip 0.0.0.0
 
 ## Copies your repo files into the Docker Container
 USER root
-COPY . ${HOME}
+RUN git clone https://$GITLAB/$REPO.git ${HOME}
 ## Enable this to copy files from the binder subdirectory
 ## to the home, overriding any existing files.
 ## Useful to create a setup on binder that is different from a
