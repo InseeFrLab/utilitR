@@ -56,7 +56,10 @@ RUN git clone https://gitlab.com/linogaliana/documentationr.git ${HOME}/document
 ## to the home, overriding any existing files.
 ## Useful to create a setup on binder that is different from a
 ## clone of your repository
-RUN chown -R ${NB_USER} ${HOME}
+RUN chown -R ${NB_USER} ${HOME} && \
+    chown -R rstudio:staff /opt/TinyTeX && \
+    chmod -R g+w /opt/TinyTeX && \
+    chmod -R g+wx /opt/TinyTeX/bin
 
 ## Become normal user again
 USER ${NB_USER}
