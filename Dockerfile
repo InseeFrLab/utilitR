@@ -33,11 +33,13 @@ RUN python3 -m venv ${VENV_DIR} && \
     # Explicitly install a new enough version of pip
     pip3 install pip==9.0.1 && \
     pip3 install --no-cache-dir \
-         jupyter-rsession-proxy
+         nbrsessionproxy==0.6.1 && \
+    jupyter serverextension enable --sys-prefix --py nbrsessionproxy && \
+    jupyter nbextension install    --sys-prefix --py nbrsessionproxy && \
+    jupyter nbextension enable     --sys-prefix --py nbrsessionproxy
 
 RUN R --quiet -e "devtools::install_github('IRkernel/IRkernel')" && \
     R --quiet -e "IRkernel::installspec(prefix='${VENV_DIR}')"
-
 
 CMD jupyter notebook --ip 0.0.0.0
 
