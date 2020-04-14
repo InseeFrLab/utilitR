@@ -1,8 +1,10 @@
 # see the original Dockerfile at https://github.com/rocker-org/binder/blob/master/Dockerfile
 FROM registry.gitlab.com/linogaliana/documentationr:master
 
-ENV NB_USER rstudio
-ENV NB_UID 1000
+## Declares build arguments
+ARG NB_USER=rstudio
+ARG NB_UID=1000
+
 ENV VENV_DIR /srv/venv
 
 # Set ENV for all programs...
@@ -41,5 +43,16 @@ RUN R --quiet -e "devtools::install_github('IRkernel/IRkernel')" && \
 
 CMD jupyter notebook --ip 0.0.0.0
 
+## Copies your repo files into the Docker Container
+USER root
+COPY . ${HOME}
+## Enable this to copy files from the binder subdirectory
+## to the home, overriding any existing files.
+## Useful to create a setup on binder that is different from a
+## clone of your repository
+RUN chown -R ${NB_USER} ${HOME}
+
+## Become normal user again
+USER ${NB_USER}
 
 ## If extending this image, remember to switch back to USER root to apt-get
