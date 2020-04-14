@@ -33,6 +33,8 @@ RUN apt-get update && \
 RUN mkdir -p ${VENV_DIR} && chown -R ${NB_USER} ${VENV_DIR}
 
 USER ${NB_USER}
+COPY Rprofile ${HOME}
+RUN mv ${HOME}/Rprofile ${HOME}/.Rprofile
 RUN python3 -m venv ${VENV_DIR} && \
     # Explicitly install a new enough version of pip
     pip3 install pip==9.0.1 && \
