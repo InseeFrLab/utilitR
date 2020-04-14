@@ -49,7 +49,7 @@ CMD jupyter notebook --ip 0.0.0.0
 
 ## Copies your repo files into the Docker Container
 USER root
-RUN git clone https://${GITLAB}/${REPO}.git ${HOME}/documentationR
+RUN git clone https://gitlab.com/linogaliana/documentationr.git ${HOME}/documentationR
 ## Enable this to copy files from the binder subdirectory
 ## to the home, overriding any existing files.
 ## Useful to create a setup on binder that is different from a
