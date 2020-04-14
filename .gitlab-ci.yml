@@ -47,6 +47,15 @@ force_bookdown_all:
   except:
     - master
 
+invalidate_binder_cache:
+  script:
+    - git fetch origin binder
+    - git checkout origin/binder
+    - git checkout -b binder
+    - git commit --allow-empty -m "master updated"
+    - git push origin binder
+    - echo $CI_REPOSITORY_URL
+
 # on master, we build gitbook and pdf: this is slow but we need to produce all the formats
 bookdown_all:
   image: $BUILD_IMAGE
