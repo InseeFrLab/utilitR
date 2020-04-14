@@ -1,11 +1,8 @@
 # see the original Dockerfile at https://github.com/rocker-org/binder/blob/master/Dockerfile
 FROM registry.gitlab.com/linogaliana/documentationr:master
 
-## Declares build arguments
-ARG NB_USER
-ARG NB_UID
-
-ENV RS_USER rstudio
+ENV NB_USER rstudio
+ENV NB_UID 1000
 ENV VENV_DIR /srv/venv
 
 # Set ENV for all programs...
@@ -18,7 +15,7 @@ RUN echo "export PATH=${PATH}" >> ${HOME}/.profile
 # without this being explicitly set
 ENV LD_LIBRARY_PATH /usr/local/lib/R/lib
 
-ENV HOME /home/${RS_USER}
+ENV HOME /home/${NB_USER}
 WORKDIR ${HOME}
 
 RUN apt-get update && \
@@ -29,9 +26,9 @@ RUN apt-get update && \
 
 # Create a venv dir owned by unprivileged user & set up notebook in it
 # This allows non-root to install python libraries if required
-RUN mkdir -p ${VENV_DIR} && chown -R ${RS_USER} ${VENV_DIR}
+RUN mkdir -p ${VENV_DIR} && chown -R ${NB_USER} ${VENV_DIR}
 
-USER ${RS_USER}
+USER ${NB_USER}
 RUN python3 -m venv ${VENV_DIR} && \
     # Explicitly install a new enough version of pip
     pip3 install pip==9.0.1 && \
@@ -55,5 +52,3 @@ RUN chown -R ${NB_USER} ${HOME}
 
 ## Become normal user again
 USER ${NB_USER}
-
-## If extending this image, remember to switch back to USER root to apt-get
