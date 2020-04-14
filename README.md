@@ -43,11 +43,11 @@ Plusieurs solutions sont possibles pour disposer de l'environnement de travail n
 
 - pour une installation sur un poste, voir la procédure d'[installation des packages](#installation-des-packages)
 
-- [l'utilisation d'un container](#utilisation-d-un-container)
+- [l'utilisation d'un container](#utilisation-dun-container)
 
 ## Installation des packages
 
-Les packages nécessaires sont déclarés dans le fichier [DESCRIPTION](-/blob/master/DESCRIPTION).  
+Les packages nécessaires sont déclarés dans le fichier [DESCRIPTION](DESCRIPTION).  
 Vous pouvez les installer en exécutant : 
 
 ```r
@@ -57,7 +57,8 @@ remotes::install_deps(dependencies = TRUE)
 
 ## Utilisation d'un container
 
-L'environnement de travail utilisé pour la compilation de la documentation est disponible sous la forme d'une image docker. [Une image est également disponible pour chaque branche du projet](container_registry).
+L'environnement de travail utilisé pour la compilation de la documentation est disponible sous la forme d'une image docker.  
+[Une image est également disponible pour chaque branche du projet](../../../container_registry).
 
 ### Container temporaire
 
