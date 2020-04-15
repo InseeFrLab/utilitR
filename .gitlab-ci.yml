@@ -1,6 +1,3 @@
-services:
-  - docker:dind
-  
 variables:
   GITLAB_BASE_IMAGE: rocker/geospatial:3.6.1
   ONYXIA_BASE_IMAGE: git-registry.stable.innovation.insee.eu/innovation/rstudio
@@ -9,10 +6,12 @@ variables:
   BUILD_IMAGE: $CI_REGISTRY_IMAGE:issue-40
 
 build_image:
+  services:
+    - docker:dind
   stage: .pre
   image: gitlab/dind
-  only:
-    - master
+  #only:
+  #  - master
   script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     # First, check where the project is hosted to define the base image
