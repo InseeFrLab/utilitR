@@ -3,23 +3,29 @@ variables:
   ONYXIA_BASE_IMAGE: git-registry.stable.innovation.insee.eu/innovation/rstudio
   DOCKER_HOST: tcp://docker:2375
   DOCKER_DRIVER: overlay2
-  BUILD_IMAGE: $CI_REGISTRY_IMAGE:issue-40
+  BUILD_IMAGE: $CI_REGISTRY_IMAGE:master
+
+stages:
+  - install
+  - build
+  - deploy
 
 build_image:
+  stage: install
+  image: gitlab/dind
   services:
     - docker:dind
-  stage: .pre
-  image: gitlab/dind
-  #only:
-  #  - master
+  only:
+    - master
   script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    # First, check where the project is hosted to define the base image
+    # Check where the project is hosted to define the base image
     - if [[ $CI_SERVER_HOST == "gitlab.com" ]]; then export BASE_IMAGE=$GITLAB_BASE_IMAGE; else export BASE_IMAGE=$ONYXIA_BASE_IMAGE; fi
     - docker build --build-arg BASE_IMAGE=$BASE_IMAGE -t $BUILD_IMAGE .
     - docker push $BUILD_IMAGE
 
 bookdown:
+  stage: build
   image: $BUILD_IMAGE
   script:
     - Rscript -e "remotes::install_deps(dependencies = TRUE, upgrade = FALSE)"
