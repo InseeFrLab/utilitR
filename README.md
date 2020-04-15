@@ -2,6 +2,7 @@
 
 <!-- badges: start -->
 [![pipeline status](https://gitlab.com/linogaliana/documentationR/badges/master/pipeline.svg)](https://gitlab.com/linogaliana/documentationR/-/commits/master)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gl/linogaliana%2FdocumentationR/binder?urlpath=rstudio)
 <!-- badges: end -->
 
  
@@ -41,9 +42,9 @@ Deux points importants sont à noter:
 
 Plusieurs solutions sont possibles pour disposer de l'environnement de travail nécessaire à la compilation de cette documentation : 
 
-- pour une installation sur un poste, voir la procédure d'[installation des packages](#installation-des-packages)
+- pour une installation sur un poste, voir la procédure d'[installation des packages](#installation-des-packages). _Cette solution ne garantit pas la reproductibilité._
 
-- [l'utilisation d'un container](#utilisation-dun-container)
+- [l'utilisation d'un container](#utilisation-dun-container). _Cette solution vous offre des garanties élevées de reproductibilité._
 
 ## Installation des packages
 
@@ -63,6 +64,15 @@ L'environnement de travail utilisé pour la compilation de la documentation est 
 ### Container temporaire
 
 _Cette solution vous sera utile si vous souhaitez apporter une modification ponctuelle au projet._
+
+#### Utilisation en ligne avec Binder
+
+Afin d'assurer une parfaite reproductibilité, un environnement de travail est disponible en ligne en cliquant sur ce bouton 
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gl/linogaliana%2FdocumentationR/binder?urlpath=rstudio).
+
+Vous arrivez sur un environnement de travail RStudio avec tous les packages déjà installés. Cet environnement utilise le service [Binder](https://mybinder.org) : il peut être indisponible ponctuellement.
+
+#### Utilisation sur un poste de travail
 
 Si docker est installé sur votre machine, vous pouvez exécuter : 
 
