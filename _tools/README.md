@@ -1,21 +1,21 @@
 # Scripts R utilitaires
 
-## Exporter la liste des packages LaTeX installés dans TinyTeX -- `tinytex_ls_pkgs.R`
+## Exporter la liste des packages LaTeX installés dans TinyTeX
 
-Le script `tinytex_ls_pkgs.R` exporte la liste des packages LaTeX installés dans le fichier `_latex_requirements.txt`.
+Le script `export_tinytex_pkgs.R` exporte la liste des packages LaTeX installés dans le fichier `_latex_requirements.txt`.
 
 ### Usage
 
 Depuis R :
 
 ```r
-source(file.path(rprojroot::find_rstudio_root_file(), "_tools/tinytex_ls_pkgs.R"))
+source(file.path(rprojroot::find_rstudio_root_file(), "_tools/export_tinytex_pkgs.R"))
 ```
 
 Depuis un terminal : 
 
 ```r
-Rscript _tools/tinytex_ls_pkgs.R
+Rscript _tools/export_tinytex_pkgs.R
 ```
 
 ## Installer la liste des packages LaTeX requis
