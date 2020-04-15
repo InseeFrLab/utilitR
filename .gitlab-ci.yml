@@ -47,17 +47,6 @@ force_bookdown_all:
   except:
     - master
 
-invalidate_binder_cache:
-  script:
-    - git fetch origin binder
-    - git checkout origin/binder
-    - git checkout -b binder
-    - git config user.email "linogaliana@yahoo.fr"
-    - git config user.name "Lino Galiana"
-    - git commit --allow-empty -m "master updated"
-    - git push origin binder
-    - echo $CI_REPOSITORY_URL
-
 # on master, we build gitbook and pdf: this is slow but we need to produce all the formats
 bookdown_all:
   image: $BUILD_IMAGE
@@ -78,3 +67,37 @@ pages:
       - public
   only:
     - master
+
+binder:
+  stage: deploy
+  only:
+    - master
+  environment:
+    name: Binder
+    url: https://mybinder.org/v2/gl/linogaliana%2FdocumentationR/binder?urlpath=rstudio
+  image: 
+    name: alpine/git:v2.24.1
+    entrypoint: [""]
+  script:
+    # configure ssh
+    - eval $(ssh-agent -s)
+      
+    # DEPLOY_PRIVATE_KEY is a base64 encoded ssh private key for deployment
+    # the corresponding public key is stored as a deploy key with write access
+    - echo "$DEPLOY_PRIVATE_KEY" | base64 -d | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan "$CI_SERVER_HOST" >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+    
+    # configure git
+    - git config --global user.email "$GITLAB_USER_EMAIL"
+    - git config --global user.name "$GITLAB_USER_NAME"
+    - git remote set-url origin "git@${CI_SERVER_HOST}:${CI_PROJECT_PATH}.git"
+    
+    # push a new commit to the binder branch to invalidate Binder cache
+    - git fetch origin binder
+    - git checkout origin/binder
+    - git checkout -b binder
+    - git commit --allow-empty -m "Update for ${CI_PIPELINE_URL}"
+    - git push origin binder
