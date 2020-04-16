@@ -2,8 +2,8 @@ ARG BASE_IMAGE=rocker/geospatial:3.6.1
 
 # Use a multi-stage build to install packages
 # First stage: install packages
-# LaTeX packages 
 FROM $BASE_IMAGE AS install_packages
+# LaTeX packages 
 COPY ./_latex_requirements.txt /tmp/build_image/
 RUN tlmgr install `cat /tmp/build_image/_latex_requirements.txt | tr '\r\n' ' '`
 # R packages 
