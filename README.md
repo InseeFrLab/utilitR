@@ -57,8 +57,14 @@ remotes::install_deps(dependencies = TRUE)
 
 ## Utilisation d'un container
 
-L'environnement de travail utilisé pour la compilation de la documentation est disponible sous la forme d'une image docker.  
-[Une image est également disponible pour chaque branche du projet](../../../container_registry).
+L'environnement de travail utilisé pour la compilation de la documentation est disponible sous la forme d'une image docker :
+
+```
+registry.gitlab.com/linogaliana/documentationr:master
+```
+
+Cette image comprend toutes les dépendances système ainsi que les packages R nécessaires à la compilation du livre.  
+Il comprend également RStudio : voir la procédure ci-après pour exécuter cet environnement.
 
 ### Container temporaire
 
