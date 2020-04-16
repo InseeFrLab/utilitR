@@ -1,12 +1,19 @@
-# Guide pour contribuer au `cookbookInsee` :cop:
+# Guide pour contribuer à la documentation UtilitR :cop:
 
 :closed_book:
 :police_car: :cop: :oncoming_police_car:
 :books: :guardsman: :nerd: 
 
 L'objet de ce document est de présenter les différentes
-manières de participer au `cookbook`. Il s'agit d'une adaptation du code des
-contributeurs proposé par l'équipe du `tidyverse`.
+manières de contribuer au projet UtilitR . 
+
+Pour ce faire, il n'y a pas besoin d'être un expert en `R` mais il 
+est nécessaire de pratiquer la gestion de version sur `gitlab` et 
+d'en connaître le vocabulaire (dépôt, issue, etc.). Des connaissances basiques 
+en `Rmarkdown` sont également nécessaires. 
+
+Une certaine discipline permet également une meilleur collaboration. Des règles 
+de contribution sont indiquées à la fin de cette fiche.
 
 ## Comment ajouter une fiche thématique à la documentation `R` :thumbsup:
 
@@ -33,12 +40,13 @@ Ensuite, avec `R`:
 
 ## Comment rédiger une fiche thématique :grinning:
 
-La fiche doit être parfaitement reproductible et respecter quelques contraintes
-formelles :police_car:. Pour cela, quelques règles sont ici évoquées:
+La fiche doit être reproductible et respecter quelques contraintes
+formelles :police_car:. Pour cela, quelques règles doivent être scrupuleusement
+respectées avant tout envoi de contribution :
 
 ### Contraintes formelles
 
-* Rédiger la fiche en `Rmarkdown` à partir du modèle de fiche (`03_Fiches_thematiques/Modele_de_fiche.Rmd`);
+* Rédiger la fiche en `Rmarkdown` à partir du modèle (`03_Fiches_thematiques/Modele_de_fiche.Rmd`);
 * Les extensions des images doivent être en minuscules. Cela veut dire qu'il faut éviter l'extension
 `.PNG` que `Windows` génère parfois (notamment via l'outil capture). Si un 
 ou plusieurs fichiers `.PNG` ont été générés,
@@ -47,12 +55,17 @@ vous pouvez utiliser ce [*snippet* de code `R`](https://gitlab.com/linogaliana/d
 
 ### Bonnes pratiques de codage en `R`
 
-Dans la mesure où les exemple de code `R` ont vocation à être réutilisés directement par les agents de l'Insee, il est demandé aux contributeurs de suivre le guide des bonnes pratiques (deuxième partie de la documentation). Le principe général est que la documentation doit être reproductible. Nous attirons particulièrement votre attention sur la gestion des dépendances.
+Dans la mesure où les exemple de code `R` ont vocation à être réutilisés 
+directement par les agents de l'Insee, il est demandé aux contributeurs 
+de suivre le guide des bonnes pratiques (deuxième partie de la documentation). 
+Le principe général est que la documentation doit être reproductible, 
+c'est-à-dire avec des exemples exécutables pris isolément. 
+Nous attirons particulièrement votre attention sur la gestion des dépendances.
 
 #### Assurer la qualité du code
 
 * **Bien tester tous les exemples**;
-* Utiliser uniquement des *datasets* disponibles dans `R` pour les exemples (`iris`, `nycflights13`, etc.);
+* Pour les exemples, utiliser uniquement des *datasets* disponibles par défaut dans `R` (`iris`, `nycflights13`, etc.);
 * Pour présenter l'utilisation d'une fonction:
         + commencer par le comportement par défaut (avec le minimum d'arguments);
         + présenter les principales options, avec un ou deux exemples;
@@ -71,8 +84,13 @@ liste des `Imports`. :tada:
 
 #### Gérer les jeux de données
 
-Pour les jeux de données utilisés dans les exemples, on précise systématiquement le *package* d'origine. Par exemple on écrit `data("World", package = "sf")` pour utiliser la table `World` du *package* `sf`. Une exception à cette règle concerne les jeux de données des *packages* présents dans la distribution de 
-base (`iris`, `mtcars`, etc. ). Pour ceux-là, on pourra simplifier l'appel avec la commande `data("iris")`.
+Pour les jeux de données utilisés dans les exemples, on précise systématiquement
+le *package* d'origine. Par exemple on écrit `data("World", package = "sf")` 
+pour utiliser la table `World` du *package* `sf`. 
+
+Une exception à cette règle concerne les jeux de données des *packages* 
+présents dans la distribution de base (`iris`, `mtcars`, etc. ). 
+Pour ceux-là, on pourra simplifier l'appel avec la commande `data("iris")`.
 
 ## Retirer des coquilles
 
