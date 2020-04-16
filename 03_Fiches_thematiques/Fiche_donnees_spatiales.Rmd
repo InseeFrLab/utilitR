@@ -73,7 +73,7 @@ La fonction **`sf::st_read()`** permet de lire différents formats de données g
 ```{r}
 # Charger les données sur la Martinique
 martinique <- sf::st_read(
-  dsn = system.file("shape/martinique.shp", package="cartography"),
+  dsn = system.file("gpkg/mtq.gpkg", package="cartography"),
   quiet = TRUE)
 ```
 
@@ -103,7 +103,7 @@ On peut produire très rapidement une représentation cartographique d'un attrib
 
 ```{r}
 # Produire une carte de la population par commune
-plot(martinique['P13_POP'])
+plot(martinique['POP'])
 ```
   
 ### Effectuer des opérations sur un objet `sf`
@@ -114,18 +114,18 @@ plot(martinique['P13_POP'])
 
 ```{r}
 grandes_villes_martinique <- martinique %>% 
-  dplyr::filter(P13_POP > 10000) %>% 
-  dplyr::arrange(P13_POP) %>% 
-  dplyr::mutate(log_pop = log(P13_POP))
+  dplyr::filter(POP > 10000) %>% 
+  dplyr::arrange(POP) %>% 
+  dplyr::mutate(log_pop = log(POP))
 ```
 
-On peut également appliquer des fonctions de statistiques descriptives avec `dplyr::summarise()` et construire des groupes avec `dplyr::group_by()`. Le `group_by()` sur un objet spatial va également agréger les géométries: il va créer une nouvelle géométrie recoupant l'ensemble des points, des lignes ou des polygones appartenant au groupe. Par exemple, on peut construire très facilement une géométrie plus agrégée par regroupement des géométries plus fines. Imaginons que la table de données sur la Martinique comprend deux groupes: les villes de plus de 10 000 habitants et celles de moins de 10 000 habitants. On désire faire la somme de la variable `P13_POP` pour chaque groupe. Dans ce cas, après avoir créé les groupes, on va effectuer un `group_by()` puis un `summarise()`:
+On peut également appliquer des fonctions de statistiques descriptives avec `dplyr::summarise()` et construire des groupes avec `dplyr::group_by()`. Le `group_by()` sur un objet spatial va également agréger les géométries: il va créer une nouvelle géométrie recoupant l'ensemble des points, des lignes ou des polygones appartenant au groupe. Par exemple, on peut construire très facilement une géométrie plus agrégée par regroupement des géométries plus fines. Imaginons que la table de données sur la Martinique comprend deux groupes: les villes de plus de 10 000 habitants et celles de moins de 10 000 habitants. On désire faire la somme de la variable `POP` pour chaque groupe. Dans ce cas, après avoir créé les groupes, on va effectuer un `group_by()` puis un `summarise()`:
 
 ```{r}
 martinique_agg <- martinique %>%
-  dplyr::mutate(group = (P13_POP < 10000)) %>%
+  dplyr::mutate(group = (POP < 10000)) %>%
   dplyr::group_by(group) %>%
-  dplyr::summarise(P13_POP = sum(P13_POP))
+  dplyr::summarise(POP = sum(POP))
 
 head(martinique_agg)
 ```
@@ -133,9 +133,9 @@ head(martinique_agg)
 Le résultat est analogue à celui qu'on obtiendrait avec un`data.frame`, à l'exception de la colonne `geometry`. L'agrégation d'une géométrie de nature `POLYGON` aboutit à une colonne de format `MULTIPOLYGON` qui agrège des polygones. La représentation graphique rend plus évidente cette agrégation:
 
 ```{r}
-plot(martinique['P13_POP'])
+plot(martinique['POP'])
 
-plot(martinique_agg['P13_POP'])
+plot(martinique_agg['POP'])
 ```
  
 ::: {.conseil data-latex=""}
