@@ -1,62 +1,38 @@
-services:
-  - docker:dind
-  
 variables:
-  GITLAB_BASE_IMAGE: rocker/geospatial:3.6.1
+  GITLAB_BASE_IMAGE: rocker/geospatial:latest
   ONYXIA_BASE_IMAGE: git-registry.stable.innovation.insee.eu/innovation/rstudio
   DOCKER_HOST: tcp://docker:2375
   DOCKER_DRIVER: overlay2
-  BUILD_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+  BUILD_IMAGE: $CI_REGISTRY_IMAGE:master
+
+stages:
+  - install
+  - build
+  - deploy
 
 build_image:
-  stage: .pre
+  stage: install
   image: gitlab/dind
-  script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    # First, check where the project is hosted to define the base image
-    - if [[ $CI_SERVER_HOST == "gitlab.com" ]]; then export BASE_IMAGE=$GITLAB_BASE_IMAGE; else export BASE_IMAGE=$ONYXIA_BASE_IMAGE; fi
-    # To speed up image builds, the following rules are applied:
-    #    - builds on master start from rocker/geospatial, they will be slower (+6 minutes) but this ensures a high level of reproducibility
-    #    - the first build on a branch starts from the image tagged 'master'
-    #    - other builds on a branch starts from the previous image
-    - if [[ $CI_COMMIT_REF_SLUG == "master" ]]; then export BUILD_BASE_IMAGE=$BASE_IMAGE; else docker pull $BUILD_IMAGE && export BUILD_BASE_IMAGE=$BUILD_IMAGE || export BUILD_BASE_IMAGE=$CI_REGISTRY_IMAGE:master; fi
-    - docker build --build-arg BASE_IMAGE=$BUILD_BASE_IMAGE -t $BUILD_IMAGE .
-    - docker push $BUILD_IMAGE
-
-# on branches, always build gitbooks: this is quite fast
-bookdown_html:
-  image: $BUILD_IMAGE
-  script:
-    - Rscript -e "bookdown::render_book('index.Rmd', output_dir = '_public')"
-  artifacts:
-    paths:
-      - _public
-  except:
-    - master
-
-# on branches, pdf build is not automatically triggered because this is very slow
-# it will be available in the CI/CD menu
-force_bookdown_all:
-  image: $BUILD_IMAGE
-  script:
-    - Rscript -e "bookdown::render_book('index.Rmd', output_format = 'all', output_dir = '_public')"
-  artifacts:
-    paths:
-      - _public
-  when: manual
-  except:
-    - master
-
-# on master, we build gitbook and pdf: this is slow but we need to produce all the formats
-bookdown_all:
-  image: $BUILD_IMAGE
-  script:
-    - Rscript -e "bookdown::render_book('index.Rmd', output_format = 'all', output_dir = '_public')"
-  artifacts:
-    paths:
-      - _public
+  services:
+    - docker:dind
   only:
     - master
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    # Check where the project is hosted to define the base image
+    - if [[ $CI_SERVER_HOST == "gitlab.com" ]]; then export BASE_IMAGE=$GITLAB_BASE_IMAGE; else export BASE_IMAGE=$ONYXIA_BASE_IMAGE; fi
+    - docker build --build-arg BASE_IMAGE=$BASE_IMAGE -t $BUILD_IMAGE .
+    - docker push $BUILD_IMAGE
+
+bookdown:
+  stage: build
+  image: $BUILD_IMAGE
+  script:
+    - Rscript -e "remotes::install_deps(dependencies = TRUE, upgrade = FALSE)"
+    - Rscript -e "bookdown::render_book('index.Rmd', output_format = 'all', output_dir = '_public')"
+  artifacts:
+    paths:
+      - _public
 
 pages:
   stage: deploy
