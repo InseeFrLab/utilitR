@@ -13,7 +13,11 @@ L'utilisateur souhaite utiliser des données d'enquête pour calculer des indica
 
 :::
 
-## Quelques détails sur comment réaliser la tâche avec les outils recommandés
+## Pourquoi l'usage des données d'enquêtes est-il particulier?
+
+La spécificité des données d'enquêtes est qu'il s'agit de données granulaires, au sens où une observation va en réalité représenter un grand nombre d'unités statistiques. La théorie des sondages assure les propriétés statistiques des estimateurs dérivés des données d'enquêtes, et en particulier l'estimateur d'horwitz-Thompson $\sum_{s \in S}\frac{y_s}{\pi_s}$. L'utilisation des données pondérées ne va pas de soi, y compris dans un langage dédié à la statistique tel que `R` ; une des difficultés de l'estimation sur données pondérées est liée à la granularité des données, qui rend difficile la représentation de la fonction de distribution cumulative.
+
+Pour rappel, la fonction de distribution cumulative, ou fonction de répartition, se formalise de la façon suivante : pour $x$ donné, elle s'écrit $F(x) = P(X \leq x)$. Or en présence de données granulaires, une grande partie des valeurs prises par $x$ ne sont pas connues (car l'information n'a pas été collectée), et il existe un grand nombre de méthodes pour estimer la valeur de la fonction de répartition dans cette situation.
 
 ::: {.conseil data-latex=""}
 
@@ -29,17 +33,7 @@ Cette boîte colorée sert à faire une remarque. Son usage n'est évidemment pa
 
 ### Faire une estimation sur données pondérées
 
-Lorsqu'on est débutant, il faut utiliser la fonction `super_fonction()` du *package* `super_package`.
-
-La fonction `super_fonction()` fonctionne comme ceci par défaut: blabla.
-
-La fonction `super_fonction()` propose beaucoup d'options:
-
-* `option1`: blabla;
-* `option2`: blabla;
-* `option3`: blabla.
-
-Voici un premier exemple de code (le plus simple possible, en utilisant des données facilement disponibles sur le site de l'Insee):
+Le _package_ `Hmisc` fournit la boîte à outils la plus simple pour calculer divers indicateurs très classiques sur des données pondérées : moyenne, variance, quantile, rang. Il existe des _packages_ dédiés spécifiquement aux indicateurs d'inégalité (sujet très largement éclairé par les données d'enquête), tel le _package_ `laeken`, mais on s'apesantira ici uniquement sur les quelques indicateurs les plus classiques.
 
 ```{r, eval = FALSE}
 library(super_package)
