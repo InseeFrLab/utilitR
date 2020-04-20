@@ -185,7 +185,8 @@ Une fois la référence créée, on peut manipuler les données de la table `d_l
 ```{r, eval = FALSE}
 count_log <- d_logement %>%
     mutate(logement = ifelse(natloc %in% c('MA', 'ME', 'AP'), 1, 0)) %>%
-    select(csdep, cne, logement)
+    select(csdep, cne, logement) %>%
+    compute()
 
 count_log <- count_log %>%
     group_by(csdep, cne) %>%
@@ -193,7 +194,7 @@ count_log <- count_log %>%
     collect()
 ```
 
-Dans cet exemple, la nature de l'objet `count_log` change entre la première et la seconde instruction. Au départ, il s'agit d'une interprétation de l'instruction sous forme `dplyr` en requête SQL (un objet `sql_tbl`), qui ensuite devient un objet `data.frame` suite à la commande `collect` (qui peut se voir comme un équivalent de la commande `dbGetQuery`, en plus large puisqu'elle déclenche la soumission de la requête SQL).
+Dans cet exemple, la nature de l'objet `count_log` change entre la première et la seconde instruction. Au départ, il s'agit d'une interprétation de l'instruction sous forme `dplyr` en requête SQL (un objet `sql_tbl`) stockée dans une table temporaire grâce à la commande `compute`, qui ensuite devient un objet `data.frame` suite à la commande `collect` (qui peut se voir comme un équivalent de la commande `dbGetQuery`, en plus large puisqu'elle déclenche la soumission de la requête SQL).
 
 Le _package_ `dbplyr` présente l'avantage d'offrir une syntaxe très proche de celle de `dplyr`. Cette syntaxe peut néanmoins, comme indiqué dans la documentation, présenter des limites dans l'interprétation des commandes en requêtes SQL. L'utilisateur devra être particulièrement attentif à ce point.
 
