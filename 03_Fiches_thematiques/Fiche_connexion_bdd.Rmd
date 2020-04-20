@@ -41,7 +41,10 @@ SQL (pour _Structured Query Language_ ou langage de requête structuré) est un 
 Dans les grandes lignes, une requête SQL ressemble généralement à ce qui suit :
 
 ```{sql, eval=FALSE}
-SELECT var1, var2 FROM ma_table WHERE var3=1 ORDER BY var1;
+SELECT var1, var2
+FROM ma_table
+WHERE var3=1
+ORDER BY var1;
 ```
 
 Un grand nombre de sites internet proposent des tutoriels sur le langage SQL.
@@ -87,14 +90,12 @@ Pour se connecter à une base de données Postgres avec `RPostgres`, il faut uti
 En voici un exemple:
 
 ```{r, eval = FALSE}
-library(RPostgres)
-driver <- dbDriver("Postgres")
-conn <- dbConnect(driver,
-                  host = "mabasededonnees.monsite.fr",
-                  port = 1983,
-                  dbname = "nom.basededonnees",
-                  user = rstudioapi::askForPassword("Nom d'utilisateur:"),
-                  password = rstudioapi::askForPassword("Mot de passe: "))
+conn <- DBI::dbConnect(drv = RPostgres::Postgres(),
+                       host = "mabasededonnees.monsite.fr",
+                       port = 1983,
+                       dbname = "nom.basededonnees",
+                       user = rstudioapi::askForPassword("Nom d'utilisateur:"),
+                       password = rstudioapi::askForPassword("Mot de passe: "))
 ```
 
 ::: {.conseil data-latex=""}
@@ -109,12 +110,12 @@ Le détail de la syntaxe est fournie à [cette adresse](https://db.rstudio.com/d
 
 ```{r, eval = FALSE}
 connexion <- DBI::dbConnect(odbc::odbc(),
-                            Driver = "PostgreSQL Unicode"
-                            Server = "mabasededonnees.monsite.fr",
-                            Port = 1983,
-                            Database = "nom.basededonnees",
-                            UID = rstudioapi::askForPassword(),
-                            PWD = rstudioapi::askForPassword())
+                            driver = "PostgreSQL Unicode"
+                            server = "mabasededonnees.monsite.fr",
+                            port = 1983,
+                            database = "nom.basededonnees",
+                            uid = rstudioapi::askForPassword(),
+                            pwd = rstudioapi::askForPassword())
 ```
 
 L'utilisateur obtient alors la visualisation de la base de données (ici par exemple le clône Fidéli) dans l'onglet `Connections` en haut à droite :
@@ -128,14 +129,12 @@ Le _package_ `ROracle` permet de se connecter à une base de données Oracle. Il
 La connexion se réalise de manière très similaire à celle pour une base de données Postgres :
 
 ```{r, eval = FALSE}
-library(ROracle)
-driver <- dbDriver("Oracle")
-conn <- dbConnect(driver,
-                  host = "mabasededonnees.monsite.fr",
-                  port = 1521,
-                  dbname = "nom.basededonnees",
-                  user = rstudioapi::askForPassword("Nom d'utilisateur:"),
-                  password = rstudioapi::askForPassword("Mot de passe: "))
+conn <- DBI::dbConnect(drv = ROracle::Oracle(),
+                       host = "mabasededonnees.monsite.fr",
+                       port = 1521,
+                       dbname = "nom.basededonnees",
+                       user = rstudioapi::askForPassword("Nom d'utilisateur:"),
+                       password = rstudioapi::askForPassword("Mot de passe: "))
 ```
 
 
@@ -176,6 +175,7 @@ Il est fréquent que les bases de données contiennent des données volumineuses
 **Il n'est pas indispensable de connaître SQL pour manipuler des données avec une connexion à une base de données sur `R`.** En effet, le package `dbplyr` permet de manipuler des tables dans une base de données avec une syntaxe très similaire à celle du _package_ `dplyr`. Ainsi, pour reprendre l'exemple du décompte des logements dans le clône Fidéli, il convient dans un premier temps de référencer l'existence de cette table en mémoire de `R` :
 
 ```{r, eval = FALSE}
+library(dplyr)
 library(dbplyr)
 d_logement <- tbl(conn, in_schema("s_diff_2018", "d_logement"))
 ```
@@ -185,14 +185,16 @@ Une fois la référence créée, on peut manipuler les données de la table `d_l
 ```{r, eval = FALSE}
 count_log <- d_logement %>%
     mutate(logement = ifelse(natloc %in% c('MA', 'ME', 'AP'), 1, 0)) %>%
-    select(csdep, cne, logement)
+    select(csdep, cne, logement) %>%
+    compute()
 
-count_log <- collect(count_log %>%
-                         group_by(csdep, cne) %>%
-                         summarise(nb_logement = sum(logement)))
+count_log <- count_log %>%
+    group_by(csdep, cne) %>%
+    summarise(nb_logement = sum(logement)) %>%
+    collect()
 ```
 
-Dans cet exemple, la nature de l'objet `count_log` change entre la première et la seconde instruction. Au départ, il s'agit d'une interprétation de l'instruction sous forme `dplyr` en requête SQL (un objet `sql_tbl`), qui ensuite devient un objet `data.frame` suite à la commande `collect` (qui peut se voir comme un équivalent de la commande `dbGetQuery`, en plus large puisqu'elle déclenche la soumission de la requête SQL).
+Dans cet exemple, la nature de l'objet `count_log` change entre la première et la seconde instruction. Au départ, il s'agit d'une interprétation de l'instruction sous forme `dplyr` en requête SQL (un objet `sql_tbl`) stockée dans une table temporaire grâce à la commande `compute`, qui ensuite devient un objet `data.frame` suite à la commande `collect` (qui peut se voir comme un équivalent de la commande `dbGetQuery`, en plus large puisqu'elle déclenche la soumission de la requête SQL).
 
 Le _package_ `dbplyr` présente l'avantage d'offrir une syntaxe très proche de celle de `dplyr`. Cette syntaxe peut néanmoins, comme indiqué dans la documentation, présenter des limites dans l'interprétation des commandes en requêtes SQL. L'utilisateur devra être particulièrement attentif à ce point.
 
@@ -205,11 +207,11 @@ Comme indiqué ci-dessus, le _package_ `dbplyr` convertit automatiquement vos in
 L'utilisation des fonctions `dbSendQuery` et `dbGetQuery` du *package* `DBI` permet de profiter pleinement des avantages du langage SQL:
 
 * indépendant de `R` : les requêtes SQL qui ont été élaborées en `R` pourront être aisément réutilisées dans un autre contexte (en `Python` par exemple) ;
-* puissance du langage: les requêtes écrites directement en SQL permettent d'utiliser toutes les fonctions de SQL pour le traitement des données par la base de données.
+* puissance du langage : les requêtes écrites directement en SQL permettent d'utiliser toutes les fonctions de SQL pour le traitement des données par la base de données.
 
 Le principal inconvénient de `DBI` et du langage SQL est que les détails du langage SQL peuvent varier légèrement d'un type de base de données à l'autre (MySQL, SQLite, Postgres...), ce qui peut entraîner des confusions et des bugs (par exemple si on reprend un exemple trouvé sur internet).
 
-Le *package* `dbplyr` a pour avantage de proposer une syntaxe simple, très proche de `dplyr`, ce qui réduit le coût d'apprentissage. Par ailleurs ce _package_ couvre l'essentiel des besoins standards en matière de base de données. Il a toutefois deux inconvénients: ce *package* ralentit l'apprentissage de SQL par l'utilisateur et empêche de réaliser des requêtes complexes réservées aux agents maîtrisant SQL. Par ailleurs, la syntaxe de `dbplyr` est spécifique à `R` et à l'écosystème `tidyverse`, créant ainsi une dépendance au langage.
+Le *package* `dbplyr` a pour avantage de proposer une syntaxe simple, très proche de `dplyr`, ce qui réduit le coût d'apprentissage. Par ailleurs ce _package_ couvre l'essentiel des besoins standards en matière de base de données. Il a toutefois deux inconvénients : ce *package* ralentit l'apprentissage de SQL par l'utilisateur et empêche de réaliser des requêtes complexes réservées aux agents maîtrisant SQL. Par ailleurs, la syntaxe de `dbplyr` est spécifique à `R` et à l'écosystème `tidyverse`, créant ainsi une dépendance au langage.
 
 ::: {.conseil data-latex=""}
 Si vous découvrez le langage SQL et le travail sur des bases de données, le _package_ `dbplyr` peut vous aider à être rapidement opérationnel. Toutefois, il est vivement recommandé d'apprendre SQL en parallèle.
