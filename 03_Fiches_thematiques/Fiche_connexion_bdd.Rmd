@@ -187,9 +187,10 @@ count_log <- d_logement %>%
     mutate(logement = ifelse(natloc %in% c('MA', 'ME', 'AP'), 1, 0)) %>%
     select(csdep, cne, logement)
 
-count_log <- collect(count_log %>%
-                         group_by(csdep, cne) %>%
-                         summarise(nb_logement = sum(logement)))
+count_log <- count_log %>%
+    group_by(csdep, cne) %>%
+    summarise(nb_logement = sum(logement)) %>%
+    collect()
 ```
 
 Dans cet exemple, la nature de l'objet `count_log` change entre la première et la seconde instruction. Au départ, il s'agit d'une interprétation de l'instruction sous forme `dplyr` en requête SQL (un objet `sql_tbl`), qui ensuite devient un objet `data.frame` suite à la commande `collect` (qui peut se voir comme un équivalent de la commande `dbGetQuery`, en plus large puisqu'elle déclenche la soumission de la requête SQL).
