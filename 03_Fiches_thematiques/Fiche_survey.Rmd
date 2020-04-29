@@ -21,9 +21,11 @@ Ce paragraphe traite de considérations assez théoriques relatives aux données
 
 :::
 
-La spécificité des données d'enquêtes est qu'il s'agit de données granulaires, au sens où une observation va en réalité représenter un grand nombre d'unités statistiques. La théorie des sondages assure les propriétés statistiques des estimateurs dérivés des données d'enquêtes, et en particulier l'estimateur d'horwitz-Thompson $\sum_{s \in S}\frac{y_s}{\pi_s}$. L'utilisation des données pondérées ne va pas de soi, y compris dans un langage dédié à la statistique tel que `R` ; une des difficultés de l'estimation sur données pondérées est liée à la granularité des données, qui rend difficile la représentation de la fonction de distribution cumulative.
+La spécificité des données d'enquêtes est qu'il s'agit de données granulaires, au sens où une observation va en réalité représenter un grand nombre d'unités statistiques. La théorie des sondages assure les propriétés statistiques des estimateurs dérivés des données d'enquêtes, et en particulier l'estimateur d'Horwitz-Thompson $\sum_{s \in S}\frac{y_s}{\pi_s}$. L'utilisation des données pondérées ne va pas de soi, y compris dans un langage dédié à la statistique tel que `R` ; une des difficultés de l'estimation sur données pondérées est liée à la granularité des données, qui rend difficile la représentation de la fonction de distribution cumulative.
 
-Pour rappel, la fonction de distribution cumulative, ou fonction de répartition, se formalise de la façon suivante : pour $x$ donné, elle s'écrit $F(x) = P(X \leq x)$. Or en présence de données granulaires, une grande partie des valeurs prises par $x$ ne sont pas connues (car l'information n'a pas été collectée), et il existe un grand nombre de méthodes pour estimer la valeur de la fonction de répartition dans cette situation. En conséquence, et de manière symétrique, il existe une grande variété de façons d'estimer un quantile, puisque le quantile se définit de la manière suivante : $Q(p) = F^{-1}(p) = inf\{x: F(x) \geq p\}$. 
+Pour rappel, la fonction de distribution cumulative, ou fonction de répartition, se formalise de la façon suivante : pour $x$ donné, elle s'écrit $F(x) = P(X \leq x)$. Or en présence de données granulaires, une grande partie des valeurs prises par $x$ ne sont pas connues (car l'information n'a pas été collectée), et il existe un grand nombre de méthodes pour estimer la valeur de la fonction de répartition dans cette situation. En conséquence, et de manière symétrique, il existe une grande variété de façons d'estimer un quantile, puisque le quantile se définit de la manière suivante : 
+
+$Q(p) = F^{-1}(p) = inf\{x: F(x) \geq p\}$. 
 
 En pratique, le quantile se calcule comme une interpolation pour les deux observations l'encadrant dans les données : ${\hat Q}(p) = (1-\gamma) X_{(j)} + \gamma X_{(j+1)}$. Toute la question est donc la forme que l'on donne à $\gamma$ ; la variété de choix de méthodes, déjà importante dans le cas non pondéré, est démultiplié dans le cas pondéré, comme le montre la documentation de la fonction `wtd.quantile` et en particulier le paramètre `type` du _package_ `Hmisc`. Pour plus de détails sur le calcul des quantiles dans les logiciels statistiques, se reporter à [l'article de Hyndman et Fan](https://www.amherst.edu/media/view/129116/original/Sample+Quantiles.pdf).
 
@@ -40,15 +42,16 @@ Le _package_ `Hmisc` fournit la boîte à outils la plus simple pour calculer di
 ```{r, eval = FALSE}
 library(Hmisc)
 ## table t, avec une variable quantitative y et une variable de poids p
-with(t, wtd.mean(y, weights = p)) ## weighted mean
-with(t, wtd.std(y, weights = p)) ## weighted standard deviation
-with(t, wtd.quantile(y, weights = p, probs = 0.5, type = 'quantile'))  ## weighted median
+with(t, wtd.mean(y, weights = p)) ## moyenne
+with(t, wtd.std(y, weights = p)) ## écart-type
+with(t, wtd.quantile(y, weights = p, probs = 0.5, type = 'quantile'))  ## médiane
 ```
 
 En sortie, on obtient les résultats attendus bruts, sans mise en forme particulière. Pour présenter les résultats, il faudra les concaténer et utiliser des _packages_ de création de tableaux.
 
 ```{r, eval = FALSE}
-with(t, wtd.quantile(y, weights = p, probs = (1:9)/10), type = 'quantile') ### calculer les déciles de la variable y
+with(t, wtd.quantile(y, weights = p, probs = (1:9)/10), 
+     type = 'quantile') ### calculer les déciles de la variable y
 ```
 
 Le code ci-dessus permet d'obtenir un vecteur (object `vector`) contenant les 9 déciles permettant de séparer la population, classée en fonction de la variable $y$, en 10 groupes de taille égale.
@@ -65,13 +68,45 @@ On obtient un objet `tibble` qui contient la variable `categorie` ainsi que la v
 
 ## Estimer à la fois valeur et variance
 
+Comme toute estimation réalisée sur une partie incomplète de l'information, l'estimation sur données d'enquêtes est entachée d'incertitude, incertitude qui peut être par ailleurs estimée dans le cadre de la théorie des sondages. Pour ce faire, il existe différents outils disponibles sous `R` ; l'outil le plus répandu, couvrant une gamme relativement simples de plans de sondage, est le _package_ `survey`.
+
+::: {.remarque data-latex=""}
+
+Pour mettre en oeuvre des outils de calcul de la variance tels que `survey`, il faut disposer d'informations qui sont en pratique rarement accessibles, concernant le plan de sondage et les variables de stratification. Les éléments présentés ci-après sont donc applicables à cette condition ; il existe néanmoins d'autres situations où le calcul de variance est possible, en particulier lorsque les producteurs mettent à disposition des poids répliqués. C'est une pratique très fréquente pour les données américaines par exemple (_cf_. par exemple ces exemples de codes fournis sur [ce site](http://asdfree.com/), et en particulier l'exemple du [SCF américain](http://asdfree.com/survey-of-consumer-finances-scf.html)). À l'Insee, un des rares exemples est l'enquête HVP, ainsi qu'au niveau européen le HFCS, pour laquelle des poids répliqués sont disponibles sur une partie des millésimes. L'utilisation du _package_ `survey` dans ce contexte est très utile.
+
+:::
+
 ### Le package `survey`
 
-Lorsqu'on est plus avancé, on peut utiliser la fonction `hyper_fonction()` du *package* `hyper_package`.
+En préalable à tout calcul, il faut créer un objet `survey.design` qui contient les éléments nécessaires au calcul des estimateurs et de la variance associée. La création de cet objet se fait au travers de la fonction `svydesign`, ou si l'on veut utiliser des poids répliqués `svrepdesign`. Dans le cadre de la fonction `svydesign`, il faut spécifier les éventuelles variables de stratification, les variables de grappe, les variables permettant de définir les tirages de première et de seconde phases. Dans le cadre de la fonction `svrepdesign`, il faut simplement spécifier la matrice des poids répliqués. Un exemple sur le HFCS est donné ci-après.
 
-* Comportement par défaut;
-* Principales options;
-* Exemples de code.
+```{r, eval = FALSE}
+library(survey)
+
+hfcs.design <- svrepdesign(weights = ~ HW0010, repweights = W, data = H1, 
+                           scale = 1, rscales = rep(1/999, 1000), 
+                           mse = FALSE, type = 'bootstrap', combined.weights = TRUE)
+```
+
+La spécification du plan de sondage est à la fois un élément compliqué, car il fait intervenir de multiples options dans les fonctions `svydesign` et `svrepdesign`, mais c'est également la force de ce _package_ que d'offrir des fonctionnalités assez complètes en matière de description des estimateurs et des plans de sondage. Il faut donc prendre grand soin à considérer l'ensemble des paramètres des fonctions utilisées. Une fois le plan de sondage spécifié, il est possible de mettre en œuvre le calcul des estimateurs et des écarts-types associés. Ainsi quelques exemples ci-dessous :
+
+```{r, eval = FALSE}
+
+svymean(~DA3001, 
+        design = hfcs.design) ### valeur moyenne de DA3001 sur l'ensemble de l'échantillon
+svyquantile(~DA3001, design = hfcs.design, quantiles = 0.5, 
+            method = "constant", interval.type = "quantile") ### valeur médiane de DA3001
+```
+
+La fonction `svyquantile` est le pendant de la fonction `wtd.quantile` dans le package `survey`, et doit donner les mêmes estimations égales pour un paramétrage équivalent. En particulier, le paramètre `method` permet de définir la façon dont la fonction de répartition est approximée.
+
+Par ailleurs, si l'on souhaite décomposer une estimation par catégorie, le _package_ `survey` contient une fonction `svyby` qui permet de réaliser cette décomposition simplement. Il n'est de toute manière pas possible d'utiliser la syntaxe `tidyverse` sur des objets de type `survey.design`. On peut ainsi décomposer la valeur médiane de `DA3001` par pays (donné par `SA0100`) de la façon suivante :
+
+```{r, eval = FALSE}
+svyby(~DA3001, ~SA0100, hfcs.design, svyquantile, quantiles = 0.5, 
+      method = "constant", interval.type = "quantile")
+```
+
 
 ## Quelques bonnes pratiques
 
