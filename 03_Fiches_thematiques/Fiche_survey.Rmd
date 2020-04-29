@@ -76,7 +76,7 @@ Pour mettre en oeuvre des outils de calcul de la variance tels que `survey`, il 
 
 :::
 
-### Le package `survey`
+### Le _package_ `survey`
 
 En préalable à tout calcul, il faut créer un objet `survey.design` qui contient les éléments nécessaires au calcul des estimateurs et de la variance associée. La création de cet objet se fait au travers de la fonction `svydesign`, ou si l'on veut utiliser des poids répliqués `svrepdesign`. Dans le cadre de la fonction `svydesign`, il faut spécifier les éventuelles variables de stratification, les variables de grappe, les variables permettant de définir les tirages de première et de seconde phases. Dans le cadre de la fonction `svrepdesign`, il faut simplement spécifier la matrice des poids répliqués. Un exemple sur le HFCS est donné ci-après.
 
@@ -107,23 +107,21 @@ svyby(~DA3001, ~SA0100, hfcs.design, svyquantile, quantiles = 0.5,
       method = "constant", interval.type = "quantile")
 ```
 
+### Le _package_ `gustave`
+
+Le _package_ `survey` présente l'avantage de fournir un cadre pour l'estimation sur données d'enquête, mais occulte des aspects pratiques communs à bon nombre d'enquêtes rendant en pratique les résultats de variance inadaptés à la réalité des enquêtes. En particulier, les estimations de variance prennent difficilement, voire pas du tout en compte l'effet sur la précision de la non-réponse totale et du calage sur marges. Pour cela, la division Sondages a développé un _package_ qui offre un cadre d'analyse complet pour l'estimation de la variance. La fonction `qvar` permet d'estimer la variance pour un estimateur donné ; les estimations de variance pour les enquêtes de l'Insee se basent désormais très largement sur cet outil.
 
 ## Quelques bonnes pratiques
 
-Quelques conseils généraux sur la façon de s'y prendre.
+De manière générale, l'estimation sur données d'enquêtes se voit commme une estimation sur données pondérées, le seul enjeu étant de bien prendre en compte la pondération dans l'estimation. De ce point de vue, le _package_ `Hmisc` suffit largement. L'utilisateur souhaitant avoir un usage avancé des données d'enquêtes, et estimer également la précision pour par exemple construire un intervalle de confiance, se trouvera face aux alternatives suivantes :
 
-* Faut-il préprocesser les données avant de réaliser la tâche;
-* Comment minimiser les temps de calculs/la charge en RAM.
-
-## Sources
-
-Si le rédacteur de la fiche a réutilisé des ressources externes en français disponible en licence libre, il faut indiquer ici l'URL des ressources, le nom des auteurs et la licence de réutilisation de ces ressources.
+* il fait face à un jeu de données d'enquêtes avec des poids répliqués, qui synthétisent _de facto_ l'intégralité des étapes dans le processus de sondage, et dans ce cas, le _package_ `survey` est adapté ;
+* il doit estimer la variance de manière analytique - comme c'est généralement le cas dans les enquêtes de l'Insee - et dans ce cas, c'est le _package_ `gustave` qui sera le plus adapté à son besoin.
 
 ## Ressources
 
 * Sample Quantiles in Statistical Packages, R. J. Hyndman and Y. Fan, https://www.amherst.edu/media/view/129116/original/Sample+Quantiles.pdf
-* les vignettes et *cheatsheets* si elles existent;
-* les formations proposées par l'Insee;
-* les formations/tutoriels disponibles sur internet.
+* Tutoriel d'exploitation des données d'enquêtes (essentiellement américaines) avec R, http://asdfree.com/
+* Vignettes du _package_, et en particulier [celle-ci](https://cran.r-project.org/web/packages/survey/vignettes/survey.pdf) ainsi que le [site compagnon du _package_](http://r-survey.r-forge.r-project.org/survey/)
+* le [README](https://github.com/martinchevalier/gustave/blob/master/README.md) du _package `gustave`
 
-Dans la mesure du possible, il faut veiller à proposer des ressources en français.
