@@ -76,7 +76,6 @@ Comme toute estimation réalisée sur une partie incomplète de l'information, l
 ::: {.remarque data-latex=""}
 
 Pour mettre en oeuvre des outils de calcul de la variance tels que `survey`, il faut disposer d'informations qui sont en pratique rarement accessibles, concernant le plan de sondage et les variables de stratification. Les éléments présentés ci-après sont donc applicables à cette condition ; il existe néanmoins d'autres situations où le calcul de variance est possible, en particulier lorsque les producteurs mettent à disposition des poids répliqués. C'est une pratique très fréquente pour les données américaines par exemple (_cf_. par exemple ces exemples de codes fournis sur [ce site](http://asdfree.com/), et en particulier l'exemple du [SCF américain](http://asdfree.com/survey-of-consumer-finances-scf.html)). À l'Insee, un des rares exemples est l'enquête HVP, ainsi qu'au niveau européen le HFCS, pour laquelle des poids répliqués sont disponibles sur une partie des millésimes. L'utilisation du _package_ `survey` dans ce contexte est très utile.
-
 :::
 
 ### Le _package_ `survey`
@@ -86,6 +85,8 @@ En préalable à tout calcul, il faut créer un objet `survey.design` qui contie
 * Pour utiliser la fonction `svydesign`, il faut spécifier les éventuelles variables de stratification, les variables de grappe, les variables permettant de définir les tirages de première et de seconde phases.
 * Pour utiliser la fonction `svrepdesign`, il suffit de spécifier la matrice des poids répliqués. Un exemple sur le HFCS est donné ci-après.
 
+**La spécification du plan de sondage est une étape complexe**, car elle fait intervenir de multiples options dans les fonctions `svydesign` et `svrepdesign`, mais c'est ce qui permet à ce _package_ d'offrir des fonctionnalités assez complètes en matière de description des estimateurs et des plans de sondage. Il faut donc prendre grand soin à considérer l'ensemble des paramètres des fonctions utilisées. 
+
 ```{r, eval = FALSE}
 library(survey)
 
@@ -94,7 +95,7 @@ hfcs.design <- svrepdesign(weights = ~ HW0010, repweights = W, data = H1,
                            mse = FALSE, type = 'bootstrap', combined.weights = TRUE)
 ```
 
-La spécification du plan de sondage est à la fois un élément compliqué, car il fait intervenir de multiples options dans les fonctions `svydesign` et `svrepdesign`, mais c'est également la force de ce _package_ que d'offrir des fonctionnalités assez complètes en matière de description des estimateurs et des plans de sondage. Il faut donc prendre grand soin à considérer l'ensemble des paramètres des fonctions utilisées. Une fois le plan de sondage spécifié, il est possible de mettre en œuvre le calcul des estimateurs et des écarts-types associés. Ainsi quelques exemples ci-dessous :
+Une fois le plan de sondage spécifié, il est possible de mettre en œuvre le calcul des estimateurs et des écarts-types associés. Ainsi quelques exemples ci-dessous :
 
 ```{r, eval = FALSE}
 
