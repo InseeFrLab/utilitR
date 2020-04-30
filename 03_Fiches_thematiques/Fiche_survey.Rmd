@@ -108,7 +108,7 @@ svyquantile(~DA3001, design = hfcs.design, quantiles = 0.5,
             method = "constant", interval.type = "quantile") ### valeur médiane de DA3001
 ```
 
-La fonction `svyquantile` est le pendant de la fonction `wtd.quantile` dans le package `survey`, et doit donner les mêmes estimations égales pour un paramétrage équivalent. En particulier, le paramètre `method` permet de définir la façon dont la fonction de répartition est approximée.
+La fonction `svyquantile` est l'équivalent de la fonction `wtd.quantile` dans le package `survey`. Elle doit donc donner des estimations identiques pour un paramétrage équivalent. En particulier, le paramètre `method` permet de définir la façon dont la fonction de répartition est approximée.
 
 Par ailleurs, si l'on souhaite décomposer une estimation par catégorie, le _package_ `survey` contient une fonction `svyby` qui permet de réaliser cette décomposition simplement. Il n'est de toute manière pas possible d'utiliser la syntaxe `tidyverse` sur des objets de type `survey.design`. On peut ainsi décomposer la valeur médiane de `DA3001` par pays (donné par `SA0100`) de la façon suivante :
 
@@ -119,7 +119,9 @@ svyby(~DA3001, ~SA0100, hfcs.design, svyquantile, quantiles = 0.5,
 
 ### Le _package_ `gustave`
 
-Le _package_ `survey` présente l'avantage de fournir un cadre pour l'estimation sur données d'enquête, mais occulte des aspects pratiques communs à bon nombre d'enquêtes rendant en pratique les résultats de variance inadaptés à la réalité des enquêtes. En particulier, les estimations de variance prennent difficilement, voire pas du tout en compte l'effet sur la précision de la non-réponse totale et du calage sur marges. Pour cela, la division Sondages a développé un _package_ qui offre un cadre d'analyse complet pour l'estimation de la variance. La fonction `qvar` permet d'estimer la variance pour un estimateur donné ; les estimations de variance pour les enquêtes de l'Insee se basent désormais très largement sur cet outil.
+Le _package_ `survey` présente l'avantage de fournir un cadre général pour l'estimation sur données d'enquête, mais il occulte des aspects pratiques communs à bon nombre d'enquêtes, ce qui rend souvent les cakculs de variance inadaptés à la réalité des enquêtes. En particulier, les estimations de variance prennent difficilement voire pas du tout en compte l'effet de la non-réponse totale et du calage sur marges sur la précision. 
+
+Pour répondre à cette difficulté, la division Sondages a développé un _package_ qui offre un cadre d'analyse complet pour l'estimation de la variance. La fonction `qvar` permet d'estimer la variance pour un estimateur donné ; les estimations de variance pour les enquêtes de l'Insee se basent désormais très largement sur cet outil. Vous pouvez en apprendre davantage sur `gustave` [ici](https://github.com/martinchevalier/gustave/blob/master/README.md).
 
 ## Quelques bonnes pratiques
 
