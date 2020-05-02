@@ -1,0 +1,490 @@
+# Manipuler des chaînes de caractères
+
+## Tâches concernées et recommandations
+
+L'utilisateur souhaite manipuler du texte (repérer et extraire une chaîne de caractères, concaténer, remplacer une chaîne par une autre, modifier la casse...).
+
+::: {.recommandation data-latex=""}
+
+* Il est recommandé d'utiliser le *package* `stringr` qui répond à la plupart des besoins courants;
+* Pour les utilisateurs plus avancés, le *package* `stringi` propose un plus grand nombre de fonctionnalités;
+* L'usage du _package_ `rex` est utile pour construire des expressions régulières complexes.
+:::
+
+
+## Manipuler des chaînes de caractères avec `stringr`
+
+### Présentation du _package_
+
+Les packages `stringi` et `stringr` facilitent beaucoup le travail sur les chaînes de caractères. `stringi` propose un grand nombre de fonctions avancées, et `stringr` propose un petit nombre de fonctions simples à utiliser (qui utilisent les fonctions de `stringi`). Il est donc préférable de commencer à travailler avec `stringr`. Toutes les fonctions de `stringi` et `stringr` sont stucturées de la même façon: le premier argument de la fonction est **toujours** une chaîne de caractères; les arguments suivants sont des options.
+
+Pour utiliser `stringr`, il faut charger le _package_:
+
+```{r}
+library(stringr)
+```
+
+### Manipulations simples
+
+#### Convertir en majuscules / minuscules
+
+Les fonctions `str_to_lower`, `str_to_upper` et `str_to_title` permettent respectivement de mettre en minuscules, mettre en majuscules, ou de capitaliser les éléments d'un vecteur de chaînes de caractères:
+
+```{r}
+str_to_lower("Hello world")
+```
+
+```{r}
+str_to_upper("Hello world")
+```
+```{r}
+str_to_title("Hello world")
+```
+
+#### Gérer les espaces
+
+La fonction `str_pad()` permet de compléter une chaîne de caractères pour qu'elle atteigne une taille fixe. Le caractère utilisé en complément est défini dans l'argument `pad` (espace par défaut). L'option `side` permet de choisir de compléter à gauche (`left`) ou à droite (`right`). Le cas typique d'usage est la gestion des codes communes Insee. Voici deux exemples:
+
+```{r}
+code_insee <- 1001
+str_pad(code_insee, 5, pad = "0", side = "left")
+str_pad(code_insee, 5, pad = "Z", side = "right")
+```
+
+La fonction `str_trim()` permet de supprimer les espaces aux extrémités d'une chaîne de caractères. On peut choisir de nettoyer à gauche (`left`), à droite (`right`) ou des deux côtés (`both`) avec l'option `side` (des deux côtés par défaut).
+
+```{r}
+string <- "   Les espaces inutiles doivent être supprimés.  "
+str_trim(string)
+str_trim(string, side = "left")
+```
+
+#### Concaténer des chaînes de caractères
+
+La fonction `str_c` permet de concaténer des chaînes de caractères entre elles, avec un délimiteur défini dans l'argument `sep`. Dans l'exemple suivant, on concatène les éléments de deux vecteurs deux à deux (le premier élément du premier vecteur avec le premier élément du second vecteur, etc.):
+
+
+```{r}
+str_c(c("Hello", "Bonjour"), c("World", "Monde"), sep = " ")
+```
+
+L'argument supplémentaire `collapse` permet de gérer la concaténation pour les éléments contenus dans un vecteur ou une liste (très utile en pratique, en particulier si on utilise la fonction `str_split` présentée ci-dessous). Ainsi, il est possible de concaténer l'ensemble des éléments d'un vecteur en une seule chaîne de caractère:
+
+```{r}
+str_c(c("B", "o", "n", "j", "o", "u", "r"))
+str_c(c("B", "o", "n", "j", "o", "u", "r"), collapse = "")
+```
+
+#### Scinder des chaînes de caractères
+
+La fonction `str_sub` permet d'extraire une sous-chaîne de caractères en fonction de sa position. On peut préciser les positions des premier et dernier caractères extraits par les arguments `start` et `end`. Par défaut, l'extraction commence au premier caractère et se termine au dernier. Il est préférable d'ajouter un `L` aux nombres dans `start` et `end` pour indiquer qu'il s'agit de nombres entiers.
+
+```{r}
+str_sub("abcdefghikl", start = 3L, end = 5L) 
+str_sub("abcdefghikl", end = 5L) 
+str_sub("abcdefghikl", start = 6L) 
+```
+
+La fonction `str_split` permet de scinder une chaîne de caractères en fonction d'un délimiteur. Le délimiteur est défini par l'argument `pattern`. Il est possible d'utiliser un motif (voir ci-après) pour définir le délimiteur. Voici un exemple simple :
+
+```{r}
+str_split("un-deux-trois", pattern = "-") 
+```
+
+On peut appliquer la fonction à un vecteur de chaîne de caractères. Dans ce cas le résultat sera une liste:
+
+```{r}
+str_split(c("un-deux-trois", "quatre-cinq"), pattern = "-")
+```
+
+On peut obtenir une matrice en ajoutant l'option `simplify = TRUE`.
+
+```{r}
+str_split(c("un-deux-trois", "quatre-cinq"), pattern = "-", simplify = TRUE)
+```
+
+::: {.remarque data-latex=""}
+
+La fonction `tstrsplit` du _package_ `data.table` permet de découper efficacement des chaînes de caractères et de transformer les sous-chaînes en variables dans un objet `data.table` (voir `?data.table::tstrsplit` pour les détails). Voici un exemple, dans lequel on découpe une chaîne de caractères pour récupérer une latitude et une longitude:
+```{r}
+library(data.table)
+df <- data.table(string = c("48.853_2.35","48.8162841_2.3082668"))
+df[,c("longitude","latitude") := tstrsplit(string, "_")]
+df
+```
+:::
+
+### Manipuler des motifs avec `stringr`
+
+#### Qu'est-ce qu'un motif (`pattern`)?
+
+Un grand nombre de fonctions de `stringr` prennent comme argument un `pattern` (ou motif en français), pour le détecter, l'extraire ou le modifier. **Un motif est une description abstraite d'un ensemble de chaînes de caractères possibles.** Rechercher un motif dans une chaîne de caractères revient donc à vérifier si cette chaîne (ou une partie de cette chaîne) correspond à cette description.
+
+Dans le cas le plus simple, un motif est une chaîne de caractères précise (par exemple le mot `voiture`). Toutefois, il prend le plus souvent la forme d'une règle logique (par exemple: une chaîne constituée uniquement de lettres minuscules sans espace, commençant par `v` et finissant par `ure`). Il est possible de décrire un motif à l'aide d'une expression régulière (*regular expressions* ou *regex* en anglais). La construction des expressions régulières en `R` est détaillée dans la section \@ref(regex).
+
+
+#### Détecter un motif dans une chaîne de caractères
+
+Le package `stringr` propose quatre fonctions pour vérifier si les éléments d'un vecteur de type `character` respectent un certain motif (`pattern`):
+
+* **`str_detect()`** vérifie si chaque élément du vecteur respecte le `pattern` et renvoie un vecteur de `TRUE` et `FALSE`;
+* **`str_count()`**  compte le nombre de fois que le `pattern` est trouvé dans chaque élément du vecteur;
+* **`str_which()`**  renvoie la position des éléments qui respectent le `pattern`;
+* **`str_subset()`**  sélectionne les éléments du vecteur qui respectent le `pattern`.
+
+Dans l'exemple qui suit, on cherche la lettre `a` dans chaque élément du vecteur `fruits`:
+
+```{r}
+fruits <- c("apple", "banane", "orange", "clementine")
+```
+ 
+```{r}
+# Chaque élément contient-il la lettre 'a'?
+str_detect(fruits, pattern = "a")
+```
+
+```{r}
+# Combien de fois trouve-t-on la lettre 'a' dans chaque élément?
+str_count(fruits, pattern = "a")
+```
+
+```{r}
+# Quelle est la position des éléments qui contiennent la lettre 'a'?
+str_which(fruits, pattern = "a")
+```
+
+```{r}
+# Garder uniquement les éléments qui contiennent la lettre 'a'
+str_subset(fruits, pattern = "a")
+```
+
+#### Extraire un motif
+
+La fonction **`str_extract()`** permet d'extraire une sous-chaîne de caractères correspondant à un motif. Cette fonction n'est vraiment utile que si l'on utilise une expression régulière pour décrire le motif des chaînes que l'on souhaite extraire. La construction des expressions régulières en `R` est détaillée dans la section \@ref(regex). La fonction prend deux arguments : la chaîne de caractères analysée et le motif recherché.
+
+Dans l'exemple suivant, on recherche une sous-chaîne de caractères constituée uniquement de chiffres:
+
+```{r}
+str_extract("J'habite au 12 rue des Arts", pattern = "\\d+")
+```
+
+Si plusieurs sous-chaînes correspondent au motif recherché, `str_extract()` n'extrait que la première occurrence du motif. On peut extraire toutes les occurrences du motif en utilisant `str_extract_all()`. Dans l'exemple suivant, `str_extract_all()` extraie les deux sous-chaînes numériques.
+
+```{r}
+str_extract_all("J'habite au 12 rue des Arts 69000 Lyon", pattern = "\\d+")
+```
+
+#### Remplacer un motif
+
+Les fonctions `str_replace()` et `str_replace_all()` permettent de remplacer un motif (spécifié dans l'argument `pattern`) par une autre chaîne de caractères (définie dans l'argument `replacement`). Attention, `str_replace()` ne remplace que la première occurrence du motif rencontrée dans la chaîne de caractères. Si vous voulez remplacer toutes les occurrences, il faut utiliser la fonction `str_replace_all()`. Voici quelques exemples:
+
+```{r}
+str_replace("j'ai une voiture", 
+            pattern = "voiture", 
+            replacement = "bicyclette")
+str_replace("j'ai une première voiture et une deuxième voiture", 
+            pattern = "voiture", 
+            replacement = "bicyclette")
+str_replace_all("j'ai une première voiture et une deuxième voiture", 
+                pattern = "voiture", 
+                replacement = "bicyclette")
+```
+
+## Les expressions régulières en `R` {#regex}
+
+### Que sont les expressions régulières?
+
+**Les expressions régulières sont un outil permettant de décrire un ensemble de chaînes de caractères possibles selon une syntaxe précise, et donc de définir un motif (ou `pattern`).** Les expressions régulières servent par exemple lorsqu'on veut extraire une partie d'une chaîne de caractères, ou remplacer une partie d'une chaîne de caractères. Une expression régulière prend la forme d'une chaîne de caractères, qui peut contenir à la fois des éléments littéraux et des caractères spéciaux qui ont un sens logique. 
+
+Par exemple, `"ch.+n"` est une expression régulière qui décrit le motif suivant: la chaîne littérale `ch`, suivi de n'importe quelle chaîne d'au moins un caractère (`.+`), suivie de la lettre `n`. Dans la chaîne `"J'ai un chien."`, la sous-chaîne `"chien"` correspond à ce motif. De même pour `"chapeau ron"` dans `"J'ai un chapeau rond"`. En revanche, dans la chaîne `"La soupe est chaude."`, aucune sous-chaîne ne correpsond à ce motif (car aucun `n` n'apparaît après le `ch`).
+
+::: {.remarque data-latex=""}
+
+**Les expressions régulières (*regex*) sont notoirement difficiles à maîtriser.** Il existe des outils qui facilitent le travail avec les expressions régulières. Ils sont présentés dans la section [Comment construire des expressions régulières en `R`]. 
+:::
+
+
+### Les éléments de base des expressions régulières en `R`
+
+#### Les types de caractères
+
+|   **Symbole**           | **Signification**                             |
+|-------------------------|-----------------------------------------------|
+| `.`                     | N'importe quel caractère                      |
+| `[:digit:]` ou `\\d`             | Tous les chiffres de 0 à 9           |
+| `[:alpha:]`             | Toutes les lettres                            |
+| `[:lower:]`             | Toutes les lettres minuscules                 |
+| `[:upper:]`             | Toutes les lettres majuscules                 |
+| `[:alnum:]`             | Tous les caractères alphanumériques           |
+| `[:punct:]`             | Tous les signes de ponctuation                |
+
+
+#### Les quantificateurs
+
+Les quantificateurs s'appliquent à l'élément qui précède. Par exemple, l'expression régulière `"abc\\d{3,5}"` décrit une chaîne constituée des lettres `abc` suivies de trois à cinq chiffres. Le quantificateur s'applique à `\\d`, pas à `abc`.
+
+|   **Quantificateur** | **Signification**                                            |
+|----------------------|--------------------------------------------------------------|
+| `?`                  |    l'élément précédent est présent zéro ou une seule fois   |
+| `*`                  |    l'élément précédent est éventuellement présent, une fois ou plus        |
+| `+`                  |    l'élément précédent est présent une fois ou plus          |
+| `{n}`                |    l'élément précédent est présent n fois                    |
+| `{n,}`               |    l'élément précédent est présent au moins n fois           |
+| `{n,m}`              |    l'élément précédent est présent entre n et m fois         |
+
+
+::: {.remarque data-latex=""}
+
+Les quantificateurs `+` et `*` peuvent être difficiles à distinguer. Ils ont pourtant un sens très différent:
+
+- `+` signifie que l'élément précédent est **nécessairement** présent, et peut être répété. Exemple: `[\\d]+` décrit une suite de chiffres comprenant au moins un chiffre;
+- `*` signifie que l'élément précédent est **éventuellement** présent, et peut être répété. Exemple: `[\\d]*` décrit une suite de chiffres qui peut éventuellement être vide.
+:::
+
+#### Les conditions logiques
+
+Certains caractères ont un sens particulier dans les expressions régulières, et permettent de coder des conditions logiques (ou, et...). Le petit tableau qui suit détaille ces caractères spéciaux. Deux points sont à garder en mémoire:
+
+- **les parenthèses `()` permettent de définir des groupes.** Elles sont notamment utiles pour l'usage des quantificateurs. Voici deux exemples:
+    - l'expression régulière `"^(a|b)\\d+"` décrit une chaîne qui commence par `a` ou `b` suivi d'au moins un chiffre;
+    - l'expression régulière `"(abc\\d){3,5}"` décrit une chaîne constituée des lettres `abc` suivies d'un chiffre, le tout répété entre trois et cinq fois. Le quantificateur s'applique à `abc\\d`, en raison de la présence des parenthèses.
+- **les caractères `^` (début de chaîne) et `$` (fin de chaîne) sont souvent très utiles.**
+
+
+|   **Symbole**         | **Signification**                              |
+|-----------------------|------------------------------------------------|
+| `^a`                  | La lettre "a" en première position             |
+| `^abc`                | La chaîne "abc" en première position           |
+| `a$`                  | La lettre "a" en dernière position             |
+| `ab|de`               | La chaîne `ab` ou la chaîne `de`               |
+| `[abc]`               | L'un des caractères `a`, `b`, `c`              |
+| `[^abc]`              | Tous les caractères sauf `a`, `b`, et `c`      |
+| `[a-z]`               | Tous les caractère de `a` à `z`                |
+| `[A-Z]`               | Tous les caractère de `A` à `Z`                |
+
+#### Les caractères spéciaux
+
+Certains caractères sont utilisés dans les expressions régulières pour décrire une caractéristique du motif (`^` pour le début de la chaîne, `.` pour désigner n'importe quel caractère, `$` pour la fin de la chaîne...). Mais il peut arriver que le motif que l'on recherche comprenne justement l'un de ces caractères spéciaux (exemple: `billet de 5$`). En ce cas, il faut utiliser `\` pour échapper ce caractère, pour que l'expression régulière le recherche exactement. Toutefois, le caractère `\` étant lui-même un caractère spécial, il faut l'échapper également, donc il faut utiliser `\\`. Ainsi pour indiquer dans une expression régulière que l'on recherche un `.`, on écrit `\\.`.
+
+Le tableau suivant présente le code de quelques caractères spéciaux:
+
+|   **Symbole**         | **Signification**                                               |
+|-----------------------|-----------------------------------------------------------------|
+| `\\.`                 | Le caractère `.`                                                |
+| `\\!`                 | Le caractère `!`                                                |
+| `\\?`                 | Le caractère `?`                                                |
+| `\\\\`                | Le caractère `\`                                                |
+| `\\$`                 | Le caractère `$`                                                |
+| `\\"`                 | Le caractère `"`                                                |
+| `\\(` et `\\)`        | Les caractères `(` et `)`                                       |
+| `\\s`                 | N'importe quel espace (tabulation, espace, retour à la ligne)   |
+| `\\d`                 | N'importe quel chiffre                                          |
+| `\\w`                 | N'importe quel caractère figurant dans un mot, sauf `-` (équivalent à `[A-z0-9_]`)      |
+
+::: {.conseil data-latex=""}
+
+Si vous rechercher une chaîne de caractères qui contient des caractères spéciaux, vous pouvez utiliser la fonction `fixed`. Cette fonction permet de rechercher une chaîne de caractères telle quelle, sans aucune interprétation des caractères spéciaux. Ainsi, `fixed("20$")` désigne littéralement la chaîne `"20$"` (et est équivalente à l'expression régulière `"20\\$"`). Voici un exemple:
+
+```{r}
+str_detect("Le chapeau coûte 20$.", fixed("20$"))
+```
+:::
+
+### Quelques exemples d'expressions régulières
+
+Voici quelques exemples un peu complexes pour vous aider à construire vos propres expressions régulières:
+
+* L'expression régulière `"(Mr|M|Mme)\\.?\\s+[\\w\\-]+"` permet de rechercher un nom de famille éventuellement composé, précédé de Mr, M ou Mme. Exemple: `str_detect("Mme Dupont-Durand habite au 21", pattern = "(Mr|M|Mme)\\.?\\s+[\\w\\-]+")`;
+* L'expression régulière `"([0-9]{2}\\.*){5}"` permet de rechecher cinq séries de deux chiffres éventuellement séparées par un point. Exemple: `str_detect("12.12.12.12.12.", pattern = "([0-9]{2}\\.*){5}")`.
+
+
+## Comment construire des expressions régulières en `R`
+
+**Les expressions régulières (*regex*) sont notoirement difficiles à maîtriser.** C'est pourquoi il existe de nombreux outils pour faciliter la construction des expressions régulières. Nous présentons ici deux types d'outils:
+
+- les testeurs en ligne de _regex_;
+- le *package* `rex`.
+
+### Les testeurs d'expressions régulières en ligne
+
+Plusieurs sites internet proposent des interfaces interactives pour construire, interpréter et tester des expressions régulières sur des exemples. Voici quelques sites:
+
+- [https://regex101.com/];
+- [https://regexr.com/];
+- [https://www.regextester.com/].
+
+::: {.conseil data-latex=""}
+
+Un problème fréquent avec les testeurs d'expressions régulières est qu'ils utilisent des expressions régulières déjà interprétées. Cela signifie qu'une expression régulière valable dans le testeur ne le sera pas nécessairement dans `R`, en raison d'un traitement différent des caractères échappés. 
+**Si votre expression régulière est correcte d'après le testeur mais erronée dans `R`, faites attention aux caractères échappés: vous devez peut-être remplacer les `\` par `\\`.** Par exemple, sur le site https://regex101.com/, l'expression régulière `([0-9]{2}\.*){5}` est correcte pour extraire la chaîne "12.12.12.12.12.", mais elle ne fonctionne avec `R`. Il faut utiliser l'expression régulière `"([0-9]{2}\\.*){5}"`.
+:::
+
+###  composer une expression régulière avec le *package* `rex`
+
+#### Principe: la fonction `rex`
+
+Le _package_ `rex` permet de construire des expressions régulères complexes avec une syntaxe relativement facile à comprendre. Vous pouvez utiliser la fonction `rex` pour assembler les différents éléments qui décrivent un motif, en les séparant par des virgules. Une expression régulière construite avec `rex` ressemble à ceci: `rex(element1, element2, element3)`. 
+Voici un exemple: `rex(start, "Le pivert", anything, n_times("toc", 3))` décrit le motif suivant: la chaîne de caractères commence par "Le pivert", suivi de n'importe quelle chaîne de caractères (`anything`), suivie de "toc " répété trois fois (`n_times("toc", 3)`). Ce motif est équivalent à l'expression régulière `"^Le pivert.*(?:toc ){3}"`. La fonction `rex` peut être utilisée de deux façons:
+
+- soit pour obtenir une expression régulière:
+    ```{r}
+    library(rex)
+    rex(start, "Le pivert", anything, n_times("toc", 3))
+    ```
+
+
+- soir directement dans une fonction du _package_ `stringr`:
+    ```{r}
+    str_detect("Le pivert fait toctoctoc.", pattern = rex(start, "Le pivert", anything, n_times("toc", 3)))
+    ```
+
+
+#### La syntaxe de `rex`
+
+Trois types d'éléments peuvent être combinés dans la fonction `rex`:
+
+- des suites de caractères: une suite de caractères précise, une suite de caractères composée de caractères figurant dans une liste (exemple: une suite composée des voyelles `aeiouy`), une suite de caractères d'un certain type (par exemple des lettres minuscules, ou des chiffres)... Le _package_ `rex` propose des _shortcuts_ pour désigner des ensembles cohérents de caractères (par exemple: tous les chiffres, tous les signes de ponctuation...);
+- des quantificateurs: une certaine chaîne doit être répétée trois fois, ou entre deux et quatre fois;
+- des liens logiques. Par exemple: la chaîne de caractère doit commencer par "Madame" ou "Monsieur", ou doit comprendre au moins l'une des chaînes "Sarl", "Société anonyme" ou "Société par actions simplifiée".
+
+Le tableau suivant présente quelques-uns des *shortcuts* de `rex`, avec leur signification. Pour la liste complète, vous pouvez consulter `names(shortcuts)`.
+
+|Argument `rex`         |Expression régulière|Signification |
+|-----------------------|------------------|---------------------------------|
+|`start`                |`"^"`             | Début de la chaîne de caractères |
+|`end`                  |`"$"`             | Fin de la chaîne de caractères |
+|`dot`                  |`"\\."`           | Un point |
+|`any`                  |`"."`             | N'importe quel caractère |
+|`something`            |`".+"`            | N'importe quelle suite de caractères non vide |
+|`anything`             |`".*"`            | N'importe quelle suite de caractères, éventuellement vide | 
+|`alnum`                |`"[:alnum:]"`     | Un caractère alphanumérique |
+|`alpha`                |`"[:alpha:]"`     | Une lettre |
+|`number`               |`"[:digit:]"`     | Un chiffre |
+|`lower`                |`"[:lower:]"`     | Une lettre minuscule |
+|`punct`                |`"[:punct:]"`     | Un signe de ponctuation |
+|`space`                |`"[:space:]"`     | un espace |
+|`upper`                |`"[:upper:]"`     | Une lettre majuscule |
+|`alnums`               |`"[[:alnum:]]+"`  | Une suite d'au moins un caractère alphanumérique |
+|`alphas`               |`"[[:alpha:]]+"`  | Une suite d'au moins une lettre |
+|`digits`               |`"[[:digit:]]+"`  | Une suite d'au moins un chiffre |
+|`lowers`               |`"[[:lower:]]+"`  | Une suite d'au moins une lettre minuscule |
+|`puncts`               |`"[[:punct:]]+"`  | Une suite d'au moins un signe de ponctuation |
+|`spaces`               |`"[[:space:]]+"`  | Une suite d'au moins un espace |
+|`uppers`               |`"[[:upper:]]+"`  | Une suite d'au moins une lettre majuscule |
+|`any_alnums`           |`"[[:alnum:]]*"`  | Une suite de caractères alphanumériques, éventuellement vide |
+|`any_alphas`           |`"[[:alpha:]]*"`  | Une suite de lettres, éventuellement vide |
+|`any_digits`           |`"[[:digit:]]*"`  | Une suite de chiffres, éventuellement vide |
+|`any_lowers`           |`"[[:lower:]]*"`  | Une suite de lettres minuscules, éventuellement vide |
+|`any_uppers`           |`"[[:upper:]]*"`  | Une suite de lettres majuscules, éventuellement vide |
+|`any_puncts`           |`"[[:punct:]]*"`  | Une suite de signes de ponctuation, éventuellement vide| 
+|`non_alphas`           |`"[^[:alpha:]]+"` | Une suite d'au moins un caractère autre qu'une lettre |
+|`non_digits`           |`"[^[:digit:]]+"` | Une suite d'au moins un caractère autre qu'un chiffre |
+
+
+::: {.remarque data-latex=""}
+
+Dans le tableau précédent, vous pouvez remarquer que certains _shortcuts_ de `rex` se ressemblent deux à deux, par exemple `alphas` et `any_alphas`. En fait, la différence entre ces deux _shortcuts_ est identique à la différence entre les quantificateurs `+` et `*` (voir la remarque de la partie [Les quantificateurs]): `rex(alphas)` décrit une suite de lettres comprenant au moins une lettre, tandis que `rex(any_alphas)` décrit une suite de lettres qui peut éventuellement être vide.
+
+:::
+
+
+Voici la liste des principaux quantificateurs utilisables dans `rex`:
+
+|Argument `rex`    | Signification                                         |
+|------------------|-------------------------------------------------------|
+|`zero_or_more(x)` | Les éléments de `x` sont présents au moins zéro fois  | 
+|`one_or_more(x)`  | Les éléments de `x` sont présents au moins une fois   | 
+|`maybe(x)`        | Les éléments de `x` sont présents zéro ou une fois    | 
+|`n_times(x, n)`   | L'expression `x` répétée `n` fois    | 
+|`between(x, low = n, high = m)` | L'expression `x` répétée entre `n` et `m` fois  | 
+|`at_least(x, n)`  | L'expression `x` répétée au moins `n` fois    | 
+|`at_most(x, n)`   | L'expression `x` répétée au plus `n` fois     |  
+
+Voici la liste des principaux liens logiques utilisables dans `rex`:
+
+|Argument `rex`         |Expression régulière|Signification |
+|-----------------------|------------------|---------------------------------|
+|`or(x, y)`             |`"|"`             | L'une des expressions `x` ou `y` est présente          |
+|`one_of("abyz")`       | `[abyz]`         | Un seul des caractères spécifiés  |
+|`some_of("abyz")`      | `[abyz]+`        | Un ou plusieurs des caractères spécifiés (éventuellement répétés) |   
+|`none_of("abyz")`      | `[^abyz]`        | Aucun des caractères spécifiés n'est présent  |
+
+## Les fonctions de `base R`
+
+Beaucoup de fonctions disponibles dans `stringi` et `stringr` sont en réalité des réécritures de fonctions de `R base`. Le tableau suivant vous indique quel est l'équivalent en `base R` des principales fonctions de `stringr`. Pour mémoire, **il est recommandé d'utiliser `stringr` plutôt que les fonctions de `R base`**, car ce _package_ est plus robuste et plus cohérent que les fonctions de base.
+
+
+| `stringr`                                 |  `R base`                               |
+|-------------------------------------------|-----------------------------------------|
+| `str_to_lower(x)`                         |  `tolower(x)`                           |
+| `str_to_upper(x)`                         |  `toupper(x)`                           |
+| `str_to_title(x)`                         |  `tools::toTitleCase(x)`                |
+| `str_trim(x)`                             |  `trimws(x)`                            |
+| `str_c(x)`                                |  `paste0(x)` ou `paste(x)`              |
+| `str_sub(x, start, end)`                  |  `substr(x, start, end)`                |
+| `str_split(x, pattern)`                   |  `strsplit(x, pattern)`                 |
+| `str_locate(x, pattern)`                  |  `regexpr(pattern, x)`                  |
+| `str_locate_all(x, pattern)`              |  `gregexpr(pattern, x)`                 |
+| `str_subset(x, pattern)`                  |  `grep(pattern, x, value = TRUE)`       |
+| `str_which(x, pattern)`                   |  `grep(pattern, x)`                     |
+| `str_detect(x, pattern)`                  |  `grepl(pattern, x)`                    |
+| `str_match(x, pattern)`                   |  `regexec(pattern, x)` + `regmatches()` |
+| `str_replace(x, pattern, replacement)`    |  `sub(pattern, replacement, x)`         |
+| `str_replace_all(x, pattern, replacement)`|  `gsub(pattern, replacement, x)`        |
+| `str_extract(x, pattern)`                 |  `regexpr(pattern, x)` + `regmatches()` |
+| `str_length(x)`                           |  `nchar(x)`                             |
+| `str_order(x)`                            |  `order(x)`                             |
+| `str_sort(x)`                             |  `sort(x)`                              |
+| `str_dup(x, n)`                           |  `strrep(x, n)`                         |
+| `str_wrap(x)`                             |  `strwrap(x)`                           |
+
+
+<!-- | `stringr`                                 |  `R base`                               | -->
+<!-- |-------------------------------------------|-----------------------------------------| -->
+<!-- | `str_locate_all(x, pattern)`              |  `gregexpr(pattern, x)`                 | -->
+<!-- | `str_subset(x, pattern)`                  |  `grep(pattern, x, value = TRUE)`       | -->
+<!-- | `str_which(x, pattern)`                   |  `grep(pattern, x)`                     | -->
+<!-- | `str_detect(x, pattern)`                  |  `grepl(pattern, x)`                    | -->
+<!-- | `str_replace_all(x, pattern, replacement)`|  `gsub(pattern, replacement, x)`        | -->
+<!-- | `str_length(x)`                           |  `nchar(x)`                             | -->
+<!-- | `str_order(x)`                            |  `order(x)`                             | -->
+<!-- | `str_match(x, pattern)`                   |  `regexec(pattern, x)` + `regmatches()` | -->
+<!-- | `str_extract(x, pattern)`                 |  `regexpr(pattern, x)` + `regmatches()` | -->
+<!-- | `str_locate(x, pattern)`                  |  `regexpr(pattern, x)`                  | -->
+<!-- | `str_sort(x)`                             |  `sort(x)`                              | -->
+<!-- | `str_dup(x, n)`                           |  `strrep(x, n)`                         | -->
+<!-- | `str_split(x, pattern)`                   |  `strsplit(x, pattern)`                 | -->
+<!-- | `str_wrap(x)`                             |  `strwrap(x)`                           | -->
+<!-- | `str_replace(x, pattern, replacement)`    |  `sub(pattern, replacement, x)`         | -->
+<!-- | `str_sub(x, start, end)`                  |  `substr(x, start, end)`                | -->
+<!-- | `str_to_lower(x)`                         |  `tolower(x)`                           | -->
+<!-- | `str_to_upper(x)`                         |  `toupper(x)`                           | -->
+<!-- | `str_to_title(x)`                         |  `tools::toTitleCase(x)`                | -->
+<!-- | `str_trim(x)`                             |  `trimws(x)`                            | -->
+
+
+
+
+
+
+## Sources
+
+Cette fiche reprend et adapte des éléments issus des sources suivantes:
+
+- [Partie `stringr`](https://juba.github.io/tidyverse/11-stringr.html) de l'introduction à `R` et au `tidyverse`;
+- [Vignette](https://github.com/tidyverse/stringr/blob/master/vignettes/from-base.Rmd) comparant `stringr` et `base R`.
+
+## Pour en savoir plus
+
+* sur le *package* `stringr`;
+    - la [documentation](https://www.rdocumentation.org/packages/stringr) du *package* (en anglais);
+    - une [vignette](https://cran.r-project.org/web/packages/stringr/vignettes/stringr.html) d'introduction à `stringr` (en anglais);
+    - un [aide-mémoire](https://github.com/rstudio/cheatsheets/raw/master/strings.pdf) sur `stringr` et les expressions régulières;
+* sur les expressions régulières:
+    - [Une page en français sur la construction des expressions régulières avec R](https://thinkr.fr/r-les-expressions-regulieres/);
+    - un très bon [article de blog](http://perso.ens-lyon.fr/lise.vaudor/strings-et-expressions-regulieres/) en français sur les expressions régulières en `R`;
+    - une [vignette](https://cran.r-project.org/web/packages/stringr/vignettes/regular-expressions.html) sur les expressions régulières avec `stringr` (en anglais);
+    - [Un aide-mémoire en anglais sur la construction des expressions régulières avec R](https://github.com/rstudio/cheatsheets/raw/master/strings.pdf);
+* sur le *package* `RVerbalExpressions`:
+    - la [documentation](https://cran.r-project.org/web/packages/RVerbalExpressions/RVerbalExpressions.pdf) du *package* (en anglais);
+    - une [vignette](https://cran.r-project.org/web/packages/RVerbalExpressions/vignettes/examples.html) d'exemples d'utilisation du *package* (en anglais).
