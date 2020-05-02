@@ -1,0 +1,141 @@
+# Utiliser des données d'enquêtes avec `R`
+
+## Tâches concernées et recommandations
+
+L'utilisateur souhaite exploiter des données d'enquête pour calculer des indicateurs. En particulier, l'enjeu est d'utiliser correctement les pondérations des données dans le calcul des indicateurs.
+
+::: {.recommandation data-latex=""}
+
+* Pour calculer des indicateurs nécessitant l'usage des pondérations, il est recommandé d'utiliser les _packages_ `stats` et `Hmisc`;
+* Pour des estimations qui prendraient en compte de manière formelle la théorie des sondages (en particulier pour l'estimation de la variance), il est conseillé d'utiliser le _package_ `survey`;
+* Le package `survey` fonctionne dans des conditions particulières (plan de sondage simple, ou poids _bootstrap_). L'utilisateur pourra se référer au _package_ `gustave` pour les enquêtes de l'Insee;
+* S'agissant de l'estimation économétrique, les fonctions d'estimation offrent généralement une option `weight`. Par ailleurs, le _package_ `survey` contient la fonction `svyglm` qui permet l'estimation des modèles les plus courants.
+
+:::
+
+## Pourquoi l'usage des données d'enquêtes est-il particulier?
+
+::: {.remarque data-latex=""}
+
+Ce paragraphe théorique expose en quoi la spécificité des données d'enquêtes rend leur usage complexe avec un logiciel statistique. Le lecteur intéressé par les aspects pratiques de l'estimation sur données d'enquêtes avec `R` peut se passer de la lecture de ce paragraphe.
+
+Ces considérations ne sont pas propres au logiciel `R`: le logiciel `SAS` propose différentes méthodes d'exploitation des données d'enquêtes et opère un calcul par défaut. L'enjeu majeur du passage de `SAS` à `R`est alors d'assurer la cohérence et la continuité des méthodes de calcul, indépendamment du logiciel utilisé.
+
+:::
+
+**La spécificité des données d'enquêtes est qu'il s'agit de données granulaires, au sens où une observation représente en réalité un grand nombre d'unités statistiques.** La théorie des sondages assure les propriétés statistiques des estimateurs dérivés des données d'enquêtes, et en particulier l'estimateur d'Horwitz-Thompson $\sum_{s \in S}\frac{y_s}{\pi_s}$. L'utilisation des données pondérées ne va pas de soi, y compris dans un langage dédié à la statistique tel que `R` ; une des difficultés de l'estimation sur données pondérées est liée à la granularité des données, qui rend difficile la représentation de la fonction de distribution cumulative. Or la fonction de distribution cumulative est sous-jacente à de nombreux estimateurs : quantiles, indice de Gini, etc.
+
+Pour rappel, la fonction de distribution cumulative, ou fonction de répartition, se formalise de la façon suivante : pour $x$ donné, elle s'écrit $F(x) = P(X \leq x)$. Or en présence de données granulaires, une grande partie des valeurs prises par $x$ n'est pas connue (car l'information n'a pas été collectée), et il existe un grand nombre de méthodes pour estimer la valeur de la fonction de répartition dans cette situation. En conséquence, et de manière symétrique, il existe une grande variété de façons d'estimer un quantile, puisque le quantile se définit de la manière suivante : 
+
+$Q(p) = F^{-1}(p) = inf\{x: F(x) \geq p\}$. 
+
+En pratique, le quantile se calcule comme une interpolation pour les deux observations l'encadrant dans les données : ${\hat Q}(p) = (1-\gamma) X_{(j)} + \gamma X_{(j+1)}$. Toute la question est donc la forme que l'on donne à $\gamma$ ; la variété de choix de méthodes, déjà importante dans le cas non pondéré, est démultiplié dans le cas pondéré, comme le montre la documentation de la fonction `wtd.quantile` et en particulier le paramètre `type` du _package_ `Hmisc`. Pour plus de détails sur le calcul des quantiles dans les logiciels statistiques, se reporter à [l'article de Hyndman et Fan](https://www.amherst.edu/media/view/129116/original/Sample+Quantiles.pdf).
+
+L'évaluation de la fonction de distribution cumulative n'est pas la seule difficulté ; d'autres estimateurs sont délicats à calculer sur des données d'enquête. En particulier, l'estimation de l'incertitude relatives aux indicateurs peut s'avérer complexe et délicate.
+
+
+## Faire une estimation sur données pondérées
+
+Le _package_ `Hmisc` fournit la boîte à outils la plus simple pour calculer divers indicateurs très classiques sur des données pondérées (moyenne, variance, quantile, rang). Les fonctions de `Hmisc` portent le même nom que les fonctions de `Base R`, avec le préfixe `wtd`, et ont un argument supplémentaire `weights` pour la pondération. Ainsi la fonction qui calcule une moyenne pondérée s'appelle `wtd.mean`.
+
+
+```{r, eval = FALSE}
+library(Hmisc)
+## table t, avec une variable quantitative y et une variable de poids p
+with(t, wtd.mean(y, weights = p)) ## moyenne
+with(t, wtd.std(y, weights = p)) ## écart-type
+with(t, wtd.quantile(y, weights = p, probs = 0.5, type = 'quantile'))  ## médiane
+```
+
+::: {.remarque data-latex=""}        
+
+Il existe des _packages_ dédiés spécifiquement aux indicateurs d'inégalité (sujet très largement éclairé par les données d'enquête), tels les _packages_ `laeken` ou `dineq`. Cette fiche aborde uniquement les quelques indicateurs les plus classiques.
+:::
+
+
+En sortie, on obtient les résultats attendus bruts, sans mise en forme particulière. Pour présenter les résultats, il faudra les concaténer et utiliser des _packages_ de création de tableaux.
+
+```{r, eval = FALSE}
+with(t, wtd.quantile(y, weights = p, probs = (1:9)/10), 
+     type = 'quantile') ### calculer les déciles de la variable y
+```
+
+Le code ci-dessus permet d'obtenir un vecteur (object `vector`) contenant les 9 déciles permettant de séparer la population, classée en fonction de la variable $y$, en 10 groupes de taille égale.
+
+Pour les adeptes de la syntaxe `tidyverse`, les fonctions issues du _package_ `Hmisc` s'intègrent aisément dans une décomposition de la statistique sous forme de `group_by` lorsqu'on souhaite obtenir une estimation par groupe de population par exemple. Ainsi pour une variable `categorie` constituant une partition de la population, on obtient la syntaxe suivante :
+
+```{r, eval = FALSE}
+stat <- t %>%
+  group_by(categorie) %>%
+  summarise(mediane = wtd.quantile(y, weights = p, probs = 0.5, type = 'quantile'))
+```
+
+On obtient un objet `tibble` qui contient la variable `categorie` ainsi que la valeur médiane de $y$ pour chaque modalité de `categorie`.
+
+## Estimer à la fois valeur et variance
+
+Comme toute estimation réalisée sur une partie incomplète de l'information, l'estimation sur données d'enquêtes est entourée d'incertitude. La théorie des sondages propose des méthodes pour estimer cette incertitude. Pour ce faire, il existe différents outils disponibles sous `R`; le _package_ `survey` est l'outil le plus répandu et couvre une gamme relativement simple de plans de sondage.
+
+::: {.remarque data-latex=""}
+
+Pour mettre en oeuvre certains outils de calcul de la variance tels que `survey`, il faut disposer d'informations qui sont en pratique rarement accessibles, concernant le plan de sondage et les variables de stratification. Il existe néanmoins d'autres situations où le calcul de variance est possible sans ces informations, en particulier lorsque les producteurs mettent à disposition des poids répliqués. C'est une pratique très fréquente pour les données américaines par exemple (_cf_. par exemple ces exemples de codes fournis sur [ce site](http://asdfree.com/), et en particulier l'exemple du [SCF américain](http://asdfree.com/survey-of-consumer-finances-scf.html)). À l'Insee, un des rares exemples est l'enquête HVP, ainsi qu'au niveau européen le HFCS, pour laquelle des poids répliqués sont disponibles sur une partie des millésimes. L'utilisation du _package_ `survey` dans ce contexte est très utile.
+:::
+
+### Le _package_ `survey`
+
+En préalable à tout calcul, il faut créer un objet `survey.design` qui contient les éléments nécessaires au calcul des estimateurs et de la variance associée. La création de cet objet se fait au travers de la fonction `svydesign`, ou si l'on veut utiliser des poids répliqués `svrepdesign`. 
+
+* Pour utiliser la fonction `svydesign`, il faut spécifier les éventuelles variables de stratification, les variables de grappe, les variables permettant de définir les tirages de première et de seconde phases.
+* Pour utiliser la fonction `svrepdesign`, il suffit de spécifier la matrice des poids répliqués. Un exemple sur le HFCS est donné ci-après.
+
+**La spécification du plan de sondage est une étape complexe**, car elle fait intervenir de multiples options dans les fonctions `svydesign` et `svrepdesign`, mais c'est ce qui permet à ce _package_ d'offrir des fonctionnalités assez complètes en matière de description des estimateurs et des plans de sondage. Il faut donc prendre grand soin à considérer l'ensemble des paramètres des fonctions utilisées. 
+
+```{r, eval = FALSE}
+library(survey)
+
+hfcs.design <- svrepdesign(weights = ~ HW0010, repweights = W, data = H1, 
+                           scale = 1, rscales = rep(1/999, 1000), 
+                           mse = FALSE, type = 'bootstrap', combined.weights = TRUE)
+```
+
+Une fois le plan de sondage spécifié, il est possible de mettre en œuvre le calcul des estimateurs et des écarts-types associés. Ainsi quelques exemples ci-dessous :
+
+```{r, eval = FALSE}
+
+svymean(~DA3001, 
+        design = hfcs.design) ### valeur moyenne de DA3001 sur l'ensemble de l'échantillon
+svyquantile(~DA3001, design = hfcs.design, quantiles = 0.5, 
+            method = "constant", interval.type = "quantile") ### valeur médiane de DA3001
+```
+
+La fonction `svyquantile` est l'équivalent de la fonction `wtd.quantile` dans le package `survey`. Elle doit donc donner des estimations identiques pour un paramétrage équivalent. En particulier, le paramètre `method` permet de définir la façon dont la fonction de répartition est approximée.
+
+Par ailleurs, si l'on souhaite décomposer une estimation par catégorie, le _package_ `survey` contient une fonction `svyby` qui permet de réaliser cette décomposition simplement. Il n'est de toute manière pas possible d'utiliser la syntaxe `tidyverse` sur des objets de type `survey.design`. On peut ainsi décomposer la valeur médiane de `DA3001` par pays (donné par `SA0100`) de la façon suivante :
+
+```{r, eval = FALSE}
+svyby(~DA3001, ~SA0100, hfcs.design, svyquantile, quantiles = 0.5, 
+      method = "constant", interval.type = "quantile")
+```
+
+### Le _package_ `gustave`
+
+Le _package_ `survey` présente l'avantage de fournir un cadre général pour l'estimation sur données d'enquête, mais il occulte des aspects pratiques communs à bon nombre d'enquêtes, ce qui rend souvent les calculs de variance inadaptés à la réalité des enquêtes. En particulier, les estimations de variance prennent difficilement voire pas du tout en compte l'effet de la non-réponse totale et du calage sur marges sur la précision. 
+
+Pour répondre à cette difficulté, la division Sondages a développé un _package_ qui offre un cadre d'analyse complet pour l'estimation de la variance. La fonction `qvar` permet d'estimer la variance pour un estimateur donné ; les estimations de variance pour les enquêtes de l'Insee se basent désormais très largement sur cet outil. Vous pouvez en apprendre davantage sur `gustave` [ici](https://github.com/martinchevalier/gustave/blob/master/README.md).
+
+## Quelques bonnes pratiques
+
+De manière générale, l'estimation sur données d'enquêtes est une estimation sur données pondérées, dont le principal enjeu est par conséquent la prise en compte de la pondération. De ce point de vue, le _package_ `Hmisc` suffit largement. 
+
+L'utilisateur qui souhaite avoir un usage avancé des données d'enquêtes, et estimer la précision (par exemple pour construire un intervalle de confiance), se trouvera face à l'alternative suivante:
+
+* il travaille sur un jeu de données d'enquêtes avec des poids répliqués, qui synthétisent _de facto_ l'intégralité des étapes dans le processus de sondage, et dans ce cas, le _package_ `survey` est adapté ;
+* il doit estimer la variance de manière analytique - comme c'est généralement le cas dans les enquêtes de l'Insee - et dans ce cas, c'est le _package_ `gustave` qui sera le plus adapté à son besoin.
+
+## Ressources
+
+* Sample Quantiles in Statistical Packages, R. J. Hyndman and Y. Fan, https://www.amherst.edu/media/view/129116/original/Sample+Quantiles.pdf
+* Tutoriel d'exploitation des données d'enquêtes (essentiellement américaines) avec R, http://asdfree.com/
+* Vignettes du _package_, et en particulier [celle-ci](https://cran.r-project.org/web/packages/survey/vignettes/survey.pdf) ainsi que le [site compagnon du _package_](http://r-survey.r-forge.r-project.org/survey/)
+* le [README](https://github.com/martinchevalier/gustave/blob/master/README.md) du _package_ `gustave`
+
