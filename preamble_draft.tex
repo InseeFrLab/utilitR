@@ -1,0 +1,300 @@
+%%%%%%%%%%%%%%%%%%%%
+% Des réglages issus du template:
+% https://www.overleaf.com/project/5e7f5f46c51627000183d386
+%%%%%%%%%%%%%%%%%%%%
+
+\usepackage[a4paper, margin=1in,headsep=10pt]{geometry} % Page margins
+\usepackage{xcolor} % Required for specifying colors by name
+\usepackage{booktabs}
+
+% Font Settings
+%\usepackage{avant} % Use the Avantgarde font for headings
+%\usepackage{times} % Use the Times font for headings
+%\usepackage{mathptmx} % Use the Adobe Times Roman as the default text font together with math symbols from the Symbol, Chancery and Computer Modern fonts
+
+\usepackage[utf8]{inputenc} % Required for including letters with accents
+% On commente fontenc car ce package fait planter l'intégration continue pour des raisons inconnues
+%\usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
+\usepackage[french]{babel} % LaTeX en français
+\usepackage{microtype} % Slightly tweak font spacing for aesthetics 
+
+
+% MATHS PACKAGE
+\usepackage{amsmath}
+
+% Bibliography
+% Tout est commenté ici car ça fait planter le code (et de toute façon ya pas de biblio)
+%\usepackage[style=alphabetic,sorting=nyt,sortcites=true,autopunct=true,babel=hyphen,hyperref=true,abbreviate=false,backref=true,backend=biber]{biblatex}
+%\addbibresource{bibliography.bib} % BibTeX bibliography file
+%\defbibheading{bibempty}{}
+
+%%%%%%%%%%%%%%%%%%%%
+% Les réglages issus de structure.tex du template
+%%%%%%%%%%%%%%%%%%%%
+%----------------------------------------------------------------------------------------
+%	VARIOUS REQUIRED PACKAGES
+%----------------------------------------------------------------------------------------
+  
+\usepackage{titlesec} % Allows customization of titles
+
+\titleformat{\chapter}[hang] 
+{\normalfont\LARGE\bfseries}{\thechapter.}{0.5em}{} 
+
+\titleformat{\section}[hang] 
+{\normalfont\Large\bfseries}{\thesection.}{0.5em}{} 
+
+\usepackage{graphicx} % Required for including pictures
+%\graphicspath{{Pictures/}} % Specifies the directory where pictures are stored
+
+\usepackage{eso-pic} % Required for specifying an image background in the title page
+
+
+%----------------------------------------------------------------------------------------
+%	Mettre les noms LaTeX en français
+%----------------------------------------------------------------------------------------
+
+\renewcommand{\contentsname}{Table des matières}
+\renewcommand{\chaptername}{Chapitre}
+\renewcommand{\partname}{Partie}
+
+
+
+%----------------------------------------------------------------------------------------
+%	MAIN TABLE OF CONTENTS
+%----------------------------------------------------------------------------------------
+  
+\renewenvironment{Shaded}
+{
+  \vspace{6pt}%
+  \begin{snugshade}%
+}{%
+  \end{snugshade}%
+}
+
+%----------------------------------------------------------------------------------------
+%	MAIN TABLE OF CONTENTS
+%----------------------------------------------------------------------------------------
+  
+\usepackage{titletoc} % Required for manipulating the table of contents
+
+  \contentsmargin{0cm} % Removes the default margin
+  
+  % Part text styling
+  \titlecontents{part}[0cm] % Indentation
+  {\addvspace{15pt}\LARGE\normalfont\bfseries} % Spacing and font options for Parts
+  {\color{Black}\contentslabel[\LARGE\thecontentslabel]{1.25cm}\color{Black}} % Part number
+  {}  
+  {\color{Black}\LARGE\normalfont\bfseries\;\titlerule*[.5pc]{.}\;\thecontentspage} % Page number
+  
+  % Chapter text styling
+  \titlecontents{chapter}[1.25cm] % Indentation
+  {\addvspace{9pt}\Large\normalfont\bfseries} % Spacing and font options for chapters
+  {\color{Black}\contentslabel[\Large\thecontentslabel]{1.25cm}\color{Black}} % Chapter number
+  {}    
+  {\color{Black}\Large\normalfont\bfseries\;\titlerule*[.5pc]{.}\;\thecontentspage} % Page number
+  
+  % Section text styling
+  \titlecontents{section}[1.25cm] % Indentation
+  {\addvspace{3pt}\normalfont\bfseries} % Spacing and font options for sections
+  {\contentslabel[\thecontentslabel]{1.25cm}} % Section number
+  {}
+  {\normalfont\hfill\color{black}\thecontentspage} % Page number
+  []
+  
+  % Subsection text styling
+  \titlecontents{subsection}[1.25cm] % Indentation
+  {\addvspace{1pt}\normalfont\small} % Spacing and font options for subsections
+  {\contentslabel[\thecontentslabel]{1.25cm}} % Subsection number
+  {}
+  {\normalfont\;\titlerule*[.5pc]{.}\;\thecontentspage} % Page number
+  [] 
+
+
+%----------------------------------------------------------------------------------------
+%	PAGE HEADERS
+%----------------------------------------------------------------------------------------
+  
+\usepackage{fancyhdr} % Required for header and footer configuration
+
+\pagestyle{fancy}
+
+  \renewcommand{\sectionmark}[1]{\markright{\normalfont\normalsize\thesection\hspace{5pt}#1}{}} % Section text font settings
+    \fancyhf{} \fancyhead[LE,RO]{\normalfont\normalsize\thepage} % Font setting for the page number in the header
+    \fancyhead[LO]{\nouppercase{\rightmark}} % Print the nearest section name on the left side of odd pages
+    \fancyhead[RE]{\nouppercase{\leftmark}} % Print the current chapter name on the right side of even pages
+    \renewcommand{\headrulewidth}{0.5pt} % Width of the rule under the header
+    \addtolength{\headheight}{2.5pt} % Increase the spacing around the header slightly
+    \renewcommand{\footrulewidth}{0pt} % Removes the rule in the footer
+    \fancypagestyle{plain}{\fancyhead{}\renewcommand{\headrulewidth}{0pt}} % Style for when a plain pagestyle is specified
+    
+    % Removes the header from odd empty pages at the end of chapters
+    \makeatletter
+    \renewcommand{\cleardoublepage}{
+      \clearpage\ifodd\c@page\else
+        \hbox{}
+      \vspace*{\fill}
+      \thispagestyle{empty}
+      \newpage
+      \fi}
+
+    % Autoriser les fiches à commencer sur n'importe quelle page
+    \makeatletter
+    \renewcommand\chapter{\clearpage
+                        \thispagestyle{plain}%
+                        \global\@topnum\z@
+                        \@afterindentfalse
+                        \secdef\@chapter\@schapter}
+    \makeatother
+
+    % Modifier les espaces autour des titres de fiches
+    \titlespacing*{\chapter}
+        {0pt}% left
+        {0cm}% before
+        {0.5cm}% after
+
+%----------------------------------------------------------------------------------------
+%	DEFINITION DES BOITES COLOREES
+%----------------------------------------------------------------------------------------
+  
+\RequirePackage[framemethod=default]{mdframed} % Required for creating the theorem, definition, exercise and corollary boxes
+
+% Boîte recommandation
+\newmdenv[skipabove=7pt,
+          skipbelow=7pt,
+          rightline=false,
+          leftline=true,
+          topline=false,
+          bottomline=false,
+          linecolor=Red,
+          backgroundcolor=Red!10!white,
+          innerleftmargin=5pt,
+          innerrightmargin=5pt,
+          innertopmargin=5pt,
+          leftmargin=0cm,
+          rightmargin=0cm,
+          linewidth=4pt,
+          innerbottommargin=5pt]{recommandationBox}
+          
+% Boîte conseil
+\newmdenv[skipabove=7pt,
+          skipbelow=7pt,
+          rightline=false,
+          leftline=true,
+          topline=false,
+          bottomline=false,
+          linecolor=Cerulean,
+          backgroundcolor=Cerulean!20!white,
+          innerleftmargin=5pt,
+          innerrightmargin=5pt,
+          innertopmargin=5pt,
+          leftmargin=0cm,
+          rightmargin=0cm,
+          linewidth=4pt,
+          innerbottommargin=5pt]{conseilBox}
+
+% Boîte remarque
+\newmdenv[skipabove=7pt,
+          skipbelow=7pt,
+          rightline=false,
+          leftline=true,
+          topline=false,
+          bottomline=false,
+          linecolor=Yellow,
+          backgroundcolor=Yellow!10!white,
+          innerleftmargin=5pt,
+          innerrightmargin=5pt,
+          innertopmargin=5pt,
+          leftmargin=0cm,
+          rightmargin=0cm,
+          linewidth=4pt,
+          innerbottommargin=5pt]{remarqueBox}
+
+%----------------------------------------------------------------------------------------
+%	Création des environnements conseil, remarque et recommandation
+%----------------------------------------------------------------------------------------
+  
+  \newenvironment{recommandation}{\par\vspace{10pt\begin{recommandationBox}} % Vertical white space above the remark and smaller font size
+    \begin{list}{}{
+      \leftmargin=0pt % Indentation on the left
+      \rightmargin=0pt}\item\ignorespaces % Indentation on the right
+    \makebox{\bfseries \sffamily Recommandation} % Nom de la boîte
+    \advance\baselineskip -1pt
+   }{\end{list}\vskip5pt\end{recommandationBox}}
+
+    \newenvironment{remarque}{\par\vspace{10pt\begin{remarqueBox}} % Vertical white space above the remark and smaller font size
+    \begin{list}{}{
+      \leftmargin=0pt % Indentation on the left
+      \rightmargin=0pt}\item\ignorespaces % Indentation on the right
+    \makebox{\bfseries \sffamily Remarque} % Nom de la boîte
+    \advance\baselineskip -1pt
+   }{\end{list}\vskip5pt\end{remarqueBox}}
+
+  \newenvironment{conseil}{\par\vspace{10pt\begin{conseilBox}} % Vertical white space above the remark and smaller font size
+    \begin{list}{}{
+      \leftmargin=0pt % Indentation on the left
+      \rightmargin=0pt}\item\ignorespaces % Indentation on the right
+    \makebox{\bfseries \sffamily Conseil} % Nom de la boîte
+    \advance\baselineskip -1pt
+   }{\end{list}\vskip5pt\end{conseilBox}}
+
+
+\AtBeginEnvironment{recommandation}{\Needspace{10\baselineskip}}
+\AtBeginEnvironment{remarque}{\Needspace{10\baselineskip}}
+\AtBeginEnvironment{conseil}{\Needspace{10\baselineskip}}
+
+
+                        
+%----------------------------------------------------------------------------------------
+%	SECTION NUMBERING IN THE MARGIN
+%----------------------------------------------------------------------------------------
+  
+%  \makeatletter
+%  \renewcommand{\@seccntformat}[1]{\llap{\textcolor{Black}{\csname the#1\endcsname}\hspace{1em}}}
+%    \renewcommand{\chapter}{\@startsection{chapter}{0}{\z@}
+%    {-4ex \@plus -1ex \@minus -.4ex}
+%    {1ex \@plus.2ex }
+%    {\normalfont\LARGE\normalfont\bfseries}}
+%  \renewcommand{\section}{\@startsection{section}{1}{\z@}
+%    {-4ex \@plus -1ex \@minus -.4ex}
+%    {1ex \@plus.2ex }
+%    {\normalfont\large\normalfont\bfseries}}
+%  \renewcommand{\subsection}{\@startsection {subsection}{2}{\z@}
+%    {-3ex \@plus -0.1ex \@minus -.4ex}
+%    {0.5ex \@plus.2ex }
+%    {\normalfont\normalfont\bfseries}}
+%  \renewcommand{\subsubsection}{\@startsection {subsubsection}{3}{\z@}
+%    {-2ex \@plus -0.1ex \@minus -.2ex}
+%    {.2ex \@plus.2ex }
+%    {\normalfont\small\normalfont\bfseries}}                        
+%  \renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}
+%    {-2ex \@plus-.2ex \@minus .2ex}
+%    {.1ex}
+%    {\normalfont\small\normalfont\bfseries}}
+
+
+
+%----------------------------------------------------------------------------------------
+%	HYPERLINKS IN THE DOCUMENTS
+%----------------------------------------------------------------------------------------
+
+% For an unclear reason, the package should be loaded now and not later
+\usepackage{hyperref}
+\hypersetup{
+  hidelinks,
+  backref=true,
+  pagebackref=true,
+  hyperindex=true,
+  colorlinks=true,
+  breaklinks=true,
+  allcolors= NavyBlue,
+  bookmarks=true,
+  bookmarksopen=false,
+  pdftitle={Title},
+  pdfauthor={Author}
+}
+
+
+
+\usepackage[printwatermark]{xwatermark}
+
+\newwatermark[allpages, color = red!50,angle = 45, scale = 2.5]{\parbox{8cm}{ Version provisoire \\ Ne pas diffuser}}
