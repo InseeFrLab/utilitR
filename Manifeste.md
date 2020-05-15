@@ -10,7 +10,7 @@ Le projet `UtilitR` part du constat qu'il est difficile d'apprendre à utiliser 
 
 ## Quelle est la spécificité du projet `UtilitR`?
 
-**Le projet `UtilitR` est un projet collaboratif, évolutif et ouvert à tous, auquel tous les agents peuvent contribuer.** Tout agent qui le souhaite peut modifier la documentation ou la compléter en fonction de ses connaissances et de ses expériences (voir [Comment fonctionne le projet `UtilitR`?]).
+**Le projet `UtilitR` est un projet collaboratif, évolutif, *open source* et ouvert à tous, auquel tous les agents peuvent contribuer.** Tout agent qui le souhaite peut modifier la documentation ou la compléter en fonction de ses connaissances et de ses expériences (voir [Comment fonctionne le projet `UtilitR`?]).
 
 Cette documentation ne prétend pas être exhaustive ou sans erreurs. **Elle doit être vue comme une mise en commun des connaissances que les agents détiennent sur l'usage de `R`.**
 
