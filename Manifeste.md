@@ -6,7 +6,7 @@
 
 ## Pourquoi avons-nous lancé `UtilitR` ?
 
-Le projet `UtilitR` est parti du constat qu'il est difficile d'apprendre à utiliser `R` pour de multiples raisons: multiplicité de _packages_ faisant plus ou moins la même chose, abondance et éclatement de la documentation (souvent en anglais), difficultés supplémentaires pour effectuer des choix éclairés et adaptés à l'environnement informatique de travail... **Nous nous sommes donc fixés pour objectif de rassembler tous les éléments utiles pour l'usage de `R` à l'Insee dans un seul document, en cherchant à aborder le plus grand nombre possible de cas d'usage.** 
+Le projet `UtilitR` part du constat qu'il est difficile d'apprendre à utiliser `R` pour de multiples raisons: multiplicité de _packages_ faisant plus ou moins la même chose, abondance et éclatement de la documentation (souvent en anglais), difficultés supplémentaires pour effectuer des choix éclairés et adaptés à l'environnement informatique de travail... **Nous nous sommes donc fixés pour objectif de rassembler tous les éléments utiles pour l'usage de `R` à l'Insee dans un seul document, en cherchant à aborder le plus grand nombre possible de cas d'usage.** 
 
 ## Quelle est la spécificité du projet `UtilitR`?
 
@@ -16,7 +16,7 @@ Cette documentation ne prétend pas être exhaustive ou sans erreurs. **Elle doi
 
 ## Quelle est la place du projet `UtilitR` à l'Insee?
 
-**Le projet `UtilitR` est porté par les agents du réseau LS<sup>2</sup> (Libre service statistique) de l'Insee.** La documentation `UtilitR` ouverte, collaborative et adaptée au contexte de travail de l'institut vise à être cohérente avec les recommandations émises par le comité de certification des _packages_ `R` (COPS) et complète les supports du projet `USSR` (LIEN A AJOUTER).
+**Le projet `UtilitR` est porté par les agents du réseau LS<sup>2</sup> (Logiciels statistiques en Libre Service) de l'Insee.** La documentation `UtilitR` ouverte, collaborative et adaptée au contexte de travail de l'institut vise à être cohérente avec les recommandations émises par le comité de certification des _packages_ `R` (COPS) et complète les supports du projet `USSR` (LIEN A AJOUTER).
 
 ## Quelles sont les valeurs du projet `UtilitR`?
 
