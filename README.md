@@ -34,7 +34,7 @@ Deux points importants sont à noter:
 * **Cette documentation recommande les outils et les *packages* les plus adaptés au contexte d'utilisation de `R` à l'Insee**. Ces recommandations ne sont pas nécessairement adaptées à d'autres contextes, et pourront évoluer lorsque ce contexte évoluera.
 * **Cette documentation recommande d'utiliser `R` avec `Rstudio`**, qui apparaît comme la solution la plus simple et la plus complète pour un usage courant de `R`.
 
-## Quelle est la place du projet `UtilitR` à l'Insee?
+##  Place du projet `UtilitR` au sein de l'Insee
 
 **Le projet `UtilitR` est porté par les agents du réseau LS<sup>2</sup> (Logiciels statistiques en Libre Service) de l'Insee.** La documentation `UtilitR` s'attache à être cohérente avec les recommandations émises par le comité de certification des _packages_ `R` (COPS) et complète les supports du projet `USSR` (LIEN A AJOUTER).
 
