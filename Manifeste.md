@@ -37,11 +37,3 @@ Une fois atteint une taille jugée critique, le projet `UtilitR` devra peut-êtr
 ## Comment contribuer au projet `UtilitR`?
 
 Le projet `UtilitR` est actuellement mené par un groupe réduit d'agents de l'Insee. **Toute personne qui le souhaite peut rejoindre le projet à tout moment**, et toutes les contributions sont les bienvenues: compléments, corrections d'erreur, améliorations, questions... Il n'y a aucun prérequis, et aucun niveau minimal en `R` n'est demandé. Tout agent intéressé à contribuer au projet est invité à consulter le [guide des contributeurs](CONTRIBUTING.md). 
-
-## Chutes de texte à réutiliser éventuellement
-
-(au travers par exemple de l'ouverture d'une _issue_ - une sorte de ticket propre à l'environnement collaboratif choisi pour le développement de ce projet, ou encore mieux en instruisant les questions qu'ils se posent et en décrivant les réponses dans la documentation)
-
-Ce projet trouve ses racines dans la période de confinement qui a affecté le pays au printemps 2020 ; ce contexte explique une partie des choix méthodologiques et techniques qui ont été faits, comme par exemple le fait d'opter pour un dépôt accessible librement sur Internet. Il est surtout porté par la volonté de prendre le meilleur d'une situation difficile, en cherchant à préparer le futur et à favoriser des mouvements de solidarité et de bienveillance au sein de l'institut - dans un cadre bien précis, mais néanmoins essentiel pour l'institut, celui de l'usage accru de `R` dans les missions quotidiennes des agents de l'Insee.
-
-le cas échéant à créer un compte sur [Gitlab](https://gitlab.com) et à se manifester auprès des contributeurs listés [ici](https://gitlab.com/linogaliana/documentationR/-/project_members)
