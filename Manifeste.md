@@ -2,7 +2,7 @@
 
 ## Qu'est-ce que le projet `UtilitR`?
 
-**Le projet `UtilitR` vise à produire une documentation collaborative sur le logiciel `R` prioritairement à l'usage des agents de l'Insee.** Cette documentation s'adresse ainsi à tous les agents amenés à utiliser `R` dans le cadre de leur poste. C'est pourquoi elle a été élaborée en prenant en compte le contexte de travail propre à l'institut. Cette documentation peut également contenir des éléments pertinents pour un usage de `R` en dehors de l'Insee, mais ce n'est pas sa finalité première.
+**Le projet `UtilitR` vise à produire une documentation collaborative sur le logiciel `R` destinée principalement aux agents de l'Insee.** C'est pourquoi elle a été élaborée en prenant en compte le contexte de travail propre à l'institut. Cette documentation peut également contenir des éléments pertinents pour un usage de `R` en dehors de l'Insee, mais ce n'est pas sa finalité première.
 
 ## Dans quel contexte le projet `UtilitR` a-t-il été lancé?
 
