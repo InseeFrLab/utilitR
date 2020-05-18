@@ -4,6 +4,10 @@
 
 **Le projet `UtilitR` vise à produire une documentation collaborative sur le logiciel `R` prioritairement à l'usage des agents de l'Insee.** Cette documentation s'adresse ainsi à tous les agents amenés à utiliser `R` dans le cadre de leur poste. C'est pourquoi elle a été élaborée en prenant en compte le contexte de travail propre à l'institut. Cette documentation peut également contenir des éléments pertinents pour un usage de `R` en dehors de l'Insee, mais ce n'est pas sa finalité première.
 
+## Dans quel contexte le projet `UtilitR` a-t-il été lancé?
+
+Ce projet trouve ses racines dans la période de confinement qui a touché la France au printemps 2020, et qui a affecté le travail des agents de l'Insee comme de beaucoup d'autres travailleurs. Il est surtout porté par la volonté de tirer le meilleur parti d'une situation difficile, en cherchant à préparer l'avenir et à favoriser des mouvements de solidarité et de bienveillance au sein de l'institut - dans un cadre bien précis et essentiel pour l'institut, celui de l'usage accru de `R` dans les missions quotidiennes des agents de l'Insee.
+
 ## Pourquoi avons-nous lancé `UtilitR` ?
 
 Le projet `UtilitR` part du constat qu'il est difficile d'apprendre à utiliser `R` pour de multiples raisons: multiplicité de _packages_ faisant plus ou moins la même chose, abondance et éclatement de la documentation (souvent en anglais), difficultés supplémentaires pour effectuer des choix éclairés et adaptés à l'environnement informatique de travail... **Nous nous sommes donc fixés pour objectif de rassembler tous les éléments utiles pour l'usage de `R` à l'Insee dans un seul document, en cherchant à aborder le plus grand nombre possible de cas d'usage.** 
