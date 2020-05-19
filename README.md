@@ -17,38 +17,44 @@ Il est également possible de télécharger le fichier au format `pdf`
 ou les  fichiers `html` pour les consulter hors-connexion en cliquant
 [ici](https://gitlab.com/linogaliana/documentationR/-/jobs/artifacts/master/download?job=buildbookdown)
 
+# Présentation du projet `UtilitR`
 
-# Objectif de la documentation
+## Objectifs de la documentation `UtilitR`
 
-**Cette documentation s'adresse à tous les agents de l'Insee dans le cadre d'un usage courant de `R`.** 
-Elle est conçue pour aider les agents à réaliser des traitements statistiques usuels avec `R` et à produire des sorties (graphiques, cartes, documents). Cette documentation présente succinctement les outils les plus adaptés à ces tâches, et oriente les agents vers les ressources documentaires pertinentes. En revanche, elle n'aborde pas les outils les plus avancés, notamment ceux utilisés dans un cadre de développement logiciel.
+**Cette documentation s'adresse à tous les agents de l'Insee dans le cadre d'un usage courant de `R`.** Elle est conçue pour aider les agents à réaliser des traitements statistiques usuels avec `R` et à produire des sorties (graphiques, cartes, documents). Cette documentation présente succinctement les outils les plus adaptés à ces tâches, et oriente les agents vers les ressources documentaires pertinentes. En revanche, elle n'aborde pas les outils les plus avancés, notamment ceux utilisés dans un cadre de développement logiciel.
 
 Cette documentation a pour ambition de répondre à trois questions générales:
 
 * Comment travailler avec `R` à l'Insee?
+* Comment réaliser des tâches standards avec `R` (importation et manipulation de données, exploitation d'enquêtes, graphiques...)?
 * Quelles sont les bonnes pratiques à respecter pour bien utiliser `R`?
-* Comment réaliser des tâches standards avec `R`?
 
 Deux points importants sont à noter:
 
 * **Cette documentation recommande les outils et les *packages* les plus adaptés au contexte d'utilisation de `R` à l'Insee**. Ces recommandations ne sont pas nécessairement adaptées à d'autres contextes, et pourront évoluer lorsque ce contexte évoluera.
-* **Cette documentation recommande d'utiliser `R` avec `Rstudio`**, qui apparaît comme la solution la plus simple et la plus complète pour un usage courant de `R`.
+* **Cette documentation recommande d'utiliser `R` avec `Rstudio`**, qui apparaît comme la solution la plus simple et la plus complète pour un usage courant de `R`, et qui est par ailleurs le choix effectué par l'Insee.
 
-# Comment contribuer à la documentation?
+##  Place du projet `UtilitR` au sein de l'Insee
 
-**Toutes les personnes volontaires peuvent contribuer à la documentation.** Un guide détaillé pour les contributeurs est disponible dans le fichier `CONTRIBUTING.md`.
+**Le projet `UtilitR` est porté par les agents du réseau LS<sup>2</sup> (Logiciels statistiques en Libre Service) de l'Insee.** La documentation `UtilitR` s'attache à être cohérente avec les recommandations émises par le comité de certification des _packages_ `R` (COPS) et complète les supports du projet `USSR` (LIEN A AJOUTER).
+
+## Comment contribuer à la documentation
+
+**Le projet `UtilitR` est un projet collaboratif, évolutif, *open source* et ouvert à tous, auquel tous les agents peuvent contribuer.** Le projet est mené par un groupe de contributeurs qui en définissent eux-mêmes le contenu, la structure et le calendrier. Les objectifs et l'approche collaborative du projet `UtilitR` sont détaillés dans [ce document](`manifeste.md`).
+
+**Tout agent qui le souhaite peut modifier ou compléter la documentation en fonction de ses connaissances et de ses expériences**, et toutes les contributions sont les bienvenues: compléments, corrections d'erreur, améliorations, questions... Il n'y a aucun prérequis, et aucun niveau minimal en `R` n'est demandé. Le dépôt de la documentation est situé [ici](https://gitlab.com/linogaliana/documentationR). Tout agent intéressé à contribuer au projet est invité à consulter le guide des contributeurs (`CONTRIBUTING.md`).
 
 # Environnement de travail
 
 Plusieurs solutions sont possibles pour disposer de l'environnement de travail nécessaire à la compilation de cette documentation : 
 
-- pour une installation sur un poste, voir la procédure d'[installation des packages](#installation-des-packages). _Cette solution ne garantit pas la reproductibilité._
+- pour une installation sur un poste, voir la procédure d'[installation des _packages_](#installation-des-packages). _Cette solution ne garantit pas la reproductibilité._
 
 - [l'utilisation d'un container](#utilisation-dun-container). _Cette solution vous offre des garanties élevées de reproductibilité._
 
-## Installation des packages
+## Installation des _packages_
 
-Les packages nécessaires sont déclarés dans le fichier [DESCRIPTION](DESCRIPTION).  
+Les _packages_ nécessaires sont déclarés dans le fichier [DESCRIPTION](DESCRIPTION).  
 Vous pouvez les installer en exécutant : 
 
 ```r
