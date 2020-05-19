@@ -36,7 +36,7 @@ Cette documentation ne prétend pas être exhaustive ou sans erreurs. **Elle doi
 
 **Le projet `UtilitR` est un projet collaboratif mené par un groupe de contributeurs qui définissent eux-mêmes le contenu, la structure et le calendrier du projet.** Il n'y a pas de hiérarchie au sein du groupe de contributeurs. Cette organisation horizontale implique un effort de dialogue et de concertation, les décisions étant prises à la majorité.
 
-Une fois atteint une taille jugée critique, le projet `UtilitR` devra sans doute, pour se pérenniser, rejoindre un cadre plus officiel. Cela permettra l'affectation de ressources pour en assurer la poursuite, en contrepartie d'un fonctionnement peut-être plus rigide et plus vertical. Toutefois, les contributeurs affirment leur attachement à l'approche collaborative et aux cinq principes présentés ci-dessus.
+Une fois atteint une taille jugée critique, le projet `UtilitR` devra sans doute, pour se pérenniser, prendre une forme plus officielle et institutionnelle. Toutefois, les contributeurs affirment leur attachement à l'approche collaborative et aux cinq principes présentés ci-dessus.
 
 ## Comment contribuer au projet `UtilitR`?
 
