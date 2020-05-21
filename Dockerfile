@@ -6,8 +6,8 @@ ARG REPO=linogaliana/documentationr
 FROM $REGISTRY/$REPO:master
 
 ## Copies your repo files into the Docker Container
-ARG NB_USER=rstudio
-ARG NB_UID=1000
+ENV NB_USER rstudio
+ENV NB_UID 1000
 USER ${NB_USER}
 ENV HOME /home/${NB_USER}
 COPY Rprofile ${HOME}
