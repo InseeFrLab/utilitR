@@ -1,11 +1,7 @@
 # see the original Dockerfile at https://github.com/rocker-org/rocker-versioned2/blob/master/dockerfiles/Dockerfile_binder_4.0.0
-ARG GITLAB=gitlab.com
-ARG REGISTRY=registry.$GITLAB
-ARG REPO=linogaliana/documentationr
+FROM registry.gitlab.com/linogaliana/documentationr:master
 
-FROM $REGISTRY/$REPO:master
-
-## Copy your files into the Docker Container
+## Copy files into the Docker image
 # Change user
 USER rstudio
 # Copy Rprofile to /home/rstudio/.Rprofile
