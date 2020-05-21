@@ -14,7 +14,7 @@ USER ${NB_USER}
 # Copy Rprofile to /home/rstudio/.Rprofile
 COPY Rprofile ${HOME}/.Rprofile
 # Clone project
-RUN git clone "https://${GITLAB}/${REPO}.git" ${HOME}/documentationR
+RUN git clone https://gitlab.com/linogaliana/documentationr.git ${HOME}/documentationR
 # Back to root
 USER root
 
