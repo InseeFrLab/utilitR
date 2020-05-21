@@ -6,22 +6,19 @@ ARG REPO=linogaliana/documentationr
 FROM $REGISTRY/$REPO:master
 
 ## Copy your files into the Docker Container
-ENV NB_USER rstudio
-ENV NB_UID 1000
-ENV HOME /home/${NB_USER}
 # Change user
-USER ${NB_USER}
+USER rstudio
 # Copy Rprofile to /home/rstudio/.Rprofile
-COPY Rprofile ${HOME}/.Rprofile
+COPY Rprofile /home/rstudio/.Rprofile
 # Clone project
-RUN git clone https://gitlab.com/linogaliana/documentationr.git ${HOME}/documentationR
+RUN git clone https://gitlab.com/linogaliana/documentationr.git /home/rstudio/documentationR
 # Back to root
 USER root
 
 # Fix rights permissions
-RUN chown -R ${NB_USER} ${HOME} && \
-    chown -R ${NB_USER}:staff /opt/texlive && \
-    chown -R ${NB_USER}:staff /usr/local/texlive && \
+RUN chown -R rstudio /home/rstudio && \
+    chown -R rstudio:staff /opt/texlive && \
+    chown -R rstudio:staff /usr/local/texlive && \
     chmod -R ug+w /opt/texlive && \
     chmod -R ug+w /usr/local/texlive
 
