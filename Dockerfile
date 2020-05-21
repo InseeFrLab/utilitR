@@ -58,9 +58,9 @@ RUN git clone https://gitlab.com/linogaliana/documentationr.git ${HOME}/document
 ## clone of your repository
 RUN chown -R ${NB_USER} ${HOME} && \
     chown -R ${NB_USER}:staff /opt/texlive && \
-    chown -R ${NB_USER}:staff /opt/local/texlive && \
+    chown -R ${NB_USER}:staff /usr/local/texlive && \
     chmod -R ug+w /opt/texlive && \
-    chmod -R ug+w /opt/local/texlive
+    chmod -R ug+w /usr/local/texlive
 
 ## Become normal user again
 USER ${NB_USER}
