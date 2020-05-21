@@ -5,3 +5,5 @@ setHook("rstudio.sessionInit", function(newSession) {
     rstudioapi::openProject('~/documentationR')
   }
 }, action = "append")
+
+.libPaths(c("/usr/local/lib/R/site-library", "/usr/local/lib/R/library"))
