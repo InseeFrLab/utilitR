@@ -5,12 +5,9 @@ ARG REPO=linogaliana/documentationr
 
 FROM $REGISTRY/$REPO:master
 
-RUN /rocker_scripts/install_python.sh
-RUN /rocker_scripts/install_binder.sh
-
 ## Copies your repo files into the Docker Container
-ENV NB_USER rstudio
-ENV NB_UID 1000
+ARG NB_USER=rstudio
+ARG NB_UID=1000
 USER ${NB_USER}
 ENV HOME /home/${NB_USER}
 COPY Rprofile ${HOME}
@@ -25,3 +22,8 @@ RUN chown -R ${NB_USER} ${HOME} && \
 
 ## Become normal user again
 USER ${NB_USER}
+
+
+RUN /rocker_scripts/install_python.sh
+RUN /rocker_scripts/install_binder.sh
+
