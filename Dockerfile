@@ -21,7 +21,7 @@ RUN chown -R ${NB_USER} ${HOME} && \
     chmod -R ug+w /usr/local/texlive
 
 ## Become normal user again
-USER ${NB_USER}
+#USER ${NB_USER}
 
 
 RUN /rocker_scripts/install_python.sh
