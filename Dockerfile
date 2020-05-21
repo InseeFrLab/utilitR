@@ -1,13 +1,16 @@
 # see the original Dockerfile at https://github.com/rocker-org/rocker-versioned2/blob/master/dockerfiles/Dockerfile_binder_4.0.0
 FROM registry.gitlab.com/linogaliana/documentationr:master
 
+ENV NB_USER=${NB_USER:-rstudio}
+ENV WORKDIR=${WORKDIR:-/home/${NB_USER}}
+
 ## Copy files into the Docker image
 # Change user
-USER rstudio
+USER ${NB_USER}
 # Copy Rprofile to /home/rstudio/.Rprofile
-COPY Rprofile /home/rstudio/.Rprofile
+COPY Rprofile ${WORKDIR}
 # Clone project
-RUN git clone https://gitlab.com/linogaliana/documentationr.git /home/rstudio/documentationR
+RUN git clone https://gitlab.com/linogaliana/documentationr.git ${WORKDIR}/documentationR
 # Back to root
 USER root
 
