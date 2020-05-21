@@ -9,7 +9,10 @@ RUN /rocker_scripts/install_python.sh
 RUN /rocker_scripts/install_binder.sh
 
 ## Copies your repo files into the Docker Container
+ENV NB_USER rstudio
+ENV NB_UID 1000
 USER ${NB_USER}
+ENV HOME /home/${NB_USER}
 COPY Rprofile ${HOME}
 RUN mv ${HOME}/Rprofile ${HOME}/.Rprofile
 RUN git clone https://gitlab.com/linogaliana/documentationr.git ${HOME}/documentationR
