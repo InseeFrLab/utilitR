@@ -6,24 +6,24 @@ ARG REPO=linogaliana/documentationr
 FROM $REGISTRY/$REPO:master
 
 ## Copy your files into the Docker Container
-ENV NB_USER rstudio
-ENV NB_UID 1000
-ENV HOME /home/${NB_USER}
+#ENV NB_USER rstudio
+#ENV NB_UID 1000
+#ENV HOME /home/${NB_USER}
 # Change user
-USER ${NB_USER}
+#USER ${NB_USER}
 # Copy Rprofile to /home/rstudio/.Rprofile
-COPY Rprofile ${HOME}/.Rprofile
+#COPY Rprofile ${HOME}/.Rprofile
 # Clone project
-RUN git clone https://gitlab.com/linogaliana/documentationr.git ${HOME}/documentationR
+#RUN git clone https://gitlab.com/linogaliana/documentationr.git ${HOME}/documentationR
 # Back to root
-USER root
+#USER root
 
 # Fix rights permissions
-RUN chown -R ${NB_USER} ${HOME} && \
-    chown -R ${NB_USER}:staff /opt/texlive && \
-    chown -R ${NB_USER}:staff /usr/local/texlive && \
-    chmod -R ug+w /opt/texlive && \
-    chmod -R ug+w /usr/local/texlive
+#RUN chown -R ${NB_USER} ${HOME} && \
+#    chown -R ${NB_USER}:staff /opt/texlive && \
+#    chown -R ${NB_USER}:staff /usr/local/texlive && \
+#    chmod -R ug+w /opt/texlive && \
+#    chmod -R ug+w /usr/local/texlive
 
 # Install python
 RUN /rocker_scripts/install_python.sh
