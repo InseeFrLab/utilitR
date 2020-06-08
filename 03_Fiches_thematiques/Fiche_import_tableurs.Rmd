@@ -2,63 +2,74 @@
 
 ## Tâches concernées et recommandations
 
-Cette fiche a pour objectif de décrire les principales fonctionnalités permettant d'importer des données issues de tableurs de type `xls`, `xlsx`ou `ods`, pour ne citer que les plus couramment utilisés à l'Insee. Cette fiche ne prétend pas être exhaustive sur l'ensemble des fonctions disponibles dans R pour réaliser ces tâches.
-
-::: {.recommandation data-latex=""}
-
-**importer un fichier .xlsx**
-Nous avons recensé 3 packages pour l'import de fichiers avec une extension de type `xls` ou `xlsx` : `readxl`, `openxlsx` et `xlsx`.   
-Les 2 premiers packages font partie des packages les plus chargées sur le site du CRAN et répondent à nos principaux besoins. Toutefois, nous présontons ici le package `openxlsx` qu nous préconisons car 
-
-* il est plus plus performant et importe un fichier de 150 MO 4 à 5 fois plus vite;  
-* n'est pas fortement lié à des dépendances java (`rJava`), ce qui peut parfois s'avérer gênant;
-* ses nombreux paramètres répondent bien à nos attentes.
-
-**importer un fichier .xls**
-
-**importer un fichier .ods**
-À notre connaissance, seul le package `readODS` propose des fonctions propres à la lecture et l'écriture des fichiers `.ods` .
-
-:::
-
-## 1. Import d'un fichier tabulé avec le package `openxlsx`
+Cette fiche a pour objectif de décrire les principales fonctionnalités permettant d'importer des données issues de tableurs de type `xls`, `xlsx` ou `ods`, pour ne citer que les plus couramment utilisés à l'Insee. Cette fiche ne prétend pas être exhaustive sur l'ensemble des fonctions disponibles dans R pour réaliser ces tâches.
 
 ::: {.remarque data-latex=""}
 
 *Différences entre `.xls` et `.xlsx`*
 
-La façon dont les informations sont stockées est très différente pour les formats XLS et XLSX. XLS est basé sur BIFF (Binary Interchange File Format) et en tant que tel, l'information est directement stockée dans un format binaire. D'autre part, XLSX est basé sur le format Office Open XML, un format de fichier dérivé de XML. Les informations contenues dans un fichier XLSX sont stockées dans un fichier texte qui utilise XML pour définir tous ses paramètres.
+La façon dont les informations sont stockées est très différente pour les formats `xls` et `xlsx`
+
 * Dans un classeur `xls`, les limites sont de 65 536 lignes et de 256 colonnes.
 * Dans un classeur `xlsx`, les limites sont de 1 048 576 lignes et de 16 384 colonnes.
-* La taille des fichiers enregistrés au format `xlsx` est significativement réduite.
+* Un fichier enregistré au format `xlsx` est plus léger que s'il est enregistré au format `xls`.
 
 :::
 
-### *Présentation des paramètres de la fonction ``openxlsx::read.xlsx() *
 
+::: {.recommandation data-latex=""}
+
+Nous avons recensé 3 packages pour l'import de fichiers avec une extension de type `xls` ou `xlsx` : `readxl`, `openxlsx` et `xlsx`.   
+Les 2 premiers packages font partie des packages les plus chargées sur le site du CRAN et répondent à nos principaux besoins. Nous excluons donc, de ce chapitre, le package `xls`.
+
+**Importer un fichier .xlsx**  
+Nous présenterons le package `openxlsx` que nous préconisons pour les fichiers de type `xlsx` et, particulièrement, lorsqu'ils sont lourds (plusieurs dizaines de MégOctets) car : 
+
+* il est plus plus performant : il importe un fichier de 150 MO 4 à 5 fois plus vite qu'avec le package `readxl`;  
+* n'est pas fortement lié à des dépendances java (`rJava`), ce qui peut parfois s'avérer gênant;
+* ses nombreux paramètres répondent bien à nos attentes.
+
+**Importer un fichier .xls**  
+Pour les fichiers `xls`, nous préconisons d'utiliser le package `readXl` qui comporte 3 fonctions d'import :
+
+* `read_excel()` fait appel à à la fonction `excel_format()` pour déterminer notamment le type et l'extension du fichier (*xls* ou *xlsx*) et fait appel à la fonction la plus adaptée parmi les 2 suivantes;
+    - `read_xls()`
+    - `read_xlsx()`). 
+
+Il est adapté pour les fichiers dont on n'est pas certain de l'extension (`xls` ou `xlsx`) et/ou les fichiers de quelques MégaOctets au plus.  
+Les paramètres de ces 3 fonctions étant les mêmes, nous préconisons de faire appel à la fonction `read_excel()` et de réserver l'appel aux autres fonctions de ce package aux cas particuliers.
+
+**importer un fichier .ods**  
+À notre connaissance, seul le package `readODS` propose des fonctions propres à la lecture `.ods`. Il a 2 fonctions d'import : `read_ods` et `read.ods`.
+La documentation du package recommande d'utiliser `read_ods`.
+
+:::
+
+## **1. Import d'un fichier tabulé avec le package** `openxlsx`
+
+### *Présentation des paramètres de la fonction* `openxlsx::read.xlsx()`  
 Pour lire un fichier au format `xlsx`, nous préconisons d'utiliser la *fonction* `read.xlsx()` du *package* `openxlsx`. Cette fonction permet de charger les données du tableur dans un `data.frame`. Cette fiche s'appuie sur la version la plus récente du package : la **4.1.5**
 
 La fonction `read.xlsx()` du package `openxlsx` propose différentes options. Ci-dessous, les valeurs par défaut et la description des paramètres :
 
-* `xlsxFile`: un fichier `xlsx`, un objet classeur ou une url vers un fichier xlsx;
-* `sheet`: *1 -* Nom ou index de la feuille à partir de laquelle lire les données;
-* `startRow`: *1 -* première ligne pour commencer à rechercher des données. Les lignes vides en haut d'un fichier sont toujours ignorées, quelle que soit la valeur de startRow;
-* `colNames` : *TRUE -* Si `TRUE`, la première ligne de données sera utilisée comme nom de colonne;
-* `rowNames` : *FALSE -* Si `TRUE`, la première colonne de données sera utilisée comme noms de ligne;
-* `detectDates` : *FALSE -* Si `TRUE`, essayer de reconnaître les dates et effectuer la conversion;
-* `skipEmprtyRows` : *TRUE -* Si `TRUE`, les lignes vides sont ignorées, sinon les lignes vides après la première ligne contenant les données renverront une ligne de `NA`;
-* `skipEmptyCols` : *FALSE -* Si `TRUE`, les colonnes vides sont ignorées;
-* `rows` : *NULL -* Un vecteur numérique spécifiant les lignes du fichier Excel à lire. Si NULL, toutes les lignes sont lues;
-* `cols` : *NULL -* Un vecteur numérique spécifiant les colonnes du fichier Excel à lire. Si NULL, toutes les colonnes sont lues;
-* `check.names` : *FALSE -* Si `TRUE`, les noms des variables dans la trame de données sont vérifiés pour s'assurer qu'ils sont des noms de variable syntaxiquement valides;
-**Bug :** Le comportement de ce paramètre est curieux. Les espaces dans les noms de variables sont remplacés par des **.** que cet argument soit à `FALSE` ou à `TRUE`. 
-**Ne pas utiliser !**
-Depuis la dernière version (*4.1.5*), le paramètre `sep.names` (ci-dessous) permet de contourner ce problème.
+* `xlsxFile`: **pas de valeur par défaut**, un objet classeur ou une url vers un fichier xlsx;
+* `sheet`: **- 1 -** Nom ou index de la feuille à partir de laquelle lire les données;
+* `startRow`: **- 1 -** première ligne pour commencer à rechercher des données. Les lignes vides en haut d'un fichier sont toujours ignorées, quelle que soit la valeur de startRow;
+* `colNames` : **- TRUE -** Si `TRUE`, la première ligne de données sera utilisée comme nom de colonne;
+* `rowNames` : **- FALSE -** Si `TRUE`, la première colonne de données sera utilisée comme noms de ligne;
+* `detectDates` : **- FALSE -** Si `TRUE`, essayer de reconnaître les dates et effectuer la conversion;
+* `skipEmprtyRows` : **- TRUE -** Si `TRUE`, les lignes vides sont ignorées, sinon les lignes vides après la première ligne contenant les données renverront une ligne de `NA`;
+* `skipEmptyCols` : **- FALSE -** Si `TRUE`, les colonnes vides sont ignorées;
+* `rows` : **- NULL -** Un vecteur numérique spécifiant les lignes du fichier Excel à lire. Si NULL, toutes les lignes sont lues;
+* `cols` : **- NULL -** Un vecteur numérique spécifiant les colonnes du fichier Excel à lire. Si NULL, toutes les colonnes sont lues;
+* `check.names` : **- FALSE -** Si `TRUE`, les noms des variables dans la trame de données sont vérifiés pour s'assurer qu'ils sont des noms de variable syntaxiquement valides  
+    - Le comportement de ce paramètre est assez curieux. Les espaces dans les noms de variables sont remplacés par des **"."** que cet argument soit à `FALSE` ou à `TRUE`.  
+    - *Ne pas utiliser !**  
+    - Depuis la dernière version (*4.1.5*), le paramètre `sep.names` (ci-dessous) permet de contourner ce problème.
 
-* `sep.names` = *"." -* Un caractère qui remplace les blancs dans les noms de colonne. Par défaut, ".";
-* `namedregion` : *NULL -* Une région nommée dans le classeur. Si ce n'est pas NULL startRow, les paramètres lignes et cols sont ignorés;
-* `na.strings` : *NA* Un vecteur de caractères de chaînes qui doit être interprété comme `NA` Les cellules vides seront retournées comme `NA`;
-* `fillMergedCells` : *FALSE -* Si `TRUE`, la valeur d'une cellule fusionnée est donnée à toutes les cellules de la fusion.
+* `sep.names` = **- "." -** Un caractère qui remplace les blancs dans les noms de colonne;
+* `namedRegion` : **- NULL -** Une région nommée dans le classeur. Si ce n'est pas NULL startRow, les paramètres lignes et cols sont ignorés;
+* `na.strings` : **- NA -** Un vecteur de caractères de chaînes qui doit être interprété comme `NA` Les cellules vides seront retournées comme `NA`;
 
 ::: {.remarque data-latex=""}
 
@@ -66,29 +77,24 @@ Les formules écrites à l'aide de writeFormula dans un objet Workbook ne seront
 
 :::
 
-Les exemples qui suivent vont vous permettre de facilement charger une table de données d'un fichier avec une extension `.xlsx` et de tester les différents paramètres liés à l'import d'une table.
+Les exemples qui suivent vont vous permettre de facilement charger tout ou partie d'une table de données d'un fichier avec une extension `.xlsx`.
 
 ### Pas à pas
-* *Installer et charger le package*
-
+* *Installer et charger le package*  
 Le cas échéant, vous devrez commencer par **installer** puis **charger** le package `openxlsx`
 ```{r,eval=FALSE}
 install.packages("openxlsx", dependencies = TRUE)
-```
-
-```{r,eval=TRUE}
 library(openxlsx)
-
 ```
+Vous pouvez également faire appel à la seule fonction du package qui vous intéresse en la faisant précéder du nom du package et de ::.  Exemple : `openxls::read.xls()`.  
+C'est la méthode que nous appliquerons ici.
 
-* *Les données*
-
+* *Les données*  
 Afin que vous puissiez reproduire les morceaux de codes proposés, il vous faut charger [le jeu de données à cette adresse](https://bureautique-afij.jimdofree.com/app/download/11922928825/EXERCICES+DU+COURS+BDD.xlsx?t=1487924250) puis le sauvegarder sur votre **Z:/**.
 
 Nous définissons, en début de script, une variable contenant le chemin d'accès aux données.
 ```{r, eval = TRUE}
-# chemin_xlsx <- "Z:/EXERCICES DU COURS BDD.xlsx"
-chemin_xlsx <- "D:/T19QHL/Mes Documents/CT_Travail/R_workSpace/dataViz/donneesTest/dataViz XLS 2 onglets.xls"
+chemin_xlsx <- "Z:/EXERCICES DU COURS BDD.xlsx"
 ```
 
 ::: {.remarque data-latex=""}
@@ -97,30 +103,28 @@ PS : si vous avez choisi de sauvegarder votre jeu de données ailleurs que sur v
 
 :::
 
-* *Définir des données à charger -* `xlsxFile`
-
+* *Définir des données à charger -* `xlsxFile`  
 Par défaut, on charge le 1er onglet : on obtient alors un `data.frame`. Le type des variables est conservé.
 ```{r, eval=TRUE}
 mesDonnees <- openxlsx::read.xlsx(xlsxFile = chemin_xlsx)
 str(mesDonnees)
 ```
 
-* *Préciser l'onglet dans un fichier qui en contient plusieurs -* `sheet`
-
+* *Préciser l'onglet dans un fichier qui en contient plusieurs -* `sheet`  
 Pour charger un autre onglet du même fichier, on utilisera le paramètre `sheet` en précisant soit le **nom de l'onglet** soit son **index** (sa position dans le fichier).
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 # Chargement du 2ème onglet
 mesDonnees <- openxlsx::read.xlsx(xlsxFile = chemin_xlsx, sheet=2)
 str(mesDonnees)
 ```
 La fonction `openxlsx::getSheetNames()` permet de récupérer les différents noms d'onglets du fichier.
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 (nomOnglets <- openxlsx::getSheetNames(chemin_xlsx))
 
 ```
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 # Chargement d'un onglet par rapport à son nom
 mesDonnees <- openxlsx::read.xlsx(xlsxFile = chemin_xlsx, sheet="Météo-Fonctions calcul pour BDD")
 # Structure des données
@@ -129,85 +133,85 @@ str(mesDonnees)
 colnames(mesDonnees)
 ```
 
-* *Préciser où débute la sélection -* `startRow`
-
+* *Préciser où débute la sélection -* `startRow`  
 Par défaut, on importe les données à partir de la 1ère ligne de l'onglet spécifié. On peut, avec le paramètre `startRow`, définir la ligne de début d'import.
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 mesDonnees <- openxlsx::read.xlsx(xlsxFile = chemin_xlsx, startRow=3)
 # Les 10 premières lignes du data.frame
 head(mesDonnees,10)
 ```
 
-On perd par contre les noms de colonnes et le type des variables.
-```{r, eval=FALSE}
+On perd les noms de colonnes et le type des variables.
+```{r, eval=TRUE}
 # Structure des données
 str(mesDonnees)
 # Nom des colonnes
 colnames(mesDonnees)
 ```
 
-* *Définir les en-têtes de colonnes -* `colNames`
-
+* *Définir les en-têtes de colonnes -* `colNames`  
 La 1ère ligne des données définit, par défaut, le nom des colonnes. Si on ne veut pas que ce soit le cas, on passe le paramètre `colNames=FALSE`.
-```{r,eval=FALSE}
+```{r,eval=TRUE}
 mesDonnees <- openxlsx::read.xlsx(xlsxFile = chemin_xlsx, colNames=FALSE)
 # Nom des colonnes
 colnames(mesDonnees)
 ```
 
 La 1ère ligne est donc considérée comme une ligne de données comme les autres.
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 # Les 10 premières lignes du data.frame
 head(mesDonnees,10)
 ```
 Par conséquent, il vous faudra, le cas échéant, préciser le nom des colonnes.
 
-* *Reconnaitre les variables au format date -* `detectDates`
-
+* *Reconnaitre les variables au format date -* `detectDates`  
 La variale `Date` de ce jeu de données est initialement importée au format `num` (cf le `str()` du point *préciser l'onglet ...*). On le transforme en un format `Date`.
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 # Transformation de la variable "DATE" au format Date
 mesDonnees <- openxlsx::read.xlsx(xlsxFile = chemin_xlsx,  sheet="Météo-Fonctions calcul pour BDD", detectDates=TRUE)
 # Structure des données
 str(mesDonnees)
 ```
-* *Ne pas importer les lignes et les colonnes vides -* `skipEmptyRows`
-
-Pour tester ce paramètre, vous pouvez ouvrir votre jeux de données (avec un tableur) et effacer les données d'une ligne et d'une colonne.
-
-Ici, j'efface les données de la ligne *2* et des 2ème et 5ème colonnes du 1er onglet (*Produits cafés - Les filtres*). J'enregistre mes modifications mais je ne ferme pas tout de suite le fichier car j'annulerai ensuite toutes ces modifications (avec plusieurs `Ctrl` + `z`).
+* *Ne pas importer les lignes et les colonnes vides -* `skipEmptyRows`  
+Pour tester ce paramètre, vous pouvez ouvrir votre jeux de données (avec un tableur) et effacer les données d'une ligne et d'une colonne.  
+par exemple :
+    * Effacer les données de la ligne 2 et des 2ème et 5ème colonnes du 1er onglet (Produits cafés - Les filtres);
+    * Enregistrer les modifications mais ne pas fermer tout de suite le fichier pour pouvoir annuler ensuite toutes ces modifications (avec plusieurs `Ctrl` + `z`);
+    * Exécuter ce code;
+    
 ```{r, eval=FALSE}
 (mesDonnees <- openxlsx::read.xlsx(xlsxFile = chemin_xlsx, skipEmptyRows=TRUE))
 ```
-Les données effacées n'ont pas été chargées. Vous pouvez annuler vos modifications sur votre fichier de données puis le sauvegarder. 
 
-* *Sélectionner les lignes et colonnes à importer -* `rows` et `cols`
+Les données effacées n'ont pas été chargées;  
+Annuler vos modifications (avec plusieurs `Ctrl` + `z`) sur votre fichier de données puis le sauvegarder. 
+
+* *Sélectionner les lignes et colonnes à importer -* `rows` et `cols`  
 On peut définir les lignes et colonnes qu'on souhaite importer en le précisant, avec un vecteur numéric, avec les paramètres `rows` et `cols`.
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 (mesDonnees <- openxlsx::read.xlsx(xlsxFile = chemin_xlsx, rows=c(1,4:6,9), cols=c(1,3:4)))
 ```
 
-*Vérification du respect des normes syntaxiques dans les noms de variable*
+* *Vérification du respect des normes syntaxiques dans les noms de variable -*  `check.names` ou `sep.names` ?
 La fonction `openxlsx::read.xlsx()` propose, via le paramètre `check.names` de modifier les noms de variables pour les adapter aux règles de bonnes pratiques syntaxiques. Ce paramètre, utilisé seul, pose des problèmes régulièrement remontés par la communauté sur [la page gitHub du développeur du package](https://github.com/awalker89) :
     - [isuue #33](https://github.com/ycphs/openxlsx/issues/33)
     - [issue #102](https://github.com/awalker89/openxlsx/issues/102)
-En effet, que cet argument soit à `FALSE` ou à `TRUE`, les espaces dans les noms de variables sont remplacés par des **.**. Depuis la dernière version (*4.1.5*), le paramètre `sep.names` (ci-dessous) permet de contourner ce problème.
-*Ne pas utiliser* `check?names`
-```{r, eval=FALSE}
-# check.names=TRUE 
+    
+En effet, que cet argument soit à `FALSE` ou à `TRUE`, les espaces dans les noms de variables sont remplacés par des **"."**. Depuis la dernière version (*4.1.5*), le paramètre `sep.names` (ci-dessous) permet de contourner ce problème.  
+**Ne pas utiliser** `check.names`
+
+Par contre, le paramètre `sep.names` permet de préciser le caractère qui doit remplacer l'espace (et plus forcément un **"."**).
+```{r, eval=TRUE}
 mesDonnees <- openxlsx::read.xlsx(xlsxFile = chemin_xlsx, sep.names="|")
 colnames(mesDonnees)
 ```
 
-*namedRegion*
+* *Importer une zone spécifique du fichier -* `namedRegion`  
 Il est possible de n'importer qu'une partie du fichier selon le nom d’une zone de la *"feuille de calcul"*.
 
-Comme nous ne les connaissons pas, ici, nous allons récupérer le nom des différentes parties de notre fichier avec la méthode `openxlsx::getNamedRegions` à qui on passe le chemin du fichier.
-```{r, eval=TRUE}
-(getNamedRegions(chemin_xlsx))
-```
-Ensuite, on passe l'une de ces zones au paramètre `namedRegion`.
-Dans le cadre de cet exercice, vous pouvez créer une région dans votre fichier de donées. Pour cela :
+Pour récupérer le nom des différentes parties de notre fichier, on utilise la méthode `openxlsx::getNamedRegions` à qui on passe le chemin du fichier. Ensuite, on passe l'une de ces zones au paramètre `namedRegion`.
+
+Dans le cadre de cet exercice, vous pouvez créer une région dans votre fichier de données. Pour cela, faire comme ceci :
 
 * ouvrir le fichier de données;
 * Faire `Ctrl`+`F3`;
@@ -218,12 +222,13 @@ Dans le cadre de cet exercice, vous pouvez créer une région dans votre fichier
 
 ![Ajouter une région dans un fichier *Excel*](D:/T19QHL/Mes Documents/CT_Travail/R_workSpace/documentationR_Tests/img/namedRegion.png)
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 (mesDonnees <- openxlsx::read.xlsx(xlsxFile = chemin_xlsx, namedRegion="test_namedRegion"))
 ```
 
 
-## 2. Import d'un fichier tabulé avec le package `readODS`
+## *2. Import d'un fichier tabulé avec le package* `readODS`
+### *Présentation des paramètres de la fonction* `readODS::read_ods()`
 
 
 
