@@ -1,8 +1,7 @@
 # import de données issues de tableurs (Excel, Calc)
 
 ## Tâches concernées et recommandations
-
-Cette fiche a pour objectif de décrire les principales fonctionnalités permettant d'importer des données issues de tableurs (extension type `xls`, `xlsx` ou `ods`), pour ne citer que les plus couramment utilisés à l'Insee. Cette fiche ne prétend pas être exhaustive sur l'ensemble des fonctions disponibles dans R pour réaliser ces tâches.
+L'utilisateur souhaite importer dans `R` des données issues de tableurs (extension type `xls`, `xlsx` ou `ods`), pour ne citer que les plus couramment utilisés à l'Insee.
 
 ::: {.remarque data-latex=""}
 
@@ -19,7 +18,7 @@ La façon dont les informations sont stockées est très différente pour les fo
 
 ::: {.recommandation data-latex=""}
 
-**Quel package utiliser pour importer son fichier `xlsx`, `xls` ou `ods`**  
+**Quel package utiliser pour importer son fichier `xlsx`, `xls` ou `ods` ?**  
 Nous avons recensé 3 packages pour l'import de fichiers avec une extension de type `xls` ou `xlsx` :
 
 * `readxl`,
@@ -45,32 +44,32 @@ Pour les fichiers `xls`, nous préconisons d'utiliser le package `readXl` qui co
 Il est adapté pour les fichiers dont on n'est pas certain de l'extension (`xls` ou `xlsx`) et/ou les fichiers de quelques MégaOctets au plus.  
 Les paramètres de ces 3 fonctions étant les mêmes, nous préconisons de faire appel à la fonction `read_excel()` et de réserver l'appel à l'une des 2 autres aux cas particuliers (certitudes sur le type de fichier, par exemple).
 
-**importer un fichier `.ods`**  
+**Importer un fichier `.ods`**  
 À notre connaissance, seul le package `readODS` propose des fonctions propres à la lecture `.ods`. Il a 2 fonctions d'import : `read_ods` et `read.ods`.
 La documentation du package recommande d'utiliser `read_ods`.
 
 :::
 
-## **1. Import d'un fichier `xlsx` ou `xls`**
+## **1. Importer un fichier `xlsx` ou `xls`**
 
-* *Les données*  
+* **Les données utilisées** 
 Nous travaillerons à partir d'un jeu de données tests provenant d'un site de formation à `Excel`. Afin de pouvoir reproduire les morceaux de codes proposés, il vous faut charger [le jeu de données ici](https://bureautique-afij.jimdofree.com/app/download/11922928825/EXERCICES+DU+COURS+BDD.xlsx?t=1487924250) puis le sauvegarder, par simplicité, sur votre lecteur **Z:/**.  
 Si vous avez choisi de sauvegarder votre jeu de données ailleurs que sur votre lecteur **Z:/**, vous devez adapter en conséquence le chemin ci-dessous.
 
 Nous définissons, en début de script, une variable contenant le chemin d'accès aux données.
 ```{r, eval = TRUE}
-# chemin_xlsx <- "Z:/EXERCICES DU COURS BDD.xlsx"
-chemin_xlsx <- "D:/T19QHL/Mes Documents/CT_Travail/R_workSpace/documentationR_Tests/EXERCICES DU COURS BDD.xlsx"
+chemin_xlsx <- "Z:/EXERCICES DU COURS BDD.xlsx"
+# chemin_xlsx <- "D:/T19QHL/Mes Documents/CT_Travail/R_workSpace/documentationR_Tests/EXERCICES DU COURS BDD.xlsx"
 
 ```
 
-### * 11. Présentation de la fonction* `openxlsx::read.xlsx()` - Version **4.1.5**
+### *11. Présentation de la fonction* `openxlsx::read.xlsx()` - Version **4.1.5**
 Pour lire un fichier au format `xlsx`, nous préconisons d'utiliser la *fonction* `read.xlsx()` du *package* `openxlsx`.  Cette fiche s'appuie sur la version la plus récente du package : la **4.1.5**.  
 Cette fonction permet de charger les données du tableur dans un `data.frame`.
 
 * **Les paramètres**
 
-La fonction `read.xlsx()` du package `openxlsx` propose différentes options. Ci-dessous, les valeurs par défaut et la description des paramètres :
+Voici les principaux arguments et options de `read.xlsx()`:
 
 | Argument         | Valeur par défaut     | Fonction                                                                                   |
 |------------------|-----------------------|--------------------------------------------------------------------------------------------|
@@ -231,10 +230,13 @@ Dans le cadre de cet exercice, vous pouvez créer une région dans votre fichier
 ```
 ---
 
-### **12. Présentation de la fonction** `readxl::read_excel()` - Version **1.3.1**
+### *12. Présentation de la fonction* `readxl::read_excel()` - Version **1.3.1**
 
 **Les paramètres**  
-La fonction `read_excel()` du package `readxl`, qui fait partie du `tidyverse`, permet d’importer des données directement depuis un fichier au format `xls` ou `xlsx`. Cette fonctions à les paramètres suivants 
+La fonction `read_excel()` du package `readxl`, qui fait partie du `tidyverse`, permet d’importer des données directement depuis un fichier au format `xls` ou `xlsx`.
+
+Voici les principaux arguments et options de `read_excel()`:
+
 
 | Argument         | Valeur par défaut     | Fonction                                                                                   |
 |------------------|-----------------------|--------------------------------------------------------------------------------------------|
@@ -364,9 +366,9 @@ names(mesDonnees)
 
 ---
 
-## **13. Import d'un fichier (`xls` ou `xlsx`) avec l'interface graphique de RStudio**
+## *13. Import d'un fichier (`xls` ou `xlsx`) avec l'interface graphique de RStudio*
 
-### **Présentation de l'interface**
+**Présentation de l'interface**
 
 Rstudio propose une interface graphique très commode pour lire, entre autres, des fichiers `xls(x)` (mais aussi des tables `Sas` ou des fichiers `csv` mais pas les `ods`).  
 On y accède avec : `File > Import Dataset > From Excel`...
@@ -375,9 +377,9 @@ R utilise la fonction `read_excel` du package `readxl`.
 Les différents menus permettent de nommer la table d'affectation, sélectionner l'onglet à importer, la zone mais aussi de copier lo code pour le réutiliser.
 
 ## **2. Import d'un fichier tabulé avec le package** `readODS`
-### **21. Présentation de la fonction** `readODS::read_ods()` - Version **1.6.7**
+### *21. Présentation de la fonction* `readODS::read_ods()` - Version **1.6.7**
 
-* *Les données*  
+* **Les données**  
 
 Nous travaillerons à partir d'un jeu de données qu'on a créé :  
 
@@ -387,11 +389,12 @@ Nous travaillerons à partir d'un jeu de données qu'on a créé :
 Si vous avez choisi de sauvegarder votre jeu de données ailleurs que sur votre lecteur **Z:/**, vous devez adapter en conséquence le chemin ci-dessous.
 
 Nous définissons, en début de script, une variable contenant le chemin d'accès aux données.
-```{r, eval = FALSE}
-# chemin_ods <- "Z:/EXERCICES DU COURS BDD.ods"
-chemin_ods <- "D:/T19QHL/Mes Documents/CT_Travail/R_workSpace/documentationR_Tests/test ODS.ods"
+```{r, eval = TRUE}
+chemin_ods <- "Z:/EXERCICES DU COURS BDD.ods"
+# chemin_ods <- "D:/T19QHL/Mes Documents/CT_Travail/R_workSpace/documentationR_Tests/test ODS.ods"
 ```
 * **Les paramètres**  
+Voici les principaux arguments et options de `read_ods()`:
 
 | Argument            | Valeur par défaut     | Fonction                                                                                   |
 |---------------------|-----------------------|--------------------------------------------------------------------------------------------|
@@ -417,20 +420,23 @@ C'est la méthode que nous appliquerons ici.
 
 * **Définir des données à charger -** `read_ods`  
 Par défaut, on charge le 1er onglet : on obtient alors un `data.frame`. Le type des variables est conservé.
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 mesDonnees <- readODS::read_ods(path = chemin_ods)
 str(mesDonnees)
 ```
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 mesDonnees <- readODS::read_ods(path = chemin_ods, sheet = 3)
 str(mesDonnees)
 ```
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 mesDonnees <- readODS::read_ods(path = chemin_ods, sheet = "Feuille3")
 str(mesDonnees)
 ```
+
+
+
 ## Quelques bonnes pratiques
 
 Quelques conseils généraux sur la façon de s'y prendre.
