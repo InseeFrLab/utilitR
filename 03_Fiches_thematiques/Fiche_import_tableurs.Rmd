@@ -58,8 +58,8 @@ Si vous avez choisi de sauvegarder votre jeu de données ailleurs que sur votre 
 
 Nous définissons, en début de script, une variable contenant le chemin d'accès aux données.
 ```{r, eval = TRUE}
-chemin_xlsx <- "Z:/EXERCICES DU COURS BDD.xlsx"
-# chemin_xlsx <- "D:/T19QHL/Mes Documents/CT_Travail/R_workSpace/documentationR_Tests/EXERCICES DU COURS BDD.xlsx"
+# chemin_xlsx <- "Z:/EXERCICES DU COURS BDD.xlsx"
+chemin_xlsx <- "D:/T19QHL/Mes Documents/CT_Travail/R_workSpace/documentationR_Tests/EXERCICES DU COURS BDD.xlsx"
 
 ```
 
@@ -244,7 +244,7 @@ Voici les principaux arguments et options de `read_excel()`:
 | `sheet`          | NULL                  | Feuille à lire. Soit une chaîne (le nom d'une feuille), soit un entier (la position de la feuille). Ignoré si la feuille est spécifiée via range. Par défaut, sélectionne le 1er onglet de la feuille                                       |
 | `range`          | NULL                  | Une plage de cellules à lire. Comprend des plages Excel typiques comme "B3: D87", y compris éventuellement le nom de la feuille comme "Budget! B2: G14", et plus encore. Interprété strictement, même si la plage force l'inclusion de lignes ou de colonnes vides de début ou de fin. Prend le pas sur `skip`, `n_max` et `sheet`                                                    |
 | `col_names`      | TRUE                  | `TRUE` pour utiliser la première ligne comme noms de colonne, `FALSE` pour obtenir les noms par défaut ou un vecteur de caractères donnant un nom à chaque colonne                                                                             |
-| `col_types`      | NULL                  | Soit `NULL` pour deviner tout à partir de la feuille de calcul ou un vecteur de caractères contenant une entrée par colonne parmi ces options. Le contenu d'une cellule dans une colonne ignorée (`skip`) n'est jamais lu et cette colonne n'apparaîtra pas dans la sortie du bloc de données                                                                                                   |
+| `col_types`      | NULL                  | Soit `NULL` pour deviner tout à partir de la feuille de calcul soit un vecteur de caractères contenant une entrée par colonne parmi ces options.  Le contenu d'une cellule dans une colonne ignorée (`skip`) n'est jamais lu et cette colonne n'apparaîtra pas dans la sortie du bloc de données                                                                                                   |
 | `na`             | ""                    | Vecteur de caractères de chaînes à interpréter comme des valeurs manquantes. Par défaut, `readxl` traite les cellules vides comme des données manquantes                                                                                  |
 | `skip`           | 0                     | Nombre minimum de lignes à ignorer avant de lire quoi que ce soit. Les premières lignes vides sont automatiquement ignorées, il s'agit donc d'une limite inférieure. Ignoré si `range` est donné                                           |
 | `n_max`          | Infini                | Nombre maximum de lignes de données à lire. Les lignes vides de fin sont automatiquement ignorées, il s'agit donc d'une limite supérieure du nombre de lignes dans le tibble retourné. Ignoré si `range` est donné                            |
@@ -303,7 +303,7 @@ colnames(mesDonnees)
 
 La 1ère ligne est donc considérée comme une ligne de données comme les autres.
 ```{r}
-# Les 10 premières lignes du data.frame
+# Les 10 premières lignes du tible
 head(mesDonnees,10)
 ```
 Par conséquent, il vous faudra, le cas échéant, préciser le nom des colonnes.
@@ -330,7 +330,7 @@ str(mesDonnees)
 ```
 
 * **Gestion des *NA* -** `NA`  
-Il est possible de préciser les valeurs qu'on souhaite considérer comme des `NA`
+Il est possible de préciser les valeurs qu'on souhaite considérer comme des `NA`. Ici, pour l'exercice, la valeur `75`.
 ```{r}
 (mesDonnees <- readxl::read_excel(path = chemin_xlsx, na="75"))
 ```
@@ -390,7 +390,7 @@ Si vous avez choisi de sauvegarder votre jeu de données ailleurs que sur votre 
 
 Nous définissons, en début de script, une variable contenant le chemin d'accès aux données.
 ```{r, eval = TRUE}
-chemin_ods <- "Z:/EXERCICES DU COURS BDD.ods"
+chemin_ods <- "Z:/test ODS.ods"
 # chemin_ods <- "D:/T19QHL/Mes Documents/CT_Travail/R_workSpace/documentationR_Tests/test ODS.ods"
 ```
 * **Les paramètres**  
@@ -399,18 +399,20 @@ Voici les principaux arguments et options de `read_ods()`:
 | Argument            | Valeur par défaut     | Fonction                                                                                   |
 |---------------------|-----------------------|--------------------------------------------------------------------------------------------|
 | `path`              | Aucune                | Le chemin du fichier ods à importer                                                        |
-| `sheet`             | 1                     |                                                                                            |
-| `col_names`         | TRUE                  |                                                                                            |
-| `col_types`         | NULL                  |                                                                                            | 
-| `na`                | ""                    |                                                                                            |
-| `skip`              | 0                     |                                                                                            |
-| `formula_as_formula`| FALSE                 |                                                                                            |
-| `range`             |  NULL                 |                                                                                            |
+| `sheet`             | 1                     | feuille à lire. Soit une chaîne (le nom de la feuille), soit un numéro de feuille entier.  |
+| `col_names`         | TRUE                  | indiquant si le fichier contient les noms des variables comme première ligne               |
+| `col_types`         | NULL                  | `NULL` pour deviner à partir de la feuille de calcul ou se reporter à `readr::type_convert` pour spécifier la spécification des cols.  NA renverra un bloc de données avec toutes les colonnes étant des "caractères".                   | 
+| `na`                | ""                    | Vecteur de caractères des chaînes à utiliser pour les valeurs manquantes. Par défaut, read_ods convertit les cellules vides en données manquantes                                                                                         |
+| `skip`              | 0                     | le nombre de lignes du fichier de données à ignorer avant de commencer à lire les données  |
+| `formula_as_formula`| FALSE                 | un commutateur pour afficher les formules en tant que formules "SUM (A1: A3)" ou en tant que valeur résultante "3" ... ou "8" ...                                                                                                              |
+| `range`             |  NULL                 | sélection d'un rectangle à l'aide d'une plage de cellules de type Excel, comme `range = "D12:F15"`. Le traitement de la plage de cellules est géré par le package `cellranger`.                                                                |
 
 ### Pas à pas
+
 * **Installer et charger le package**  
+
 Le cas échéant, vous devrez commencer par **installer** puis **charger** le package `readODS`
-```{r,eval=FALSE}
+```{r, eval=FALSE}
 install.packages("readODS", dependencies = TRUE)
 library(readODS)
 ```
@@ -418,54 +420,112 @@ Vous pouvez également faire appel à la seule fonction du package qui vous int�
 Exemple : `readODS::read_ods()`.  
 C'est la méthode que nous appliquerons ici.
 
-* **Définir des données à charger -** `read_ods`  
+* **Définir des données à charger -** `path`  
 Par défaut, on charge le 1er onglet : on obtient alors un `data.frame`. Le type des variables est conservé.
-```{r, eval=TRUE}
+```{r}
 mesDonnees <- readODS::read_ods(path = chemin_ods)
 str(mesDonnees)
 ```
 
-```{r, eval=TRUE}
-mesDonnees <- readODS::read_ods(path = chemin_ods, sheet = 3)
-str(mesDonnees)
+* **Préciser l’onglet dans un fichier qui en contient plusieurs -** `sheet`  
+Pour charger un autre onglet du même fichier, on utilisera le paramètre `sheet` en précisant soit le nom de l’onglet soit son index (sa position dans le fichier).
+
+```{r}
+# Chargement du 2ème onglet
+mesDonnees <- readODS::read_ods(path = chemin_ods, sheet = 2)
 ```
 
-```{r, eval=TRUE}
+La fonction readODS::ods_sheets() permet de récupérer les différents noms d’onglets du fichier.
+
+```{r}
+# Récupération des noms d'onglet
+readODS::ods_sheets(chemin_ods)
+```
+
+```{r}
+# Chargement d'un onglet par rapport à son nom
 mesDonnees <- readODS::read_ods(path = chemin_ods, sheet = "Feuille3")
+```
+
+**Définir les en-têtes de colonnes -** `col_names`  
+La 1ère ligne des données définit, par défaut, le nom des colonnes. Si on ne veut pas que ce soit le cas, on passe le paramètre `colNames=FALSE`.
+```{r}
+mesDonnees <- readODS::read_ods(path = chemin_ods, col_names = FALSE)
+```
+La 1ère ligne est donc considérée comme une ligne de données comme les autres.
+
+```{r}
+# Les 10 premières lignes du data.frame
+head(mesDonnees,10)
+```
+
+**(re)définir le type des colonnes -** `col_types`  
+`col_types=NA` renverra un bloc de données avec toutes les colonnes typées "caractères".
+```{r}
+mesDonnees <- readODS::read_ods(path = chemin_ods, col_types = NA)
 str(mesDonnees)
 ```
 
+On peut également spécifié le type de différentes variables. Pour plus d'informations, se référer à `vignette("readr")`
+
+| Fonction                    | contenu de la variable                        | Aréviation    |  
+|-----------------------------|-----------------------------------------------|---------------|
+|col_logical()                | `T`,`F`,`TRUE`,`FALSE`                        | "l"           |
+|col_integer()                | entiers                                       | "i"           |
+|col_double()                 | double                                        | "d"           |
+|col_character()              | chaîne de caractères                          | "c"           |
+|col_factor(niveaux, ordonné) | un ensemble fixe de valeurs                   | "f"           |
+|col_date(format="")          | avec le `date_format`des paramètres régionaux | "D"           |
+|col_time(format="")          | avec le `time_format`des paramètres régionaux | "t"           |
+|col_datetime(format="")      | heures de date ISO8601                        | "T"           |
+|col_number()                 | nombre contenant le `grouping_mark`           | "n"           |
+|col_skip()                   | ne pas importer la colonne                    |               |
+|col_guess()                  | Définition automatique asé sur *n* lignes     | "?"           |
 
 
-## Quelques bonnes pratiques
+L'exemple ci-dessous permet de ne pas importer la variable `Adresse` et de changer le type des variables ``Département`` et ``Code Postal`` en, respectivement, `entier` et `caractère`.  
+*Nota* : les noms de variables ayant des caractères spéciaux, type estpace ou accent, sont appelées entre ```` (`Alt Gr`+ `7`).
+```{r,message=FALSE,warning=FALSE}
+library(readr)
+mesDonnees <- readODS::read_ods(path = chemin_ods, col_types = cols(Adresse= col_skip(), `Département`="i",`Code postal`="c"))
+str(mesDonnees)
+```
 
-Quelques conseils généraux sur la façon de s'y prendre.
+* **Gestion des *NA* -** `NA`  
+Il est possible de préciser les valeurs qu'on souhaite considérer comme des `NA`. Ici, pour l'exercice, la valeur `75`.
+```{r,message=FALSE}
+mesDonnees <- readODS::read_ods(path = chemin_ods, na="75")
+head(mesDonnees,5)
+```
 
-* Faut-il préprocesser les données avant de réaliser la tâche;
-* Comment minimiser les temps de calculs/la charge en RAM.
+* **Ne pas importer les x premières lignes -** `skip`  
+On n'importe pas les 5 premières lignes. Par conséquent, l'import commence à la 6ème ligne : on peut passer le paramètre `col_names=FALSE` pour qu'elle ne soit pas considérée comme entête de colonnes.
+```{r}
+(mesDonnees <- readODS::read_ods(path = chemin_ods, skip = 5, col_names = FALSE))
+#  Nom des colonnes
+names(mesDonnees)
+```
 
-## Sources
+* **Afficher le résultats des formules ou les formules -** `formula_as_formula`  
 
-Cette fiche, et les exemples, sont inspirées des travaux de :
+```{r}
+(mesDonnees <- readODS::read_ods(path = chemin_ods,formula_as_formula = TRUE))
+```
 
-* [analyse-R de lamarrange](https://larmarange.github.io/analyse-R/import-de-donnees.html)
-* travaux précédents du réseau *Logiciels Libre Service et Statistique (LS2)*
-* [https://rdrr.io/cran/openxlsx/man/read.xlsx.html]()https://rdrr.io/cran/openxlsx/man/read.xlsx.html
-Les données utilisées pour les tests "`xls`" proviennent :
+* **Importer une zone spécifique du fichier -** `range`  
+Il est possible de n'importer qu'une plage de cellules en la définissant tel que cela se fait dans *Calc* i.e. en définissant les colonnes et lignes de début et de fin de la plage. **Exemple : "B2:D7"**. On peut également préciser l'onglet avant : **"Feuille1!B2:D7"**
 
-* [site data.gouv.fr - Finances](https://www.data.gouv.fr/fr/datasets/impots-locaux-fichier-de-recensement-des-elements-dimposition-a-la-fiscalite-directe-locale-rei-3/).
-- [Fichier de recensement des éléments d'imposition à la fiscalité directe locale 2018 (REI)](https://www.impots.gouv.fr/portail/www2/fichiers/statistiques/base_de_donnees/rei/rei_2018.zip).
+Au contraire des fonctions d'import de fichiers `xlsx` ou `xls`, la 1ère ligne du fichier est considérée comme l'en-tête de colonnes et non comme données à proprement parlé : elle ne fait donc pas partie de la plage considérée. **Exemple : B2:D7** débutera la sélection à la 2ème ligne des données soit la 3ème ligne du fichier. 
 
-Le fichier initial fait près de 150 MO. Il a été allégé et adapté pour les besoins de l'exercice.
+```{r,message=FALSE}
+(mesDonnees <- readODS::read_ods(path = chemin_ods, range = "Feuille1!B2:D7"))
+str(mesDonnees)
+```
+Le type des variables est conservé et la 1ère ligne de la plage est considérée comme *en-tête de colonnes* : si ça ne doit pas être le cas, ajouter le paramètre `col_names=FALSE`.
 
 ## Ressources
 
-* la documentation des *packages*;
-* les vignettes et *cheatsheets* si elles existent;
-* les formations proposées par l'Insee;
-* les formations/tutoriels disponibles sur internet.
-
-Dans la mesure du possible, il faut veiller à proposer des ressources en français.
-
-
-
+* [Package `openxlsx`](https://cran.r-project.org/web/packages/openxlsx/openxlsx.pdf);
+* [Package `readxl`](https://cran.r-project.org/web/packages/readxl/readxl.pdf);
+* [Package `readODS`](https://cran.r-project.org/web/packages/readODS/readODS.pdf);
+* [vignette `readr`](https://cran.r-project.org/web/packages/readr/vignettes/readr.html)
