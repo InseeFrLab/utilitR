@@ -72,24 +72,26 @@ Cette fonction permet de charger les données du tableur dans un `data.frame`.
 
 La fonction `read.xlsx()` du package `openxlsx` propose différentes options. Ci-dessous, les valeurs par défaut et la description des paramètres :
 
-* `xlsxFile`: **pas de valeur par défaut**, un objet classeur ou une url vers un fichier xlsx;
-* `sheet`: **- 1 -** Nom ou index de la feuille à partir de laquelle lire les données;
-* `startRow`: **- 1 -** première ligne pour commencer à rechercher des données. Les lignes vides en haut d'un fichier sont toujours ignorées, quelle que soit la valeur de startRow;
-* `colNames` : **- TRUE -** Si `TRUE`, la première ligne de données sera utilisée comme nom de colonne;
-* `rowNames` : **- FALSE -** Si `TRUE`, la première colonne de données sera utilisée comme noms de ligne;
-* `detectDates` : **- FALSE -** Si `TRUE`, essayer de reconnaître les dates et effectuer la conversion;
-* `skipEmprtyRows` : **- TRUE -** Si `TRUE`, les lignes vides sont ignorées, sinon les lignes vides après la première ligne contenant les données renverront une ligne de `NA`;
-* `skipEmptyCols` : **- FALSE -** Si `TRUE`, les colonnes vides sont ignorées;
-* `rows` : **- NULL -** Un vecteur numérique spécifiant les lignes du fichier Excel à lire. Si NULL, toutes les lignes sont lues;
-* `cols` : **- NULL -** Un vecteur numérique spécifiant les colonnes du fichier Excel à lire. Si NULL, toutes les colonnes sont lues;
-* `check.names` : **- FALSE -** Si `TRUE`, les noms des variables dans la trame de données sont vérifiés pour s'assurer qu'ils sont des noms de variable syntaxiquement valides  
-    - Le comportement de ce paramètre est assez curieux. Les espaces dans les noms de variables sont remplacés par des **"."** que cet argument soit à `FALSE` ou à `TRUE`.  
-    - **Ne pas utiliser !**  
-        - Depuis la dernière version (*4.1.5*), le paramètre `sep.names` (ci-dessous) permet de contourner ce problème.
+| Argument         | Valeur par défaut     | Fonction                                                                                   |
+|------------------|-----------------------|--------------------------------------------------------------------------------------------|
+| `xlsxFile`       | Aucune                | Chemin d'accès vers un objet classeur ou une url vers un fichier xlsx xlsx à importer      |
+| `sheet`          | 1                     | Nom ou index de la feuille à partir de laquelle lire les données                           |
+| `startRow`       | 1                     | Première ligne pour commencer à rechercher des données. Les lignes vides en haut d'un fichier sont toujours ignorées, quelle que soit la valeur de startRow                                                                                |
+| `colNames`       | TRUE                  | Si `TRUE`, la première ligne de données sera utilisée comme nom de colonne                 |
+| `rowNames`       | FALSE                 | Si `TRUE`, la première colonne de données sera utilisée comme noms de ligne                |
+| `detectDates`    | FALSE                 | Si `TRUE`, essayer de reconnaître les dates et effectuer la conversion                     |
+| `skipEmprtyRows` | TRUE                  | Si `TRUE`, les lignes vides sont ignorées, sinon les lignes vides après la première ligne contenant les données renverront une ligne de `NA`                                                                                                |
+| `skipEmptyCols`  | FALSE                 | Si `TRUE`, les colonnes vides sont ignorées                                                |
+| `rows`           | NULL                  | Un vecteur numérique spécifiant les lignes du fichier Excel à lire. Si NULL, toutes les lignes sont lues                                                                                                                                    |
+| `cols`           | NULL                  | Un vecteur numérique spécifiant les colonnes du fichier Excel à lire. Si NULL, toutes les colonnes sont lues                                                                                                                               |
+| `check.names`    | FALSE                 | Si `TRUE`, les noms des variables dans la trame de données sont vérifiés pour s'assurer qu'ils sont des noms de variable syntaxiquement valides                                                                                             | 
+| `sep.names`      | "."                   | Un caractère qui remplace les blancs dans les noms de colonne                              |
+| `namedRegion`    | NULL                  | Une région nommée dans le classeur. Si ce n'est pas NULL startRow, les paramètres lignes et cols sont ignorés                                                                                                                                 |
+| `na.strings`     | NA                    | Un vecteur de caractères de chaînes qui doit être interprété comme `NA` Les cellules vides seront retournées comme `NA`                                                                                                                   |
 
-* `sep.names` = **- "." -** Un caractère qui remplace les blancs dans les noms de colonne;
-* `namedRegion` : **- NULL -** Une région nommée dans le classeur. Si ce n'est pas NULL startRow, les paramètres lignes et cols sont ignorés;
-* `na.strings` : **- NA -** Un vecteur de caractères de chaînes qui doit être interprété comme `NA` Les cellules vides seront retournées comme `NA`;
+**Le comportement de `check.names` est assez curieux. Les espaces dans les noms de variables sont remplacés par des `"."` que cet argument soit à `FALSE` ou à `TRUE`.Il vaut mieux ne pas utiliser ce paramètre**
+
+**Depuis la dernière version (*4.1.5*), le paramètre `sep.names` (ci-dessous) permet de contourner ce problème**
 
 Les exemples qui suivent vont vous permettre de facilement charger tout ou partie d'une table de données d'un fichier avec une extension `.xlsx`.
 
@@ -234,16 +236,18 @@ Dans le cadre de cet exercice, vous pouvez créer une région dans votre fichier
 **Les paramètres**  
 La fonction `read_excel()` du package `readxl`, qui fait partie du `tidyverse`, permet d’importer des données directement depuis un fichier au format `xls` ou `xlsx`. Cette fonctions à les paramètres suivants 
 
-* `path` : *- pas de valeur par défaut -* Chemin d'accès au fichier xls / xlsx;
-* `sheet` : *- NULL -* Feuille à lire. Soit une chaîne (le nom d'une feuille), soit un entier (la position de la feuille). Ignoré si la feuille est spécifiée via range. Par défaut, sélectionne le 1er onglet de la feuille.
-* `range` : Une plage de cellules à lire. Comprend des plages Excel typiques comme "B3: D87", y compris éventuellement le nom de la feuille comme "Budget! B2: G14", et plus encore. Interprété strictement, même si la plage force l'inclusion de lignes ou de colonnes vides de début ou de fin. Prend le pas sur `skip`, `n_max` et `sheet``.
-* `col_names` : *- TRUE -* `TRUE` pour utiliser la première ligne comme noms de colonne, `FALSE` pour obtenir les noms par défaut ou un vecteur de caractères donnant un nom à chaque colonne.
-* `col_types` : *- NULL -* Soit `NULL` pour deviner tout à partir de la feuille de calcul ou un vecteur de caractères contenant une entrée par colonne parmi ces options. Le contenu d'une cellule dans une colonne ignorée (`skip`) n'est jamais lu et cette colonne n'apparaîtra pas dans la sortie du bloc de données.
-* `na` : *- "" -*Vecteur de caractères de chaînes à interpréter comme des valeurs manquantes. Par défaut, `readxl` traite les cellules vides comme des données manquantes;
-* `skip` : *- 0 -* Nombre minimum de lignes à ignorer avant de lire quoi que ce soit. Les premières lignes vides sont automatiquement ignorées, il s'agit donc d'une limite inférieure. Ignoré si `range` est donné;
-* `n_max` : *- Infini -* Nombre maximum de lignes de données à lire. Les lignes vides de fin sont automatiquement ignorées, il s'agit donc d'une limite supérieure du nombre de lignes dans le tibble retourné. Ignoré si `range` est donné;
-* `guess_max` : *- 1000 ou `n_max` -* Nombre maximal de lignes de données à utiliser pour deviner les types de colonnes;
-* `.name_repair` : Gestion des noms de colonne. Par défaut, `readxl` garantit que les noms de colonnes ne sont pas vides et sont uniques.
+| Argument         | Valeur par défaut     | Fonction                                                                                   |
+|------------------|-----------------------|--------------------------------------------------------------------------------------------|
+| `path`           | Aucune                | Chemin d'accès au fichier xls / xlsx à importer                                            |
+| `sheet`          | NULL                  | Feuille à lire. Soit une chaîne (le nom d'une feuille), soit un entier (la position de la feuille). Ignoré si la feuille est spécifiée via range. Par défaut, sélectionne le 1er onglet de la feuille                                       |
+| `range`          | NULL                  | Une plage de cellules à lire. Comprend des plages Excel typiques comme "B3: D87", y compris éventuellement le nom de la feuille comme "Budget! B2: G14", et plus encore. Interprété strictement, même si la plage force l'inclusion de lignes ou de colonnes vides de début ou de fin. Prend le pas sur `skip`, `n_max` et `sheet`                                                    |
+| `col_names`      | TRUE                  | `TRUE` pour utiliser la première ligne comme noms de colonne, `FALSE` pour obtenir les noms par défaut ou un vecteur de caractères donnant un nom à chaque colonne                                                                             |
+| `col_types`      | NULL                  | Soit `NULL` pour deviner tout à partir de la feuille de calcul ou un vecteur de caractères contenant une entrée par colonne parmi ces options. Le contenu d'une cellule dans une colonne ignorée (`skip`) n'est jamais lu et cette colonne n'apparaîtra pas dans la sortie du bloc de données                                                                                                   |
+| `na`             | ""                    | Vecteur de caractères de chaînes à interpréter comme des valeurs manquantes. Par défaut, `readxl` traite les cellules vides comme des données manquantes                                                                                  |
+| `skip`           | 0                     | Nombre minimum de lignes à ignorer avant de lire quoi que ce soit. Les premières lignes vides sont automatiquement ignorées, il s'agit donc d'une limite inférieure. Ignoré si `range` est donné                                           |
+| `n_max`          | Infini                | Nombre maximum de lignes de données à lire. Les lignes vides de fin sont automatiquement ignorées, il s'agit donc d'une limite supérieure du nombre de lignes dans le tibble retourné. Ignoré si `range` est donné                            |
+| `guess_max`      | 1000 ou `n_max`       | Nombre maximal de lignes de données à utiliser pour deviner les types de colonnes          |
+| `.name_repair`   |                       | Gestion des noms de colonne. Par défaut, `readxl` garantit que les noms de colonnes ne sont pas vides et sont uniques                                                                                                                         |
 
 ### Pas à pas
 
@@ -389,14 +393,16 @@ chemin_ods <- "D:/T19QHL/Mes Documents/CT_Travail/R_workSpace/documentationR_Tes
 ```
 * **Les paramètres**  
 
-* `path` : **- Pas de valeur par défaut -** 
-* `sheet` : **- 1 -** 
-* `col_names` : **- TRUE -** 
-* `col_types` : **- NULL -** 
-* `na` : **- "" -** 
-* `skip` : **- 0 -** 
-* `formula_as_formula` : **- FALSE -** 
-* `range` : **- NULL -** 
+| Argument            | Valeur par défaut     | Fonction                                                                                   |
+|---------------------|-----------------------|--------------------------------------------------------------------------------------------|
+| `path`              | Aucune                | Le chemin du fichier ods à importer                                                        |
+| `sheet`             | 1                     |                                                                                            |
+| `col_names`         | TRUE                  |                                                                                            |
+| `col_types`         | NULL                  |                                                                                            | 
+| `na`                | ""                    |                                                                                            |
+| `skip`              | 0                     |                                                                                            |
+| `formula_as_formula`| FALSE                 |                                                                                            |
+| `range`             |  NULL                 |                                                                                            |
 
 ### Pas à pas
 * **Installer et charger le package**  
