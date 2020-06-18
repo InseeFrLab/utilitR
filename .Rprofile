@@ -25,3 +25,35 @@ print_latex_only <- function(x){
   return("")
 }
 
+
+screen_files <- function(){
+  
+  masterfile <- paste(readLines("_bookdown.yml"),
+                      collapse = " ")
+  masterfile <- gsub(
+    '(\\[|\\]|\\")', "",
+    regmatches(masterfile,
+               gregexpr("\\[.+?\\]",
+                        masterfile))[[1]]
+  )
+  masterfile <- unlist(
+    strsplit(
+      x = masterfile,
+      split = ","
+    )
+  )
+  masterfile <- trimws(masterfile)
+  masterfile <- masterfile[endsWith(masterfile, suffix = ".Rmd")]
+  
+  return(masterfile)  
+}
+
+add_space <- function(){
+  
+  files <- screen_files()
+  
+  lapply(files, function(f) writeLines(c(readLines(f)," "),
+                                       con = f)
+  )
+  
+}
