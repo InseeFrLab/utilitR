@@ -15,7 +15,7 @@ Elle prend la forme d'un livre qui est pour l'instant déployé à l'adresse
 
 Il est également possible de télécharger le fichier au format `pdf` 
 ou les  fichiers `html` pour les consulter hors-connexion en cliquant
-[ici](https://gitlab.com/linogaliana/documentationR/-/jobs/artifacts/master/download?job=buildbookdown)
+[ici](https://gitlab.com/linogaliana/documentationR/-/jobs/artifacts/master/download?job=bookdown)
 
 # Présentation du projet `UtilitR`
 
