@@ -9,21 +9,21 @@ try(detach("package:MASS", unload=TRUE))
 try(detach("package:dplyr", unload=TRUE))
 ```
 
-<div class="fold o">
+<!----<div class="fold o">---->
 ```{r eval = FALSE, error=TRUE, message = FALSE}
 library(dplyr)
 library(MASS)
 cars %>% select(dist) %>% head()
 ```
-</div>
+<!----</div>----->
 produira l'erreur suivante:
-<div class="fold o">
+<!----<div class="fold o">------>
 ```{r eval = TRUE, error=TRUE, message = FALSE, echo = FALSE}
 library(dplyr)
 library(MASS)
 cars %>% select(dist) %>% head()
 ```
-</div>
+<!----</div>----->
 
 alors que le code suivant:
 
@@ -32,30 +32,30 @@ try(detach("package:MASS", unload=TRUE))
 try(detach("package:dplyr", unload=TRUE))
 ```
 
-<div class="fold o">
+<!-----<div class="fold o">----->
 ```{r eval = FALSE, message = FALSE}
 # On attache les *packages* dans ce sens
 library(MASS)
 library(dplyr)
 cars %>% select(dist) %>% head()
 ```
-</div>
+<!----</div>---->
 fonctionnera bien. 
-<div class="fold o">
+<!----<div class="fold o">---->
 ```{r eval = TRUE, message = FALSE, echo = FALSE}
 # On attache les *packages* dans ce sens
 library(MASS)
 library(dplyr)
 cars %>% select(dist) %>% head()
 ```
-</div>
+<!---</div>----->
 
 Le code est le même dans les deux cas à l'exception de l'ordre dans lequel les *packages* sont chargés. Pour éviter cela, la syntaxe avec `::` est préférable:
-<div class="fold o">
+<!----<div class="fold o">----->
 ```{r eval = T}
 cars %>% dplyr::select(dist)  %>% head()
 ```
-</div>
+<!---</div>---->
 fonctionnera quels que soient les *packages* chargés en mémoire et l'ordre dans lequel ils l'ont été.
 
 <span style="color:DarkBlue">**Pour les développeurs de *packages* **</span>  L'utilisation de l'opérateur `::` évite de charger un *package*. En développement de *package* on privilégiera systématiquement cette forme. Les *packages* appelés sous cette forme sont à mettre dans le champ `Imports` et, il est préférable de n'avoir aucun *package* dans le champ `Depends`.
