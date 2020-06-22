@@ -5,6 +5,7 @@ ARG BASE_IMAGE=rocker/geospatial:latest
 FROM $BASE_IMAGE AS install_packages
 # LaTeX packages 
 COPY ./_latex_requirements.txt /tmp/build_image/
+RUN tlmgr update --self
 RUN tlmgr install `cat /tmp/build_image/_latex_requirements.txt | tr '\r\n' ' '`
 # R packages 
 COPY ./DESCRIPTION /tmp/build_image/
