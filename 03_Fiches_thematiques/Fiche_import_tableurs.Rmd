@@ -13,7 +13,7 @@ L'utilisateur souhaite importer dans `R` des données issues de tableurs (extens
 
 - **Il est recommandé d'utiliser la fonction `read_xlsx()` du _package_ `openxlsx` pour importer des fichiers `xlsx`.**
 - **Il est recommandé d'utiliser la fonction `read_excel()` du _package_ `readxl` pour importer des fichiers `xls`.**
-- **Il est recommandé d'utiliser la fonction `read_ods` du _package_ `readODS` importer des fichiers `odt`.**
+- **Il est recommandé d'utiliser la fonction `read_ods` du _package_ `readODS` importer des fichiers `ods`.**
 
 Il est déconseillé d'utiliser le _package_ `xlsx`.
 
@@ -44,7 +44,7 @@ Rstudio propose une interface graphique très commode pour lire, entre autres, d
 On y accède avec : `File > Import Dataset > From Excel`...
 ![import avec l'IHM](D:/T19QHL/Mes Documents/CT_Travail/R_workSpace/documentationR_Tests/img/1 import IHM.png)
 R utilise la fonction `read_excel` du _package_ `readxl`.  
-Les différents menus permettent de nommer la table d'affectation, sélectionner l'onglet à importer, la zone mais aussi de copier lo code pour le réutiliser.
+Les différents menus permettent de nommer la table d'affectation, sélectionner l'onglet à importer, la zone mais aussi de copier le code pour le réutiliser.
 
 
 ### Présentation de la fonction `openxlsx::read.xlsx()`
@@ -57,24 +57,20 @@ Voici les principaux arguments et options de `read.xlsx()`:
 
 | Argument         | Valeur par défaut     | Fonction                                                                                   |
 |------------------|-----------------------|--------------------------------------------------------------------------------------------|
-| `xlsxFile`       | Aucune                | Chemin d'accès vers un objet classeur ou une url vers un fichier xlsx xlsx à importer      |
+| `xlsxFile`       | Aucune                | Chemin d'accès vers un objet classeur ou une url vers un fichier xlsx à importer           |
 | `sheet`          | 1                     | Nom ou index de la feuille à partir de laquelle lire les données                           |
 | `startRow`       | 1                     | Première ligne pour commencer à rechercher des données. Les lignes vides en haut d'un fichier sont toujours ignorées, quelle que soit la valeur de startRow                                                                                |
 | `colNames`       | TRUE                  | Si `TRUE`, la première ligne de données sera utilisée comme nom de colonne                 |
 | `rowNames`       | FALSE                 | Si `TRUE`, la première colonne de données sera utilisée comme noms de ligne                |
 | `detectDates`    | FALSE                 | Si `TRUE`, essayer de reconnaître les dates et effectuer la conversion                     |
-| `skipEmprtyRows` | TRUE                  | Si `TRUE`, les lignes vides sont ignorées, sinon les lignes vides après la première ligne contenant les données renverront une ligne de `NA`                                                                                                |
+| `skipEmptyRows` | TRUE                   | Si `TRUE`, les lignes vides sont ignorées, sinon les lignes vides après la première ligne contenant les données renverront une ligne de `NA`                                                                                                |
 | `skipEmptyCols`  | FALSE                 | Si `TRUE`, les colonnes vides sont ignorées                                                |
-| `rows`           | NULL                  | Un vecteur numérique spécifiant les lignes du fichier Excel à lire. Si NULL, toutes les lignes sont lues                                                                                                                                    |
+| `rows`           | NULL                  | Un vecteur numérique spécifiant les lignes du fichier à lire. Si NULL, toutes les lignes sont lues                                                                                                                                         |
 | `cols`           | NULL                  | Un vecteur numérique spécifiant les colonnes du fichier Excel à lire. Si NULL, toutes les colonnes sont lues                                                                                                                               |
 | `check.names`    | FALSE                 | Si `TRUE`, les noms des variables dans la trame de données sont vérifiés pour s'assurer qu'ils sont des noms de variable syntaxiquement valides                                                                                             | 
 | `sep.names`      | "."                   | Un caractère qui remplace les blancs dans les noms de colonne                              |
-| `namedRegion`    | NULL                  | Une région nommée dans le classeur. Si ce n'est pas NULL startRow, les paramètres lignes et cols sont ignorés                                                                                                                                 |
+| `namedRegion`    | NULL                  | Une région nommée dans le classeur. Si ce n'est pas NULL startRow, les paramètres lignes et cols sont ignorés                                                                                                                            |
 | `na.strings`     | NA                    | Un vecteur de caractères de chaînes qui doit être interprété comme `NA` Les cellules vides seront retournées comme `NA`                                                                                                                   |
-
-**Le comportement de `check.names` est assez curieux. Les espaces dans les noms de variables sont remplacés par des `"."` que cet argument soit à `FALSE` ou à `TRUE`.Il vaut mieux ne pas utiliser ce paramètre**
-
-**Depuis la dernière version (*4.1.5*), le paramètre `sep.names` (ci-dessous) permet de contourner ce problème**
 
 Les exemples qui suivent vont vous permettre de facilement charger tout ou partie d'une table de données d'un fichier avec une extension `.xlsx`.
 
@@ -150,7 +146,7 @@ head(mesDonnees,10)
 Par conséquent, il vous faudra, le cas échéant, préciser le nom des colonnes.
 
 * **Reconnaitre les variables au format date -** `detectDates`  
-La variale `Date` de ce jeu de données est initialement importée au format `num` (cf le `str()` du point *préciser l'onglet ...*). On le transforme en un format `Date`.
+La variable `Date` de ce jeu de données est initialement importée au format `num` (cf le `str()` du point *préciser l'onglet ...*). On le transforme en un format `Date`.
 ```{r}
 # Transformation de la variable "DATE" au format Date
 mesDonnees <- openxlsx::read.xlsx(xlsxFile = chemin_xlsx,  sheet="Météo-Fonctions calcul pour BDD", detectDates=TRUE)
@@ -178,42 +174,39 @@ On peut définir les lignes et colonnes qu'on souhaite importer en le précisant
 (mesDonnees <- openxlsx::read.xlsx(xlsxFile = chemin_xlsx, rows=c(1,4:6,9), cols=c(1,3:4)))
 ```
 
-* **Vérification du respect des normes syntaxiques dans les noms de variable -**  `check.names` ou `sep.names` ?
-La fonction `openxlsx::read.xlsx()` propose, via le paramètre `check.names` de modifier les noms de variables pour les adapter aux règles de bonnes pratiques syntaxiques. Ce paramètre, utilisé seul, pose des problèmes régulièrement remontés par la communauté sur [la page gitHub du développeur du _package_](https://github.com/awalker89) :
-- [isuue #33](https://github.com/ycphs/openxlsx/issues/33)
-- [issue #102](https://github.com/awalker89/openxlsx/issues/102)
+* **Vérification du respect des normes syntaxiques dans les noms de variable -**  `check.names` et `sep.names`
+La fonction `openxlsx::read.xlsx()` propose, via le paramètre `check.names` de modifier les noms de variables pour les adapter aux règles de bonnes pratiques syntaxiques. Dans tous les cas, les espaces dans les noms de variables sont remplacés par des **"."**.
 
-En effet, que cet argument soit à `FALSE` ou à `TRUE`, les espaces dans les noms de variables sont remplacés par des **"."**. Depuis la dernière version (*4.1.5*), le paramètre `sep.names` (ci-dessous) permet de contourner ce problème.  
-**Ne pas utiliser** `check.names`
+```{r}
+mesDonnees <- openxlsx::read.xlsx(xlsxFile = chemin_xlsx, check.names=FALSE)
+colnames(mesDonnees)
+```
+Dans ce cas, `Code-postal` resterait inchangé et `Cafés torréfiés préférés` deviendrait `Cafés.torréfiés.préférés`. En passant `check.names=TRUE`,`Code-postal` devient `Code.postal`.
 
-Par contre, le paramètre `sep.names` permet de préciser le caractère qui doit remplacer l'espace (et plus forcément un **"."**).
+
+Le paramètre `sep.names` permet de préciser par quel caractère remplacer les espaces pour que ça ne soit plus forcément un **"."**.
 ```{r}
 mesDonnees <- openxlsx::read.xlsx(xlsxFile = chemin_xlsx, sep.names="|")
 colnames(mesDonnees)
 ```
+Dans ce cas, `Code-postal` resterait inchangé et `Cafés torréfiés préférés` deviendrait `Cafés|torréfiés|préférés`. 
 
 * **Importer une zone spécifique du fichier -** `namedRegion`  
 Il est possible de n'importer qu'une partie du fichier selon le nom d’une zone de la *"feuille de calcul"*.
 
 Pour récupérer le nom des différentes parties de notre fichier, on utilise la méthode `openxlsx::getNamedRegions` à qui on passe le chemin du fichier. Ensuite, on passe l'une de ces zones au paramètre `namedRegion`.
 
-Dans le cadre de cet exercice, vous pouvez créer une région dans votre fichier de données. Pour cela, faire comme ceci :
-
-* ouvrir le fichier de données;
-* Faire `Ctrl`+`F3`;
-* *Options de la plage*/Ajouter;
-* Donner un `Nom` à la plage. Ici `test_namedRegion`;
-* Sélectionner la plage directement sur la feuille avec la souris;
-* `Ajouter`.
-
-![Ajouter une région dans un fichier *Excel*](D:/T19QHL/Mes Documents/CT_Travail/R_workSpace/documentationR_Tests/img/namedRegion.png)
+Dans le cadre de cet exercice, vous pouvez créer une région (nommer une plage : **test_namedRegion**) avec votre tableur. 
 
 ```{r}
 (mesDonnees <- openxlsx::read.xlsx(xlsxFile = chemin_xlsx, namedRegion="test_namedRegion"))
 ```
+
 ---
 
 ### Présentation de la fonction `readxl::read_excel()`
+
+Pour lire un fichier au format `xls` (ce que ne fait pas le package `openxlsx`), éventuellement un fichier au format `xlsx` de quelques Mo seulement, nous préconisons d'utiliser la *fonction* `read_excel()` du *package* `readxl`.
 
 #### Les paramètres
 La fonction `read_excel()` du _package_ `readxl`, qui fait partie du `tidyverse`, permet d’importer des données directement depuis un fichier au format `xls` ou `xlsx`.
@@ -346,7 +339,7 @@ On importe maximum 3 lignes
 names(mesDonnees)
 ```
 
-## Import d'un fichier tabulé avec le _package_ `readODS`
+## Import d'un fichier avec le _package_ `readODS`
 
 ### Présentation de la fonction `readODS::read_ods()`
 
@@ -439,7 +432,7 @@ mesDonnees <- readODS::read_ods(path = chemin_ods, col_types = NA)
 str(mesDonnees)
 ```
 
-On peut également spécifié le type de différentes variables. Pour plus d'informations, se référer à `vignette("readr")`
+On peut également spécifier le type de différentes variables. Pour plus d'informations, se référer à `vignette("readr")`
 
 | Fonction                    | contenu de la variable                        | Aréviation    |  
 |-----------------------------|-----------------------------------------------|---------------|
@@ -457,11 +450,11 @@ On peut également spécifié le type de différentes variables. Pour plus d'inf
 
 
 L'exemple ci-dessous permet de ne pas importer la variable `Adresse` et de changer le type des variables ``Département`` et ``Code Postal`` en, respectivement, `entier` et `caractère`.  
-*Nota* : les noms de variables ayant des caractères spéciaux, type estpace ou accent, sont appelées entre ```` (`Alt Gr`+ `7`).
+*Nota* : les noms de variables ayant des caractères spéciaux, type espace ou accent, sont appelées entre ```` (`Alt Gr`+ `7`).
 
 ```{r, message=FALSE, warning=FALSE}
 library(readr)
-mesDonnees <- readODS::read_ods(path = chemin_ods, col_types = cols(Adresse= col_skip(), `Département`="i",`Code postal`="c"))
+mesDonnees <- readODS::read_ods(path = chemin_ods, col_types = cols(Adresse= col_skip(), `Département`="i", `Code postal`="c"))
 str(mesDonnees)
 ```
 
@@ -489,13 +482,11 @@ names(mesDonnees)
 * **Importer une zone spécifique du fichier -** `range`  
 Il est possible de n'importer qu'une plage de cellules en la définissant tel que cela se fait dans *Calc* i.e. en définissant les colonnes et lignes de début et de fin de la plage. **Exemple : "B2:D7"**. On peut également préciser l'onglet avant : **"Feuille1!B2:D7"**
 
-Au contraire des fonctions d'import de fichiers `xlsx` ou `xls`, la 1ère ligne du fichier est considérée comme l'en-tête de colonnes et non comme données à proprement parlé : elle ne fait donc pas partie de la plage considérée. **Exemple : B2:D7** débutera la sélection à la 2ème ligne des données soit la 3ème ligne du fichier. 
-
 ```{r, message=FALSE}
 (mesDonnees <- readODS::read_ods(path = chemin_ods, range = "Feuille1!B2:D7"))
 str(mesDonnees)
 ```
-Le type des variables est conservé et la 1ère ligne de la plage est considérée comme *en-tête de colonnes* : si ça ne doit pas être le cas, ajouter le paramètre `col_names=FALSE`.
+Le type des variables est conservé.  
 
 ## Ressources
 
