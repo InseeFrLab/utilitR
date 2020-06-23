@@ -11,14 +11,162 @@ L'utilisateur souhaite importer dans `R` des données issues de tableurs (extens
 
 ::: {.recommandation data-latex=""}
 
+- **Il est recommandé d'utiliser la fonction `read_ods` du _package_ `readODS` importer des fichiers `ods`.**
 - **Il est recommandé d'utiliser la fonction `read_xlsx()` du _package_ `openxlsx` pour importer des fichiers `xlsx`.**
 - **Il est recommandé d'utiliser la fonction `read_excel()` du _package_ `readxl` pour importer des fichiers `xls`.**
-- **Il est recommandé d'utiliser la fonction `read_ods` du _package_ `readODS` importer des fichiers `ods`.**
 
 Il est déconseillé d'utiliser le _package_ `xlsx`.
 
 :::
 
+## Import d'un fichier avec le _package_ `readODS`
+
+### Présentation de la fonction `readODS::read_ods()`
+
+#### Les données
+
+Nous travaillerons à partir d'un jeu de données qu'on a créé :  
+
+- Faire une copie du fichier ayant servi aux tests des _packages_ `xlsx` ou charger [le jeu de données ici](https://bureautique-afij.jimdofree.com/app/download/11922928825/EXERCICES+DU+COURS+BDD.xlsx?t=1487924250) puis le sauvegarder, par simplicité, sur votre lecteur **Z:/**. ;
+- changer l'extension `.xlsx` en `.ods`.
+
+Si vous avez choisi de sauvegarder votre jeu de données ailleurs que sur votre lecteur **Z:/**, vous devez adapter en conséquence le chemin ci-dessous.
+
+Nous définissons, en début de script, une variable contenant le chemin d'accès aux données.
+```{r}
+# chemin_ods <- "Z:/test ODS.ods"
+chemin_ods <- "Z:/import_donnees_tabulees_tests/mes_donnees.ods"
+"
+```
+
+### Les paramètres
+Voici les principaux arguments et options de `read_ods()`:
+
+| Argument            | Valeur par défaut     | Fonction                                                                                   |
+|---------------------|-----------------------|--------------------------------------------------------------------------------------------|
+| `path`              | Aucune                | Le chemin du fichier ods à importer                                                        |
+| `sheet`             | 1                     | feuille à lire. Soit une chaîne (le nom de la feuille), soit un numéro de feuille entier.  |
+| `col_names`         | TRUE                  | indiquant si le fichier contient les noms des variables comme première ligne               |
+| `col_types`         | NULL                  | `NULL` pour deviner à partir de la feuille de calcul ou se reporter à `readr::type_convert` pour spécifier la spécification des cols.  NA renverra un bloc de données avec toutes les colonnes étant des "caractères".                   | 
+| `na`                | ""                    | Vecteur de caractères des chaînes à utiliser pour les valeurs manquantes. Par défaut, read_ods convertit les cellules vides en données manquantes                                                                                         |
+| `skip`              | 0                     | le nombre de lignes du fichier de données à ignorer avant de commencer à lire les données  |
+| `formula_as_formula`| FALSE                 | un commutateur pour afficher les formules en tant que formules "SUM (A1: A3)" ou en tant que valeur résultante "3" ... ou "8" ...                                                                                                              |
+| `range`             |  NULL                 | sélection d'un rectangle à l'aide d'une plage de cellules de type Excel, comme `range = "D12:F15"`. Le traitement de la plage de cellules est géré par le _package_ `cellranger`.                                                                |
+
+### Pas à pas
+
+* **Charger le package**  
+
+Le cas échéant, vous devrez commencer par **charger** le _package_ `readODS`
+```{r}
+library(readODS)
+```
+Vous pouvez également faire appel à la seule fonction du _package_ qui vous intéresse en la faisant précéder du `nom du _package_` et de `::`  
+Exemple : `readODS::read_ods()`.  
+C'est la méthode que nous appliquerons ici.
+
+* **Définir des données à charger -** `path`  
+Par défaut, on charge le 1er onglet : on obtient alors un `data.frame`. Le type des variables est conservé.
+```{r}
+mesDonnees <- readODS::read_ods(path = chemin_ods)
+str(mesDonnees)
+```
+
+* **Préciser l’onglet dans un fichier qui en contient plusieurs -** `sheet`  
+Pour charger un autre onglet du même fichier, on utilisera le paramètre `sheet` en précisant soit le nom de l’onglet soit son index (sa position dans le fichier).
+
+```{r}
+# Chargement du 2ème onglet
+mesDonnees <- readODS::read_ods(path = chemin_ods, sheet = 2)
+```
+
+La fonction readODS::ods_sheets() permet de récupérer les différents noms d’onglets du fichier.
+
+```{r}
+# Récupération des noms d'onglet
+readODS::ods_sheets(chemin_ods)
+```
+
+```{r}
+# Chargement d'un onglet par rapport à son nom
+mesDonnees <- readODS::read_ods(path = chemin_ods, sheet = "Feuille3")
+```
+
+**Définir les en-têtes de colonnes -** `col_names`  
+La 1ère ligne des données définit, par défaut, le nom des colonnes. Si on ne veut pas que ce soit le cas, on passe le paramètre `colNames=FALSE`.
+
+```{r}
+mesDonnees <- readODS::read_ods(path = chemin_ods, col_names = FALSE)
+```
+La 1ère ligne est donc considérée comme une ligne de données comme les autres.
+
+```{r}
+# Les 10 premières lignes du data.frame
+head(mesDonnees,10)
+```
+
+**(re)définir le type des colonnes -** `col_types`  
+`col_types=NA` renverra un bloc de données avec toutes les colonnes typées "caractères".
+```{r}
+mesDonnees <- readODS::read_ods(path = chemin_ods, col_types = NA)
+str(mesDonnees)
+```
+
+On peut également spécifier le type de différentes variables. Pour plus d'informations, se référer à `vignette("readr")`
+
+| Fonction                    | contenu de la variable                        | Aréviation    |  
+|-----------------------------|-----------------------------------------------|---------------|
+|col_logical()                | `T`,`F`,`TRUE`,`FALSE`                        | "l"           |
+|col_integer()                | entiers                                       | "i"           |
+|col_double()                 | double                                        | "d"           |
+|col_character()              | chaîne de caractères                          | "c"           |
+|col_factor(niveaux, ordonné) | un ensemble fixe de valeurs                   | "f"           |
+|col_date(format="")          | avec le `date_format`des paramètres régionaux | "D"           |
+|col_time(format="")          | avec le `time_format`des paramètres régionaux | "t"           |
+|col_datetime(format="")      | heures de date ISO8601                        | "T"           |
+|col_number()                 | nombre contenant le `grouping_mark`           | "n"           |
+|col_skip()                   | ne pas importer la colonne                    |               |
+|col_guess()                  | Définition automatique asé sur *n* lignes     | "?"           |
+
+
+L'exemple ci-dessous permet de ne pas importer la variable `Adresse` et de changer le type des variables ``Département`` et ``Code Postal`` en, respectivement, `entier` et `caractère`.  
+*Nota* : les noms de variables ayant des caractères spéciaux, type espace ou accent, sont appelées entre ```` (`Alt Gr`+ `7`).
+
+```{r, message=FALSE, warning=FALSE}
+library(readr)
+mesDonnees <- readODS::read_ods(path = chemin_ods, col_types = cols(Adresse= col_skip(), `Département`="i", `Code postal`="c"))
+str(mesDonnees)
+```
+
+* **Gestion des *NA* -** `NA`  
+Il est possible de préciser les valeurs qu'on souhaite considérer comme des `NA`. Ici, pour l'exercice, la valeur `75`.
+```{r, message=FALSE}
+mesDonnees <- readODS::read_ods(path = chemin_ods, na="75")
+head(mesDonnees,5)
+```
+
+* **Ne pas importer les x premières lignes -** `skip`  
+On n'importe pas les 5 premières lignes. Par conséquent, l'import commence à la 6ème ligne : on peut passer le paramètre `col_names=FALSE` pour qu'elle ne soit pas considérée comme entête de colonnes.
+```{r}
+(mesDonnees <- readODS::read_ods(path = chemin_ods, skip = 5, col_names = FALSE))
+#  Nom des colonnes
+names(mesDonnees)
+```
+
+* **Afficher le résultats des formules ou les formules -** `formula_as_formula`  
+
+```{r}
+(mesDonnees <- readODS::read_ods(path = chemin_ods,formula_as_formula = TRUE))
+```
+
+* **Importer une zone spécifique du fichier -** `range`  
+Il est possible de n'importer qu'une plage de cellules en la définissant tel que cela se fait dans *Calc* i.e. en définissant les colonnes et lignes de début et de fin de la plage. **Exemple : "B2:D7"**. On peut également préciser l'onglet avant : **"Feuille1!B2:D7"**
+
+```{r, message=FALSE}
+(mesDonnees <- readODS::read_ods(path = chemin_ods, range = "Feuille1!B2:D7"))
+str(mesDonnees)
+```
+Le type des variables est conservé.  
 
 ## Importer un fichier `xlsx` ou `xls`
 
@@ -45,6 +193,9 @@ On y accède avec : `File > Import Dataset > From Excel`...
 ![import avec l'IHM](D:/T19QHL/Mes Documents/CT_Travail/R_workSpace/documentationR_Tests/img/1 import IHM.png)
 R utilise la fonction `read_excel` du _package_ `readxl`.  
 Les différents menus permettent de nommer la table d'affectation, sélectionner l'onglet à importer, la zone mais aussi de copier le code pour le réutiliser.
+
+
+**A DEVELOPPER**
 
 
 ### Présentation de la fonction `openxlsx::read.xlsx()`
@@ -338,155 +489,6 @@ On importe maximum 3 lignes
 (mesDonnees <- readxl::read_excel(path = chemin_xlsx, n_max = 3))
 names(mesDonnees)
 ```
-
-## Import d'un fichier avec le _package_ `readODS`
-
-### Présentation de la fonction `readODS::read_ods()`
-
-#### Les données
-
-Nous travaillerons à partir d'un jeu de données qu'on a créé :  
-
-- Faire une copie du fichier ayant servi aux tests des _packages_ `xlsx` ou charger [le jeu de données ici](https://bureautique-afij.jimdofree.com/app/download/11922928825/EXERCICES+DU+COURS+BDD.xlsx?t=1487924250) puis le sauvegarder, par simplicité, sur votre lecteur **Z:/**. ;
-- changer l'extension `.xlsx` en `.ods`.
-
-Si vous avez choisi de sauvegarder votre jeu de données ailleurs que sur votre lecteur **Z:/**, vous devez adapter en conséquence le chemin ci-dessous.
-
-Nous définissons, en début de script, une variable contenant le chemin d'accès aux données.
-```{r}
-# chemin_ods <- "Z:/test ODS.ods"
-chemin_ods <- "Z:/import_donnees_tabulees_tests/mes_donnees.ods"
-"
-```
-
-### Les paramètres
-Voici les principaux arguments et options de `read_ods()`:
-
-| Argument            | Valeur par défaut     | Fonction                                                                                   |
-|---------------------|-----------------------|--------------------------------------------------------------------------------------------|
-| `path`              | Aucune                | Le chemin du fichier ods à importer                                                        |
-| `sheet`             | 1                     | feuille à lire. Soit une chaîne (le nom de la feuille), soit un numéro de feuille entier.  |
-| `col_names`         | TRUE                  | indiquant si le fichier contient les noms des variables comme première ligne               |
-| `col_types`         | NULL                  | `NULL` pour deviner à partir de la feuille de calcul ou se reporter à `readr::type_convert` pour spécifier la spécification des cols.  NA renverra un bloc de données avec toutes les colonnes étant des "caractères".                   | 
-| `na`                | ""                    | Vecteur de caractères des chaînes à utiliser pour les valeurs manquantes. Par défaut, read_ods convertit les cellules vides en données manquantes                                                                                         |
-| `skip`              | 0                     | le nombre de lignes du fichier de données à ignorer avant de commencer à lire les données  |
-| `formula_as_formula`| FALSE                 | un commutateur pour afficher les formules en tant que formules "SUM (A1: A3)" ou en tant que valeur résultante "3" ... ou "8" ...                                                                                                              |
-| `range`             |  NULL                 | sélection d'un rectangle à l'aide d'une plage de cellules de type Excel, comme `range = "D12:F15"`. Le traitement de la plage de cellules est géré par le _package_ `cellranger`.                                                                |
-
-### Pas à pas
-
-* **Charger le package**  
-
-Le cas échéant, vous devrez commencer par **charger** le _package_ `readODS`
-```{r}
-library(readODS)
-```
-Vous pouvez également faire appel à la seule fonction du _package_ qui vous intéresse en la faisant précéder du `nom du _package_` et de `::`  
-Exemple : `readODS::read_ods()`.  
-C'est la méthode que nous appliquerons ici.
-
-* **Définir des données à charger -** `path`  
-Par défaut, on charge le 1er onglet : on obtient alors un `data.frame`. Le type des variables est conservé.
-```{r}
-mesDonnees <- readODS::read_ods(path = chemin_ods)
-str(mesDonnees)
-```
-
-* **Préciser l’onglet dans un fichier qui en contient plusieurs -** `sheet`  
-Pour charger un autre onglet du même fichier, on utilisera le paramètre `sheet` en précisant soit le nom de l’onglet soit son index (sa position dans le fichier).
-
-```{r}
-# Chargement du 2ème onglet
-mesDonnees <- readODS::read_ods(path = chemin_ods, sheet = 2)
-```
-
-La fonction readODS::ods_sheets() permet de récupérer les différents noms d’onglets du fichier.
-
-```{r}
-# Récupération des noms d'onglet
-readODS::ods_sheets(chemin_ods)
-```
-
-```{r}
-# Chargement d'un onglet par rapport à son nom
-mesDonnees <- readODS::read_ods(path = chemin_ods, sheet = "Feuille3")
-```
-
-**Définir les en-têtes de colonnes -** `col_names`  
-La 1ère ligne des données définit, par défaut, le nom des colonnes. Si on ne veut pas que ce soit le cas, on passe le paramètre `colNames=FALSE`.
-
-```{r}
-mesDonnees <- readODS::read_ods(path = chemin_ods, col_names = FALSE)
-```
-La 1ère ligne est donc considérée comme une ligne de données comme les autres.
-
-```{r}
-# Les 10 premières lignes du data.frame
-head(mesDonnees,10)
-```
-
-**(re)définir le type des colonnes -** `col_types`  
-`col_types=NA` renverra un bloc de données avec toutes les colonnes typées "caractères".
-```{r}
-mesDonnees <- readODS::read_ods(path = chemin_ods, col_types = NA)
-str(mesDonnees)
-```
-
-On peut également spécifier le type de différentes variables. Pour plus d'informations, se référer à `vignette("readr")`
-
-| Fonction                    | contenu de la variable                        | Aréviation    |  
-|-----------------------------|-----------------------------------------------|---------------|
-|col_logical()                | `T`,`F`,`TRUE`,`FALSE`                        | "l"           |
-|col_integer()                | entiers                                       | "i"           |
-|col_double()                 | double                                        | "d"           |
-|col_character()              | chaîne de caractères                          | "c"           |
-|col_factor(niveaux, ordonné) | un ensemble fixe de valeurs                   | "f"           |
-|col_date(format="")          | avec le `date_format`des paramètres régionaux | "D"           |
-|col_time(format="")          | avec le `time_format`des paramètres régionaux | "t"           |
-|col_datetime(format="")      | heures de date ISO8601                        | "T"           |
-|col_number()                 | nombre contenant le `grouping_mark`           | "n"           |
-|col_skip()                   | ne pas importer la colonne                    |               |
-|col_guess()                  | Définition automatique asé sur *n* lignes     | "?"           |
-
-
-L'exemple ci-dessous permet de ne pas importer la variable `Adresse` et de changer le type des variables ``Département`` et ``Code Postal`` en, respectivement, `entier` et `caractère`.  
-*Nota* : les noms de variables ayant des caractères spéciaux, type espace ou accent, sont appelées entre ```` (`Alt Gr`+ `7`).
-
-```{r, message=FALSE, warning=FALSE}
-library(readr)
-mesDonnees <- readODS::read_ods(path = chemin_ods, col_types = cols(Adresse= col_skip(), `Département`="i", `Code postal`="c"))
-str(mesDonnees)
-```
-
-* **Gestion des *NA* -** `NA`  
-Il est possible de préciser les valeurs qu'on souhaite considérer comme des `NA`. Ici, pour l'exercice, la valeur `75`.
-```{r, message=FALSE}
-mesDonnees <- readODS::read_ods(path = chemin_ods, na="75")
-head(mesDonnees,5)
-```
-
-* **Ne pas importer les x premières lignes -** `skip`  
-On n'importe pas les 5 premières lignes. Par conséquent, l'import commence à la 6ème ligne : on peut passer le paramètre `col_names=FALSE` pour qu'elle ne soit pas considérée comme entête de colonnes.
-```{r}
-(mesDonnees <- readODS::read_ods(path = chemin_ods, skip = 5, col_names = FALSE))
-#  Nom des colonnes
-names(mesDonnees)
-```
-
-* **Afficher le résultats des formules ou les formules -** `formula_as_formula`  
-
-```{r}
-(mesDonnees <- readODS::read_ods(path = chemin_ods,formula_as_formula = TRUE))
-```
-
-* **Importer une zone spécifique du fichier -** `range`  
-Il est possible de n'importer qu'une plage de cellules en la définissant tel que cela se fait dans *Calc* i.e. en définissant les colonnes et lignes de début et de fin de la plage. **Exemple : "B2:D7"**. On peut également préciser l'onglet avant : **"Feuille1!B2:D7"**
-
-```{r, message=FALSE}
-(mesDonnees <- readODS::read_ods(path = chemin_ods, range = "Feuille1!B2:D7"))
-str(mesDonnees)
-```
-Le type des variables est conservé.  
 
 ## Ressources
 
