@@ -84,7 +84,7 @@ readODS::ods_sheets(chemin_ods)
 mesDonnees <- readODS::read_ods(path = chemin_ods, sheet = "Feuille3")
 ```
 
-On peutt noter que le type des variables est conservé.
+On peut noter que le type des variables est conservé.
 
 **Définir les en-têtes de colonnes -** `col_names`  
 La 1ère ligne des données définit, par défaut, le nom des colonnes. Si on ne veut pas que ce soit le cas, on passe le paramètre `colNames=FALSE`.
@@ -100,38 +100,7 @@ head(mesDonnees,10)
 ```
 
 **(re)définir le type des colonnes -** `col_types`  
-Si on précise `col_types=NA`, on récupèrera un bloc de données avec toutes les colonnes typées "caractères".  
-On peut également spécifier le type de différentes variables. Pour plus d'informations, se référer à `vignette("readr")`
-
-| Fonction                    | contenu de la variable                        | Aréviation    |  
-|-----------------------------|-----------------------------------------------|---------------|
-|col_logical()                | `T`,`F`,`TRUE`,`FALSE`                        | "l"           |
-|col_integer()                | entiers                                       | "i"           |
-|col_double()                 | double                                        | "d"           |
-|col_character()              | chaîne de caractères                          | "c"           |
-|col_factor(niveaux, ordonné) | un ensemble fixe de valeurs                   | "f"           |
-|col_date(format="")          | avec le `date_format`des paramètres régionaux | "D"           |
-|col_time(format="")          | avec le `time_format`des paramètres régionaux | "t"           |
-|col_datetime(format="")      | heures de date ISO8601                        | "T"           |
-|col_number()                 | nombre contenant le `grouping_mark`           | "n"           |
-|col_skip()                   | ne pas importer la colonne                    |               |
-|col_guess()                  | Définition automatique asé sur *n* lignes     | "?"           |
-
-Le prochain exemple permet de ne pas importer la variable `Adresse` et de changer le type des variables `Département` et `Code Postal` en, respectivement, `entier` et `caractère`.  
-*Nota* : les noms de variables ayant des caractères de type *espace* ou *accent* sont appelées ainsi : `` `nom de la variable` `` (`Alt Gr`+ `7`).
-
-```{r, eval=TRUE}
-library(readr)
-mesDonnees <- readODS::read_ods(path = chemin_ods, col_types = cols(Adresse= col_skip(), `Département`="i", `Code postal`="c"))
-str(mesDonnees)
-```
-
-* **Gestion des *NA* -** `NA`  
-Il est possible de préciser les valeurs qu'on souhaite considérer comme des `NA`. Ici, pour l'exercice, la valeur `75`.
-```{r}
-mesDonnees <- readODS::read_ods(path = chemin_ods, na="75")
-head(mesDonnees,5)
-```
+Si on souhaite récupérer un bloc de données avec toutes les colonnes de type "caractères", il faut précisee `col_types=NA`.
 
 * **Ne pas importer les x premières lignes -** `skip`  
 On n'importe pas les 5 premières lignes. Par conséquent, l'import commence à la 6ème ligne : on peut passer le paramètre `col_names=FALSE` pour qu'elle ne soit pas considérée comme entête de colonnes.
