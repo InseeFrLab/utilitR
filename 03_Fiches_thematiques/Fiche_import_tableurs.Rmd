@@ -8,7 +8,6 @@ knitr::opts_chunk$set(echo = TRUE, eval=FALSE, include=TRUE, message=FALSE, warn
 ## Tâches concernées et recommandations
 L'utilisateur souhaite importer dans `R` des données issues de tableurs (extension type `xls`, `xlsx` ou `ods`), pour ne citer que les plus couramment utilisés à l'Insee.
 
-
 ::: {.recommandation data-latex=""}
 
 - **Il est recommandé d'utiliser la fonction `read_ods` du _package_ `readODS` importer des fichiers `ods`.**
@@ -70,6 +69,7 @@ Par défaut, on charge le 1er onglet : on obtient alors un `data.frame`. Pour ch
 ```{r}
 # Chargement du 2ème onglet
 mesDonnees <- readODS::read_ods(path = chemin_ods, sheet = 2)
+str(mesDonnees)
 ```
 
 La fonction readODS::ods_sheets() permet de récupérer les différents noms d’onglets du fichier.
@@ -81,7 +81,7 @@ readODS::ods_sheets(chemin_ods)
 
 ```{r}
 # Chargement d'un onglet par rapport à son nom
-mesDonnees <- readODS::read_ods(path = chemin_ods, sheet = "Feuille3")
+mesDonnees <- readODS::read_ods(path = chemin_ods, sheet = "Sheet3")
 ```
 
 On peut noter que le type des variables est conservé.
@@ -91,39 +91,37 @@ La 1ère ligne des données définit, par défaut, le nom des colonnes. Si on ne
 
 ```{r}
 mesDonnees <- readODS::read_ods(path = chemin_ods, col_names = FALSE)
+str(mesDonnees)
+
 ```
-La 1ère ligne est donc considérée comme une ligne de données comme les autres.
+La 1ère ligne est donc considérée comme une ligne de données comme les autres et les colonnes snt typées "character".
 
 ```{r}
 # Les 10 premières lignes du data.frame
-head(mesDonnees,10)
+head(mesDonnees,2)
 ```
 
-**(re)définir le type des colonnes -** `col_types`  
-Si on souhaite récupérer un bloc de données avec toutes les colonnes de type "caractères", il faut précisee `col_types=NA`.
+Il est parfois utile de pouvoir n'importer qu'une partie des données.
 
-* **Ne pas importer les x premières lignes -** `skip`  
-On n'importe pas les 5 premières lignes. Par conséquent, l'import commence à la 6ème ligne : on peut passer le paramètre `col_names=FALSE` pour qu'elle ne soit pas considérée comme entête de colonnes.
+* **Ne pas importer les x premières lignes -**   
+Le paramètre `skip` permet de préciser à compter de quelle ligne commencer l'import.  
+
 ```{r}
-(mesDonnees <- readODS::read_ods(path = chemin_ods, skip = 5, col_names = FALSE))
+mesDonnees <- readODS::read_ods(path = chemin_ods, skip = 5, col_names = FALSE)
 #  Nom des colonnes
-names(mesDonnees)
+head(mesDonnees,3)
 ```
-
-* **Afficher le résultats des formules ou les formules -** `formula_as_formula`  
-
-```{r}
-(mesDonnees <- readODS::read_ods(path = chemin_ods,formula_as_formula = TRUE))
-```
+On n'importe les données qu'à compter de la 5ème ligne. Si on laisse le paramètre `col_names = TRUE`, la 1ère de ces lignes est considérée comme *noms de colonnes*. Si ça ne doit pas être le cas, on passe le paramètre `col_names=FALSE`.
 
 * **Importer une zone spécifique du fichier -** `range`  
-Il est possible de n'importer qu'une plage de cellules en la définissant tel que cela se fait dans *Calc* i.e. en définissant les colonnes et lignes de début et de fin de la plage. **Exemple : "B2:D7"**. On peut également préciser l'onglet avant : **"Feuille1!B2:D7"**
+Il est possible de n'importer qu'une plage de cellules en la définissant tel que cela se fait dans *Calc* i.e. en définissant les colonnes et lignes de début et de fin de la plage. **Exemple : "B2:D7"**. On peut également préciser l'onglet avant : **"Sheet1!B2:D7"**
 
-```{r, }
-(mesDonnees <- readODS::read_ods(path = chemin_ods, range = "Feuille1!B2:D7"))
+```{r }
+mesDonnees <- readODS::read_ods(path = chemin_ods, range = "Sheet1!B2:D7")
 str(mesDonnees)
 ```
 Le type des variables est conservé.  
+
 
 ## Importer un fichier `xlsx` ou `xls`
 
@@ -186,7 +184,7 @@ Les exemples qui suivent vont vous permettre de facilement charger tout ou parti
 ### Pas à pas
 * **charger le _package_**  
 Le cas échéant, vous devrez commencer par **charger** le _package_ `openxlsx`
-```{r ,eval=FALSE}
+```{r}
 library(openxlsx)
 ```
 Vous pouvez également faire appel à la seule fonction du _package_ qui vous intéresse en la faisant précéder du `nom du package` et de `::`  
@@ -258,7 +256,7 @@ Par conséquent, il vous faudra, le cas échéant, préciser le nom des colonnes
 La variable `Date` de ce jeu de données est initialement importée au format `num` (cf le `str()` du point *préciser l'onglet ...*). On le transforme en un format `Date`.
 ```{r}
 # Transformation de la variable "DATE" au format Date
-mesDonnees <- openxlsx::read.xlsx(xlsxFile = chemin_xlsx,  sheet="Météo-Fonctions calcul pour BDD", detectDates=TRUE)
+mesDonnees <- openxlsx::read.xlsx(xlsxFile = chemin_xlsx,  sheet="Sheet3", detectDates=TRUE)
 # Structure des données
 str(mesDonnees)
 ```
@@ -343,7 +341,7 @@ Voici les principaux arguments et options de `read_excel()`:
 | `sheet`          | NULL                  | Feuille à lire. Soit une chaîne (le nom d'une feuille), soit un entier (la position de la feuille). Ignoré si la feuille est spécifiée via range. Par défaut, sélectionne le 1er onglet de la feuille                                       |
 | `range`          | NULL                  | Une plage de cellules à lire. Comprend des plages Excel typiques comme "B3: D87", y compris éventuellement le nom de la feuille comme "Budget! B2: G14", et plus encore. Interprété strictement, même si la plage force l'inclusion de lignes ou de colonnes vides de début ou de fin. Prend le pas sur `skip`, `n_max` et `sheet`                                                    |
 | `col_names`      | TRUE                  | `TRUE` pour utiliser la première ligne comme noms de colonne, `FALSE` pour obtenir les noms par défaut ou un vecteur de caractères donnant un nom à chaque colonne                                                                             |
-| `col_types`      | NULL                  | Soit `NULL` pour deviner tout à partir de la feuille de calcul soit un vecteur de caractères contenant une entrée par colonne parmi ces options.  Le contenu d'une cellule dans une colonne ignorée (`skip`) n'est jamais lu et cette colonne n'apparaîtra pas dans la sortie du bloc de données                                                                                                   |
+| `col_types`      | NULL                  | Soit `NULL` pour deviner tout à partir de la feuille de calcul soit un vecteur de caractères contenant une entrée par colonne parmi ces options. Le contenu d'une cellule dans une colonne ignorée (`skip`) n'est jamais lu et cette colonne n'apparaîtra pas dans la sortie du bloc de données                                                                                                   |
 | `na`             | ""                    | Vecteur de caractères de chaînes à interpréter comme des valeurs manquantes. Par défaut, `readxl` traite les cellules vides comme des données manquantes                                                                                  |
 | `skip`           | 0                     | Nombre minimum de lignes à ignorer avant de lire quoi que ce soit. Les premières lignes vides sont automatiquement ignorées, il s'agit donc d'une limite inférieure. Ignoré si `range` est donné                                           |
 | `n_max`          | Infini                | Nombre maximum de lignes de données à lire. Les lignes vides de fin sont automatiquement ignorées, il s'agit donc d'une limite supérieure du nombre de lignes dans le tibble retourné. Ignoré si `range` est donné                            |
@@ -384,7 +382,7 @@ La fonction `readxl::excel_sheets()` permet de récupérer les différents noms 
 
 ```{r}
 # Chargement d'un onglet par rapport à son nom
-mesDonnees <- readxl::read_excel(path = chemin_xls, sheet="Météo-Fonctions calcul pour BDD")
+mesDonnees <- readxl::read_excel(path = chemin_xls, sheet="Sheet3")
 # Structure des données
 str(mesDonnees)
 # Nom des colonnes
@@ -410,7 +408,7 @@ Par conséquent, il vous faudra, le cas échéant, préciser le nom des colonnes
 Il est possible de n'importer qu'une plage de cellules en la définissant tel que cela se fait dans *Excel* i.e. en définissant les colonnes et lignes de début et de fin de la plage. **Exemple : "B2:D7"**. On peut également préciser l'onglet avant : **"Météo-Fonctions calcul pour BDD!B2:D7"**
 
 ```{r}
-(mesDonnees <- readxl::read_excel(path = chemin_xls, range = "Météo-Fonctions calcul pour BDD!B2:D7"))
+(mesDonnees <- readxl::read_excel(path = chemin_xls, range = "Sheet3!B2:D7"))
 ```
 Le type des variables est conservé et la 1ère ligne de la plage est considérée comme *en-tête de colonnes* : si ça ne doit pas être le cas, ajouter le paramètre `col_names=FALSE`.
 
@@ -423,7 +421,7 @@ le paramètre `col_types` permet de (re)définir le type des colonnes, d'une par
 Le type de la variable sera appliqué aux colonnes dans l'ordre défini par le vecteur. Exemple : `c("text","text","numeric","guess","skip","logical")`. Dans le cas où on souhaite définir le même type à toutes les colonnes, on écrita juste le type attendu entre *""*. Par exemple `col_types = "text"`.
 
 ```{r}
-mesDonnees <- readxl::read_excel(path = chemin_xls, col_types = c("text", "skip","text", "numeric", "text", "list"))
+mesDonnees <- readxl::read_excel(path = chemin_xls, col_types = c("text","list",rep("skip",9), "text", "numeric", "text", "guess"))
 str(mesDonnees)
 ```
 
