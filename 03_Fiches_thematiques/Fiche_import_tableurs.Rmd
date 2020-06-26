@@ -32,8 +32,15 @@ Le _package_ `readODS` propose deux fonctions d'importation de fichiers `ods`: `
 
 ```{r, eval=TRUE, echo = FALSE}
 # Définir le chemin du fichier
-chemin_ods <- "./import_donnees_tabulees_tests/mes_donnees.ods"
+chemin_ods <- "../import_donnees_tabulees_tests/mes_donnees.ods"
 ```
+
+Il ne faut pas oublier de charger le _package_ avec `library`.
+
+```{r}
+library(readODS)
+```
+
 
 ### Présentation de la fonction `readODS::read_ods()`
 
@@ -49,72 +56,46 @@ Voici les principaux arguments et options de `read_ods()`:
 | `skip`              | 0                     | le nombre de lignes du fichier de données à ignorer avant de commencer à lire les données  |
 | `range`             |  NULL                 | sélection d'un rectangle à l'aide d'une plage de cellules de type Excel, comme `range = "D12:F15"`. |
 
-### Pas à pas
+### Quelques exemples
 
-* **Charger le package**  
-
-Le cas échéant, vous devrez commencer par **charger** le _package_ `readODS`
-```{r}
-library(readODS)
-```
-Vous pouvez également faire appel à la seule fonction du _package_ qui vous intéresse en la faisant précéder du `nom du _package_` et de `::`  
-Exemple: `readODS::read_ods()`.  
-C'est la méthode que nous appliquerons ici.
-
-* **Définir des données à charger -** `path`  
-Par défaut, on charge le 1er onglet: on obtient alors un `data.frame`. Pour charger un autre onglet du même fichier, on utilisera le paramètre `sheet` en précisant soit le nom de l’onglet soit son index (sa position dans le fichier).  
+* **Utilisation la plus simple**: on importe toutes les données du premier onglet, en supposant que la première ligne contient les noms de variables.
 
 ```{r}
 # Chargement du 2ème onglet
-mesDonnees <- readODS::read_ods(path = chemin_ods, sheet = 2)
-str(mesDonnees)
+mesDonnees <- readODS::read_ods(path = chemin_ods)
+head(mesDonnees, 3)
 ```
 
-La fonction readODS::ods_sheets() permet de récupérer les différents noms d’onglets du fichier.
+* **Définir l'onglet à importer**: on importe toutes les données du second onglet, en supposant que la première ligne contient les noms de variables. On définit l'onglet à importer avec le paramètre `sheet` en précisant soit le nom de l’onglet soit son index (sa position dans le fichier). Il est conseillé d'utiliser le nom de l'onglet plutôt que sa position.
 
+```{r}
+# Chargement du 3ème onglet
+mesDonnees <- readODS::read_ods(path = chemin_ods, sheet = "Sheet3")
+```
+
+::: {.remarque data-latex=""}
+La fonction `readODS::ods_sheets()` permet de récupérer les différents noms d’onglets du fichier.
 ```{r}
 # Récupération des noms d'onglet
 readODS::ods_sheets(chemin_ods)
 ```
+:::
 
-```{r}
-# Chargement d'un onglet par rapport à son nom
-mesDonnees <- readODS::read_ods(path = chemin_ods, sheet = "Sheet3")
-str(mesDonnees)
-```
-
-On peut noter que le type des variables est conservé.
-
-**Définir les en-têtes de colonnes -** `col_names`  
-La 1ère ligne des données définit, par défaut, le nom des colonnes. Si on ne veut pas que ce soit le cas, on passe le paramètre `colNames=FALSE`.
-
-```{r}
-mesDonnees <- readODS::read_ods(path = chemin_ods, col_names = FALSE)
-str(mesDonnees)
-
-```
-La 1ère ligne est donc considérée comme une ligne de données comme les autres et les colonnes sont typées "character".
-
-Il est parfois utile de pouvoir n'importer qu'une partie des données.
-
-* **Ne pas importer les x premières lignes -**   
-Le paramètre `skip` permet de préciser à compter de quelle ligne commencer l'import.  
+* **Ne pas importer les x premières lignes ** Le paramètre `skip` permet de préciser à compter de quelle ligne commencer l'importation. Dans l'exemple ci-dessous, on n'importe les données qu'à compter de la cinquième ligne. Si on laisse le paramètre `col_names = TRUE`, la première de ces lignes est considérée comme *noms de colonnes*, ce qui peut donner des résultats absurdes. Si c'est le cas, on peut utiliser le paramètre `col_names=FALSE`.
 
 ```{r}
 mesDonnees <- readODS::read_ods(path = chemin_ods, skip = 5, col_names = FALSE)
 #  Nom des colonnes
-head(mesDonnees,3)
+head(mesDonnees, 3)
 ```
-On n'importe les données qu'à compter de la 5ème ligne. Si on laisse le paramètre `col_names = TRUE`, la 1ère de ces lignes est considérée comme *noms de colonnes*. Si ça ne doit pas être le cas, on passe le paramètre `col_names=FALSE`.
 
-* **Importer une zone spécifique du fichier -** `range`  
-Il est possible de n'importer qu'une plage de cellules en la définissant tel que cela se fait dans *Calc* i.e. en définissant les colonnes et lignes de début et de fin de la plage. **Exemple: "B2:D7"**. On peut également préciser l'onglet avant: **"Sheet1!B2:D7"**
+* **Importer une zone spécifique du fichier ** `range`  
+Il est possible de n'importer qu'une plage de cellules en la définissant dans l'argument `range`. On peut également préciser l'onglet concerné, en écrivant la zone sous la forme `"Sheet1!B2:D7"`.
 
 ```{r }
 mesDonnees <- readODS::read_ods(path = chemin_ods, range = "Sheet1!B2:D7")
-str(mesDonnees)
+head(mesDonnees, 3)
 ```
-Le type des variables est conservé.  
 
 ## Importer un fichier `xlsx` ou `xls`
 
