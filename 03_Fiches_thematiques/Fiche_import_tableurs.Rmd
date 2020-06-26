@@ -25,7 +25,7 @@ Il est déconseillé d'utiliser le _package_ `xlsx`.
 Le _package_ `readODS` propose deux fonctions d'importation de fichiers `ods`: `read_ods` et `read.ods`. La documentation du _package_ recommande d'utiliser, autant que possible, `read_ods`. L'usage de cette fonction va être illustré à partir d'un jeu de données créé à partir de données présentes sur le site de l'Insee. Pour reproduire les exemples ci-dessous, vous devez:
 
 - télécharger [le jeu de données ici (LIEU DE STOCKAGE A DEFINIR)](inactif) puis le sauvegarder sur votre poste;
-- définir le chemin du fichier nommé `chemin_ods` . Voici un exemple:
+- définir le chemin du fichier nommé `chemin_ods`. Voici un exemple:
   ```{r, eval=FALSE}
   chemin_ods <- "D:/mon_IDEP_Insee/Dossier_UtilitR/mes_donnees/mes_donnees.ods"
   ```
@@ -76,12 +76,11 @@ mesDonnees <- readODS::read_ods(path = chemin_ods, sheet = "Sheet3")
 ::: {.remarque data-latex=""}
 La fonction `readODS::ods_sheets()` permet de récupérer les différents noms d’onglets du fichier.
 ```{r}
-# Récupération des noms d'onglet
 readODS::ods_sheets(chemin_ods)
 ```
 :::
 
-* **Ne pas importer les x premières lignes ** Le paramètre `skip` permet de préciser à compter de quelle ligne commencer l'importation. Dans l'exemple ci-dessous, on n'importe les données qu'à compter de la cinquième ligne. Si on laisse le paramètre `col_names = TRUE`, la première de ces lignes est considérée comme *noms de colonnes*, ce qui peut donner des résultats absurdes. Si c'est le cas, on peut utiliser le paramètre `col_names=FALSE`.
+* **Ne pas importer les x premières lignes *: le paramètre `skip` permet de préciser à compter de quelle ligne commencer l'importation. Dans l'exemple ci-dessous, on n'importe les données qu'à compter de la cinquième ligne. Si on laisse le paramètre `col_names = TRUE`, la première de ces lignes est considérée comme *noms de colonnes*, ce qui peut donner des résultats absurdes. Si c'est le cas, on peut utiliser le paramètre `col_names=FALSE`.
 
 ```{r}
 mesDonnees <- readODS::read_ods(path = chemin_ods, skip = 5, col_names = FALSE)
@@ -89,8 +88,7 @@ mesDonnees <- readODS::read_ods(path = chemin_ods, skip = 5, col_names = FALSE)
 head(mesDonnees, 3)
 ```
 
-* **Importer une zone spécifique du fichier ** `range`  
-Il est possible de n'importer qu'une plage de cellules en la définissant dans l'argument `range`. On peut également préciser l'onglet concerné, en écrivant la zone sous la forme `"Sheet1!B2:D7"`.
+* **Importer une zone spécifique du fichier **: il est possible de n'importer qu'une plage de cellules en la définissant dans l'argument `range`. On peut également préciser l'onglet concerné, en écrivant la zone sous la forme `"Sheet1!B2:D7"`.
 
 ```{r }
 mesDonnees <- readODS::read_ods(path = chemin_ods, range = "Sheet1!B2:D7")
@@ -99,29 +97,42 @@ head(mesDonnees, 3)
 
 ## Importer un fichier `xlsx` ou `xls`
 
+L'usage de cette fonction va être illustré à partir d'un jeu de données créé à partir de données présentes sur le site de l'Insee. Pour reproduire les exemples ci-dessous, vous devez:
+
+- télécharger [le jeu de données ici (LIEU DE STOCKAGE A DEFINIR)](inactif) puis le sauvegarder sur votre poste;
+- définir les chemins des fichiers nommés `chemin_xls` et `chemin_xlsx`. Voici un exemple:
+  ```{r, eval=FALSE}
+  chemin_xls  <- "D:/mon_IDEP_Insee/Dossier_UtilitR/mes_donnees/mes_donnees.xls"
+  chemin_xlsx <- "D:/mon_IDEP_Insee/Dossier_UtilitR/mes_donnees/mes_donnees.xlsx"
+  ```
+
+```{r, eval=TRUE, echo = FALSE}
+# Définir le chemin du fichier
+chemin_ods <- "./import_donnees_tabulees_tests/mes_donnees.ods"
+```
+
+
+
+
 ### Avec l'interface graphique de RStudio
 
 **Présentation de l'interface**
 
-Rstudio propose une interface graphique très commode pour lire, entre autres, des fichiers `xls` et `xlsx` (mais aussi des tables `Sas` ou des fichiers `csv`, mais pas les `ods`). `R` utilise la fonction `read_excel` du _package_ `readxl` qui peut lire aisément des fichiers de type `xls` ou `xlsx` peu volumineux. On y accède avec: `File > Import Dataset > From Excel...`.  Les différents menus permettent notamment de sélectionner l'onglet et la zone à importer et de nommer la table d'affectation. Le grand intérêt de cette interface est qu'elle fournit le code utilisé pour importer les données. Vous pouvez donc le copier dans vos scripts pour le réutiliser, et ainsi vous familiariser avec les fonctions d'importation.
+Rstudio propose une interface graphique très commode pour lire des fichiers `xls` et `xlsx` (mais aussi des tables `Sas` ou des fichiers `csv`, mais pas les `ods`). Le grand intérêt de cette interface est qu'elle fournit le code utilisé pour importer les données. Vous pouvez donc le copier dans vos scripts pour le réutiliser, et ainsi vous familiariser avec les fonctions d'importation. 
 
+On accède à cette interface avec: `File > Import Dataset > From Excel...`.  Les différents menus permettent notamment de sélectionner l'onglet et la zone à importer et de nommer la table d'affectation.
 
-Dans ce premier exemple, on a importé l'onglet par défaut (`Sheet`), i.e. le 1er, de la table **mes_donnees.xlsx** (`File/Url`) qu'on a nommé **mes_donnees** (`Name`). On a gardé la 1ère ligne du fichier comme **noms de colones** (`First Row as Names`).
+Dans ce premier exemple, on importe l'onglet par défaut (`Sheet1`), de la table `mes_donnees.xlsx` (`File/Url`) qu'on nomme `mes_donnees` (`Name`). On garde la première ligne du fichier comme noms de colonnes (`First Row as Names`). Vous pouvez voir que le code d'importation apparaît en bas à droite, dans la cellule `Code Preview`.
 
 ![IHM: Exemple 1](./import_donnees_tabulees_tests/img/1 import IHM.png)
 
-Dans l'exemple suivant, on n'importe qu'une plage de données (`A1:D5`) de l'onglet nommé **Sheet3** (`Sheet`) de la même table qu'on a nommé de la même façon.
+Dans l'exemple suivant, on n'importe qu'une plage de données (`A1:D5`) de l'onglet nommé `Sheet3` (`Sheet`), et on remplace les valeurs manquantes par `1904`.
 
 ![IHM: Exemple 2](./import_donnees_tabulees_tests/img/2 import IHM avec param sheet range NA.png)
 
-Dans ce dernier exemple, on n'importe qu'au maximum 10 lignes de l'onglet nommé **Sheet2** (`Sheet`), en débutant la sélection à la ligne numéro 3. On ne garde pas cette 1ère ligne comme **noms de colones**.
-
-![IHM: Exemple 3](./import_donnees_tabulees_tests/img/3 import IHM avec param sheet maxRows skip.png)
-
 ### Présentation de la fonction `openxlsx::read.xlsx()`
 
-Pour lire un fichier au format `xlsx`, nous préconisons d'utiliser la *fonction* `read.xlsx()` du *package* `openxlsx` d'autant plus si le fichier de données est volumineux.  Cette fiche s'appuie sur la version **4.1.5**.  
-Cette fonction permet de charger les données du tableur dans un `data.frame`.
+Pour lire un fichier au format `xlsx`, nous préconisons d'utiliser la fonction `read.xlsx()` du *package* `openxlsx`, en particulier si le fichier est volumineux. Cette fonction permet de charger les données du tableur dans un `data.frame`.
 
 #### Les données utilisées
 
