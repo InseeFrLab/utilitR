@@ -196,22 +196,17 @@ Vous pouvez également faire appel à la seule fonction du _package_ qui vous in
 Exemple : `openxls::read.xls()`.  
 C'est la méthode que nous appliquerons ici.
 
-* **Définir des données à charger -** `xlsxFile`  
-Par défaut, on charge le 1er onglet : on obtient alors un `data.frame`. Le type des variables est conservé.
-```{r}
-mesDonnees <- openxlsx::read.xlsx(xlsxFile = chemin_xlsx)
-str(mesDonnees)
-```
+* **Définir des données à charger -** `xlsxFile` 
+Par défaut, on charge le 1er onglet : on obtient alors un `data.frame`. Pour charger un autre onglet du même fichier, on utilisera le paramètre `sheet` en précisant soit le nom de l’onglet soit son index (sa position dans le fichier).  
 
-* **Préciser l'onglet dans un fichier qui en contient plusieurs -** `sheet`  
-Pour charger un autre onglet du même fichier, on utilisera le paramètre `sheet` en précisant soit le **nom de l'onglet** soit son **index** (sa position dans le fichier).
 ```{r}
 # Chargement du 2ème onglet
 mesDonnees <- openxlsx::read.xlsx(xlsxFile = chemin_xlsx, sheet=2)
 str(mesDonnees)
 ```
-La fonction `openxlsx::getSheetNames()` permet de récupérer les différents noms d'onglets du fichier.
+Le type des variables est conservé.
 
+La fonction `openxlsx::getSheetNames()` permet de récupérer les différents noms d'onglets du fichier.
 ```{r}
 (nomOnglets <- openxlsx::getSheetNames(chemin_xlsx))
 
@@ -220,8 +215,6 @@ La fonction `openxlsx::getSheetNames()` permet de récupérer les différents no
 ```{r}
 # Chargement d'un onglet par rapport à son nom
 mesDonnees <- openxlsx::read.xlsx(xlsxFile = chemin_xlsx, sheet="Sheet3")
-# Structure des données
-str(mesDonnees)
 # Nom des colonnes
 colnames(mesDonnees)
 ```
@@ -238,8 +231,6 @@ On perd les noms de colonnes et le type des variables.
 ```{r}
 # Structure des données
 str(mesDonnees)
-# Nom des colonnes
-colnames(mesDonnees)
 ```
 
 * **Définir les en-têtes de colonnes -** `colNames`  
@@ -257,14 +248,6 @@ head(mesDonnees,10)
 ```
 Par conséquent, il vous faudra, le cas échéant, préciser le nom des colonnes.
 
-* **Reconnaitre les variables au format date -** `detectDates`  
-La variable `Date` de ce jeu de données est initialement importée au format `num` (cf le `str()` du point *préciser l'onglet ...*). On le transforme en un format `Date`.
-```{r}
-# Transformation de la variable "DATE" au format Date
-mesDonnees <- openxlsx::read.xlsx(xlsxFile = chemin_xlsx,  sheet="Sheet3", detectDates=TRUE)
-# Structure des données
-str(mesDonnees)
-```
 * **Ne pas importer les lignes et les colonnes vides -** `skipEmptyRows`  
 
 Pour tester ce paramètre, vous pouvez ouvrir votre jeux de données (avec un tableur) et effacer les données d'une ligne et d'une colonne.  
