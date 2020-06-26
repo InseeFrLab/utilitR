@@ -18,14 +18,14 @@ L'utilisateur souhaite importer dans `R` des données issues de tableurs (extens
 Il est déconseillé d'utiliser le _package_ `xlsx`.
 :::
 
-## Import d'un fichier `ods` avec le _package_ `readODS`
+## Importer un fichier `ods` avec le _package_ `readODS`
 
 ### Introduction
 
 Le _package_ `readODS` propose deux fonctions d'importation de fichiers `ods`: `read_ods` et `read.ods`. La documentation du _package_ recommande d'utiliser, autant que possible, `read_ods`. L'usage de cette fonction va être illustré à partir d'un jeu de données créé à partir de données présentes sur le site de l'Insee. Pour reproduire les exemples ci-dessous, vous devez:
 
 - télécharger [le jeu de données ici (LIEU DE STOCKAGE A DEFINIR)](inactif) puis le sauvegarder sur votre poste;
-- définir le chemin du fichier nommé `chemin_ods`. Voici un exemple:
+- définir dans `R` le chemin du fichier nommé `chemin_ods`. Voici un exemple:
   ```{r, eval=FALSE}
   chemin_ods <- "D:/mon_IDEP_Insee/Dossier_UtilitR/mes_donnees/mes_donnees.ods"
   ```
@@ -42,7 +42,7 @@ library(readODS)
 ```
 
 
-### Présentation de la fonction `readODS::read_ods()`
+### Comment utiliser le _package_ `readODS`
 
 Voici les principaux arguments et options de `read_ods()`:
 
@@ -100,23 +100,19 @@ head(mesDonnees, 3)
 L'usage de cette fonction va être illustré à partir d'un jeu de données créé à partir de données présentes sur le site de l'Insee. Pour reproduire les exemples ci-dessous, vous devez:
 
 - télécharger [le jeu de données ici (LIEU DE STOCKAGE A DEFINIR)](inactif) puis le sauvegarder sur votre poste;
-- définir les chemins des fichiers nommés `chemin_xls` et `chemin_xlsx`. Voici un exemple:
+- définir dans `R` les chemins des fichiers nommés `chemin_xls` et `chemin_xlsx`. Voici un exemple:
   ```{r, eval=FALSE}
   chemin_xls  <- "D:/mon_IDEP_Insee/Dossier_UtilitR/mes_donnees/mes_donnees.xls"
   chemin_xlsx <- "D:/mon_IDEP_Insee/Dossier_UtilitR/mes_donnees/mes_donnees.xlsx"
   ```
-
+  
 ```{r, eval=TRUE, echo = FALSE}
 # Définir le chemin du fichier
-chemin_ods <- "./import_donnees_tabulees_tests/mes_donnees.ods"
+chemin_xls  <- "./import_donnees_tabulees_tests/mes_donnees.xls"
+chemin_xlsx <- "./import_donnees_tabulees_tests/mes_donnees.xlsx"
 ```
 
-
-
-
-### Avec l'interface graphique de RStudio
-
-**Présentation de l'interface**
+### Importer un fichier `xlsx` ou `xls` avec l'interface graphique de RStudio
 
 Rstudio propose une interface graphique très commode pour lire des fichiers `xls` et `xlsx` (mais aussi des tables `Sas` ou des fichiers `csv`, mais pas les `ods`). Le grand intérêt de cette interface est qu'elle fournit le code utilisé pour importer les données. Vous pouvez donc le copier dans vos scripts pour le réutiliser, et ainsi vous familiariser avec les fonctions d'importation. 
 
@@ -130,30 +126,17 @@ Dans l'exemple suivant, on n'importe qu'une plage de données (`A1:D5`) de l'ong
 
 ![IHM: Exemple 2](./import_donnees_tabulees_tests/img/2 import IHM avec param sheet range NA.png)
 
-### Présentation de la fonction `openxlsx::read.xlsx()`
+### Importer un fichier `xlsx` avec le _package_ `openxlsx`
 
 Pour lire un fichier au format `xlsx`, nous préconisons d'utiliser la fonction `read.xlsx()` du *package* `openxlsx`, en particulier si le fichier est volumineux. Cette fonction permet de charger les données du tableur dans un `data.frame`.
 
-#### Les données utilisées
-
-Nous travaillerons à partir d'un jeu de données fictif, créé pour l'occasion:  
-
-- charger [le jeu de données ici (A définir)](inactif) puis le sauvegarder sur votre poste.
-- Adapter en conséquence le chemin ci-dessous en remplaçant `./import_donnees_tabulees_tests` par votre chemin menant au fichier `/mes_donnees.xlsx`. **Exemple:** `D:/T19QHL/Mes Documents/R_workSpace/documentationR/mes_donnees`.
-
-Nous définissons, en début de script, une variable contenant le chemin d'accès aux données.
-
-```{r}
-chemin_xlsx <- "./import_donnees_tabulees_tests/mes_donnees.xlsx"
-```
-
-#### Les paramètres
+#### Comment utiliser la fonction `read.xlsx()`
 
 Voici les principaux arguments et options de `read.xlsx()`:
 
 | Argument         | Valeur par défaut     | Fonction                                                                                   |
 |------------------|-----------------------|--------------------------------------------------------------------------------------------|
-| `xlsxFile`       | Aucune                | Chemin d'accès vers un objet classeur ou une url vers un fichier xlsx à importer           |
+| `xlsxFile`       | Aucune                | Chemin d'accès vers un objet classeur ou une url vers un fichier `xlsx` à importer           |
 | `sheet`          | 1                     | Nom ou index de la feuille à partir de laquelle lire les données                           |
 | `startRow`       | 1                     | Première ligne pour commencer à rechercher des données. Les lignes vides en haut d'un fichier sont toujours ignorées, quelle que soit la valeur de startRow                                                                                |
 | `colNames`       | TRUE                  | Si `TRUE`, la première ligne de données sera utilisée comme nom de colonne                 |
