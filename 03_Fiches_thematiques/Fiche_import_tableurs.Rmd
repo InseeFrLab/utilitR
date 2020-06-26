@@ -250,18 +250,12 @@ Par conséquent, il vous faudra, le cas échéant, préciser le nom des colonnes
 
 * **Ne pas importer les lignes et les colonnes vides -** `skipEmptyRows`  
 
-Pour tester ce paramètre, vous pouvez ouvrir votre jeux de données (avec un tableur) et effacer les données d'une ligne et d'une colonne.  
-par exemple :
-    - Effacer les données de la ligne 2 et des 2ème et 5ème colonnes du 1er onglet (Produits cafés - Les filtres);
-    - Enregistrer les modifications mais ne pas fermer tout de suite le fichier pour pouvoir annuler ensuite toutes ces modifications (avec plusieurs `Ctrl` + `z`);
-    - Exécuter ce code;
-
+Pour tester ce paramètre, vous pouvez ouvrir votre jeux de données (avec un tableur) et effacer les données d'une ligne et d'une colonne puis exécutez le code suivant :
 ```{r}
 (mesDonnees <- openxlsx::read.xlsx(xlsxFile = chemin_xlsx, skipEmptyRows=TRUE))
 ```
 
-Les données effacées n'ont pas été chargées;  
-Annuler vos modifications (avec plusieurs `Ctrl` + `z`) sur votre fichier de données puis le sauvegarder. 
+Les données effacées n'ont pas été chargées.
 
 * **Sélectionner les lignes et colonnes à importer -** `rows` et `cols`  
 On peut définir les lignes et colonnes qu'on souhaite importer en le précisant, avec un vecteur numéric, avec les paramètres `rows` et `cols`.
@@ -272,19 +266,11 @@ On peut définir les lignes et colonnes qu'on souhaite importer en le précisant
 * **Vérification du respect des normes syntaxiques dans les noms de variable -**  `check.names` et `sep.names`
 La fonction `openxlsx::read.xlsx()` propose, via le paramètre `check.names` de modifier les noms de variables pour les adapter aux règles de bonnes pratiques syntaxiques. Dans tous les cas, les espaces dans les noms de variables sont remplacés par des **"."**.
 
-```{r}
-mesDonnees <- openxlsx::read.xlsx(xlsxFile = chemin_xlsx, check.names=FALSE)
-colnames(mesDonnees)
-```
-Dans ce cas, `Code-postal` resterait inchangé et `Cafés torréfiés préférés` deviendrait `Cafés.torréfiés.préférés`. En passant `check.names=TRUE`,`Code-postal` devient `Code.postal`.
-
+Avec `check.names=FALSE`, `nom-de-variable` resterait inchangé et `nom de variable` deviendrait `nom.de.variable`.  
+En passant `check.names=TRUE`,`nom-de-variable` devient `nom.de.variable`.
 
 Le paramètre `sep.names` permet de préciser par quel caractère remplacer les espaces pour que ça ne soit plus forcément un **"."**.
-```{r}
-mesDonnees <- openxlsx::read.xlsx(xlsxFile = chemin_xlsx, sep.names="|")
-colnames(mesDonnees)
-```
-Dans ce cas, `Code-postal` resterait inchangé et `Cafés torréfiés préférés` deviendrait `Cafés|torréfiés|préférés`. 
+Avec `sep.names="|"`, `nom-de-variable` resterait inchangé et `nom de variable` deviendrait `nom|de|variable`. 
 
 * **Importer une zone spécifique du fichier -** `namedRegion`  
 Il est possible de n'importer qu'une partie du fichier selon le nom d’une zone de la *"feuille de calcul"*.
