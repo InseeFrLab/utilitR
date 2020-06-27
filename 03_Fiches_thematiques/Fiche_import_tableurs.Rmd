@@ -97,9 +97,9 @@ head(mesDonnees, 3)
 
 ## Importer un fichier `xlsx` ou `xls`
 
-L'usage de cette fonction va être illustré à partir d'un jeu de données créé à partir de données présentes sur le site de l'Insee. Pour reproduire les exemples ci-dessous, vous devez:
+L'usage de cette fonction va être illustré à partir de deux jeux de données créés à partir de données présentes sur le site de l'Insee, en formats `xls` et `xlsx`. Pour reproduire les exemples ci-dessous, vous devez:
 
-- télécharger [le jeu de données ici (LIEU DE STOCKAGE A DEFINIR)](inactif) puis le sauvegarder sur votre poste;
+- télécharger [les jeu de données ici (LIEU DE STOCKAGE A DEFINIR)](inactif) puis le sauvegarder sur votre poste;
 - définir dans `R` les chemins des fichiers nommés `chemin_xls` et `chemin_xlsx`. Voici un exemple:
   ```{r, eval=FALSE}
   chemin_xls  <- "D:/mon_IDEP_Insee/Dossier_UtilitR/mes_donnees/mes_donnees.xls"
@@ -154,7 +154,7 @@ Voici les principaux arguments et options de `read.xlsx()`:
 
 Les exemples qui suivent vont vous permettre de facilement charger tout ou partie d'une table de données d'un fichier avec une extension `xlsx`.
 
-### Quelques exemples
+#### Quelques exemples
 
 * **Utilisation la plus simple**: on importe toutes les données du premier onglet, en supposant que la première ligne contient les noms de variables.
 
@@ -200,41 +200,23 @@ head(mesDonnees, 4)
 
 ### Présentation de la fonction `readxl::read_excel()`
 
-Pour lire un fichier au format `xls` (ce que ne fait pas le package `openxlsx`), éventuellement un fichier au format `xlsx` peu volumineux, vous pouvez utiliser la *fonction* `read_excel()` du *package* `readxl`.
+Pour importer un fichier au format `xls`, vous pouvez utiliser la *fonction* `read_excel()` du *package* `readxl`. Cette fonction permet également d'importer un fichier au format `xlsx` peu volumineux. Si vous voulez importer un fichier `xlsx` volumineux, il est préférable d'utiliser `openxlsx`.
 
-#### Les données utilisées
+#### Comment utiliser la fonction `read_excel()`
 
-Nous travaillerons à partir d'un jeu de données fictif, créé pour l'occasion:  
-
-- charger [le jeu de données ici (A définir)](inactif) puis le sauvegarder sur votre poste.
-- Adapter en conséquence le chemin ci-dessous en remplaçant `./import_donnees_tabulees_tests` par votre chemin menant au fichier `/mes_donnees.xlsx`. **Exemple:** `D:/T19QHL/Mes Documents/R_workSpace/documentationR/mes_donnees`.
-
-Nous définissons, en début de script, une variable contenant le chemin d'accès aux données.
-
-```{r}
-# chemin_xlsx <- "Z:/EXERCICES DU COURS BDD.xlsx"
-chemin_xls <- "./import_donnees_tabulees_tests/mes_donnees.xls"
-```
-
-#### Les paramètres
-
-La fonction `read_excel()` du _package_ `readxl`, qui fait partie du `tidyverse`, permet d’importer des données directement depuis un fichier au format `xls` ou `xlsx`.
-
-Voici les principaux arguments et options de `read_excel()`:
-
+La fonction `read_excel()` du _package_ `readxl` permet d’importer des données directement depuis un fichier au format `xls` ou `xlsx`. Voici les principaux arguments et options de `read_excel()`:
 
 | Argument         | Valeur par défaut     | Fonction                                                                                   |
 |------------------|-----------------------|--------------------------------------------------------------------------------------------|
 | `path`           | Aucune                | Chemin d'accès au fichier xls / xlsx à importer                                            |
-| `sheet`          | NULL                  | Feuille à lire. Soit une chaîne (le nom d'une feuille), soit un entier (la position de la feuille). Ignoré si la feuille est spécifiée via range. Par défaut, sélectionne le 1er onglet de la feuille                                       |
-| `range`          | NULL                  | Une plage de cellules à lire. Comprend des plages Excel typiques comme "B3: D87", y compris éventuellement le nom de la feuille comme "Budget! B2: G14", et plus encore. Interprété strictement, même si la plage force l'inclusion de lignes ou de colonnes vides de début ou de fin. Prend le pas sur `skip`, `n_max` et `sheet`                                                    |
-| `col_names`      | TRUE                  | `TRUE` pour utiliser la première ligne comme noms de colonne, `FALSE` pour obtenir les noms par défaut ou un vecteur de caractères donnant un nom à chaque colonne                                                                             |
-| `col_types`      | NULL                  | Soit `NULL` pour deviner tout à partir de la feuille de calcul soit un vecteur de caractères contenant une entrée par colonne parmi ces options. Le contenu d'une cellule dans une colonne ignorée (`skip`) n'est jamais lu et cette colonne n'apparaîtra pas dans la sortie du bloc de données                                                                                                   |
-| `na`             | ""                    | Vecteur de caractères de chaînes à interpréter comme des valeurs manquantes. Par défaut, `readxl` traite les cellules vides comme des données manquantes                                                                                  |
-| `skip`           | 0                     | Nombre minimum de lignes à ignorer avant de lire quoi que ce soit. Les premières lignes vides sont automatiquement ignorées, il s'agit donc d'une limite inférieure. Ignoré si `range` est donné                                           |
-| `n_max`          | Infini                | Nombre maximum de lignes de données à lire. Les lignes vides de fin sont automatiquement ignorées, il s'agit donc d'une limite supérieure du nombre de lignes dans le tibble retourné. Ignoré si `range` est donné                            |
-| `guess_max`      | 1000 ou `n_max`       | Nombre maximal de lignes de données à utiliser pour deviner les types de colonnes          |
-| `.name_repair`   |                       | Gestion des noms de colonne. Par défaut, `readxl` garantit que les noms de colonnes ne sont pas vides et sont uniques                                                                                                                         |
+| `sheet`          | `NULL`                  | Onglet à importer Soit le nom de l'onglet, soit la position de l'onglet. Par défaut, sélectionne le premier onglet du fichier |
+| `range`          | `NULL`                  | Une plage de cellules à lire. Accepte des plages Excel typiques comme `"B3:D87"`et des plages avec le nom de l'onglet comme `"Budget! B2:G14"` |
+| `col_names`      | `TRUE`                  | `TRUE` pour utiliser la première ligne comme noms de colonne, `FALSE` pour obtenir les noms par défaut ou un vecteur de caractères donnant un nom à chaque colonne      |
+| `col_types`      | `NULL`                  | Préciser le type des colonnes. Si `col_types = NULL`, `readxl` essaie de deviner le type des colonnes. Voir `?readxl::read_xls` pour l'usage de cette option |
+| `na`             | ""                    | Vecteur de chaînes de caractères à interpréter comme des valeurs manquantes   |
+| `skip`           | `0`                     | Nombre de lignes à ignorer avant d'importer les données |
+| `n_max`          | `Inf`                | Nombre maximum de lignes de données à lire  |
+| `guess_max`      | `1000` ou `n_max`       | Nombre de lignes utilisées pour deviner les types de colonnes          |
 
 ### Pas à pas
 
