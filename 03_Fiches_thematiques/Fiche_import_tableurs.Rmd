@@ -88,7 +88,7 @@ mesDonnees <- readODS::read_ods(path = chemin_ods, skip = 5, col_names = FALSE)
 head(mesDonnees, 3)
 ```
 
-* **Importer une zone spécifique du fichier **: il est possible de n'importer qu'une plage de cellules en la définissant dans l'argument `range`. On peut également préciser l'onglet concerné, en écrivant la zone sous la forme `"Sheet1!B2:D7"`.
+* **Importer une zone spécifique du fichier**: il est possible de n'importer qu'une plage de cellules en la définissant dans l'argument `range`. On peut également préciser l'onglet concerné, en écrivant la zone sous la forme `"Sheet1!B2:D7"`.
 
 ```{r }
 mesDonnees <- readODS::read_ods(path = chemin_ods, range = "Sheet1!B2:D7")
@@ -97,7 +97,7 @@ head(mesDonnees, 3)
 
 ## Importer un fichier `xlsx` ou `xls`
 
-L'usage de cette fonction va être illustré à partir de deux jeux de données créés à partir de données présentes sur le site de l'Insee, en formats `xls` et `xlsx`. Pour reproduire les exemples ci-dessous, vous devez:
+L'importation de fichiers `xlsx` et `xls` va être illustré à partir de deux jeux de données créés à partir de données présentes sur le site de l'Insee, en formats `xls` et `xlsx`. Pour reproduire les exemples ci-dessous, vous devez:
 
 - télécharger [les jeu de données ici (LIEU DE STOCKAGE A DEFINIR)](inactif) puis le sauvegarder sur votre poste;
 - définir dans `R` les chemins des fichiers nommés `chemin_xls` et `chemin_xlsx`. Voici un exemple:
@@ -192,7 +192,7 @@ mesDonnees <- openxlsx::read.xlsx(xlsxFile = chemin_xlsx, rows=c(1,4:6,9), cols=
 head(mesDonnees, 4)
 ```
 
-* **Vérification du respect des normes syntaxiques dans les noms de variable**: les noms de colonnes dans un fichier Excel ne peuvent pas toujours être utilisés directement comme noms de variables dans `R`. Les paramètres `check.names` et `sep.names` permettent de modifier les noms de variables pour les adapter aux règles de bonnes pratiques syntaxiques:
+* **Vérification du respect des normes syntaxiques dans les noms de variables**: les noms de colonnes dans un fichier Excel ne peuvent pas toujours être utilisés directement comme noms de variables dans `R`. Les paramètres `check.names` et `sep.names` permettent de modifier les noms de variables pour les adapter aux règles de bonnes pratiques syntaxiques:
     - Le paramètre `check.names=TRUE` modifie les noms de variables qui posent problème. Par exemple, 
 `nom-de-variable` dans Excel devient `nom.de.variable` dans `R`. 
     - Le paramètre `sep.names` permet de définir le caractère par lequel remplacer les espaces.
@@ -248,76 +248,39 @@ readxl::excel_sheets(chemin_xls)
 :::
 
 
-* **Définir les en-têtes de colonnes -** `col_names`  
-La 1ère ligne des données définit, par défaut, le nom des colonnes. Si on ne veut pas que ce soit le cas, on passe le paramètre `colNames=FALSE`. Les colonnes serot alors numérotées.
-```{r}
-mesDonnees <- readxl::read_excel(path = chemin_xls, col_names=FALSE)
-# Nom des colonnes
-colnames(mesDonnees)
+* **Importer une zone spécifique du fichier**: il est possible de n'importer qu'une plage de cellules en la définissant dans l'argument `range`. On peut également préciser l'onglet concerné, en écrivant la zone sous la forme `"Sheet3!B2:D7"`. La première ligne de la plage est considérée comme *en-tête de colonnes*. Si ça n'est pas le cas, il faut ajouter le paramètre `col_names=FALSE` pour que la première ligne soit traitée comme une ligne de données.
+
+```{r }
+mesDonnees <- readxl::read_excel(path = chemin_xls, range = "Sheet3!B2:D7")
+head(mesDonnees, 3)
 ```
-La 1ère ligne est donc considérée comme une ligne de données comme les autres.
-```{r}
-# Les 10 premières lignes du tible
-head(mesDonnees,10)
-```
-Par conséquent, il vous faudra, le cas échéant, préciser le nom des colonnes.
 
-* **Importer une zone spécifique du fichier -** `range`  
-Il est possible de n'importer qu'une plage de cellules en la définissant comme ceci: **Exemple: "B2:D7"**. On peut également préciser l'onglet avant: **"Sheet3!B2:D7"**
-
-```{r}
-(mesDonnees <- readxl::read_excel(path = chemin_xls, range = "Sheet3!B2:D7"))
-```
-Le type des variables est conservé et la 1ère ligne de la plage est considérée comme *en-tête de colonnes*: si ça ne doit pas être le cas, ajouter le paramètre `col_names=FALSE`.
-
-* **Définir le type des colonnes -** `col_types`
-
-le paramètre `col_types` permet de (re)définir le type des colonnes, d'une part, de "sauter" les colonnes qu'on ne souhaite pas importer d'autre part. Pour cela, on passe au paramètre `col_types` un vecteur précisant le type parmi les possibilités suivantes:  
-* `"skip"`: permet de sauter une colonne qui ne sera pas importée;
-* `"guess"`: le type de la variable est "devinée" par rapport à ses *modalités*;
-* `"list"`: crée une liste.  
-* et `"logical`, `"numeric"`, `"date"` ou `"text"`.
-Le type de la variable sera appliqué aux colonnes dans l'ordre défini par le vecteur. Exemple: `c("text","text","numeric","guess","skip","logical")`. Dans le cas où on souhaite définir le même type à toutes les colonnes, on écrita juste le type attendu entre *""*. Par exemple `col_types = "text"`.
+* **Définir le type des colonnes**: le paramètre `col_types` permet de définir explicitement le type des colonnes et d'ignorer les colonnes qu'on ne souhaite pas importer. Pour cela, on passe au paramètre `col_types` un vecteur précisant le type parmi les possibilités suivantes:  
+  * `"skip"`: ignorer la colonne (qui ne sera pas importée);
+  * `"guess"`: le type de la variable est devinée par rapport à ses *modalités*;
+  * `"list"`: crée une liste;
+  * `"logical` pour une variable booléenne, `"numeric"` pour une variable numérique, `"date"` pour une date et `"text"` pour une variable caractère.
+  
+    Le type de la variable sera appliqué aux colonnes dans l'ordre défini par le vecteur. Exemple: `c("text","text","numeric","guess","skip","logical")`. Dans le cas où on souhaite définir le même type pour toutes les colonnes, il suffit de préciser une seule fois le type attendu (exemple `col_types = "text"`).
 
 ```{r}
 mesDonnees <- readxl::read_excel(path = chemin_xls, col_types = c("text","list",rep("skip",9), "text", "numeric", "text", "guess"))
-str(mesDonnees)
+head(mesDonnees)
 ```
 
-* **Gestion des *NA* -** `NA`  
-Il est possible de préciser les valeurs qu'on souhaite considérer comme des `NA`. Ici, pour l'exercice, la valeur `75`.
+* **Gestion des *NA* **: il est possible de préciser les valeurs qu'on souhaite considérer comme des `NA` avec le paramètre `na`. Ici, pour l'exercice, la valeur `1902` est considérée comme `NA`.
 ```{r}
-(mesDonnees <- readxl::read_excel(path = chemin_xls, na="75"))
+mesDonnees <- readxl::read_excel(path = chemin_xls, na="1902")
+head(mesDonnees)
 ```
 
-* **Appliquer une fonction pour formatter les noms de colonnes -** `.name_repair`
-`.name_repair` permet d'appliquer un format aux noms de colonnes. Dans l'exemple suivant, on passe les noms de colonnes en MAJUSCULE.
-```{r}
-mesDonnees <- readxl::read_excel(path = chemin_xls, .name_repair = toupper)
-names(mesDonnees)
-```
-
-Dans cet exemple, on applique une fonction crée pour l'occasion qui vise à remplacer les *"espaces"* par des `_` et passe le tout en majuscule.
+* **Ne pas importer les x premières lignes**: le paramètre `skip` permet de définir le nombre de lignes à ignorer avant de commencer l'importation des données. Si on laisse le paramètre `col_names = TRUE`, la première des lignes importées est considérée comme noms de colonnes, ce qui peut donner des résultats absurdes. On peut alors utiliser le paramètre `col_names=FALSE` pour qu'elle ne soit pas considérée comme nom de variables.
 
 ```{r}
-my_custom_name_repair <- function(nms) toupper(gsub("[[:space:]]", "_", nms))
-mesDonnees <- readxl::read_excel(path = chemin_xls, .name_repair = my_custom_name_repair)
-names(mesDonnees)
+mesDonnees <- readxl::read_excel(path = chemin_xls, skip = 5, col_names = FALSE)
+head(mesDonnees, 4)
 ```
 
-* **Ne pas importer les x premières lignes -** `skip`
-On n'importe pas les 5 premières lignes. Par conséquent, l'import commence à la 6ème ligne: on peut passer le paramètre `col_names=FALSE` pour qu'elle ne soit pas considérée comme entête de colonnes.
-```{r}
-(mesDonnees <- readxl::read_excel(path = chemin_xls, skip = 5, col_names = FALSE))
-names(mesDonnees)
-```
-
-* **Importer un nombre maximum de lignes -**`n_max`
-On importe maximum 3 lignes
-```{r}
-(mesDonnees <- readxl::read_excel(path = chemin_xls, n_max = 3))
-names(mesDonnees)
-```
 
 ## Ressources
 
