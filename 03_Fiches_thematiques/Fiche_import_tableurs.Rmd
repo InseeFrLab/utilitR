@@ -8,7 +8,7 @@ knitr::opts_chunk$set(echo = TRUE, eval=TRUE, include=TRUE, message=FALSE, warni
 ## Tâches concernées et recommandations
 
 L'utilisateur souhaite importer dans `R` des données issues de tableurs (extension type `xls`, `xlsx` ou `ods`).
-
+chemin_xlsx
 ::: {.recommandation data-latex=""}
 
 - **Il est recommandé d'utiliser la fonction `read_ods` du _package_ `readODS` importer des fichiers `ods`.**
@@ -66,7 +66,7 @@ mesDonnees <- readODS::read_ods(path = chemin_ods)
 head(mesDonnees, 3)
 ```
 
-* **Définir l'onglet à importer**: on importe toutes les données du second onglet, en supposant que la première ligne contient les noms de variables. On définit l'onglet à importer avec le paramètre `sheet` en précisant soit le nom de l’onglet soit son index (sa position dans le fichier). Il est conseillé d'utiliser le nom de l'onglet plutôt que sa position.
+* **Définir l'onglet à importer**: on importe toutes les données du troisième onglet, en supposant que la première ligne contient les noms de variables. On définit l'onglet à importer avec le paramètre `sheet` en précisant soit le nom de l’onglet soit son index (sa position dans le fichier). Il est conseillé d'utiliser le nom de l'onglet plutôt que sa position.
 
 ```{r}
 # Chargement du 3ème onglet
@@ -80,7 +80,7 @@ readODS::ods_sheets(chemin_ods)
 ```
 :::
 
-* **Ne pas importer les x premières lignes *: le paramètre `skip` permet de préciser à compter de quelle ligne commencer l'importation. Dans l'exemple ci-dessous, on n'importe les données qu'à compter de la cinquième ligne. Si on laisse le paramètre `col_names = TRUE`, la première de ces lignes est considérée comme *noms de colonnes*, ce qui peut donner des résultats absurdes. Si c'est le cas, on peut utiliser le paramètre `col_names=FALSE`.
+* **Ne pas importer les n premières lignes **: le paramètre `skip` permet de préciser à compter de quelle ligne commencer l'importation. Dans l'exemple ci-dessous, on n'importe les données qu'à compter de la cinquième ligne. Si on laisse le paramètre `col_names = TRUE`, la première de ces lignes est considérée comme *noms de colonnes*, ce qui peut donner des résultats absurdes. Si c'est le cas, on peut utiliser le paramètre `col_names=FALSE`.
 
 ```{r}
 mesDonnees <- readODS::read_ods(path = chemin_ods, skip = 5, col_names = FALSE)
@@ -151,105 +151,52 @@ Voici les principaux arguments et options de `read.xlsx()`:
 | `skipEmptyCols`  | `FALSE`                 | Si `TRUE`, les colonnes vides sont ignorées  |
 | `check.names`    | `FALSE`                 | Si `TRUE`, les noms des variables dans la trame de données sont vérifiés pour s'assurer qu'ils sont des noms de variable syntaxiquement valides | 
 | `sep.names`      | "."                   | Un caractère qui remplace les blancs dans les noms de colonne   |
-| `namedRegion`    | `NULL`                  | Une région nommée dans le classeur |
 
 Les exemples qui suivent vont vous permettre de facilement charger tout ou partie d'une table de données d'un fichier avec une extension `xlsx`.
 
 ### Quelques exemples
 
-
-
-
-* **Définir des données à charger -** `xlsxFile` 
-Par défaut, on charge le 1er onglet: on obtient alors un `data.frame`. Pour charger un autre onglet du même fichier, on utilisera le paramètre `sheet` en précisant soit le nom de l’onglet soit son index (sa position dans le fichier).  
+* **Utilisation la plus simple**: on importe toutes les données du premier onglet, en supposant que la première ligne contient les noms de variables.
 
 ```{r}
 # Chargement du 2ème onglet
-mesDonnees <- openxlsx::read.xlsx(xlsxFile = chemin_xlsx, sheet=2)
-str(mesDonnees)
+mesDonnees <- openxlsx::read.xlsx(xlsxFile = chemin_xlsx)
+head(mesDonnees, 3)
 ```
-Le type des variables est conservé.
+
+* **Définir l'onglet à importer**: on importe toutes les données du troisième onglet, en supposant que la première ligne contient les noms de variables. On définit l'onglet à importer avec le paramètre `sheet` en précisant soit le nom de l’onglet soit son index (sa position dans le fichier). Il est conseillé d'utiliser le nom de l'onglet plutôt que sa position.
+
+```{r}
+# Chargement du 3ème onglet
+mesDonnees <- openxlsx::read.xlsx(xlsxFile = chemin_xlsx, sheet = "Sheet3")
+```
 
 ::: {.remarque data-latex=""}
 La fonction `openxlsx::getSheetNames()` permet de récupérer les noms des onglets du fichier sans avoir à l'ouvrir.
 ```{r}
-(nomOnglets <- openxlsx::getSheetNames(chemin_xlsx))
+openxlsx::getSheetNames(chemin_xlsx)
 ```
 :::
 
+* **Préciser où débute la sélection**: par défaut, on importe les données à partir de la première ligne de l'onglet spécifié. On peut, avec le paramètre `startRow`, définir la ligne de début d'importation. Dans l'exemple ci-dessous, on n'importe les données qu'à compter de la troisième ligne. Si on laisse le paramètre `colNames = TRUE`, la première de ces lignes est considérée comme *noms de colonnes*, ce qui peut donner des résultats absurdes. Si c'est le cas, on peut utiliser le paramètre `colNames=FALSE`.
+
 ```{r}
-# Chargement d'un onglet par rapport à son nom
-mesDonnees <- openxlsx::read.xlsx(xlsxFile = chemin_xlsx, sheet="Sheet3")
-# Nom des colonnes
-colnames(mesDonnees)
+mesDonnees <- openxlsx::read.xlsx(xlsxFile = chemin_xlsx, startRow=3, colNames=FALSE)
+# Les 4 premières lignes du data.frame
+head(mesDonnees, 4)
 ```
 
-* **Préciser où débute la sélection -** `startRow`  
-Par défaut, on importe les données à partir de la 1ère ligne de l'onglet spécifié. On peut, avec le paramètre `startRow`, définir la ligne de début d'import.
+* **Sélectionner les lignes et colonnes à importer**: on peut définir les lignes et colonnes qu'on souhaite importer en le précisant, avec un vecteur numérique, avec les paramètres `rows` et `cols`.
+
 ```{r}
-mesDonnees <- openxlsx::read.xlsx(xlsxFile = chemin_xlsx, startRow=3)
-# Les 10 premières lignes du data.frame
-head(mesDonnees,10)
+mesDonnees <- openxlsx::read.xlsx(xlsxFile = chemin_xlsx, rows=c(1,4:6,9), cols=c(1,3:4))
+head(mesDonnees, 4)
 ```
 
-On perd les noms de colonnes et le type des variables.
-```{r}
-# Structure des données
-str(mesDonnees)
-```
-
-* **Définir les en-têtes de colonnes -** `colNames`  
-La 1ère ligne des données définit, par défaut, le nom des colonnes. Si on ne veut pas que ce soit le cas, on passe le paramètre `colNames=FALSE`.
-```{r,eval = FALSE}
-mesDonnees <- openxlsx::read.xlsx(xlsxFile = chemin_xlsx, colNames=FALSE)
-# Nom des colonnes
-colnames(mesDonnees)
-```
-
-La 1ère ligne est donc considérée comme une ligne de données comme les autres.
-```{r}
-# Les 10 premières lignes du data.frame
-head(mesDonnees,10)
-```
-Par conséquent, il vous faudra, le cas échéant, préciser le nom des colonnes.
-
-* **Ne pas importer les lignes et les colonnes vides -** `skipEmptyRows`  
-
-Pour tester ce paramètre, vous pouvez ouvrir votre jeux de données (avec un tableur) et effacer les données d'une ligne et d'une colonne puis exécutez le code suivant:
-```{r, eval=FALSE}
-(mesDonnees <- openxlsx::read.xlsx(xlsxFile = chemin_xlsx, skipEmptyRows=TRUE))
-```
-
-Les données effacées ne seront pas chargées.
-
-* **Sélectionner les lignes et colonnes à importer -** `rows` et `cols`  
-On peut définir les lignes et colonnes qu'on souhaite importer en le précisant, avec un vecteur numéric, avec les paramètres `rows` et `cols`.
-```{r}
-(mesDonnees <- openxlsx::read.xlsx(xlsxFile = chemin_xlsx, rows=c(1,4:6,9), cols=c(1,3:4)))
-```
-
-* **Vérification du respect des normes syntaxiques dans les noms de variable -**  `check.names` et `sep.names`
-
-La fonction `openxlsx::read.xlsx()` propose, via le paramètre `check.names` de modifier les noms de variables pour les adapter aux règles de bonnes pratiques syntaxiques. Dans tous les cas, les espaces dans les noms de variables sont remplacés par des **"."**.
-
-Avec `check.names=FALSE`, *nom-de-variable* resterait inchangé et *nom de variable* deviendrait *nom.de.variable*.  
-En passant `check.names=TRUE`, *nom-de-variable* devient *nom.de.variable*.
-
-Le paramètre `sep.names` permet de préciser par quel caractère remplacer les espaces pour que ça ne soit plus forcément un **"."**.
-Avec `sep.names="|"`, *nom-de-variable* resterait inchangé et *nom de variable* deviendrait *nom|de|variable*. 
-
-* **Importer une zone spécifique du fichier -** `namedRegion`  
-Il est possible de n'importer qu'une partie du fichier selon le nom d’une zone de la *"feuille de calcul"*.
-
-Pour récupérer le nom des différentes parties de notre fichier, on utilise la méthode `openxlsx::getNamedRegions` à qui on passe le chemin du fichier. Ensuite, on passe l'une de ces zones au paramètre `namedRegion`.
-
-Dans le cadre de cet exercice, vous pouvez créer une région (nommer une plage: **test_namedRegion**) avec votre tableur puis l'importer: 
-
-```{r, eval=FALSE}
-(mesDonnees <- openxlsx::read.xlsx(xlsxFile = chemin_xlsx, namedRegion="test_namedRegion"))
-```
-
----
+* **Vérification du respect des normes syntaxiques dans les noms de variable**: les noms de colonnes dans un fichier Excel ne peuvent pas toujours être utilisés directement comme noms de variables dans `R`. Les paramètres `check.names` et `sep.names` permettent de modifier les noms de variables pour les adapter aux règles de bonnes pratiques syntaxiques:
+    - Le paramètre `check.names=TRUE` modifie les noms de variables qui posent problème. Par exemple, 
+`nom-de-variable` dans Excel devient `nom.de.variable` dans `R`. 
+    - Le paramètre `sep.names` permet de définir le caractère par lequel remplacer les espaces.
 
 ### Présentation de la fonction `readxl::read_excel()`
 
