@@ -8,12 +8,12 @@ knitr::opts_chunk$set(echo = TRUE, eval=TRUE, include=TRUE, message=FALSE, warni
 ## Tâches concernées et recommandations
 
 L'utilisateur souhaite importer dans `R` des données issues de tableurs (extension type `xls`, `xlsx` ou `ods`).
-chemin_xlsx
+
 ::: {.recommandation data-latex=""}
 
-- **Il est recommandé d'utiliser la fonction `read_ods` du _package_ `readODS` importer des fichiers `ods`.**
-- **Il est recommandé, notamment pour des raisons de vitesse d'import, d'utiliser la fonction `read_xlsx()` du _package_ `openxlsx` pour importer des fichiers `xlsx`.**
-- **Il est recommandé d'utiliser la fonction `read_excel()` du _package_ `readxl` pour importer des fichiers `xls`.**
+- **Il est recommandé d'utiliser la fonction `read_ods` du _package_ `readODS` pour importer des fichiers `ods`.**
+- **Il est recommandé d'utiliser la fonction `read_xlsx()` du _package_ `openxlsx` pour importer des fichiers `xlsx`.**
+- **Il est recommandé d'utiliser la fonction `read_excel()` du _package_ `readxl` pour importer des fichiers `xls`.** Cette fonction peut également importer des fichiers `xlsx`, mais elle est moins rapide que la fonction `read_xlsx()` du _package_ `openxlsx`.
 
 Il est déconseillé d'utiliser le _package_ `xlsx`.
 :::
@@ -22,7 +22,7 @@ Il est déconseillé d'utiliser le _package_ `xlsx`.
 
 ### Introduction
 
-Le _package_ `readODS` propose deux fonctions d'importation de fichiers `ods`: `read_ods` et `read.ods`. La documentation du _package_ recommande d'utiliser, autant que possible, `read_ods`. L'usage de cette fonction va être illustré à partir d'un jeu de données créé à partir de données présentes sur le site de l'Insee. Pour reproduire les exemples ci-dessous, vous devez:
+Le _package_ `readODS` propose deux fonctions d'importation de fichiers `ods`: `read_ods` et `read.ods`. La documentation du _package_ recommande d'utiliser `read_ods`. L'usage de cette fonction va être illustré à partir d'un jeu de données créé à partir de données présentes sur le site de l'Insee. Pour reproduire les exemples ci-dessous, vous devez:
 
 - télécharger [le jeu de données ici (LIEU DE STOCKAGE A DEFINIR)](inactif) puis le sauvegarder sur votre poste;
 - définir dans `R` le chemin du fichier nommé `chemin_ods`. Voici un exemple:
@@ -34,7 +34,6 @@ Le _package_ `readODS` propose deux fonctions d'importation de fichiers `ods`: `
 # Définir le chemin du fichier
 chemin_ods <- "./import_donnees_tabulees_tests/mes_donnees.ods"
 ```
-
 Il ne faut pas oublier de charger le _package_ avec `library`.
 
 ```{r}
@@ -42,18 +41,18 @@ library(readODS)
 ```
 
 
-### Comment utiliser le _package_ `readODS`
+### Comment utiliser la fonction `read_ods()`
 
 Voici les principaux arguments et options de `read_ods()`:
 
 | Argument            | Valeur par défaut     | Fonction                                                                                   |
 |---------------------|-----------------------|--------------------------------------------------------------------------------------------|
 | `path`              | Aucune                | Le chemin du fichier `ods` à importer                                                        |
-| `sheet`             | 1                     | feuille à lire. Soit le nom de la feuille, soit un numéro de feuille entier.  |
-| `col_names`         | TRUE                  | Indique si la première ligne du fichier contient les noms des variables               |
-| `col_types`         | NULL                  | `NULL` pour laisser `R` deviner à partir de la feuille de calcul ou se reporter à `readr::type_convert` pour spécifier la spécification des cols. | 
-| `na`                | ""                    | Vecteur de caractères des chaînes à utiliser pour les valeurs manquantes. Par défaut, `read_ods` convertit les cellules vides en données manquantes                                                                                         |
-| `skip`              | 0                     | le nombre de lignes du fichier de données à ignorer avant de commencer à lire les données  |
+| `sheet`             | 1                     | Onglet à importer. Soit le nom de l'onglet, soit un numéro de l'onglet  |
+| `col_names`         | TRUE                  | Indique si la première ligne de l'onglet contient les noms des variables               |
+| `col_types`         | NULL                  | `NULL` pour laisser `R` deviner le type des variables à partir de l'onglet ou se reporter à `readr::type_convert` pour spécifier le type des variables | 
+| `na`                | ""                    | Vecteur donnant les chaîne de caractères interprétées comme des valeurs manquantes. Par défaut, `read_ods` convertit les cellules vides en données manquantes |
+| `skip`              | 0                     | le nombre de lignes du fichier de données à ignorer avant de commencer à importer les données  |
 | `range`             |  NULL                 | sélection d'un rectangle à l'aide d'une plage de cellules de type Excel, comme `range = "D12:F15"`. |
 
 ### Quelques exemples
@@ -114,7 +113,7 @@ chemin_xlsx <- "./import_donnees_tabulees_tests/mes_donnees.xlsx"
 
 ### Importer un fichier `xlsx` ou `xls` avec l'interface graphique de RStudio
 
-Rstudio propose une interface graphique très commode pour lire des fichiers `xls` et `xlsx` (mais aussi des tables `Sas` ou des fichiers `csv`, mais pas les `ods`). Le grand intérêt de cette interface est qu'elle fournit le code utilisé pour importer les données. Vous pouvez donc le copier dans vos scripts pour le réutiliser, et ainsi vous familiariser avec les fonctions d'importation. 
+Rstudio propose une interface graphique très commode pour lire des fichiers `xls` et `xlsx` (mais aussi des tables `SAS` ou des fichiers `csv`, mais pas les `ods`). Le grand intérêt de cette interface est qu'elle fournit le code utilisé pour importer les données. Vous pouvez donc le copier dans vos scripts pour le réutiliser, et ainsi vous familiariser avec les fonctions d'importation. 
 
 On accède à cette interface avec: `File > Import Dataset > From Excel...`.  Les différents menus permettent notamment de sélectionner l'onglet et la zone à importer et de nommer la table d'affectation.
 
