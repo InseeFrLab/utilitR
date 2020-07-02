@@ -1,6 +1,7 @@
 # see the original Dockerfile at https://github.com/rocker-org/rocker-versioned2/blob/master/dockerfiles/Dockerfile_binder_4.0.0
 FROM registry.gitlab.com/linogaliana/documentationr:master
 
+ENV PYTHON_VENV_PATH=/usr/share/jupyter/kernels
 RUN /rocker_scripts/install_python.sh
 RUN /rocker_scripts/install_binder.sh
 
