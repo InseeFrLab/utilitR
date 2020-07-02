@@ -1,8 +1,8 @@
 # see the original Dockerfile at https://github.com/rocker-org/rocker-versioned2/blob/master/dockerfiles/Dockerfile_binder_4.0.0
 FROM registry.gitlab.com/linogaliana/documentationr:master
 
-ENV PYTHON_VENV_PATH=/usr
 RUN /rocker_scripts/install_python.sh
+ENV PYTHON_VENV_PATH=/usr
 RUN /rocker_scripts/install_binder.sh
 
 ENV NB_USER=${NB_USER:-rstudio}
