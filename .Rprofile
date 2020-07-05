@@ -57,3 +57,6 @@ add_space <- function(){
   )
   
 }
+
+# needed for bookdown 0.20
+options(bookdown.render.file_scope = FALSE)
