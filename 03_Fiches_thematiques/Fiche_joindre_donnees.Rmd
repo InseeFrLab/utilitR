@@ -1,0 +1,379 @@
+# Joindre des tables de données
+
+## Tâches concernées et recommandations
+
+Vous souhaitez apparier deux tables de données selon une ou plusieurs variables de jointure.
+
+::: {.recommandation data-latex=""}
+* Pour des tables de données de taille petite et moyenne (inférieure à 1 Go ou moins d'un million d'observations), il est recommandé d'utiliser le _package_ `dplyr` ou `R base`. Le _package_ `dplyr` est présenté en détail dans la fiche [Manipuler des données avec le `tidyverse`];
+* Pour des tables de données de grande taille (plus de 1 Go ou plus d'un million d'observations), il est recommandé d'utiliser le _package_ `data.table` qui fait l'objet d'une autre fiche. Ce _package_ est présenté en détail dans la fiche [Manipuler des données avec `data.table`].
+* Il est vivement recommandé de lire la section [Quelques bonnes pratiques sur les jointures] avant de réaliser des jointures.
+:::
+
+## Les différents types de jointure
+
+**Une jointure consiste à associer les observations de deux tables à l'aide d'un identifiant présent dans les deux tables**, qui prend généralement la forme d'une ou plusieurs variables de jointure. Il existe plusieurs types de jointure. Les principales sont:
+
++ _jointure interne_ (*inner join*): la plus courante. Il s'agit de retourner les observations lorsque l'identifiant est présent **dans les deux tables**.
++ _jointure à gauche_ (*left join*): renvoie toutes les observations de la table de gauche, même si l'identifiant n'est pas présent dans la table de droite.
++ _jointure à droite_ (*right join*): l'inverse de la jointure à gauche ; toutes les observations de la table de droite.
++ _jointure externe_ (*full join*): retourne l'ensemble des observations des deux tables, même lorsque l'identifiant ne se retrouve que dans l'une des tables.
++ _anti-jointures_: retourne les observations de la table de gauche seulement si l'identifiant n'est pas trouvé dans la table de droite (renvoyer les observations dont l'identifiant n'existe pas dans l'autre table).
+
+Le graphique ci-dessous illustre les différentes méthodes de jointures:
+
+![Illustration graphique des différents types de jointures](./pics/jointures/dplyr_join.png)
+
+::: {.remarque data-latex=""}
+Pour vous aider à comprendre le principe des jointures, voici une rapide description des opérations que `R` réalise quand on fait une jointure interne entre deux tables:
+
+* `R` isole la première observation de la table de gauche et en extrait l'identifiant (la (ou les) variable(s) de jointures);
+* il compare cet identifiant avec l'identifiant de chacune des observations de la table de droite:
+    * soit l'identifiant est identique, auquel cas il rajoute dans la table de sortie une nouvelle observation avec les valeurs de l'observation extraite de la table de gauche et celle de l'observation extraite de la table de droite;
+    * soit l'identifiant est différent, auquel cas il passe à la suivante de la table de droite.
+* `R` passe ensuite à la deuxième observation de la table de gauche, et ainsi de suite.
+  
+Il est très important de comprendre qu'une ligne présente dans une des deux tables peut ainsi se retrouver dans la table finale en plusieurs exemplaires, ou pas du tout.
+
+Dans le cas d'une jointure à gauche (left_join), le fonctionnement est le même. La différence est que, pour chaque ligne de la table de gauche, si après avoir balayé toutes les lignes de la table de droite aucune correspondance n'a été trouvée, `R` ajoute quand même la ligne de gauche dans la table de sortie et met les colonnes correspondant à la table de droite à valeur manquante. On ne peut donc avoir moins de lignes en sortie que dans la table de gauche, par contre on peut en avoir plus si on a des doublons d'identifiant.
+
+Le cas d'une jointure à droite est tout à fait symétrique, et on déduit facilement le cas d'une jointure complète (full_join).
+
+:::
+
+## Réaliser une jointure avec `R`
+
+Cette section présente les principales fonctions permettant de réaliser des jointures selon trois approches de manipulation de données: `R base`, `dplyr` et `data.table`. Les deux dernières approches font l'objet de présentations détaillées dans les fiches [Manipuler des données avec le `tidyverse`] et [Manipuler des données avec `data.table`].
+
+
+::: {.conseil data-latex=""}
+Il est possible de réaliser les jointures avec chacune des trois approches présentées ici. Il est néanmoins conseillé d'être cohérent avec les outils de manipulation de données que vous utilisez. Si vous manipulez vos données avec `data.table`, il sera préférable d'utiliser la fonction `merge` de ce _package_ qui est optimisée pour les objets `data.table`. Si vous manipulez vos données avec le `tidyverse`, il est recommandé d'utiliser les fonctions du *package* `dplyr`.
+:::
+
+Les fonctions de jointure vont être illustrées avec la table des communes du code officiel géographique 2019 et les données du répertoire Filosofi 2016 agrégées par commune. Ces tables sont disponibles dans le _package_ `doremifasol`. Pour alléger les sorties, on conserve uniquement l'identifiant de commune, le revenu médian 2016 `MED16` et le taux de pauvreté `TP6016` dans la première table, et l'identifiant de commune `com`, le type de commune `typecom`, le nom officiel de la commune `ncc` et son département `dep` dans la seconde table.
+
+```{r import_donnees}
+library(doremifasol)
+filosofi_com_2016 <- filosofi_com_2016[, c("CODGEO", "MED16", "TP6016")]
+cog_com_2019 <- cog_com_2019[, c("com", "typecom", "libelle", "dep")]
+```
+
+```{r setup, echo = FALSE}
+# Régler le nombre de lignes à imprimer
+options(tibble.print_min = 6)
+options(tibble.print_max = 6)
+options(dplyr.print_min  = 6)
+options(dplyr.print_max  = 6)
+```
+
+Voici un aperçu des données:
+
+```{r apercu1}
+head(filosofi_com_2016)
+```
+
+```{r apercu2}
+head(cog_com_2019)
+```
+
+::: {.remarque data-latex=""}
+Contrairement à d'autres logiciels statistiques, **il n'est pas nécessaire ni même utile de trier les tables avant de les joindre avec `R`**. Le faire n'apporte pas de gain de performance (une exception à cette règle est évoquée dans la fiche [Manipuler des données avec `data.table`]). Il n'est pas non plus nécessaire que les variables de jointure portent les mêmes noms dans les deux tables.
+:::
+
+### Jointure avec `R base`
+
+La fonction pour effectuer des jointures en `base R` est la fonction `merge` (fusionner). Elle prend les arguments suivants:
+
+- le nom des deux `data.frame` à joindre;
+- les variables de jointure, défini par les arguments `by.x` et `by.y` ou par l'argument `by`;
+- le type de jointure défini par les arguments `all`, `all.x` et `all.y`.
+
+Voici quelques remarques sur l'usage de `merge`:
+
+- Lorsque les variables de jointure portent exactement le même nom dans les deux tables, on les définit par l'argument `by`. Sinon, il faut préciser `by.x = nom_var_joint_table_gauche` et `by.y = nom_var_joint_table_droite`;
+- Par défaut, `merge` réalise une jointure interne. On peut obtenir d'autres types de jointure avec les arguments `all`, `all.x` et `all.y`. Voici un aide mémoire:
+
+    | Type de jointure                      | Argument de la fonction `merge`  |
+    |---------------------------------------|----------------------------------|
+    | Jointure à gauche (*left outer join*) | `all.x = TRUE`                   |
+    | Jointure à droite (*right outer join*)| `all.y = TRUE`                   |
+    | Jointure externe  (*full outer join*) | `all = TRUE`                     |
+- Si deux variables portent le même nom dans les deux tables, alors dans la table jointe le nom de ces variables sera complété par un suffixe `.x` et `.y` pour pouvoir les différencier. Il est possible de modifier ces suffixes avec l'option `suffixes`.
+- Il y a d'autres options plus avancées que vous pouvez consulter avec `?merge`.
+
+Voici un exemple dans lequel on utilise `merge` pour réaliser une jointure à gauche entre la table des données Filosofi et la table des communes du COG.
+
+```{r merge_base}
+table_jointe <- base::merge(filosofi_com_2016,
+                            cog_com_2019,
+                            by.x = "CODGEO",
+                            by.y = "com",
+                            all.x = TRUE)
+head(table_jointe)
+```
+
+### Jointure avec `dplyr`
+
+**Avec `dplyr`, les jointures se réalisent grâce aux fonctions `left_join`, `right_join`, `inner_join`, `full_join` et `anti_join`.** Ces fonctions prennent les arguments suivants:
+
+- le nom des deux `data.frame` à joindre;
+- les variables de jointure, défini par l'argument `by`. Lorsque la variable de jointure ne porte pas le même nom dans les deux tables, on utilise le paramètre `by = c("var_x" = "var_y")`. S'il y a plusieurs variables de jointures, on écrit `by = c("var_x1" = "var_y1", "var_x2" = "var_y2")`.
+
+Il est préférable d'utiliser ces fonctions sur des objets `tibble` plutôt que `data.frame`. On va donc convertir les deux tables avant de présenter un exemple:
+
+```{r, message = FALSE, warning = FALSE}
+library(dplyr)
+filosofi_com_2016_tbl <- as_tibble(filosofi_com_2016)
+cog_com_2019_tbl <- as_tibble(cog_com_2019)
+```
+
+Voici un exemple dans lequel on utilise la fonction `left_join` pour réaliser une jointure à gauche entre la table des données Filosofi et la table des communes du COG.
+
+```{r left_join_dplyr}
+table_jointe_tbl <- filosofi_com_2016_tbl %>% 
+                        left_join(y = cog_com_2019_tbl, 
+                                  by = c("CODGEO" = "com"))
+head(table_jointe_tbl)
+```
+
+La syntaxe pour réaliser les autres types de jointure est très similaire:
+
+| Type de jointure  | Syntaxe `dplyr`                                                                        |
+|-------------------|----------------------------------------------------------------------------------------|
+| Jointure à gauche | `left_join(x = filosofi_com_2016_tbl, y = cog_com_2019_tbl, by = c("CODGEO" = "com"))` |
+| Jointure à droite | `right_join(x = filosofi_com_2016_tbl, y = cog_com_2019_tbl, by = c("CODGEO" = "com"))`|
+| Jointure externe  | `full_join(x = filosofi_com_2016_tbl, y = cog_com_2019_tbl, by = c("CODGEO" = "com"))` |
+| Anti-jointure     | `anti_join(x = filosofi_com_2016_tbl, y = cog_com_2019_tbl, by = c("CODGEO" = "com"))` |
+
+### Jointure avec `data.table`
+
+**Il existe deux façons de réaliser des jointures avec `data.table`**:
+
++ **la fonction `merge` de `data.table`**, dont le fonctionnement est identique à celui de la fonction `merge` de `R base`; de façon générale, c'est cette approche qu'il faut privilégier pour faire des jointures avec `data.table`;
++ **l'opérateur crochet `[]`**. Cette approche convient pour des utilisations avancées, lorsque l'approche `merge` ne peut pas être utilisée.
+
+Il est préférable d'utiliser ces fonctions sur des objets `data.table` plutôt que `data.frame`. On va donc convertir les deux tables avant de présenter des exemples.
+
+```{r, message = FALSE}
+library(data.table)
+filosofi_com_2016_dt <- as.data.table(filosofi_com_2016)
+cog_com_2019_dt <- as.data.table(cog_com_2019)
+```
+
+::: {.conseil data-latex=""}
+L'un des intérêts d'utiliser le *package* `data.table` est qu'il est très efficace pour effectuer des jointures car il est possible d'indexer les tables. L'indexation permet à `R` de retrouver rapidement les lignes qui correspondent à une valeur de la clé de jointure, accélérant les combinaisons de données.
+
+Il et possible de définir une (ou plusieurs) clé(s) grâce à la commande `setkeyv`. Pour plus de détails, se reporter à la fiche [Manipuler des données avec `data.table`].
+:::
+
+#### Joindre des objets `data.table` avec `merge`
+
+**La fonction `merge` de `data.table` a un fonctionnement identique à celui de la fonction `merge` de `R base`, mais elle est plus rapide lorsqu'on l'utilise pour joindre des objets `data.table`** plutôt que des objets `data.frame`. Elle prend les arguments suivants:
+
+- le nom des deux `data.frame` à joindre;
+- les variables de jointure, défini par les arguments `by.x` et `by.y` ou par l'argument `by`;
+- le type de jointure défini par les arguments `all`, `all.x` et `all.y`.
+
+Voici un exemple dans lequel on utilise la fonction `merge` de `data.table` pour réaliser une jointure à gauche entre la table des données Filosofi et la table des communes du COG.
+
+```{r merge_datatable}
+table_jointe_dt <- 
+  merge(x = filosofi_com_2016_dt,
+        y = cog_com_2019_dt,
+        by.x = "CODGEO",
+        by.y = "com",
+        all.x = TRUE)
+head(table_jointe_dt)
+```
+
+Comme pour les jointures avec `base R`, la syntaxe pour réaliser les autres types de jointure est très similaire, il suffit de modifier l'option `all`, `all.x` ou `all.y`. Voici un aide mémoire:
+
+| Type de jointure                      | Argument de la fonction `merge`  |
+|---------------------------------------|----------------------------------|
+| Jointure à gauche (*left outer join*) | `all.x = TRUE`                   |
+| Jointure à droite (*right outer join*)| `all.y = TRUE`                   |
+| Jointure externe  (*full outer join*) | `all = TRUE`                     |
+
+Il est difficile de réaliser une anti-jointure avec la commande `merge`. Pour cela, la syntaxe ci-dessous, fondée sur les crochets, s'avère nécessaire. 
+
+#### _Inner join_ avec la syntaxe `[]`
+
+::: {.conseil data-latex=""}
+**Si vous utilisez `data.table`, il est préférable de joindre des tables avec `merge`** car cette approche permet d'écrire des codes lisibles et couvre la majorité des besoins. La syntaxe utilisant les crochets `[]` peut être utilisée dans les cas (peu fréquents) où l'utilisation de `merge` s'avère complexe, par exemple dans le cas de l'anti-jointure. Avant de lire ce paragraphe, il est recommandé de vous familiariser avec l'opérateur `[]` dans `data.table`. Pour cela, vous pouvez vous reporter à la fiche [Manipuler des données avec `data.table`].
+:::
+
+
+Une manière équivalente mais moins lisible que `merge` pour effectuer des appariements consiste à utiliser la syntaxe `x[y, on = c(xvar1 = yvar1, ...)]`. On peut voir `x[y, on = c(xvar1 = yvar1)]` comme une manière concise d'écrire `x[x$var1 %in% y$yvar1, ]` en `R` base. Les personnes habituées à la syntaxe SQL retrouveront une similarité avec la requête suivante:
+
+```sql
+SELECT *
+FROM x
+INNER JOIN y ON x.var1 = y.var1
+```
+
+Par exemple, pour faire une jointure interne, on pourrait écrire `merge(x = filosofi_com_2016_dt, y = cog_com_2019_dt, by.x = "CODGEO", by.y = "com", all = FALSE)`. Avec la syntaxe alternative, on peut écrire:
+
+```{r, eval=TRUE}
+filosofi_com_2016_dt[cog_com_2019_dt, on = c("CODGEO" = "com"), nomatch=NULL]
+```
+
+L'argument `nomatch` sert à définir le comportement pour les valeurs des observations de la table de gauche (`filosofi_com_2016_dt`) n'ayant pas de clé correspondante dans la table de droite (`cog_com_2019_dt`). La valeur par défaut est `NA`, qui signifie que les valeurs de gauche sans correspondance auront des valeurs `NA`. Avec `nomatch=NULL` (ou `nomatch=0`), on retire les observations de `x` sans correspondance dans `y`: on effectue ainsi une jointure interne. 
+
+Pour effectuer une anti-jointure, il faut sélectionner les clés de `x` qui n'ont pas de contrepartie dans `y` ce qui s'écrit de manière générale `x[!y]`. Dans notre exemple, cela donne:
+
+```{r, eval=TRUE}
+filosofi_com_2016_dt[!cog_com_2019_dt, on = c("CODGEO" = "com")]
+```
+
+
+Le tableau précédent peut être enrichi:
+
+
+| Type de jointure                      | Argument(s) de la fonction `merge`  | Approche alternative  |
+|---------------------------------------|----------------------------------|-----------------------|
+| Jointure interne (*inner join*)       | `all = FALSE` (défaut)           | `X[Y, nomatch=0]`     |
+| Jointure à gauche (*left outer join*) | `all.x = TRUE`                   | `Y[X]`                |
+| Jointure à droite (*right outer join*)| `all.y = TRUE`                   | `X[Y]`                |
+| Jointure externe  (*full outer join*) | `all = TRUE`                     |   -                   |
+| Anti-jointure (*anti join*)           | `all = TRUE, subset = NA`        | `X[!Y]`               |
+
+## Quelques bonnes pratiques sur les jointures
+
+```{r minisetup, echo = FALSE}
+options(max.print = 25)
+```
+
+De manière générale, **il est important de bien préparer une jointure**. Voici une liste non exhaustive de bonnes pratiques qui peuvent permettre d'éviter des erreurs. Ces bonnes pratiques seront illustrées par la jointure entre la table communale du répertoire Filosofi 2016 et la table des communes du code officiel géographique 2019. Cette jointure présente des problèmes dus au fait que le référentiel communal a évolué entre les deux dates.
+
+### Avant la jointure
+
+Avant de procéder à une jointure, il est essentiel de **vérifier la qualité des identifiants dans les deux tables** que l'on veut joindre.
+
+- **Règle n°1: vérifier la présence de valeurs manquantes dans les variables de jointure**.
+
+  Une première approche consiste à rechercher les valeurs manquantes (`NA`) dans les variables de jointures. Le code suivant permet de calculer le nombre d'observations pour lesquelles l'identifiant est manquant:
+
+  ```{r, eval=TRUE}
+  sum(is.na(filosofi_com_2016$CODGEO))
+  sum(is.na(cog_com_2019$com))
+  ```
+  
+  On voit ici que les variables de jointure ne contiennent aucun `NA` dans les deux tables. Toutefois, les valeurs manquantes peuvent prendre des formes plus complexes que `NA`: `0`, `.`, `999`... c'est pourquoi il est important de procéder à une inspection visuelle des variables de jointures. Pour ce faire, vous pouvez utilisez la fonction `unique()`, qui permet d'afficher la liste des valeurs qui apparaissent dans une variable.
+
+  ```{r, eval=TRUE}
+  unique(filosofi_com_2016$CODGEO)
+  ```
+
+- **Règle n°2: vérifier la présence de doublons dans les variables de jointure**.
+
+  Si les variables de jointures contiennent un grand nombre de fois les mêmes valeurs, la jointure peut devenir très gourmande en ressources, voire irréalisable. Il est donc indispensable de repérer les doublons, et de les traiter si nécessaire. Les deux codes suivants calculent le nombre d'observations dans la table pour chaque valeur des variables de jointure, et affichent les premières lignes par nombre d'observations décroissant. Si la variable `nb_obs` est supérieure ou égale à 2, alors il y a des doublons. Le premier code est adapté si vous utilisez `tidyverse` pour manipuler des données, le second si vous utilisez `data.table`.
+
+  ```{r, eval=TRUE}
+  # Approche dplyr/tidyverse
+  doublons <- filosofi_com_2016_tbl %>% 
+                group_by(CODGEO) %>% 
+                summarise(nb_obs = n()) %>% 
+                filter(nb_obs > 1) %>% 
+                arrange(-nb_obs)
+  doublons
+  ```
+
+  ```{r, eval=FALSE}
+  # Approche data.table
+  doublons <- filosofi_com_2016[, .(nb_obs = .N), by = COGDEO
+                              ][nb_obs > 1][order(-nb_obs)]
+  doublons
+  ```
+
+  On voit ici qu'il n'y a aucun doublon sur les identifiants dans la table issue du répertoire Filosofi. En revanche, on constate qu'il y a un grand grand nombre de doublons sur les identifiants dans la table du code officiel géographique. Cette présence de doublons rend nécessaire une analyse de cette table avant de réaliser la jointure. 
+  
+  ```{r, eval=TRUE}
+  # Approche dplyr/tidyverse
+  doublons <- cog_com_2019_tbl %>% 
+                group_by(com) %>% 
+                summarise(nb_obs = n()) %>% 
+                filter(nb_obs > 1) %>% 
+                arrange(-nb_obs)
+  doublons
+  ```
+  
+::: {.conseil data-latex=""}
+Le fait que les variables de jointure contiennent des valeurs manquantes ou des doublons n'est pas nécessairement un problème. C'est à vous de déterminer si cela pose un problème. Voici deux questions que vous pouvez vous poser pour analyser la situation:
+
+- La (ou les) variable(s) de jointure doi(ven)t-elle(s) impérativement être renseignée(s) pour chaque observation? Si oui, il ne doit pas y avoir de valeurs manquantes.
+- La (ou les) variable(s) de jointure doivent-elles identifier de façon unique chaque observation? Si oui, il ne doit pas y avoir de doublons.
+:::
+
++ **Règle n°3: vérifier la compatibilité des variables de jointures**. 
+  
+  Il faut vérifier deux choses:
+  
+  - **Une jointure ne peut être réalisée avec `R` que si les variables de jointures sont de même type.** Il faut donc vérifier que c'est le cas. Les types de variables les plus fréquemment utilisées pour des jointures avec `R` sont `integer` (nombre entier), `character` (chaîne de caractères) et `factor` (catégorie). Vous pouvez utiliser la fonction `class` pour connaître le type d'une variable. Dans l'exemple suivant, on voit que les deux variables de jointures sont de type `character`.
+  
+  ```{r, eval=TRUE}
+  # Type de la variable de jointure dans la table Filosofi
+  class(filosofi_com_2016$CODGEO)
+  # Type de la variable de jointure dans le COG 2019
+  class(cog_com_2019$com)
+  ```
+  Si les variables sont de type différent, alors il faut convertir les variables de jointures dans l'une des tables. Pour ce faire, vous pouvez utiliser les fonctions `as.integer`, `as.character` et `as.factor`. Si vous convertissez une variable de jointure, il faut refaire les vérifications sur la présence de valeurs manquantes et de doublons.
+  
+  - **Une jointure ne peut être réalisée que si les valeurs des variables de jointure de la table de gauche figurent (au moins pour certaines d'entre elles) parmi les valeurs des variables de jointure de la table de droite.** Il faut donc le vérifier. Voici deux exemples de code qui peuvent vous aider. 
+  
+  Le premier code affiche le nombre d'identifiants distincts dans chaque table, et le nombre d'identifiants communs aux deux tables. On voit que tous les identifiants de la table issue de Filosofi figurent dans le COG 2019, mais que l'inverse n'est pas vrai.
+
+  ```{r, eval=TRUE}
+  # Nombre d'identifiants distincts dans la table Filosofi
+  length(unique(filosofi_com_2016$CODGEO))
+  # Nombre d'identifiants distincts dans le COG 2019
+  length(unique(cog_com_2019$com))
+  # Nombre d'identifiants communs
+  sum(unique(filosofi_com_2016$CODGEO) %in% unique(cog_com_2019$com))
+  ```
+  
+  Le second code donne la liste des identifiants de la table du COG 2019 qui ne figurent pas parmi les identifiants de la table issue de Filosofi.
+  
+  ```{r, eval=TRUE}
+  unique(cog_com_2019$com)[!(unique(cog_com_2019$com) %in% unique(filosofi_com_2016$CODGEO))]
+  ```
+
+### Après la jointure
+
+Après une jointure, il est essentiel de **vérifier que la jointure a bien produit le résultat attendu**.
+
+- **Règle n°4: vérifier que le nombre d'observations de la table de sortie est cohérent.** 
+
+  Par exemple, dans le cas d'une jointure à gauche (_left join_) et si les variables de la table de droite ne présentent aucun doublon, alors la table de sortie doit avoir le même nombre d'observations que la table de gauche. Dans l'exemple qui suit, on voit que la table issue de la jointure comprend 35609 observations, tandis que la table communale de Filosofi n'en comprenait que 34932. La jointure présente donc un problème (due aux doublons dans la table du COG 2019).
+
+
+  ```{r}
+  dim(filosofi_com_2016_tbl)
+  table_jointe_tbl <- left_join(x = filosofi_com_2016_tbl, 
+                                y = cog_com_2019_tbl, 
+                                by = c("CODGEO" = "com"))
+  dim(table_jointe_tbl)
+  ```
+
+- **Règle n°5: vérifier la présence éventuelle de valeurs manquantes (`NA`) dans les variables d'intérêt.** 
+
+  Vous pouvez par exemple utiliser la fonction `is.na()` qui permet de repérer les observations manquantes dans les variables provenant de la table de droite. S'il y a des valeurs manquantes, cela peut indiquer que cette variable contient des valeurs manquantes dans la table de droite, ou que certaines observations de la table de gauche n'ont pas de correspondances dans la table de droite. Dans l'exemple qui suit, on voit que le département est manquant pour plusieurs centaines d'observations de la table jointe.
+
+  ```{r, eval=TRUE}
+  table_jointe_tbl %>% filter(is.na(dep))
+  ```
+
+::: {.conseil data-latex=""}
+Si vous faites des jointures avec `dplyr`, vous pouvez utiliser le _package_ [`tidylog`](https://github.com/elbersb/tidylog) pour obtenir des informations détaillées sur les jointures réalisées. Cela aide dans la mise en œuvre des bonnes pratiques présentées plus haut. Il faut toutefois être prudent avec ce _package_ si les tables sont volumineuses (plus d'un million d'observations). En effet, ce _package_ réalise de manière sous-jacente plusieurs opérations de jointures, ce qui risque de saturer la mémoire de `R`.
+:::
+
+
+## Pour en savoir plus {#RessourcesJointures}
+
+* Fiche [Manipuler des données avec le `tidyverse`];
+* Fiche [Manipuler des données avec `data.table`];
+* un [tutoriel sur les jointures en SQL](https://sql.sh/cours/jointures) (entièrement en français);
+* un [tutoriel de Lise Vaudor sur les jointures en `dplyr`](http://perso.ens-lyon.fr/lise.vaudor/combinaisons-et-jointures-de-tables-avec-dplyr);
+* la [section consacrée à `dplyr` de la formation de Julien Barnier](https://juba.github.io/tidyverse/10-dplyr.html);
+* les [formations du MTES](https://mtes-mct.github.io/parcours-r/);
+* ce [tutoriel sur les jointures avec data.table](https://rstudio-pubs-static.s3.amazonaws.com/52230_5ae0d25125b544caab32f75f0360e775.html).
+* la [vignette du _package_ `tidylog`](https://cran.r-project.org/web/packages/tidylog/readme/README.html)

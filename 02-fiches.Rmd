@@ -1,0 +1,146 @@
+# Fiches de documentation
+
+## Importer des fichiers plats (CSV, TSV, TXT)
+
+### Tâches concernées / cas d'usage
+
+L'utilisateur souhaite importer dans R des données stockées dans un format plat (.txt, .csv, .tsv).
+
+### Recommandations
+
+* petites données: readr
+* grosses données: data.table
+
+* packages non recommandés: voir la note de Christian, et dire que read.csv n'est pas performant (ni read.delim).
+
+### Quelques détails sur les packages recommandés
+
+#### read_csv et ses cousins
+
+options:
+
+* encoding;
+* sélection de variables;
+* type des variables?
+
+#### `fread()`
+
+* encoding;
+* choix du séparateur;
+* sélection de variables;
+* type des variables;
+* barre de progrès.
+
+
+```r
+library(data.table)
+df <- fread()
+```
+
+
+### Bonnes pratiques
+
+* Ne pas importer trop de colonnes.
+
+### Pour aller plus loin
+
+#### Quelques conseils
+
+Choisir le package en fonction du format de sortie (vibble versus dt)
+
+
+
+#### Ressources
+
+* doc de fread
+* doc de data.table
+* éventuel fiche sur les types de données en R.
+
+
+
+
+
+
+## Importer des données depuis SAS vers `R`
+
+### Tâches concernées / cas d'usage
+
+L'utilisateur souhaite importer dans R des données stockées sous format SAS.
+
+### Recommandations
+
+* **Pour des données de taille petite ou moyenne (moins de 1 Go environ), l'usage du package `haven` est recommandé**.
+* **Pour des fichiers de taille importante (plus de 1 Go environ),** il est  recommandé de procéder en deux temps:
+    * Exporter les données SAS en format CSV;
+    * Importer en R les données CSV.
+
+
+
+**Les packages suivants ne sont pas recommandés pour importer des données SAS : `sas7dbat`, `foreign`, `Hmisc`, `SASxport`**.
+
+### Quelques détails sur les packages recommandés
+
+#### Comment utiliser `haven`?
+La fonction du package `haven` à utiliser se nomme `read_sas()`
+```r=
+library(haven)
+
+## chargement d'une table RP depuis le lecteur GEN - environ 20"
+dfRP <- read_sas("W:/A1090/GEN_A1090990_DINDISAS/RPADUDIF.sas7bdat")
+```
+
+Options de `read_sas()`
+
+* Sélectionner les colonnes parmi celles présentes dans la base SAS
+```r=
+dfRP <- read_sas("W:/A1090/GEN_A1090990_DINDISAS/RPADUDIF.sas7bdat", cols_only = c("NUMERO", "ANAIX", "DPNAIX"))
+```
+
+* Obtenir la liste des labels de colonne de la table importée avec `haven`
+```r=
+library(sjlabelled)
+get_label(dfRP)
+```
+
+* encoding - Cet argument est à renseigner uniquement si l'importation des caractères accentués se passe mal. La valeur à indiquer dépend de la source.
+```r=
+dfRP <- read_sas("W:/A1090/GEN_A1090990_DINDISAS/RPADUDIF.sas7bdat", encoding = "UTF-8")
+```
+
+#### Comment procéder en deux temps?
+
+Export depuis SAS: exemple de code
+```sass=
+options mprint mlogic notes;
+
+libname donnees "W:/A1090/GEN_A1090990_DINDISAS/"; 
+
+PROC EXPORT DATA= donnees.RPADUDIF
+            OUTFILE= "U:/RP.csv" 
+            DBMS=CSV REPLACE;
+     PUTNAMES=YES;
+RUN;
+```
+
+Renvoyer à la fiche import de fichiers plats.
+
+
+### Pour aller plus loin
+
+#### Quelques conseils
+
+* N'importer que les colonnes nécessaires.
+* Les tables SAS compressées en BINARY ne sont pas prises en charge par le package `haven`. Il faut donc procéder en deux étapes (export en CSV puis import dans R)
+
+![](https://minio.stable.innovation.insee.eu/hackmd-uploads/uploads/upload_d8c9c189eb1a11c5527374cb7b771ab0.png)
+
+
+### Références
+
+* doc de haven
+```r=
+library(haven)
+help(read_sas)
+```
+
+* fiche import de fichiers plats
