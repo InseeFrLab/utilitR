@@ -2,6 +2,8 @@
 FROM registry.gitlab.com/linogaliana/documentationr:master
 
 RUN /rocker_scripts/install_python.sh
+
+ENV PYTHON_VENV_PATH=/usr
 RUN /rocker_scripts/install_binder.sh
 
 ENV NB_USER=${NB_USER:-rstudio}
