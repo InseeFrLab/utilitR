@@ -11,9 +11,8 @@ colorize <- function(x, color) {
 }
 
 
-import::from("magrittr","%>%")
 knitr::opts_chunk$set(out.width='75%', fig.align='center') 
-
+options(bookdown.render.file_scope = FALSE)
 
 print_html_only <- function(x){
   if (knitr::is_html_output()) return(x)
@@ -48,6 +47,25 @@ screen_files <- function(){
   return(masterfile)  
 }
 
+get_hash <- function(){
+  
+  list_files <- screen_files()
+  
+  system2 <- function(...) {
+    stopifnot(!any(names(list(...)) %in% "intern"))
+    result <- base::system(..., intern = TRUE)
+    print(result)
+  }
+  
+  return(
+    sapply(
+      list_files, function(k)
+        system2(paste0("git log -n 1 --pretty=format:%h ","./", k))
+    )
+  )
+  
+}
+
 add_space <- function(){
   
   files <- screen_files()
@@ -60,3 +78,7 @@ add_space <- function(){
 
 # needed for bookdown 0.20
 options(bookdown.render.file_scope = FALSE)
+
+
+
+import::from("magrittr","%>%")
