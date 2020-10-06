@@ -10,8 +10,7 @@ Code source pour le projet `UtilitR`, documentation collaborative `R`
 à l'usage des agents de l'Insee. Elle a vocation à être validée annuellement 
 afin de produire un guide des bonnes pratiques et des fiches techniques.
 
-Elle prend la forme d'un livre qui est pour l'instant déployé à l'adresse 
-[suivante](https://linogaliana.gitlab.io/documentationR/index.html). 
+Elle prend la forme d'un livre qui est déployé à l'adresse <http://www.book.utilitr.org/>. 
 
 Il est également possible de télécharger le fichier au format `pdf` 
 ou les  fichiers `html` pour les consulter hors-connexion en cliquant
