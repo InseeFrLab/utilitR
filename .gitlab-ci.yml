@@ -47,6 +47,18 @@ pages:
   only:
     - master
 
+pagedown:
+  stage: build
+  image: $BUILD_IMAGE
+  before_script:
+    - docker build --build-arg BASE_IMAGE=$BUILD_IMAGE -f docker/Dockerfile_pagedown -t pagedownenv:build build-env .
+  script:
+    - docker run --rm --entrypoint check.r publinsee:build
+    - docker run --rm -v $(pwd)/public:/home/rstudio/public --entrypoint coverage.r publinsee:build
+  artifacts:
+    paths:
+      - _public
+    expire_in: 1 week
 
 netlify-master:
   stage: deploy
