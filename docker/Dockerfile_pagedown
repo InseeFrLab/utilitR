@@ -27,11 +27,6 @@ RUN apt-get update \
 COPY . /var/local/R/devpkg
 
 COPY docker/check.r docker/coverage.r /usr/local/bin/
-RUN chmod +x /usr/local/bin/check.r \
-    && chmod +x /usr/local/bin/coverage.r
-
 RUN Rscript -e "remotes::install_deps('/var/local/R/devpkg', dependencies = TRUE)"
 
-RUN Rscript -e "devtools::install('/var/local/R/devpkg')" \
-    && rm -rf /var/local/R \
-    && rm /usr/local/bin/check.r /usr/local/bin/coverage.r
+RUN Rscript -e "devtools::install('/var/local/R/devpkg')"
