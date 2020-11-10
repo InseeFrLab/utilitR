@@ -22,16 +22,49 @@ Une *Application Programming Interface* (ou **API**) est une interface applicati
 
 Ce terme peut faire peur, mais il s'agit en fait simplement d'une façon de restituer des données. Plutôt que d'attaquer directement des bases de données, qui sont volumineuses et complexes, des outils ont été développés pour faire le travail intermédiaire et restituer la données sous forme de service.
 
-À l'Insee comme ailleurs, la connexion inter bases de données pour les nouveaux projets tend à se réaliser via des API, afin de limiter le nombre de personne ayant accès aux bases, mais aussi pour faciliter les accès avec des services sur-mesures pour les utilisateurs.
+À l'Insee comme ailleurs, la connexion inter bases de données pour les nouveaux projets tend à se réaliser via des API, afin de limiter le nombre de personnes ayant accès aux bases, mais aussi pour faciliter les accès avec des services sur-mesures pour les utilisateurs.
 
-Les API sont porposés soit via des accès libres, soit via des accès contrôlés où il est nécessaire d'utiliser un jeton.
+### Mise à disposition des API
 
-Comme pour l'utilisation d'une fonction ou d'une macro SAS, l'appel d'une API s'effectue via des paramètres.
-Certaines API propose un portail contenant une IHM (catalogue des API). Cependant, une API est majoritairement utilisée pour automatiser un process ou effectuer du chargement de masse, sont accès s'effectuera donc par l'utilisation d'une url contenant les paramètres.  Ces paramètres sont à renseigner pour compléter l'url du service.
+Les API peuvent ou non utiliser un interface utilisateur.
+Les API Insee mise à disposition sur le [catalogue des API](https://api.insee.fr/catalogue/) proposent une interface utilisateur. Cette interface, permet :
+- de s'inscrire aux différents services;
+- de visualiser les différentes requêtes proposées par les services;
+- de lancer l'API depuis cette plateforme;
+- de documentater les API.
+Cependant, l'utilisation de cette interface ne vous servira pas très longtemps, car vous allez vite vous rendre compte qu'une API s'utilise via un logiciel de traitement pour automatiser un processus ou réaliser du chargement de masse.
+
+
+Pour d'autres API, mise à disposition de la [BDM au format SDMX](https://www.insee.fr/fr/information/2862759), ce point d'entré n'existe pas. De la documentation est mise à disposition pour permettre à l'utilisateur de comprendre l'utilisation du service. L'utilisateur devra ensuite utiliser l'API directement via son url par son navigateur internet ou un logiciel adapté (R, java, python...).
+
+Les API sont porposées avec plusieurs degrés de liberté pour l'utilisteur :
+- soit en libre accès. L'utilisation n'est ici pas contrôlée et peut utiliser le service comme bon lui semble ;
+- soit via la génération d'un compte et d'un jeton qui permet de sécuriser son utilisation et limiter le nombre de requêtes.
+
+### Requête d'une API
+
+Comme pour l'utilisation d'une fonction ou d'une macro SAS, l'appel d'une API s'effectue via des paramètres. 
+Chaque service se présente sous la forme d'une url. Cette url est à compléter avec les différents paramètres de la requête.
+
 Prenons l'exemple de l'API Sirene, l'url a utiliser pour avoir des informations sur un siren est : https://api.insee.fr/entreprises/sirene/V3/siren/{siren} (modifier {siren} en renseignant le numéro du siren).
 
+Chaque service proposé par l'API aura sa propre url avec ses propres paramètres.
 
- 
+Enfin, le résultat envoyé par une API est majoritairement du json ou de l'XML. Cependant certains service peuvent proposer du csv.
+Le résultat n'est pas toujours facile à récupérer. Pour faciliter les utilisations des API, des packages ont été créé pour simplifier l'utilisation. Malheureusement tous les services d'API ne possèdent pas un package. Dans ce cas, il va falloir que l'utilisation détricotte le résultat pour obtenir des données lisibles.
+
+## Package de hauts vols permettant une utilisation simple des API
+
+Nous allons voir ici quelques packages permettant de traiter l'information d'une API facielement :
+
+### [apinsee](https://github.com/InseeFrLab/apinsee)
+
+Ce package est trés utile pour l'utilisation des API mises à diposition sur le catalogue des API. En effet, pour ces API, un jeton ayant une durée de vie limitée doit être régulièrement généré. Ce package, va automatiquement créer un jeton lorsqu'on l'appelle. Donc plus besoin de naviguer entre le programme et et le catalogue des API.
+
+
+### 
+
+
 
 ::: {.conseil data-latex=""}
 
