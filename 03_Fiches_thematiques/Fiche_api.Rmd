@@ -59,10 +59,49 @@ Nous allons voir ici quelques packages permettant de traiter l'information d'une
 
 ### [apinsee](https://github.com/InseeFrLab/apinsee)
 
-Ce package est trés utile pour l'utilisation des API mises à diposition sur le catalogue des API. En effet, pour ces API, un jeton ayant une durée de vie limitée doit être régulièrement généré. Ce package, va automatiquement créer un jeton lorsqu'on l'appelle. Donc plus besoin de naviguer entre le programme et et le catalogue des API.
+Ce package est trés utile pour l'utilisation des API mises à diposition sur le catalogue des API. En effet, pour ces API, un jeton ayant une durée de vie limitée doit être régulièrement généré. Ce package, va automatiquement créer un jeton lorsqu'on l'appelle. Ainsi il n'y a plus besoin de naviguer entre le programme et et le catalogue des API.
 
+```{r, eval = FALSE}
+# Dans un premier temps il faut modifier son .Renviron, en utilisant la commande usethis::edit_r_environ("user").
+# Ces deux lignes doivent être ajoutée : 
+# Dans un premier temps il faut modifier son .Renviron, en utilisant la commande :
+usethis::edit_r_environ("user")
+# Ces deux lignes doivent être ajoutée. Ces informations se trouvent dans la partie clé et jeton d'accès du portail des API : 
+INSEE_APP_KEY=xxxxxxxxxxxxxxxxxx    # clef du consommateur
+INSEE_APP_SECRET=yyyyyyyyyyyyyyyyyy # secret du consommateur
 
-### 
+# Vous pouvez donc simplement exécuter la fonction :
+token <- apinsee::insee_auth()
+
+# Ce token peut ensuite être utilisé comme valeur du paramètre token de la fonction httr::config() :
+
+library(httr)
+set_config(config(token = token))
+
+# Dès lors, vous pouvez accéder aux API de l’Insee auxquelles votre application a souscrites.
+
+```
+
+### [insee](https://hadrilec.github.io/insee/)
+
+Ce package permet de télécharger les données et leur métadonnées diffusées sur le service SDMX de la Base de données Macroéconomique de l'Insee (BDM). Cette API étant ouverte, l'accès à cette API ne demande pas d'identification, ni de jeton. Il est uniquement nécessaire de déterminer les données souhaitées soit via une liste idbank, soit via une liste de dataset. 
+Voici quelques utilisations possible de ce package :
+
+Obtenir la liste des tables présentes dans la BDM , les dataset, ou la liste des séries proposées, les idbank :
+
+```{r, eval = FALSE}
+liste_table <- get_dataset_list()
+liste_indicateur <- get_idbank_list()
+
+```
+
+Importer les données à partir de leur idbank ou importer un dataset à partir de leur identifiant:
+```{r, eval = FALSE}
+table_bp <- get_insee_dataset("BALANCE-PAIEMENTS")
+indicateur_001694056 <- get_insee_idbank("001694056")
+
+```
+Il est possible de rajouter des filtres à ces fonctions ain de limiter le nombre de données importée (filtre sur la période, sur la date de mise à jour, sur les filtres).
 
 
 
