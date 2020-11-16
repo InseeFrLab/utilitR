@@ -10,8 +10,7 @@ Code source pour le projet `UtilitR`, documentation collaborative `R`
 à l'usage des agents de l'Insee. Elle a vocation à être validée annuellement 
 afin de produire un guide des bonnes pratiques et des fiches techniques.
 
-Elle prend la forme d'un livre qui est pour l'instant déployé à l'adresse 
-[suivante](https://linogaliana.gitlab.io/documentationR/index.html). 
+Elle prend la forme d'un livre qui est déployé à l'adresse <https://www.book.utilitr.org/>. 
 
 Il est également possible de télécharger le fichier au format `pdf` 
 ou les  fichiers `html` pour les consulter hors-connexion en cliquant
@@ -40,7 +39,7 @@ Deux points importants sont à noter:
 
 ## Comment contribuer à la documentation
 
-**Le projet `UtilitR` est un projet collaboratif, évolutif, *open source* et ouvert à tous, auquel tous les agents peuvent contribuer.** Le projet est mené par un groupe de contributeurs qui en définissent eux-mêmes le contenu, la structure et le calendrier. Les objectifs et l'approche collaborative du projet `UtilitR` sont détaillés dans [ce document](`manifeste.md`).
+**Le projet `UtilitR` est un projet collaboratif, évolutif, *open source* et ouvert à tous, auquel tous les agents peuvent contribuer.** Le projet est mené par un groupe de contributeurs qui en définissent eux-mêmes le contenu, la structure et le calendrier. Les objectifs et l'approche collaborative du projet `UtilitR` sont détaillés dans [`ce document`](Manifeste.md).
 
 **Tout agent qui le souhaite peut modifier ou compléter la documentation en fonction de ses connaissances et de ses expériences**, et toutes les contributions sont les bienvenues: compléments, corrections d'erreur, améliorations, questions... Il n'y a aucun prérequis, et aucun niveau minimal en `R` n'est demandé. Le dépôt de la documentation est situé [ici](https://gitlab.com/linogaliana/documentationR). Tout agent intéressé à contribuer au projet est invité à consulter le guide des contributeurs (`CONTRIBUTING.md`).
 

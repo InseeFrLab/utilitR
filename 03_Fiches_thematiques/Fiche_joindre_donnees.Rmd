@@ -18,11 +18,19 @@ Vous souhaitez apparier deux tables de données selon une ou plusieurs variables
 + _jointure à gauche_ (*left join*): renvoie toutes les observations de la table de gauche, même si l'identifiant n'est pas présent dans la table de droite.
 + _jointure à droite_ (*right join*): l'inverse de la jointure à gauche ; toutes les observations de la table de droite.
 + _jointure externe_ (*full join*): retourne l'ensemble des observations des deux tables, même lorsque l'identifiant ne se retrouve que dans l'une des tables.
-+ _anti-jointures_: retourne les observations de la table de gauche seulement si l'identifiant n'est pas trouvé dans la table de droite (renvoyer les observations dont l'identifiant n'existe pas dans l'autre table).
++ _anti-jointures_: retourne les observations de la table de gauche seulement si l'identifiant n'est pas trouvé dans la table de droite (renvoyer les observations dont l'identifiant n'existe pas dans l'autre table). Ce type de jointure est peu utilisé en pratique.
 
 Le graphique ci-dessous illustre les différentes méthodes de jointures:
 
-![Illustration graphique des différents types de jointures](./pics/jointures/dplyr_join.png)
+| **Type de jointure** | **Exemple** |
+| :--------------------------------------------------: | :----------------------------------------------: |
+| Jointure interne (_inner join_) |![](./pics/Manipuler_donnees_dplyr/inner_join.png){width=62%} 
+| Jointure à gauche (_left join_) |![](./pics/Manipuler_donnees_dplyr/left_join.png){width=62%} 
+| Jointure à droite (_right join_) |![](./pics/Manipuler_donnees_dplyr/right_join.png){width=62%} 
+| Jointure externe (_full join_) |![](./pics/Manipuler_donnees_dplyr/full_join.png){width=62%} 
+
+
+
 
 ::: {.remarque data-latex=""}
 Pour vous aider à comprendre le principe des jointures, voici une rapide description des opérations que `R` réalise quand on fait une jointure interne entre deux tables:
@@ -35,10 +43,9 @@ Pour vous aider à comprendre le principe des jointures, voici une rapide descri
   
 Il est très important de comprendre qu'une ligne présente dans une des deux tables peut ainsi se retrouver dans la table finale en plusieurs exemplaires, ou pas du tout.
 
-Dans le cas d'une jointure à gauche (left_join), le fonctionnement est le même. La différence est que, pour chaque ligne de la table de gauche, si après avoir balayé toutes les lignes de la table de droite aucune correspondance n'a été trouvée, `R` ajoute quand même la ligne de gauche dans la table de sortie et met les colonnes correspondant à la table de droite à valeur manquante. On ne peut donc avoir moins de lignes en sortie que dans la table de gauche, par contre on peut en avoir plus si on a des doublons d'identifiant.
+Dans le cas d'une jointure à gauche (*left join*), le fonctionnement est le même. La différence est que, pour chaque ligne de la table de gauche, si après avoir balayé toutes les lignes de la table de droite aucune correspondance n'a été trouvée, `R` ajoute quand même la ligne de gauche dans la table de sortie et met des valeurs manquantes dans les colonnes correspondant à la table de droite. On ne peut donc avoir moins de lignes en sortie que dans la table de gauche; en revanche on peut en avoir plus si on a des doublons d'identifiant.
 
-Le cas d'une jointure à droite est tout à fait symétrique, et on déduit facilement le cas d'une jointure complète (full_join).
-
+Le cas d'une jointure à droite est tout à fait symétrique, et on déduit facilement le cas d'une jointure complète (*full join*).
 :::
 
 ## Réaliser une jointure avec `R`
@@ -50,10 +57,10 @@ Cette section présente les principales fonctions permettant de réaliser des jo
 Il est possible de réaliser les jointures avec chacune des trois approches présentées ici. Il est néanmoins conseillé d'être cohérent avec les outils de manipulation de données que vous utilisez. Si vous manipulez vos données avec `data.table`, il sera préférable d'utiliser la fonction `merge` de ce _package_ qui est optimisée pour les objets `data.table`. Si vous manipulez vos données avec le `tidyverse`, il est recommandé d'utiliser les fonctions du *package* `dplyr`.
 :::
 
-Les fonctions de jointure vont être illustrées avec la table des communes du code officiel géographique 2019 et les données du répertoire Filosofi 2016 agrégées par commune. Ces tables sont disponibles dans le _package_ `doremifasol`. Pour alléger les sorties, on conserve uniquement l'identifiant de commune, le revenu médian 2016 `MED16` et le taux de pauvreté `TP6016` dans la première table, et l'identifiant de commune `com`, le type de commune `typecom`, le nom officiel de la commune `ncc` et son département `dep` dans la seconde table.
+Les fonctions de jointure vont être illustrées avec la table des communes du code officiel géographique 2019 et les données du répertoire Filosofi 2016 agrégées par commune. Ces tables sont disponibles dans le _package_ `doremifasolData`. Pour alléger les sorties, on conserve uniquement l'identifiant de commune, le revenu médian 2016 `MED16` et le taux de pauvreté `TP6016` dans la première table, et l'identifiant de commune `com`, le type de commune `typecom`, le nom officiel de la commune `ncc` et son département `dep` dans la seconde table.
 
 ```{r import_donnees}
-library(doremifasol)
+library(doremifasolData)
 filosofi_com_2016 <- filosofi_com_2016[, c("CODGEO", "MED16", "TP6016")]
 cog_com_2019 <- cog_com_2019[, c("com", "typecom", "libelle", "dep")]
 ```

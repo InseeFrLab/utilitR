@@ -3,6 +3,7 @@
 % https://www.overleaf.com/project/5e7f5f46c51627000183d386
 %%%%%%%%%%%%%%%%%%%%
 
+\usepackage{pdfpages}
 \usepackage[a4paper, margin=1in,headsep=10pt]{geometry} % Page margins
 \usepackage{xcolor} % Required for specifying colors by name
 \usepackage{booktabs}
@@ -70,21 +71,6 @@
 }{%
   \end{snugshade}%
 }
-
-%\makeatletter
-%  \@ifundefined{Shaded}
-%  {}
-%  {
-%    \renewenvironment{Shaded}
-%    {
-%      \vspace{6pt}%
-%      \begin{snugshade}%
-%    }{%
-%      \end{snugshade}
-%    }
-%  }
-%\makeatother
-
 
 %----------------------------------------------------------------------------------------
 %	MAIN TABLE OF CONTENTS
@@ -224,11 +210,29 @@
           linewidth=4pt,
           innerbottommargin=5pt]{remarqueBox}
 
+% Boîte auteurs (pour faire plaisir à Lino)
+\newmdenv[skipabove=7pt,
+          skipbelow=7pt,
+          rightline=false,
+          leftline=true,
+          topline=false,
+          bottomline=false,
+          linecolor=Green,
+          backgroundcolor=Green!10!white,
+          innerleftmargin=5pt,
+          innerrightmargin=5pt,
+          innertopmargin=5pt,
+          leftmargin=0cm,
+          rightmargin=0cm,
+          linewidth=4pt,
+          innerbottommargin=5pt]{auteurBox}
+
+
 %----------------------------------------------------------------------------------------
 %	Création des environnements conseil, remarque et recommandation
 %----------------------------------------------------------------------------------------
   
-  \newenvironment{recommandation}{\par\vspace{10pt\begin{recommandationBox}} % Vertical white space above the remark and smaller font size
+  \newenvironment{recommandation}{\par\vspace{10pt}\begin{recommandationBox} % Vertical white space above the remark and smaller font size
     \begin{list}{}{
       \leftmargin=0pt % Indentation on the left
       \rightmargin=0pt}\item\ignorespaces % Indentation on the right
@@ -236,7 +240,7 @@
     \advance\baselineskip -1pt
    }{\end{list}\vskip5pt\end{recommandationBox}}
 
-    \newenvironment{remarque}{\par\vspace{10pt\begin{remarqueBox}} % Vertical white space above the remark and smaller font size
+    \newenvironment{remarque}{\par\vspace{10pt}\begin{remarqueBox} % Vertical white space above the remark and smaller font size
     \begin{list}{}{
       \leftmargin=0pt % Indentation on the left
       \rightmargin=0pt}\item\ignorespaces % Indentation on the right
@@ -244,7 +248,7 @@
     \advance\baselineskip -1pt
    }{\end{list}\vskip5pt\end{remarqueBox}}
 
-  \newenvironment{conseil}{\par\vspace{10pt\begin{conseilBox}} % Vertical white space above the remark and smaller font size
+  \newenvironment{conseil}{\par\vspace{10pt}\begin{conseilBox} % Vertical white space above the remark and smaller font size
     \begin{list}{}{
       \leftmargin=0pt % Indentation on the left
       \rightmargin=0pt}\item\ignorespaces % Indentation on the right
@@ -252,12 +256,19 @@
     \advance\baselineskip -1pt
    }{\end{list}\vskip5pt\end{conseilBox}}
 
+  \newenvironment{auteur}{\par\vspace{10pt}\begin{auteurBox} % Vertical white space above the remark and smaller font size
+    \begin{list}{}{
+      \leftmargin=0pt % Indentation on the left
+      \rightmargin=0pt}\item\ignorespaces % Indentation on the right
+    \makebox{\bfseries \sffamily Auteurs} % Nom de la boîte
+    \advance\baselineskip -1pt
+   }{\end{list}\vskip5pt\end{auteurBox}}
+
 
 \AtBeginEnvironment{recommandation}{\Needspace{10\baselineskip}}
 \AtBeginEnvironment{remarque}{\Needspace{10\baselineskip}}
 \AtBeginEnvironment{conseil}{\Needspace{10\baselineskip}}
-
-
+\AtBeginEnvironment{auteur}{\Needspace{10\baselineskip}}
                         
 %----------------------------------------------------------------------------------------
 %	SECTION NUMBERING IN THE MARGIN
@@ -308,8 +319,8 @@
   pdfauthor={Author}
 }
 
+\usepackage[color=red!50, angle=60, fontsize = 0.13\paperwidth]{draftwatermark}
+\DraftwatermarkOptions{text= \parbox{20cm}{Version provisoire \\ Ne pas diffuser} }
 
 
-\usepackage[printwatermark]{xwatermark}
 
-\newwatermark[allpages, color = red!50,angle = 45, scale = 2.5]{\parbox{8cm}{ Version provisoire \\ Ne pas diffuser}}

@@ -24,6 +24,8 @@ print_latex_only <- function(x){
   return("")
 }
 
+render_rmd <- function(x) return(cat(htmltools::includeText(x)))
+
 
 screen_files <- function(){
   

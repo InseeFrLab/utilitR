@@ -145,8 +145,10 @@ Une fois que l'équipe de contributeurs est d'accord sur l'objet de la fiche et 
 * Rédiger la fiche en `Rmarkdown` à partir du modèle de fiche (`03_Fiches_thematiques/Modele_de_fiche.Rmd`); 
     - il est fortement conseillé de lire des fiches existantes pour comprendre la démarche et le niveau de détail retenus par les autres contributeurs;
     - il est impératif de respecter les règles de fond et de forme détaillées ci-dessous;
+* Pour chaque branche, un site temporaire est disponible afin de prévisualiser le résultat déployé à chaque fois que les tests automatiques aboutissent, ce que `Gitlab` signale par une croix verte :heavy_check_mark:. La structure de l'url est la suivante: `https://{BRANCH_NAME}--preview-documentationr.netlify.app/` (faire attention aux deux tirets qui se suivent). Par exemple, si la branche en question s'appelle `toto`, l'adresse de prévisualisation est `https://toto--preview-documentationr.netlify.app/`. Le résultat d'une modification met approximativement 5 minutes à être validé (croix verte) dont à être disponible en prévisualisation .
+Prévisualiser le résultat sur le site temporaire
 * Quand une première version de la fiche est prête:
-    - vérifier que le code est bien fonctionnel (c'est-à-dire que la branche compile bien, ce que `gitlab` indique par une croix verte :heavy_check_mark:);
+    - vérifier que le code est bien fonctionnel (c'est-à-dire que la branche compile bien, ce que `Gitlab` indique par une croix verte :heavy_check_mark:);
     - faire un *merge request* vers la branche `master` du dépôt, avec les options `squash commits` et `WIP` (Work In Progress);
 * Une discussion s'engage dans la *merge request* sur les améliorations/corrections à apporter à la fiche;
 * **La validation d'une fiche est une décision collective**. La règle approximative est qu'une fiche est intégrée à la documentation si quatre ou cinq contributeurs considèrent qu'elle est acceptable en l'état;
