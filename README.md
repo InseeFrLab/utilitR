@@ -1,4 +1,4 @@
-# `UtilitR` : Documentation `R` à l'usage des agents de l'Insee 
+# `UtilitR` : une documentation utile pour `R`  <a href='https://www.utilitr.org'><img src='resources/logo-utilitR.svg' align="right" height="139" /></a>
 
 <!-- badges: start -->
 [![pipeline status](https://gitlab.com/linogaliana/documentationR/badges/master/pipeline.svg)](https://gitlab.com/linogaliana/documentationR/-/commits/master)
