@@ -1,0 +1,114 @@
+# Télécharger des données depuis R
+
+Il est possible de télécharger des données depuis `R` de différentes façons. Selon les besoins, il peut s'agir :
+
+* de récupérer un fichier hébergé sur un site internet,
+* d'utiliser un protocole standard tel que le SDMX, le SPARQL, ...  ;
+* d'extraire de l'information répartie sur plusieurs pages internet (moissonnage, ou *web scraping*).
+
+::: recommandation
+**Recommandations de l'Insee**
+
+Il est recommandé d'utiliser le *package* `readsdmx` pour récupérer des données au travers du standard `SDMX` ;
+<!--
+	2. `xml2` pour *parser* des fichiers xml et html ;
+	1. `rvest` pour *scraper* des données ;
+	4. `SPARQL` pour requêter par ce protocole ;
+	5. `rdflib` pour les triplets RDF.
+-->
+:::
+
+## La fonction `download.file`
+
+Il s'agit ici de montrer comment télécharger des données hébergées sur des sites internet. Les fichiers cibles sont souvent de format `Excel`, `csv`, mais l'opération s'applique de la même façon à tout type de fichiers.
+
+Pour cela, nous devons connaitre l'*URL* (l'adresse internet) des données à collecter.
+
+```{r, eval=FALSE}
+
+file_path <- "http://www.url_vers_fichier.zip"
+
+download.file(url = file_path,
+              mode = "wb",
+              destfile = "mon_repertoire_destination/fichier.zip")
+```
+
+Si le fichier téléchargé est une archive (fichier `zip` par exemple), il faut extraire les éléments qui la compose :
+
+```{r, eval=FALSE}
+unzip(zipfile = "mon_repertoire_destination/fichier.zip", 
+      exdir = "mon_repertoire_extraction")
+```
+
+Après cela, il ne reste qu'à lire (importer) les données (voir fiche "importer des données" #refQuiVaBien)
+Si les données sont au format `csv` :
+
+```{r, eval=FALSE}
+mes_donnees <- readr::read_csv("mon_repertoire_extraction/fichier.csv")
+```
+
+D'autres *packages* permettent de télécharger des données depuis `R` (voir `httr` et `curl`).
+
+## Le standard [`sdmx`](https://sdmx.org/)
+
+SDMX (*Statistical Data and Metadata eXchange*) est une initiative menée conjointement par plusieurs organisations (BRI, BCE, Eurostat, FMI, OCDE, ONU et Banque mondiale), dont le but est de fournir des standards d'échange d'informations statistiques.
+
+Le package `readsdmx` permet de collecter des données chez les fournisseurs (*providers*) qui proposent ce service (voir https://db.nomics.world/).
+
+La collecte se réalise grâce à la fonction `read_sdmx`, la transformation en `data.frame` avec la fonction `as.data.frame` :
+
+```{r, eval=FALSE}
+url_PIB_hab <- "https://stats.oecd.org/restsdmx/sdmx.ashx/GetData/SNA_TABLE1/ZAF+SAU+ARG+AUS+BRA+CAN+CHN+KOR+USA+IND+IDN+JPN+MEX+RUS+TUR+EU28.B1_GE.HCPC/all?startTime=2016&endTime=2019"
+
+## baseR style
+data_PIB_hab <- as.data.frame(readsdmx::read_sdmx(url_PIB_hab))
+
+## tidyverse style
+data_PIB_hab <- url_PIB_hab %>%
+	readsdmx::read_sdmx() %>%
+	as.data.frame()
+
+# NB : certaines données de la BDM sont accessibles en `sdmx`.
+# ex : "https://bdm.insee.fr/series/sdmx/data/SERIES_BDM/010565710?detail=dataonly"
+# mettre un exemple ?
+```
+
+<!--
+## Récolter des données sur des pages web
+
+Le *web scraping* est une technique d'extraction automatisée du contenu d’un site Web, à l'aide d'un script ou d'un programme. La litérature distingue parfois le *crawling* du *scraping*.
+
+Avant de se lancer dans une opération de *web scraping*, il est **impératif** de se renseigner sur les aspects réglementaires d'une telle opération.
+
+A DEVELOPPER
+
+### Quelques notions indispensables
+
+* html
+* xml
+* xpath
+
+Cette documentation n'a pas vocation à aborder ces concepts dans le détail. Le lecteur est encouragé à se référer à [W3C Schools](https://www.w3schools.com/) pour se familiariser avec ces langages, indispensables pour le *web scraping*.
+
+### Exemple de webscrapping simple
+
+TODO
+-->
+
+## Ressources {#RessourcesWebScraping}
+
+* [article sur les aspects réglementaires du *web scraping*](https://hal-paris1.archives-ouvertes.fr/hal-02125245/document)
+
+* un [article sur l'utilisation de `rvest` du blog de Thinkr](https://thinkr.fr/rvest/) en français
+
+* un [article de towards data science sur `rvest`](https://towardsdatascience.com/tidy-web-scraping-in-r-tutorial-and-resources-ac9f72b4fe47)
+
+* le [wiki EduTech](http://edutechwiki.unige.ch/fr/Web_scraping_avec_R) en français
+
+* [la norme iso 17369 sur le sdmx](https://www.iso.org/fr/standard/52500.html)
+
+* [service SDMX d'Eurostat](https://ec.europa.eu/eurostat/fr/web/sdmx-web-services/sdmx)
+
+* [espace d'information d'Eurostat sur le SDMX](https://ec.europa.eu/eurostat/fr/web/sdmx-infospace/welcome)
+
+* [vignette `rdflib`](https://cran.r-project.org/web/packages/rdflib/vignettes/rdf_intro.html)
