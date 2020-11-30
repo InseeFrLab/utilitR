@@ -7,6 +7,7 @@
 \usepackage[a4paper, margin=1in,headsep=10pt]{geometry} % Page margins
 \usepackage{xcolor} % Required for specifying colors by name
 \usepackage{booktabs}
+\usepackage{setspace}
 
 % Font Settings
 %\usepackage{avant} % Use the Avantgarde font for headings
@@ -44,10 +45,13 @@
 \titleformat{\section}[hang] 
 {\normalfont\Large\bfseries}{\thesection.}{0.5em}{} 
 
+%\usepackage{mathpazo} % Use the Palatino font by default
+\usepackage{xcolor} % For named colors
+\usepackage{eso-pic} % required to place huge uni logo at the back 
+\usepackage{transparent}
 \usepackage{graphicx} % Required for including pictures
 %\graphicspath{{Pictures/}} % Specifies the directory where pictures are stored
 
-\usepackage{eso-pic} % Required for specifying an image background in the title page
 
 
 %----------------------------------------------------------------------------------------
@@ -318,6 +322,70 @@
   pdftitle={Title},
   pdfauthor={Author}
 }
+
+%----------------------------------------------------------------------------------------
+%	PAGE DE GARDE
+%----------------------------------------------------------------------------------------
+\usepackage{courier}
+
+
+\definecolor{OxfordBlue}{rgb}{0,0.106,0.329}   
+\definecolor{SomeRed}{rgb}{0.73,0.09,0.19}  
+
+\DeclareGraphicsExtensions{.pdf,.jpeg,.png,.jpg} 
+
+\def\logoInsee{{\includegraphics[width=30mm]{resources/logo_insee.jpeg}}}
+\def\logoutilitR{{\includegraphics[width=30mm]{resources/logo-utilitR}}}
+
+
+\makeatletter
+\newcommand\AlCentroPagina[1]{%
+\AddToShipoutPicture*{\AtPageCenter{%
+\makebox(0,-50){\includegraphics[width=0.5\paperwidth]{#1}}}}}
+
+% The front page
+\renewcommand{\maketitle}
+{\begingroup
+\AlCentroPagina{resources/Rlogo_grey3}
+\parbox[b][0.95\textheight][t]{0.2\textwidth}{\raggedleft\logoInsee \\ \logoutilitR} 
+%% this 0.95 is important, otherwise page overflows in next page
+\hspace*{2ex}
+\textcolor{OxfordBlue}{\rule{2pt}{0.95\textheight}}
+\hspace*{2ex}
+\parbox[b][0.95\textheight][t]{0.8\textwidth}{
+    \setlength{\parindent}{0pt}
+    \sffamily
+    {\Huge\bfseries{\begin{spacing}{1.15}\textcolor{OxfordBlue}{\@title}\end{spacing}}}
+    \vspace*{2ex}
+    {\large\textit{\tagline}}\\[1in]
+    {\Huge \project} \\[1cm]
+    {\large  \doctype\ \public}\\
+    \vfill
+    {\bfseries \dateversion}\\[\baselineskip]
+    \parbox[t]{0.80\linewidth}{\footnotesize\textit{Réalisé par \groupe}.}   
+}
+\thispagestyle{empty}
+\if@openright\cleardoublepage\else\clearpage\fi
+\endgroup
+  }
+\makeatother
+
+\usepackage{courier}
+
+\title{Langage R\\ Fiches techniques\\et bonnes pratiques}  
+\newcommand{\tagline}{Guide pratique à l'usage des statisticiens}
+\newcommand{\project}{Projet \texttt{utilitR}}
+\newcommand{\doctype}{Une documentation collaborative}
+\newcommand{\public}{pour les agents de l'Insee}
+\newcommand{\groupe}{la communauté \texttt{R} de l'Insee}
+\newcommand{\dateversion}{Septembre 2020 - Version 1.0}
+
+     
+
+
+%----------------------------------------------------------------------------------------
+%	FILIGRANE DE DIFFUSION
+%----------------------------------------------------------------------------------------
 
 \usepackage[color=red!50, angle=60, fontsize = 0.13\paperwidth]{draftwatermark}
 \DraftwatermarkOptions{text= \parbox{20cm}{Version provisoire \\ Ne pas diffuser} }
