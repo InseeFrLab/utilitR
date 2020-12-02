@@ -1,0 +1,121 @@
+---
+title: "`Rmarkdown` et les rapports paramétrés"
+subtitle: ""
+date: '`r format(Sys.time(), "%d %B %Y")`'
+output:
+  pdf_document:
+    toc: no
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      fig.pos='H',
+                      fig.align = "center",
+                      warning=FALSE,
+                      message=FALSE)
+```
+
+```{r lib}
+library("doremifasolData")
+```
+
+# Tâches concernées et recommandations
+
+L'utilisateur souhaite réaliser un modèle de rapport "générique", qu'il pourra décliner selon :
+
++ différents territoires ;
++ différentes périodicités ;
++ différents code d'une nomenclature...
+
+Bref, selon différents **paramètres**.
+
+# Approche classique (naïve ?)
+
+Prenons l'exemple très simple d'un utilisateur qui doit générer une table d'effectif de chaque département français.
+
+Pour cela, il peut être tenté de multiplier les fichiers `rmarkdown` (`fichierAin.Rmd`, `fichierAisne.Rmd`...).
+
+Cette approche, si elle se justifie lorsque le nombre de paramètres est réduit, voit ses limites lorsqu'il s'agit de réaliser plusieurs dizaines de rapports. C'est à ce moment que le système de rapports paramétrés prend tout son sens.
+
+# Approche rapports paramétrés
+
+L'utilisateur a eu vent de la fonctionnalité de rapports paramétrés. Il doit alors réaliser un *template* (modèle) de document qui s'appliquera de la même façon pour chaque département.
+
+Voici un exemple (appelons le `template.Rmd`):
+
+~~~
+
+---
+title: "Mon rapport"
+date: "`r Sys.Date()`"
+output: pdf_document
+params:
+  codeDpt: "01"
+---
+
+```{r librarie, eval=FALSE, echo=TRUE}
+library("doremifasolData")
+```
+
+```{r importData, eval=FALSE, echo=TRUE}
+cogCom2019 <- doremifasolData::cog_com_2019
+```
+
+```{r selectData, eval=FALSE, echo=TRUE}
+monDpt <- cogCom2019[cogCom2019$dep %in% params$codeDpt, ]
+```
+
+```{r tableData, eval=FALSE, echo=TRUE}
+table(monDpt$dep)
+```
+~~~
+
+La compilation de ce fichier, au travers de la commande `rmarkdown::render(input = template.Rmd)` génèrera le document suivant :
+
+~~~
+ 01
+393
+~~~
+
+Bon, jusque là, rien d'exceptionnel me direz-vous ...
+
+Mais l'utilisateur peut également lancer la commande suivante :
+
+`rmarkdown::render(input = template.Rmd, params = list(codeDpt = "02"))`, qui cette fois génèrera le document suivant :
+
+~~~
+ 02
+800
+~~~
+
+Il y a 800 communes dans l'Aisne. C'est mieux ! Mais allons encore un peu plus loin...
+
+Cette fois, l'utilisateur souhaite créer une fonction pour automatiser la génération de rapport. Il peut procéder de la sorte :
+
+~~~
+render_report <- function(codeDpt) {
+	rmarkdown::render(input = "template.Rmd",
+										params = list(codeDpt = codeDpt),
+										envir = new.env(),
+										output_file = paste0("Rapport_", codeDpt, ".pdf")
+	)
+}
+~~~
+
+Après cela, il pourra générer ses rapports en lançant la commande :
+
+~~~
+render_report("02")
+~~~
+
+Il pourra également inclure cette fonction dans une boucle, au sein d'un autre document `rmarkdown` :
+
+~~~
+for(i in maListeDeDpt) {
+	render_report(i)
+}
+~~~
+
+# PESP
+
+https://bookdown.org/yihui/rmarkdown/parameterized-reports.html
