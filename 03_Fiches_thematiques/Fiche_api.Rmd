@@ -16,29 +16,33 @@
 
 ## Rappels des notions essentielles sur les API
 
-### Qu'est ce qu'une API ?
+### Qu'est-ce qu'une API ?
 
 Une *Application Programming Interface* (ou **API**) est une interface applicative de programmation qui permet d'utiliser une application existante pour restituer des données. Il s'agit d'une façade clairement délimitée par laquelle un logiciel offre des services à d'autres logiciels (ou utilisateurs). L'objectif est de fournir une porte d'accès à une fonctionnalité en cachant les détails de la mise en œuvre. 
 
-Ce terme peut faire peur, mais il s'agit en fait simplement d'une façon de restituer des données. Plutôt que d'attaquer directement des bases de données, qui sont volumineuses et complexes, des outils ont été développés pour faire le travail intermédiaire et restituer la données sous forme de service.
+Ce terme peut faire peur, mais il s'agit en fait simplement d'une façon de restituer des données. Plutôt que d'attaquer directement des bases de données, qui sont volumineuses et complexes, des outils ont été développés pour faire le travail intermédiaire et restituer la donnée sous forme de service.
 
-À l'Insee comme ailleurs, la connexion inter bases de données pour les nouveaux projets tend à se réaliser via des API, afin de limiter le nombre de personnes ayant accès aux bases, mais aussi pour faciliter les accès avec des services sur-mesures pour les utilisateurs.
+À l'Insee comme ailleurs, la connexion entre les bases de données pour les nouveaux projets tend à se réaliser via des API, afin de limiter le nombre de personnes ayant accès aux bases, mais aussi pour faciliter les accès avec des services sur-mesures pour les utilisateurs.
 
 ### Mise à disposition des API
 
-Les API peuvent ou non utiliser un interface utilisateur.
-Les API Insee mise à disposition sur le [catalogue des API](https://api.insee.fr/catalogue/) proposent une interface utilisateur. Cette interface, permet :
-- de s'inscrire aux différents services;
-- de visualiser les différentes requêtes proposées par les services;
-- de lancer l'API depuis cette plateforme;
-- de documentater les API.
-Cependant, l'utilisation de cette interface ne vous servira pas très longtemps, car vous allez vite vous rendre compte qu'une API s'utilise via un logiciel de traitement pour automatiser un processus ou réaliser du chargement de masse.
+Les API peuvent utiliser une interface utilisateur.  
+
+Les API Insee mise à disposition sur le [catalogue des API](https://api.insee.fr/catalogue/) en proposent. Cette interface, permet :
+
+- de s'inscrire aux différents services ;
+- de visualiser les différentes requêtes proposées par les services ;
+- de lancer l'API depuis cette plateforme ;
+- de documenter les API.
+
+Cependant, l'utilisation de cette interface ne sera pas utile très longtemps, car l'utilisateur va vite se rendre compte qu'une API s'utilise via un logiciel de traitement pour automatiser un processus ou réaliser du chargement de masse.
 
 
-Pour d'autres API, mise à disposition de la [BDM au format SDMX](https://www.insee.fr/fr/information/2862759), ce point d'entré n'existe pas. De la documentation est mise à disposition pour permettre à l'utilisateur de comprendre l'utilisation du service. L'utilisateur devra ensuite utiliser l'API directement via son url par son navigateur internet ou un logiciel adapté (R, java, python...).
+Pour d'autres API, mises à disposition par la [BDM au format SDMX](https://www.insee.fr/fr/information/2862759), ce point d'entré n'existe pas. De la documentation est mise à disposition pour permettre à l'utilisateur de comprendre l'utilisation du service. L'utilisateur devra ensuite utiliser l'API directement via son url par un navigateur internet ou un logiciel adapté (R, java, python...).
 
-Les API sont porposées avec plusieurs degrés de liberté pour l'utilisteur :
-- soit en libre accès. L'utilisation n'est ici pas contrôlée et peut utiliser le service comme bon lui semble ;
+Les API sont proposées avec plusieurs degrés de liberté pour l'utilisateur :
+
+- soit en libre accès (l'utilisation n'est ici pas contrôlée et l'utilisateur peut utiliser le service comme bon lui semble) ;
 - soit via la génération d'un compte et d'un jeton qui permet de sécuriser son utilisation et limiter le nombre de requêtes.
 
 ### Requête d'une API
@@ -50,23 +54,23 @@ Prenons l'exemple de l'API Sirene, l'url a utiliser pour avoir des informations 
 
 Chaque service proposé par l'API aura sa propre url avec ses propres paramètres.
 
-Enfin, le résultat envoyé par une API est majoritairement du json ou de l'XML. Cependant certains service peuvent proposer du csv.
-Le résultat n'est pas toujours facile à récupérer. Pour faciliter les utilisations des API, des packages ont été créé pour simplifier l'utilisation. Malheureusement tous les services d'API ne possèdent pas un package. Dans ce cas, il va falloir que l'utilisation détricotte le résultat pour obtenir des données lisibles.
+Enfin, le résultat envoyé par une API est majoritairement au format JSON ou XML. Cependant certains services peuvent proposer du csv.  
+Le résultat n'est pas toujours facile à récupérer. Pour faciliter les utilisations des API, des packages ont été créés pour simplifier l'utilisation. Malheureusement ce n'est pas le cas pour tous les services d'API. Dans ce cas, il va falloir que l'utilisateur retravaille le résultat pour obtenir des données lisibles.
 
-## Package de hauts vols permettant une utilisation simple des API
+## Package permettant une utilisation simple des API
 
-Nous allons voir ici quelques packages permettant de traiter l'information d'une API facielement :
+Nous allons voir ici quelques packages permettant de traiter l'information d'une API facilement :
 
 ### [apinsee](https://github.com/InseeFrLab/apinsee)
 
-Ce package est trés utile pour l'utilisation des API mises à diposition sur le catalogue des API. En effet, pour ces API, un jeton ayant une durée de vie limitée doit être régulièrement généré. Ce package, va automatiquement créer un jeton lorsqu'on l'appelle. Ainsi il n'y a plus besoin de naviguer entre le programme et et le catalogue des API.
+Ce package est très utile pour l'utilisation des API mises à diposition sur le catalogue des API. En effet, pour ces API, un jeton ayant une durée de vie limitée doit être régulièrement généré. Ce package va automatiser la création d'un jeton. Ainsi il n'y a plus besoin de naviguer entre le programme et le catalogue des API.
 
 ```{r, eval = FALSE}
 # Dans un premier temps il faut modifier son .Renviron, en utilisant la commande usethis::edit_r_environ("user").
-# Ces deux lignes doivent être ajoutée : 
+# Ces deux lignes doivent être ajoutées : 
 # Dans un premier temps il faut modifier son .Renviron, en utilisant la commande :
 usethis::edit_r_environ("user")
-# Ces deux lignes doivent être ajoutée. Ces informations se trouvent dans la partie clé et jeton d'accès du portail des API : 
+# Ces deux lignes doivent être ajoutées. Ces informations se trouvent dans la partie clé et jeton d'accès du portail des API : 
 INSEE_APP_KEY=xxxxxxxxxxxxxxxxxx    # clef du consommateur
 INSEE_APP_SECRET=yyyyyyyyyyyyyyyyyy # secret du consommateur
 
@@ -78,97 +82,49 @@ token <- apinsee::insee_auth()
 library(httr)
 set_config(config(token = token))
 
-# Dès lors, vous pouvez accéder aux API de l’Insee auxquelles votre application a souscrites.
+# Dès lors, vous pouvez accéder aux API de l’Insee auxquelles votre application a souscrit.
 
 ```
 
 ### [insee](https://hadrilec.github.io/insee/)
 
-Ce package permet de télécharger les données et leur métadonnées diffusées sur le service SDMX de la Base de données Macroéconomique de l'Insee (BDM). Cette API étant ouverte, l'accès à cette API ne demande pas d'identification, ni de jeton. Il est uniquement nécessaire de déterminer les données souhaitées soit via une liste idbank, soit via une liste de dataset. 
-Voici quelques utilisations possible de ce package :
+Ce package permet de télécharger les données et leurs métadonnées diffusées sur le service SDMX de la Base de données Macroéconomique de l'Insee (BDM). Cette API étant ouverte, son accès ne demande pas d'identification, ni de jeton. Il est uniquement nécessaire de déterminer les données souhaitées soit via une liste idbank, soit via une liste de dataset. 
+Voici quelques utilisations possibles de ce package :
 
-Obtenir la liste des tables présentes dans la BDM , les dataset, ou la liste des séries proposées, les idbank :
+
 
 ```{r, eval = FALSE}
+# Obtenir la liste des tables présentes dans la BDM , les dataset, ou la liste des séries proposées, les idbank :
 liste_table <- get_dataset_list()
 liste_indicateur <- get_idbank_list()
 
-```
-
-Importer les données à partir de leur idbank ou importer un dataset à partir de leur identifiant:
-```{r, eval = FALSE}
+# Importer les données à partir de leur idbank ou importer un dataset à partir de leur identifiant:
 table_bp <- get_insee_dataset("BALANCE-PAIEMENTS")
 indicateur_001694056 <- get_insee_idbank("001694056")
+# Il est possible de rajouter des filtres à ces fonctions afin de limiter le nombre de données importées (filtre sur la période, sur la date de mise à jour, sur les filtres).
 
 ```
-Il est possible de rajouter des filtres à ces fonctions ain de limiter le nombre de données importée (filtre sur la période, sur la date de mise à jour, sur les filtres).
 
 
-
-::: {.conseil data-latex=""}
-
-Cette boîte colorée sert à donner un conseil. Son usage n'est évidemment pas obligatoire.
-
-:::
+### [OECD](https://cran.r-project.org/web/packages/OECD/index.html)
 
 ::: {.remarque data-latex=""}
 
-Cette boîte colorée sert à faire une remarque. Son usage n'est évidemment pas obligatoire.
+Ce package utilise la library(rsmdx), qui n'est pas compatible avec direct access. Il ne fonctionne pas en télétravail.
 
 :::
 
-### Réaliser la tâche, cas 1
+Ce package permet de télécharger les données mises à disposition sur le site de l'[OCDE](https://stats.oecd.org/index.aspx?lang=fr). Cette API étant ouverte,son accès ne demande pas d'identification, ni de jeton. Il est uniquement nécessaire de déterminer les données souhaitées. 
 
-Lorsqu'on est débutant, il faut utiliser la fonction `super_fonction()` du *package* `super_package`.
-
-La fonction `super_fonction()` fonctionne comme ceci par défaut: blabla.
-
-La fonction `super_fonction()` propose beaucoup d'options:
-
-* `option1`: blabla;
-* `option2`: blabla;
-* `option3`: blabla.
-
-Voici un premier exemple de code (le plus simple possible, en utilisant des données facilement disponibles sur le site de l'Insee):
+Voici quelques utilisations possibles de ce package :
 
 ```{r, eval = FALSE}
-library(super_package)
-output <- super_fonction(arguments)
+# Obtenir la liste des tables présentes sur le site :
+dsets <- get_datasets()
+
+# Voir les métadonnées d'une table, via l'ouverture d'une page web (ici la table DUR_D) :
+browse_metadata("DUR_D")
+
+# Importer une table de données (ici la table DUR_D) :
+data <- get_dataset("DUR_D")
 ```
-
-Ne pas oublier d'expliquer ce qu'on obtient comme output.
-
-Voici un second exemple de code, avec des options un peu plus avancées:
-
-```{r, eval = FALSE}
-output <- super_fonction(arguments et options)
-```
-
-
-### Réaliser la tâche, cas 2
-
-Lorsqu'on est plus avancé, on peut utiliser la fonction `hyper_fonction()` du *package* `hyper_package`.
-
-* Comportement par défaut;
-* Principales options;
-* Exemples de code.
-
-## Quelques bonnes pratiques
-
-Quelques conseils généraux sur la façon de s'y prendre.
-
-* Faut-il préprocesser les données avant de réaliser la tâche;
-* Comment minimiser les temps de calculs/la charge en RAM.
-
-## Sources
-
-Si le rédacteur de la fiche a réutilisé des ressources externes en français disponible en licence libre, il faut indiquer ici l'URL des ressources, le nom des auteurs et la licence de réutilisation de ces ressources.
-
-## Ressources
-
-* la documentation des *packages*;
-* les vignettes et *cheatsheets* si elles existent;
-* les formations proposées par l'Insee;
-* les formations/tutoriels disponibles sur internet.
-
-Dans la mesure du possible, il faut veiller à proposer des ressources en français.
