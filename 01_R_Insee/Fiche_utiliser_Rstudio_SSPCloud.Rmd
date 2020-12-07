@@ -1,0 +1,99 @@
+# Utiliser `Rstudio` sur l'environnement SSP Cloud
+
+Le nom de la fiche décrit la tâche qu'on veut réaliser en quelques mots.
+
+## Tâches concernées et recommandations
+
+Quelques détails sur la tâche dont il s'agit
+
+::: {.recommandation data-latex=""}
+
+Dire en 4-5 lignes comment il est recommandé de procéder:
+
+* le ou les *package*(*s*) dont l'usage est recommandé; si on recommande plusieurs *packages*, expliquer comment choisir lequel (en fonction de la taille des données, du format...)
+* les *packages* dont l'usage est déconseillé; 
+* les autres points de méthode essentiels.
+:::
+
+## Présentation succincte du SSP Cloud
+
+**Le SSP Cloud est une plate-forme informatique hébergée à l'Insee et ouverte à tous les agents de la statistique publique.** Elle permet aux statisticiens d'utiliser un grand nombre de logiciels de _data science_ (`R`, Python, PostgreSQL, Jupyter, Tensorflow...) dans un environnement informatique ergonomique et performant. Il faut donc noter que le SSP Cloud n'est donc pas spécifiquement conçu pour utiliser `R`.
+
+**Le SSP Cloud est une plate-forme sur laquelle vous pouvez mener des expérimentations qui seraient difficiles à réaliser dans AUS**, soit parce qu'AUS ne propose pas le logiciel dont vous avez besoin, soit parce que votre traitement demande des ressources informatiques particulièrement importantes.
+
+En revanche, **le SSP Cloud n'est pas une infrastructure de production, et n'offre pas les mêmes garanties de service qu'AUS**.
+
+A ajouter: un mot sur le fait qu'on ne peut pas mettre de données confidentielles sur le SSP Cloud (pas forcément vrai).
+
+
+## Comment créer un service Rstudio sur le SSP Cloud
+
+### 1. Création d'un compte SSP Cloud
+
+Il est nécessaire de disposer d'un compte personnel **SSP Cloud** pour en utiliser les services. Si vous n'avez pas de compte sur le **SSP Cloud**, vous pouvez vous en créer un en [cliquant sur ce lien (https://datalab.sspcloud.fr/accueil)](https://datalab.sspcloud.fr/accueil) puis suivre les indications. Deux points sont importants à noter:
+
+- vous devez avoir une adresse mail en `insee.fr`  ou en `gouv.fr`;
+- **votre nom d'utilisateur ne doit contenir ni caractères accentués, ni caractère spécial, ni signe de ponctuation**. Ce point est essentiel, car votre compte ne fonctionnera pas si votre nom d'utilisateur comprend l'un de ces caractères. Le plus simple est que votre nom d'utilisateur respecte le format `prenomnom`. Par exemple, si vous vous appelez Jérôme-Gérard L'Hâltère, votre nom d'utilisateur pourra être `jeromegerardlhaltere`.
+
+### 2. Créer un service RStudio
+
+Voici comment procéder pour créer un service RStudio:
+
+- [Cliquer sur **"Consulter le catalogue"**](https://datalab.sspcloud.fr/my-lab/catalogue)  
+
+![](./pics/SSPCloud/99_SSPCloud_0.png){width=75%}
+
+- La fenêtre suivante s'affiche. Elle ne contient pour le moment qu'un seul dossier nommé `datascience`. Cliquer sur le petit dossier, en bas à droite.
+
+![](./pics/SSPCloud/99_SSPCloud_2.png){width=75%}
+
+- Vous accédez alors à la liste des services. En faisant défiler la page, vous trouverez facilement la fiche Rstudio (voir l'image suivante). VOus pouvez alors cliquer sur l'image ![](./pics/SSPCloud/99_SSPCloud_3_Plus.png){width="40"} de la fiche RStudio.
+
+![](./pics/SSPCloud/99_SSPCloud_1.png){width=75%}
+
+
+- Dans la page qui s'affiche, vous pouvez définir les options de votre service Rstudio (voir la section [Définir les options d'un service Rstudio]). Vous pouvez lancer le service en cliquant sur **Créer votre service**.
+
+![](./pics/SSPCloud/99_SSPCloud_3.png){width=75%}
+
+### 3. Se connecter à un service Rstudio
+
+Une fois que votre service `RStudio` est créé, il faut vous connecter à ce service. Pour ce faire, il faut vous identifier avec un nom d'utilisateur et un _password_. Pour récupérer votre _password_, le plus simple est de cliquer sur la clé bleue (voir image suivante) : vous copiez ainsi votre mot de passe.
+
+
+![](./pics/SSPCloud/99_SSPCloud_4bis.png){width=75%}
+
+Vous pouvez ensuite vous connecter au service en cliquant sur l'icône ![](./pics/SSPCloud/Se_connecter_service.png){width="40"} (voir image précédente). Les identifiants sont :  
+
+- `Username` : `rstudio`;
+- `Password` : le _password_ copié précédemment (il suffit de faire `Ctrl + V`).
+
+![](./pics/SSPCloud/99_SSPCloud_5bis.png){width=75%}
+
+L'interface habituelle de RStudio s'affiche alors dans la fenêtre.
+
+![](./pics/SSPCloud/99_SSPCloud_6.png){width=75%}
+
+## Définir les options d'un service Rstudio
+
+Lors de la création de votre service Rstudio, vous pouvez définir les options du service en naviguant dans les différents onglets de l'interface du SSP Cloud (cadre rouge). 
+
+![](./pics/SSPCloud/99_SSPCloud_4bis.png){width=75%}
+
+Les principales options sont les suivantes:
+
+- L'**option `mem`** (dans l'onglet `service`) définit la quantité maximale de mémoire vive (mesurée en Mo) que votre service Rstudio peut utiliser. **Cette option est particulièrement importante** et vous devez choisir soigneusement sa valeur: si vos traitements requièrent plus de mémoire que la valeur de `mem`, la seule solution consiste à lancer un autre service Rstudio avec une valeur de `mem` plus élevée. Il est conseillé d'utiliser 10000 comme valeur par défaut.
+- L'**option `cpu`** (dans l'onglet `service`) définit le nombre minimal de processeurs alloués à votre service Rstudio. Contrairement à l'option `mem`, il ne s'agit pas d'un maximum, une valeur basse ne risque donc pas de bloquer vos traitements. Il est conseillé d'utiliser 2 comme valeur par défaut.
+- L'**option `custom name`** (dans l'onglet `Onyxia`) permet de définir le nom de votre service. Cette option n'a aucun impact sur le fonctionnement de votre service, mais peut vous aider à vous y retrouver si vous avez plusieurs services Rstudio en parallèle.
+- L'**option `Enable IP protection`** (dans l'onglet `Networking`) est une option de sécurité informatique très contraignante, qui est activée par défaut. Il est conseillé de la désactiver, en particulier si vous souhaitez utiliser votre service Rstudio pendant plusieurs jours.
+
+## Utiliser des données stockées sur Minio
+
+A compléter
+
+
+## Liens utiles
+
+- Le salon Tchap [SSPCloud](https://www.tchap.gouv.fr/#/room/#SSPCloudXDpAw6v:agent.finances.tchap.gouv.fr)
+- Le salon Tchap d'assistance aux utilisateurs des **Logiciels Statistiques et Libre Service** [Insee - Outils Stats V2](https://www.tchap.gouv.fr/#/room/#InseeOutilsStatsv2wtxSdth:agent.finances.tchap.gouv.fr)
+
