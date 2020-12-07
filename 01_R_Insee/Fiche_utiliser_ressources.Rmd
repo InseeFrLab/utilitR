@@ -1,4 +1,4 @@
-# Superviser une session `R`
+# Bien utiliser les ressources informatiques avec `R`
 
 ::: {.recommandation data-latex=""}
 * Il est essentiel de suivre régulièrement
@@ -22,7 +22,64 @@ Contrairement à SAS, `R` est un langage conçu pour traiter des données charg�
 
 **Le risque de saturation de la mémoire vive est aggravé par la façon dont `R` gère la mémoire.** En effet, une session `R` augmente automatiquement la quantité de mémoire vive qu'elle occupe lorsque les traitements réclament davantage de mémoire, mais elle ne la libère pas toujours lorsque les besoins en mémoire diminuent. Il est donc possible qu'une session `R` occupe beaucoup plus de mémoire que ce dont elle a besoin. Par exemple, si vous lancez une session `R`, que vous importez une table de données de 10 Go, puis que vous la supprimez immédiatement de votre session avec la fonction `rm()`, il est possible que votre session `R` continue à occuper inutilement 10 Go de mémoire vive, et ce quand bien même votre environnement `Rstudio` vous indique qu'il n'y a aucun objet en mémoire.
 
-La conclusion est simple: suivre attentivement l'usage que votre session `R` fait de la mémoire vive est essentiel, pour votre efficacité comme pour celles des autres agents.
+La conclusion est simple: suivre attentivement l'usage que votre session `R` fait de la mémoire vive est essentiel pour votre efficacité comme pour celles des autres agents.
+
+## Comment limiter la consommation de mémoire vive avec `R`?
+
+
+
+### Limiter la taille des objets en mémoire
+
+
+
+
+- **Il est conseillé de sélectionner uniquement les colonnes dont vous avez besoin lorsque vous importer des données.** Toutes les fonctions d'importation de données présentées dans cette documentation comprennent une option permettant de choisir les colonnes. Le tableau qui suit vous indique le nom de l'option en fonction du format des données. Vous pouvez vous reporter à la fiche correspondante pour les détails sur son utilisation.
+
+    | Format des données  | Fonction | _package_ | Option    |
+    |---------------------|-----------|----------|----------------------|
+    | Fichier plat (`.csv`, `.tsv`, `.txt`)   | `fread()`   | `data.table`    | `select`   |
+    | Table SAS        | `read_sas()`     | `haven`    | `col_select`   |
+    | Fichier `.xlsx`  | `read.xlsx()`    | `openxlsx`    | `cols`   |
+    | Fichier `.xls`   | `read_excel()`   | `readxl`      | `range`   |
+    | Fichier `.ods`   | `read_ods()`     | `readODS`     | `range`   |
+    
+- Dans le cas où vous ne savez pas quelles sont les colonnes dont vous avez besoin (parce que vous découvrez les données par exemple), **il est conseillé de commencer par importer un petit nombre de lignes** (10 000 par exemple) afin d'étudier les données et de choisir ensuite les colonnes à importer. Toutes les fonctions d'importation de données présentées dans cette documentation comprennent une option permettant de définir le nombre de lignes à importer. Le tableau qui suit vous indique le nom de l'option en fonction du format des données. Vous pouvez vous reporter à la fiche correspondante pour les détails sur son utilisation.
+
+    | Format des données  | Fonction | _package_ | Option    |
+    |---------------------|-----------|----------|----------------------|
+    | Fichier plat (`.csv`, `.tsv`, `.txt`)   | `fread()`   | `data.table`    | `nrows`   |
+    | Fichier plat (`.csv`, `.tsv`, `.txt`)   | `read_csv()`   | `readr`    | `n_max`   |
+    | Table SAS   | `read_sas()`   | `haven`    | `n_max`   |
+    | Fichier `.xlsx`   | `read.xlsx()`   | `openxlsx`    | `rows`   |
+    | Fichier `.xls`   | `read_excel()`   | `readxl`      | `n_max`   |
+    | Fichier `.ods`   | `read_ods()`   | `readODS`      | `range`   |
+
+
+
+
+### Limiter le nombre d'objets en mémoire
+
+
+
+
+
+### Nettoyer régulièrement la mémoire vive
+
+Comme mentionné précédemment, une session `R` augmente automatiquement la quantité de mémoire vive qu'elle occupe lorsque les traitements réclament davantage de mémoire, mais ne la libère pas toujours lorsque les besoins en mémoire diminuent. Il est donc important de vérifier régulièrement que vous n'occupez pas plus de mémoire vive que nécessaire.
+
+Pour ce faire, **la solution la plus simple consiste à utiliser la fonction `gc()`** (_garbage collection_, qui signifie littéralement "enlèvement des ordures"). Cette fonction analyse la mémoire vive occupée par la session `R`, et libère la mémoire qui est occupée inutilement. Il est vivement recommandé d'exécuter la fonction `gc()` après un traitement portant sur des données volumineuses. Voici une liste indicative d'opérations après lesquelles vous pouvez exécuter `gc()`:
+
+- une jointure entre deux tables volumineuses;
+- la suppression d'objets volumineux avec la fonction `rm()`;
+- une estimation économétrique complexe.
+
+::: {.remarque data-latex=""}
+Plus la session `R` occupe de mémoire vive, plus la fonction `gc()` met de temps à nettoyer la mémoire. Ce nettoyage peut prendre jusqu'à plusieurs minutes si vous manipulez des données volumineuses.
+:::
+
+
+
+## Comment suivre la consommation de mémoire vive avec `R`?
 
 
 
