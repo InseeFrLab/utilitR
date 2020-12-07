@@ -117,18 +117,71 @@ pour sauvegarder ou lire un fichier depuis un poste personnel.
 
 ## Fonctionnement du système S3
 
+Le système S3 (*Simple Storage System*)
+est un système de stockage initialement démocratisé par Amazon 
+et qui est maintenant devenu une référence. Il s'agit d'une architecture 
+à la fois sécurisée (données cryptées, accès restreints) et performante.
 
+Le concept central du système S3 est le *bucket*. Un *bucket* est un 
+espace (privé ou partagé) où on peut stocker une arborescence de fichiers. 
+Pour un *bucket* privé, il est nécessaire de montrer patte blanche en fournissant
+des jetons d'accès reconnus par le serveur de stockage. Ces derniers sont
+automatiquement générés lors de la création d'un service Rstudio.
+
+[Capture écran accès via interface sspcloud]
 
 ## Lecture
 
 Les fichiers de données d'exemples
 [disponibles sur le SSP-Cloud](https://datalab.sspcloud.fr/mes-fichiers/donnees-insee)
-serviront à illustrer les fonctionalités de lecture de la librairie `aws.s3` 
+serviront à illustrer les fonctionalités de lecture de la librairie `aws.s3`.
 
-## Vérifier les droits d'accès à 
 
+
+
+## Vérifier les droits d'accès à un *bucket*
+
+```{r, eval = FALSE}
+aws.s3::get_bucket(XXXX, region = "")
+```
+
+~~~text
+Bucket: XXXX
+
+$Contents
+Key:            data/test.csv 
+LastModified:   2020-12-07T15:05:05.246Z 
+ETag:           "95c2cdf3321744f998b234e546a5c736" 
+Size (B):       367 
+Owner:           
+Storage class:  STANDARD 
+~~~
 
 ## Ecriture
+
+```{r, eval = FALSE}
+df <- data.frame(
+  x = rnorm(10),
+  y = rnorm(10)
+)
+
+
+aws.s3::s3write_using(
+  df,
+  FUN = data.table::fwrite,
+  object = "data/test.csv",
+  bucket = XXXXX,
+  opts = list("region" = "")
+)
+
+
+df2 <- aws.s3::s3read_using(
+  FUN = data.table::fread,
+  object = "data/test.csv",
+  bucket = XXXXX,
+  opts = list("region" = "")
+)
+```
 
 
 ## Liens utiles
