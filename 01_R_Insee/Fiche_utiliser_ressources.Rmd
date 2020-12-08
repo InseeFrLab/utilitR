@@ -8,7 +8,7 @@ Il est possible de prévenir la plupart des difficultés en adoptant quatre bonn
 - Suivre l'utilisation de la mémoire vive et des processeurs avec le gestionnaire des tâches;
 - Bien réfléchir avant d'importer des données volumineuses;
 - Utiliser régulièrement la fonction `gc()` pour nettoyer la mémoire;
-- Fermer sa session `R` lorsque vous avez terminé vos traitements.
+- Fermer sa session `R` lorsque les traitements sont terminés.
 
 Ces recommandations ne s'appliquent pas au SSP Cloud dont le fonctionnement est différent.
 :::
@@ -57,11 +57,12 @@ L'onglet qui vous sera le plus utile est l'onglet `Utilisateurs`. Il affiche la 
 
 ## Comment limiter la consommation de mémoire vive avec `R`?
 
-### Limiter la taille des objets en mémoire
 
+### Importer uniquement les données nécessaires
 
+La saturation de la mémoire vive est souvent provoquée par un utilisateur qui essaie d'importer des données très volumineuses. **Voici deux bonnes pratiques à adopter, en particulier lorsque la taille de l'ensemble des données que vous souhaitez importer avec `R` est supérieure à 5 Go:**
 
-- **Il est conseillé de sélectionner uniquement les colonnes dont vous avez besoin lorsque vous importer des données.** Toutes les fonctions d'importation de données présentées dans cette documentation comprennent une option permettant de choisir les colonnes. Le tableau qui suit vous indique le nom de l'option en fonction du format des données. Vous pouvez vous reporter à la fiche correspondante pour les détails sur son utilisation.
+- **Il est conseillé d'importer uniquement les colonnes dont vous avez besoin.** Toutes les fonctions d'importation de données présentées dans cette documentation comprennent une option permettant de choisir les colonnes. Le tableau qui suit vous indique le nom de l'option en fonction du format des données. Vous pouvez vous reporter à la fiche correspondante pour les détails sur son utilisation.
 
     | Format des données  | Fonction      | _package_       | Option    |
     |---------------------|---------------|-----------------|----------------------|
@@ -71,7 +72,7 @@ L'onglet qui vous sera le plus utile est l'onglet `Utilisateurs`. Il affiche la 
     | Fichier `.xls`     | `read_excel()` | `readxl`        | `range`   |
     | Fichier `.ods`     | `read_ods()`   | `readODS`       | `range`   |
     
-- Dans le cas où vous ne savez pas quelles sont les colonnes dont vous avez besoin (parce que vous découvrez les données par exemple), **il est conseillé de commencer par importer un petit nombre de lignes** (10 000 par exemple) afin d'étudier les données et de choisir ensuite les colonnes à importer. Toutes les fonctions d'importation de données présentées dans cette documentation comprennent une option permettant de définir le nombre de lignes à importer. Le tableau qui suit vous indique le nom de l'option en fonction du format des données. Vous pouvez vous reporter à la fiche correspondante pour les détails sur son utilisation.
+- Dans le cas où vous ne savez pas quelles sont les colonnes dont vous avez besoin (parce que vous découvrez les données par exemple), **il est conseillé de commencer par importer un petit nombre de lignes** (1\ 000 ou 10\ 000) afin d'étudier les données et de choisir ensuite les colonnes à importer. Toutes les fonctions d'importation de données présentées dans cette documentation comprennent une option permettant de définir le nombre de lignes à importer. Le tableau qui suit vous indique le nom de l'option en fonction du format des données. Vous pouvez vous reporter à la fiche correspondante pour les détails sur son utilisation.
 
     | Format des données  | Fonction | _package_ | Option    |
     |---------------------|-----------|----------|----------------------|
@@ -82,14 +83,9 @@ L'onglet qui vous sera le plus utile est l'onglet `Utilisateurs`. Il affiche la 
     | Fichier `.xls`   | `read_excel()`   | `readxl`      | `n_max`   |
     | Fichier `.ods`   | `read_ods()`   | `readODS`      | `range`   |
 
+### Faire preuve de prudence en faisant des jointures
 
-
-
-### Limiter le nombre d'objets en mémoire
-
-
-
-
+Un autre cas standard de saturation de la mémoire vive provient d'une erreur dans la réalisation d'une jointure entre deux tables. En effet, une jointure mal réalisée peut aboutir à une table d'une taille largement supérieure à celle de la mémoire vive d'AUS. De façon générale, **une jointure entre des tables comprenant plus de 500\ 000\ observations doit être menée avec prudence.** Vous trouverez davantage de conseils dans la fiche\ [Joindre des tables de données], en particulier dans la dernière section.
 
 ### Nettoyer régulièrement la mémoire vive
 
