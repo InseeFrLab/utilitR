@@ -3,11 +3,12 @@
 ::: {.recommandation data-latex=""}
 L'environnement de travail AUS est une infrastructure dans laquelle l'usage des ressources informatiques (mémoire vive et processeurs) est partagé entre les utilisateurs. Il est donc essentiel de veiller à faire un bon usage de ces ressources, de façon à ne pas gêner le travail des autres agents.
 
-Il est possible de prévenir la plupart des difficultés en adoptant trois bonnes pratiques:
+Il est possible de prévenir la plupart des difficultés en adoptant quatre bonnes pratiques:
 
 - Suivre l'utilisation de la mémoire vive et des processeurs avec le gestionnaire des tâches;
 - Bien réfléchir avant d'importer des données volumineuses;
-- Utiliser régulièrement la fonction `gc()` pour nettoyer la mémoire.
+- Utiliser régulièrement la fonction `gc()` pour nettoyer la mémoire;
+- Fermer sa session `R` lorsque vous avez terminé vos traitements.
 
 Ces recommandations ne s'appliquent pas au SSP Cloud dont le fonctionnement est différent.
 :::
@@ -34,12 +35,25 @@ La conclusion est simple: suivre attentivement l'usage que votre session `R` fai
 
 Toutefois, **il peut arriver qu'un traitement réalisé avec `R` sature l'ensemble des processeurs.** En effet, certains _packages_ `R` sont conçus pour utiliser un grand nombre de processeurs en parallèle, de façon à accélérer les calculs. Il est donc important de suivre l'usage que votre session `R` fait des processeurs.
 
-## Comment superviser sa session `R`?
+## Superviser sa session `R` avec le gestionnaire des tâches
 
-Vous pouvez facilement superviser sa session `R` avec le gestionnaire des tâches. Pour ouvrir le gestionnaire des tâches, il suffit d'utiliser le raccourci présent sur le bureau de votre session AUS, ou d'utiliser le raccourci clavier suivant: <kbd>Ctrl</kbd> + <kbd>⇧ Shift</kbd> + <kbd>Echap</kbd>.
+Vous pouvez facilement superviser sa session `R` avec le gestionnaire des tâches. Ce programme vous permet de suivre votre consommation de mémoire vive et votre usage des processeurs. Il permet également de forcer l'arrêt de votre session `R` si elle est bloquée, mais cette possibilité ne doit être utilisée qu'en dernier recours.
 
+### Ouvrir le gestionnaire des tâches
 
+Pour ouvrir le gestionnaire des tâches, il suffit d'utiliser le raccourci présent sur le bureau de votre session AUS, ou d'utiliser le raccourci clavier suivant: <kbd>Ctrl</kbd> + <kbd>⇧ Shift</kbd> + <kbd>Echap</kbd>. Lorsque la fenêtre suivante s'affiche, il faut cliquer sur `Plus de détails`.
 
+![](./pics/utiliser_ressources/TskMngr1small.png){width=50%}
+
+### Utiliser le gestionnaire des tâches
+
+L'onglet qui vous sera le plus utile est l'onglet `Utilisateurs`. Il affiche la liste de tous les agents connectés sur la machine virtuelle. Voici comment vous pouvez utiliser cet onglet pour superviser votre session `R`:
+
+- les deux pourcentages dans le cadre rouge indiquent le taux d'utilisation des processeurs et le taux d'occupation de la mémoire vive, _au niveau de l'ensemble des utilisateurs connectés sur cette machine virtuelle_. **Le serveur est proche de la saturation lorsque l'un des deux taux dépasse 80%.** Vous pouvez constater sur l'image que le serveur n'est pas saturé: le taux d'utilisation est faible (moins de 15%) et le taux d'occupation de la mémoire vive est proche de 40%.
+- les lignes du tableau indiquent le taux d'utilisation des processeurs et le taux d'occupation de la mémoire vive, _au niveau de chaque utilisateur_. Vous devez normalement retrouver votre IDEP dans la première colonne. Le cadre bleu correspond par exemple à l'auteur de cette fiche. Vous pouvez constater qu'il utilise 7,5% des processeurs et qu'il occupe environ 10 Go de mémoire vive.
+- En cliquant sur la petite flèche grise (indiquée par la flèche noire), vous pouvez afficher la consommation de ressources de chacun des programmes que vous utilisez.
+
+![](./pics/utiliser_ressources/TskMngr2bis.png){width=75%}
 
 ## Comment limiter la consommation de mémoire vive avec `R`?
 
@@ -49,13 +63,13 @@ Vous pouvez facilement superviser sa session `R` avec le gestionnaire des tâche
 
 - **Il est conseillé de sélectionner uniquement les colonnes dont vous avez besoin lorsque vous importer des données.** Toutes les fonctions d'importation de données présentées dans cette documentation comprennent une option permettant de choisir les colonnes. Le tableau qui suit vous indique le nom de l'option en fonction du format des données. Vous pouvez vous reporter à la fiche correspondante pour les détails sur son utilisation.
 
-    | Format des données  | Fonction | _package_ | Option    |
-    |---------------------|-----------|----------|----------------------|
+    | Format des données  | Fonction      | _package_       | Option    |
+    |---------------------|---------------|-----------------|----------------------|
     | Fichier plat (`.csv`, `.tsv`, `.txt`)   | `fread()`   | `data.table`    | `select`   |
-    | Table SAS        | `read_sas()`     | `haven`    | `col_select`   |
-    | Fichier `.xlsx`  | `read.xlsx()`    | `openxlsx`    | `cols`   |
-    | Fichier `.xls`   | `read_excel()`   | `readxl`      | `range`   |
-    | Fichier `.ods`   | `read_ods()`     | `readODS`     | `range`   |
+    | Table SAS          | `read_sas()`   | `haven`         | `col_select`   |
+    | Fichier `.xlsx`    | `read.xlsx()`  | `openxlsx`      | `cols`   |
+    | Fichier `.xls`     | `read_excel()` | `readxl`        | `range`   |
+    | Fichier `.ods`     | `read_ods()`   | `readODS`       | `range`   |
     
 - Dans le cas où vous ne savez pas quelles sont les colonnes dont vous avez besoin (parce que vous découvrez les données par exemple), **il est conseillé de commencer par importer un petit nombre de lignes** (10 000 par exemple) afin d'étudier les données et de choisir ensuite les colonnes à importer. Toutes les fonctions d'importation de données présentées dans cette documentation comprennent une option permettant de définir le nombre de lignes à importer. Le tableau qui suit vous indique le nom de l'option en fonction du format des données. Vous pouvez vous reporter à la fiche correspondante pour les détails sur son utilisation.
 
