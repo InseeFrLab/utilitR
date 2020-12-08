@@ -1,35 +1,49 @@
-# Bien utiliser les ressources informatiques avec `R`
+# Bien utiliser les ressources informatiques avec `R` dans AUS
 
 ::: {.recommandation data-latex=""}
-* Il est essentiel de suivre régulièrement
+L'environnement de travail AUS est une infrastructure dans laquelle l'usage des ressources informatiques (mémoire vive et processeurs) est partagé entre les utilisateurs. Il est donc essentiel de veiller à faire un bon usage de ces ressources, de façon à ne pas gêner le travail des autres agents.
 
-utiliser la fonction `gc()`
-Suivre la consommation de mémoire vive et l'utilisation des CPU.
+Il est possible de prévenir la plupart des difficultés en adoptant trois bonnes pratiques:
 
+- Suivre l'utilisation de la mémoire vive et des processeurs avec le gestionnaire des tâches;
+- Bien réfléchir avant d'importer des données volumineuses;
+- Utiliser régulièrement la fonction `gc()` pour nettoyer la mémoire.
+
+Ces recommandations ne s'appliquent pas au SSP Cloud dont le fonctionnement est différent.
 :::
 
 
+## Pourquoi faut-il suivre son usage des ressources informatiques?
+
+Un usage inadapté des logiciels statistiques peut aboutir à deux problèmes: la saturation de la mémoire vive, et la saturation des processeurs. Le premier problème est plus fréquent avec `R` que le second.
 
 
+### `R` et la mémoire vive
 
+Contrairement à SAS, `R` est un langage conçu pour traiter des données chargées dans la mémoire vive (RAM) de l'ordinateur. Cette caractéristique permet à `R` d'être relativement rapide, mais induit des difficultés lorsque les données sont volumineuses. **Le principal risque d'une mauvaise gestion de la mémoire est d'aboutir à une saturation de la mémoire vive**: la session `R` occupe l'intégralité de la mémoire vive ce qui ralentit les traitements, voire paralyse l'ordinateur. Les problèmes de saturation de la RAM se traduisent généralement par un message du type `cannot allocate a vector of size ** Mb` (quand la session ne plante pas...). 
 
-
-## Pourquoi est-il important de superviser sa session `R`?
-
-Contrairement à SAS, `R` est un langage conçu pour traiter des données chargées dans la mémoire vive (RAM) de l'ordinateur. Cette caractéristique permet à `R` d'être relativement rapide, mais induit des difficultés lorsque les données sont volumineuses. **Le principal risque d'une mauvaise gestion de la mémoire est d'aboutir à une saturation de la mémoire vive**: la session `R` occupe l'intégralité de la mémoire vive ce qui ralentit les traitements voire paralyse l'ordinateur. Les problèmes de saturation de la RAM se traduisent généralement par un message du type `cannot allocate a vector of size ** Mb` (quand la session ne plante pas...). 
-
-**Le risque de saturation de la mémoire vive est particulièrement fréquent lorsqu'on travaille avec une infrastructure informatique où la mémoire vive est partagée avec d'autres utilisateurs, comme c'est le cas dans l'environnement AUS.** Si plusieurs utilisateurs occupent chacun une grande quantité de mémoire vive sur la même machine virtuelle d'AUS, il est facile d'arriver à une situation de saturation qui paralyse tous les agents connectés sur cette machine virtuelle (voire fait planter leur session `R`).
+**Le risque de saturation de la mémoire vive est particulièrement fréquent lorsqu'on travaille sur une infrastructure informatique où la mémoire vive est partagée avec d'autres utilisateurs, comme c'est le cas dans l'environnement AUS.** Si plusieurs utilisateurs occupent chacun une grande quantité de mémoire vive sur la même machine virtuelle d'AUS, il est facile d'arriver à une situation de saturation qui paralyse tous les agents connectés (voire fait planter leur session `R`).
 
 **Le risque de saturation de la mémoire vive est aggravé par la façon dont `R` gère la mémoire.** En effet, une session `R` augmente automatiquement la quantité de mémoire vive qu'elle occupe lorsque les traitements réclament davantage de mémoire, mais elle ne la libère pas toujours lorsque les besoins en mémoire diminuent. Il est donc possible qu'une session `R` occupe beaucoup plus de mémoire que ce dont elle a besoin. Par exemple, si vous lancez une session `R`, que vous importez une table de données de 10 Go, puis que vous la supprimez immédiatement de votre session avec la fonction `rm()`, il est possible que votre session `R` continue à occuper inutilement 10 Go de mémoire vive, et ce quand bien même votre environnement `Rstudio` vous indique qu'il n'y a aucun objet en mémoire.
 
 La conclusion est simple: suivre attentivement l'usage que votre session `R` fait de la mémoire vive est essentiel pour votre efficacité comme pour celles des autres agents.
 
+### `R` et les processeurs
+
+**Le second risque est celui d'une saturation des processeurs: une session `R` consomme l'intégralité de la puissance de calcul du serveur, ce qui paralyse les sessions des autres utilisateurs.** Ce risque est relativement peu fréquent avec `R`, pour deux raisons. D'une part, le langage `R` est conçu pour réaliser des traitements en utilisant un seul processeur. D'autre part, toutes les machines virtuelles d'AUS disposent d'au moins une dizaine de processeurs.
+
+Toutefois, **il peut arriver qu'un traitement réalisé avec `R` sature l'ensemble des processeurs.** En effet, certains _packages_ `R` sont conçus pour utiliser un grand nombre de processeurs en parallèle, de façon à accélérer les calculs. Il est donc important de suivre l'usage que votre session `R` fait des processeurs.
+
+## Comment superviser sa session `R`?
+
+Vous pouvez facilement superviser sa session `R` avec le gestionnaire des tâches. Pour ouvrir le gestionnaire des tâches, il suffit d'utiliser le raccourci présent sur le bureau de votre session AUS, ou d'utiliser le raccourci clavier suivant: <kbd>Ctrl</kbd> + <kbd>⇧ Shift</kbd> + <kbd>Echap</kbd>.
+
+
+
+
 ## Comment limiter la consommation de mémoire vive avec `R`?
 
-
-
 ### Limiter la taille des objets en mémoire
-
 
 
 
@@ -71,43 +85,10 @@ Pour ce faire, **la solution la plus simple consiste à utiliser la fonction `gc
 
 - une jointure entre deux tables volumineuses;
 - la suppression d'objets volumineux avec la fonction `rm()`;
-- une estimation économétrique complexe.
+- une estimation économétrique complexe;
+- toute opération statistique qui prend plus de quelques minutes.
 
 ::: {.remarque data-latex=""}
-Plus la session `R` occupe de mémoire vive, plus la fonction `gc()` met de temps à nettoyer la mémoire. Ce nettoyage peut prendre jusqu'à plusieurs minutes si vous manipulez des données volumineuses.
+Plus la session `R` occupe de mémoire vive, plus la fonction `gc()` met de temps à nettoyer la mémoire. Ce nettoyage peut prendre jusqu'à plusieurs minutes si vous manipulez des données volumineuses. 
 :::
 
-
-
-## Comment suivre la consommation de mémoire vive avec `R`?
-
-
-
-Dans certains langages, il est nécessaire d'explicitement supprimer des objets pour que leur espace mémoire soit libéré. `R` adopte une approche différente, celle du **garbage collection** (GC). GC libère automatiquement la mémoire occupée par un objet qui n'existe plus (en inspectant les espaces qui pointent vers des noms d'objets n'existant pas). Même si `R` effectue fréquemment des GC, **il est nécessaire d'appeler la commande `gc()` de temps en temps (en particulier après l'appel d'une fonction ayant effectué un gros traitement) pour rendre de la RAM au système d'exploitation.** Sur un serveur partagé, cela permet de réduire les risques de saturation à cause de sessions inactives qui n'ont plus besoin de la mémoire qu'elles mobilisent^[@wickham2014advanced dans son ouvrage développe l'idée que la commande `gc()` est inutile car la GC étant automatique, évoquer `gc()` ne libère aucun espace mémoire mais prend du temps. En pratique, je trouve que c'est faux (`gc()` permet souvent de libérer plusieurs gigaoctets) et que sur un serveur partagé, c'est une règle de bonne conduite pour permettre à chacun d'avoir des chances de disposer de mémoire quand il en a besoin.]. 
-
-Outre la lenteur d'exécution, **le principal risque d'une mauvaise gestion de la mémoire est d'aboutir à une saturation de la RAM**. Les problèmes de saturation de la RAM se traduisent généralement par un message du type `cannot allocate a vector of size ** Mb` (quand la session ne *crashe* pas...). 
-
-
-
-
-
-
-
-
-(les postes nomades de l'Insee ont 8 Go de RAM; les ressources d'un serveur sont partagées entre tous les utilisateurs)
-
-Une session `R` augmente automatiquement la quantité de mémoire vive qu'elle occupe lorsque les traitements réclament davantage de mémoire, mais elle ne la libère pas toujours lorsque les besoins en mémoire diminuent. Il est donc possible qu'une session `R` occupe beaucoup plus de mémoire que ce dont elle a besoin. Par exemple, si vous lancez une session `R`, que vous importez une table de données de 10 Go, puis que vous la supprimez immédiatement de votre session avec la fonction `rm()`, il est possible que votre session `R` continue à occuper inutilement 10 Go de mémoire vive, et ce quand bien même votre environnement `Rstudio` vous indique qu'il n'y a aucun objet en mémoire.
-
-
-**La solution la plus simple pour éviter d'occuper plus de mémoire vive que nécessaire consiste à utiliser la fonction `gc()`** (_garbage collection_, qui signifie littéralement "enlèvement des ordures"). Cette fonction analyse la mémoire vive occupée par la session `R`, et libère la mémoire vive qui est occupée inutilement.
-
-
-
-
-## Utiliser `R` et `Rstudio` à l'Insee?
-
-- Présentation du Gitlab interne
-- Configurer son accès à Gitlab (SSH, Putty etc.)
-- Comment travailler à plusieurs avec Gitlab? Reprendre la partie 4.4 de la formation Travail Collaboratif sous R.
-
-## Se former à `R` à l'Insee
