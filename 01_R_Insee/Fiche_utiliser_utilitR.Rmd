@@ -74,6 +74,62 @@ output <-
     row_spec(0,bold=TRUE, align = "c")
 ```
 
+```{r echo = FALSE, message = FALSE}
+library(kableExtra)
+# library(emojifont)
+library(dplyr)
+library(fontawesome)
+
+texte_recommandation <- "Ce paragraphe présente succinctement les outils et les approches les plus adaptés à la tâche concernée. Chaque fiche ne comprend qu'un seul paragraphe de ce type."
+texte_conseil        <- "Ce paragraphe détaille les bonnes pratiques à adopter."
+texte_remarque       <- "Ce paragraphe donne des informations supplémentaires ou formule une mise en garde."
+
+if (knitr::is_latex_output()) {
+  symb  <- 
+    c("{\\Huge \\color{Red} \\faHandPointRight}", 
+      "{\\Huge \\color{Cerulean} \\faLightbulb}", 
+      "{\\Huge \\color{Yellow} \\faInfoCircle}")
+} else if (knitr::is_html_output()) {
+  symb  <- 
+        c(fa("hand-point-right", fill = "rgba(220, 53, 69, 1)", height = 40),
+        fa("lightbulb", fill = "rgba(255, 193, 7, 1)", height = 40),
+        fa("info-circle", fill = "rgba(0, 123, 255, 1)", height = 40))
+}
+
+dt <- 
+  as.data.frame(list(
+    Nom = c("Recommandation", 
+            "Conseil", 
+            "Remarque"), 
+    Symbole = symb,
+    Signification = c(texte_recommandation, 
+                      texte_conseil, 
+                      texte_remarque)
+  )
+  )
+
+if (knitr::is_latex_output()) {
+  output <- 
+    dt %>% 
+    kable(escape = F, position = "center", align="ccl") %>%
+    kable_classic(full_width = F)
+  row_spec(output, 0, bold=TRUE, align = "c") %>%
+    column_spec(1, width = "3cm", bold = TRUE) %>%
+    column_spec(2, width = "2cm") %>% 
+    column_spec(3, width = "10cm")
+} else if (knitr::is_html_output()) {
+  output <- 
+    dt %>% 
+    kable(escape = F, position = "center", full_width = F, align="ccl") %>%
+    kable_classic(full_width = F)
+  column_spec(output, 1, width = "3cm", bold = TRUE) %>%
+    column_spec(2, width = "2cm") %>% 
+    column_spec(3, width = "10cm") %>% 
+    row_spec(0,bold=TRUE, align = "c")
+}
+```
+
+
 ### Des exemples reproductibles
 
 Certains lecteurs auront uniquement besoin de parcourir une fiche pour s'en imprégner. D'autres éprouveront le besoin d'exécuter le code.
