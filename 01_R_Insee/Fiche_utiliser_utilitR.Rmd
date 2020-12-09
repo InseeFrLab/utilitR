@@ -74,7 +74,7 @@ dt <-
 if (knitr::is_latex_output()) {
   output <- 
     dt %>% 
-    kable(escape = F, position = "center", align="ccl") %>%
+    kable(escape = TRUE, position = "center", align="ccl") %>%
     kable_classic(full_width = F)
   row_spec(output, 0, bold=TRUE, align = "c") %>%
     column_spec(1, width = "3cm", bold = TRUE) %>%
@@ -125,13 +125,29 @@ Voici la liste des tables disponibles dans `doremifasolData`.
 
 ```{r "contenu_doremifasolData", echo = FALSE, results = "asis"}
 tables <- data(package = "doremifasolData")$result
-output <- knitr::kable(
+
+if (knitr::is_latex_output()) {
+output <- 
+  knitr::kable(
   as.data.frame(list("Table" = tables[, "Item"], "Description" = tables[, "Title"])),
+  format = "latex",
+  escape = TRUE, position = "center", align="cl") %>%
+    kable_classic(full_width = F)
+  column_spec(output, 1, width = "4cm") %>%
+    column_spec(2, width = "13cm") %>% 
+    row_spec(0, bold=TRUE, align = "c")
+} else if (knitr::is_html_output()) {
+output <- 
+  knitr::kable(
+  as.data.frame(list("Table" = tables[, "Item"], "Description" = tables[, "Title"])),
+  format = "html",
   escape = F, position = "center", full_width = F, align="cl") %>%
     kable_classic(full_width = F)
   column_spec(output, 1, width = "4cm") %>%
     column_spec(2, width = "13cm") %>% 
     row_spec(0, bold=TRUE, align = "c")
+}
+
 ```
 
 ::: {.remarque data-latex=""}
