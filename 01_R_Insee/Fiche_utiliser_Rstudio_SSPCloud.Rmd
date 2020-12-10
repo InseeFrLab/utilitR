@@ -90,33 +90,29 @@ Les principales options sont les suivantes:
 
 ## Utiliser des données stockées sur le système de stockage S3
 
-Le SSP Cloud propose des environnements temporaires (comme les services Rstudio, Jupyter, etc. [LIEN VERS PARTIE PERTINENTE]) pour exécuter des programmes informatiques. Ces environnements sont **temporaires par définition** (quelques heures ou quelques jours), et ne sont donc pas destinés à stocker des données ou des programmes infomatiques. Cela a pour conséquence que les programmes informatiques et les données doivent être stockés dans d'autres espaces:
+### Pourquoi utiliser S3 sur le SSP Cloud?
+
+Le SSP Cloud propose des environnements (comme les services Rstudio, Jupyter, etc. [LIEN VERS PARTIE PERTINENTE]) pour exécuter des programmes informatiques. Ces environnements sont **temporaires par définition** (quelques heures ou quelques jours), et ne sont donc pas destinés à stocker des données ou des programmes infomatiques. Cela a pour conséquence que les programmes informatiques et les données doivent être stockés dans d'autres espaces:
 
 * *stockage des codes*: il est nécessaire d'utiliser une plate-forme de développement pour stocker des programmes informatiques, tel que [Gitlab](www.gitlab.com) ou [Github](www.github.com). L'usage du Gitlab interne de l'Insee est présenté dans la fiche [LIEN A FAIRE].
-* *stockage des données*:  la plateforme SSP Cloud propose un système de stockage de données nommé `S3`. Depuis votre service Rstudio, vous pourrez facilement accéder à des données stockées sur `S3` grâce au _package_ `aws.s3`.
+* *stockage des données*:  la plateforme SSP Cloud propose un système de stockage de données nommé S3. Depuis votre service Rstudio, vous pourrez facilement accéder à des données stockées sur S3 grâ au _package_ `aws.s3`.
 
 ::: {.remarque data-latex=""}
-Voici deux remarques essentielles pour faire un bon du SSP Cloud: 
+Voici deux règles à respecter pour faire un bon de ces deux espaces de stockage: 
 
 * Les plate-formes telles que Gitlab ou Github ne doivent **jamais** être utilisées pour stocker des données.
-* **Le système de stockage `S3` ne doit pas être utilisé pour stocker des données confidentielles**.
+* Le système de stockage S3 ne doit pas **jamais** être utilisé pour stocker des données confidentielles.
 :::
 
-## Fonctionnement du système S3
+### Qu'est-ce que le système de stockage S3?
 
-Le système S3 (*Simple Storage System*)
-est un système de stockage initialement démocratisé par Amazon 
-et qui est maintenant devenu une référence. Il s'agit d'une architecture 
-à la fois sécurisée (données cryptées, accès restreints) et performante.
+Le système S3 (*Simple Storage System*) est un système de stockage développé par Amazon et qui est maintenant devenu une référence. Il s'agit d'une architecture à la fois sécurisée (données cryptées, accès restreints) et performante.
 
-Le concept central du système S3 est le *bucket*. Un *bucket* est un 
-espace (privé ou partagé) où on peut stocker une arborescence de fichiers. 
-Pour un *bucket* privé, il est nécessaire de montrer patte blanche en fournissant
-des jetons d'accès reconnus par le serveur de stockage. Ces derniers sont
-automatiquement générés lors de la création d'un service Rstudio.
+Le concept central du système S3 est le *bucket*. Un *bucket* est un espace (privé ou partagé) où on peut stocker une arborescence de fichiers. Pour accéder aux fichiers figurant dans un *bucket* privé, il fournir des jetons d'accès (l'équivalent d'un mot de passe) reconnus par le serveur de stockage. On peut alors lire et écrire dans le *bucket*.
 
-Lorsque vous créez un service Rstudio, des droits d'accès temporaires au système `S3` sont automatiquement initialisés. Ils permettent de communiquer avec le serveur de stockage grâce au _package_ `aws.s3` dont l'objectif est de simplifier les interactions entre votre service Rstudio avec `S3` de manière à offrir une syntaxe proche de celle qu'on suivrait pour sauvegarder ou lire un fichier depuis un poste personnel. 
+### Comment utiliser S3 avec Rstudio?
 
+Lorsqu'on crée un service Rstudio, des droits d'accès temporaires au système S3 sont automatiquement initialisés. Ils permettent de communiquer avec le serveur de stockage, mais l'usage de ces droits est complexe. Le _package_ `aws.s3` simplifie beaucoup les interactions entre le service Rstudio et S3 en proposant des fonctions de lecture et d'écritures similaires à celles existantes pour lire ou écrire un fichier depuis un poste personnel.
 
 [Capture écran accès via interface sspcloud]
 
