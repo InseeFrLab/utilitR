@@ -133,7 +133,7 @@ Lorsqu'on crée un service Rstudio, des droits d'accès temporaires au système 
 
 #### Vérifier les droits d'accès à un *bucket*
 
-Imaginons qu'on souhaite accéder depuis un service Rstudio au _bucket_ nommé `donnees-insee` qui contient des fichiers de données d'exemples ([lien](https://datalab.sspcloud.fr/mes-fichiers/donnees-insee)). Le service Rstudio dispose déjà des droits d'accès au système S3, il n'y a donc pas besoin de les configurer. Pour lister l'ensemble des fichiers disponibles dans ce _bucket_, Il suffit de chargert le _package_ `aws.s3` et d'exécuter la commande suivante:
+Imaginons qu'on souhaite accéder depuis un service Rstudio au _bucket_ nommé `donnees-insee` qui contient des fichiers de données d'exemples ([lien](https://datalab.sspcloud.fr/mes-fichiers/donnees-insee)). Le service Rstudio dispose déjà des droits d'accès au système S3, il n'y a donc pas besoin de les configurer. Pour lister l'ensemble des fichiers disponibles dans ce _bucket_, Il suffit de charger le _package_ `aws.s3` et d'exécuter la commande `get_bucket()`. Cette commande donne quelques informations sur les fichiers stockés dans le _bucket_: nom et emplacement, taille et date de dernière modification. 
 
 ```{r, eval = FALSE}
 # Attention cet exemple renvoie un très nombre de résultats
@@ -141,24 +141,14 @@ library(aws.s3)
 get_bucket("donnees-insee", region = "")
 ```
 
-~~~text
-Bucket: XXXX
-
-$Contents
-Key:            data/test.csv 
-LastModified:   2020-12-07T15:05:05.246Z 
-ETag:           "95c2cdf3321744f998b234e546a5c736" 
-Size (B):       367 
-Owner:           
-Storage class:  STANDARD 
-~~~
-
-Cette commande peut toutefois renvoyer un grand nombre de résultats si le _bucket_ contient un grand nombre de fichiers. Le _bucket_ `donnees-insee` contient ainsi plus de 1000 fichiers. L'option `prefix` permet de spécifier le chemin des fichiers que l'on souhaite lister. Par exemple, le code suivant fournit la liste des fichiers situés dans le répertoire `Estel/2015` du _bucket_ `donnees.insee`:
+::: {.conseil data-latex=""}
+La commande `get_bucket()` peut renvoyer un grand nombre de résultats si le _bucket_ contient un grand nombre de fichiers. Le _bucket_ `donnees-insee` contient ainsi plus de 1000 fichiers. Il est donc conseille d'utiliser l'option `prefix` permet de spécifier le chemin des fichiers que l'on souhaite lister. Par exemple, le code suivant fournit la liste des fichiers situés dans le répertoire `Estel/2015` du _bucket_ `donnees.insee`:
 
 ```{r}
 library(aws.s3)
 get_bucket("donnees-insee", region = "", prefix = "ESTEL/2015")
 ```
+:::
 
 
 #### Lire les fichiers d'un *bucket*
