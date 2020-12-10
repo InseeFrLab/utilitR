@@ -108,13 +108,33 @@ Le système S3 (*Simple Storage System*) est un système de stockage développé
 
 Le concept central du système S3 est le *bucket*. Un *bucket* est un espace (privé ou partagé) où on peut stocker une arborescence de fichiers. Pour accéder aux fichiers figurant dans un *bucket* privé, il fournir des jetons d'accès (l'équivalent d'un mot de passe) reconnus par le serveur de stockage. On peut alors lire et écrire dans le *bucket*.
 
-### Comment utiliser S3 avec Rstudio?
+### Utiliser S3 avec un service Rstudio
 
 Lorsqu'on crée un service Rstudio, des droits d'accès temporaires au système S3 sont automatiquement initialisés. Ils permettent de communiquer avec le serveur de stockage, mais l'usage de ces droits est complexe. Le _package_ `aws.s3` simplifie beaucoup les interactions entre le service Rstudio et S3 en proposant des fonctions de lecture et d'écritures similaires à celles existantes pour lire ou écrire un fichier depuis un poste personnel.
 
 [Capture écran accès via interface sspcloud]
 
-## Lecture
+
+#### Vérifier les droits d'accès à un *bucket*
+
+```{r, eval = FALSE}
+aws.s3::get_bucket(XXXX, region = "")
+```
+
+~~~text
+Bucket: XXXX
+
+$Contents
+Key:            data/test.csv 
+LastModified:   2020-12-07T15:05:05.246Z 
+ETag:           "95c2cdf3321744f998b234e546a5c736" 
+Size (B):       367 
+Owner:           
+Storage class:  STANDARD 
+~~~
+
+
+#### Lire les fichiers d'un *bucket*
 
 Les fichiers de données d'exemples
 [disponibles sur le SSP-Cloud](https://datalab.sspcloud.fr/mes-fichiers/donnees-insee)
@@ -133,25 +153,7 @@ df <- aws.s3::s3read_using(
 ```
 
 
-## Vérifier les droits d'accès à un *bucket*
-
-```{r, eval = FALSE}
-aws.s3::get_bucket(XXXX, region = "")
-```
-
-~~~text
-Bucket: XXXX
-
-$Contents
-Key:            data/test.csv 
-LastModified:   2020-12-07T15:05:05.246Z 
-ETag:           "95c2cdf3321744f998b234e546a5c736" 
-Size (B):       367 
-Owner:           
-Storage class:  STANDARD 
-~~~
-
-## Ecriture
+#### Ecrire un fichier dans un *bucket*
 
 ```{r, eval = FALSE}
 df <- data.frame(
