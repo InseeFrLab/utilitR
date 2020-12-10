@@ -133,12 +133,12 @@ Lorsqu'on crée un service Rstudio, des droits d'accès temporaires au système 
 
 #### Vérifier les droits d'accès à un *bucket*
 
-Imaginons que le bucket auquel on désire accéder soit nommé `XXXX`. 
-Pour lister l'ensemble des fichiers disponibles, il suffit d'effectuer la 
-commande suivante
+Imaginons qu'on souhaite accéder depuis un service Rstudio au _bucket_ nommé `donnees-insee` qui contient des fichiers de données d'exemples ([lien](https://datalab.sspcloud.fr/mes-fichiers/donnees-insee)). Le service Rstudio dispose déjà des droits d'accès au système S3, il n'y a donc pas besoin de les configurer. Pour lister l'ensemble des fichiers disponibles dans ce _bucket_, Il suffit de chargert le _package_ `aws.s3` et d'exécuter la commande suivante:
 
 ```{r, eval = FALSE}
-aws.s3::get_bucket(XXXX, region = "")
+# Attention cet exemple renvoie un très nombre de résultats
+library(aws.s3)
+get_bucket("donnees-insee", region = "")
 ```
 
 ~~~text
@@ -152,6 +152,13 @@ Size (B):       367
 Owner:           
 Storage class:  STANDARD 
 ~~~
+
+Cette commande peut toutefois renvoyer un grand nombre de résultats si le _bucket_ contient un grand nombre de fichiers. Le _bucket_ `donnees-insee` contient ainsi plus de 1000 fichiers. L'option `prefix` permet de spécifier le chemin des fichiers que l'on souhaite lister. Par exemple, le code suivant fournit la liste des fichiers situés dans le répertoire `Estel/2015` du _bucket_ `donnees.insee`:
+
+```{r}
+library(aws.s3)
+get_bucket("donnees-insee", region = "", prefix = "ESTEL/2015")
+```
 
 
 #### Lire les fichiers d'un *bucket*
