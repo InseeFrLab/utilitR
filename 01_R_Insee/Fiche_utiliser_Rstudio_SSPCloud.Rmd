@@ -110,7 +110,29 @@ Le système S3 (*Simple Storage System*) est un système de stockage développé
 
 Le concept central du système S3 est le *bucket*. Un *bucket* est un espace (privé ou partagé) où on peut stocker une arborescence de fichiers. Pour accéder aux fichiers figurant dans un *bucket* privé, il fournir des jetons d'accès (l'équivalent d'un mot de passe) reconnus par le serveur de stockage. On peut alors lire et écrire dans le *bucket*.
 
-### Comment utiliser S3 avec Rstudio?
+
+### Explorer son dépôt de fichiers 
+
+Il est possible d'utiliser l'interface du `SSP Cloud` pour explorer les
+fichiers présents dans S3 ainsi qu'ajouter ou télécharger manuellement 
+des fichiers.
+
+Le raccourci pour accéder aux fichiers disponibles se trouve en bas à droite
+de la fenêtre du `SSP Cloud`
+
+![](./pics/SSPcloud/onyxia_files.png)
+
+En cliquant dessus, on obtient la liste des *buckets* auxquels on a accès, 
+par exemple ici le *bucket* `XXXX`:
+
+![](./pics/SSPcloud/onyxia_files2.png)
+
+Il est possible de naviguer dans l'arborescence depuis cette fenêtre afin,
+par exemple, de récupérer un chemin qu'on va utiliser avec `R`
+
+![](./pics/SSPcloud/onyxia_files3.png)
+
+## Comment utiliser S3 avec Rstudio?
 
 Lorsqu'on crée un service Rstudio, des droits d'accès temporaires au système S3 sont automatiquement initialisés. Ils permettent de communiquer avec le serveur de stockage, mais l'usage de ces droits est complexe. Le _package_ `aws.s3` simplifie beaucoup les interactions entre le service Rstudio et S3 en proposant des fonctions de lecture et d'écritures similaires à celles existantes pour lire ou écrire un fichier depuis un poste personnel.
 
@@ -137,6 +159,10 @@ df <- aws.s3::s3read_using(
 
 ## Vérifier les droits d'accès à un *bucket*
 
+Imaginons que le bucket auquel on désire accéder soit nommé `XXXX`. 
+Pour lister l'ensemble des fichiers disponibles, il suffit d'effectuer la 
+commande suivante
+
 ```{r, eval = FALSE}
 aws.s3::get_bucket(XXXX, region = "")
 ```
@@ -149,6 +175,83 @@ Key:            data/test.csv
 LastModified:   2020-12-07T15:05:05.246Z 
 ETag:           "95c2cdf3321744f998b234e546a5c736" 
 Size (B):       367 
+Owner:           
+Storage class:  STANDARD 
+~~~
+
+Si les jetons d'accès à un bucket sont périmés, ou si le nom du bucket est mal
+orthographié, `R` renverra l'erreur suivante
+
+~~~r
+Error in parse_aws_s3_response(r, Sig, verbose = verbose) : 
+  Forbidden (HTTP 403).
+~~~
+
+Il est également possible de faire une requête pour chercher un fichier dans 
+un dossier au sein de l'arborescence du bucket. Par exemple, dans le *bucket*
+`donnees-insee` auquel tout utilisateur du SSP-Cloud a accès, on peut
+lister les fichiers présents dans le dossier `ETAT_CIVIL`:
+
+
+```{r, eval = FALSE}
+aws.s3::get_bucket("donnees-insee", prefix = "ETAT_CIVIL", region = "")
+```
+~~~text
+Bucket: donnees-insee 
+
+$Contents
+Key:            ETAT_CIVIL/2018/DECES_COM_0817.csv 
+LastModified:   2020-10-06T20:58:14.674Z 
+ETag:           "96227fed503493eb5f1aa6fb85af3622" 
+Size (B):       1969776 
+Owner:           
+Storage class:  STANDARD 
+
+$Contents
+Key:            ETAT_CIVIL/2019/DECES_COM_0918.csv 
+LastModified:   2020-10-06T20:58:15.817Z 
+ETag:           "92ac1845874da27bb61e8f5173b3f312" 
+Size (B):       1950859 
+Owner:           
+Storage class:  STANDARD 
+
+$Contents
+Key:            ETAT_CIVIL/2019/NAISSANCES_COM_0918.csv 
+LastModified:   2020-10-06T21:18:52.326Z 
+ETag:           "609e8b42abd5b82b0a7b9aadabe08b5c" 
+Size (B):       1970893 
+Owner:           
+Storage class:  STANDARD 
+
+$Contents
+Key:            ETAT_CIVIL/2019/PRENOM_DEP.csv 
+LastModified:   2020-10-06T21:19:33.886Z 
+ETag:           "d550d74aed71db1862d74051a3795103-9" 
+Size (B):       88760691 
+Owner:           
+Storage class:  STANDARD 
+
+$Contents
+Key:            ETAT_CIVIL/2019/PRENOM_NAT.csv 
+LastModified:   2020-10-06T21:18:59.352Z 
+ETag:           "fc429c25afa83b68b1564aa2b89caeef-2" 
+Size (B):       13834168 
+Owner:           
+Storage class:  STANDARD 
+
+$Contents
+Key:            ETAT_CIVIL/2020/DECES_COM_1019.csv 
+LastModified:   2020-10-06T20:58:16.467Z 
+ETag:           "5cb9f547c306b64339419957b6d626ce" 
+Size (B):       1079283 
+Owner:           
+Storage class:  STANDARD 
+
+$Contents
+Key:            ETAT_CIVIL/2020/NAISSANCES_COM_1019.csv 
+LastModified:   2020-10-06T21:18:53.929Z 
+ETag:           "8650985234abd361bf0eb83ebe7946e3" 
+Size (B):       1097015 
 Owner:           
 Storage class:  STANDARD 
 ~~~
