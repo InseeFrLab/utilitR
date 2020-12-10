@@ -3,6 +3,7 @@
 <!-- badges: start -->
 [![pipeline status](https://gitlab.com/linogaliana/documentationR/badges/master/pipeline.svg)](https://gitlab.com/linogaliana/documentationR/-/commits/master)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gl/linogaliana%2FdocumentationR/binder?urlpath=rstudio)
+[![R build status](https://github.com/InseeFrLab/utilitR/workflows/R-CMD-check/badge.svg)](https://github.com/InseeFrLab/utilitR/actions)
 <!-- badges: end -->
 
  
