@@ -90,30 +90,17 @@ Les principales options sont les suivantes:
 
 ## Utiliser des données stockées sur le système de stockage S3
 
-Le SSP Cloud est un environnement où sont dissociés:
+Le SSP Cloud propose des environnements temporaires (comme les services Rstudio, Jupyter, etc. [LIEN VERS PARTIE PERTINENTE]) pour exécuter des programmes informatiques. Ces environnements sont **temporaires par définition** (quelques heures ou quelques jours), et ne sont donc pas destinés à stocker des données ou des programmes infomatiques. Cela a pour conséquence que les programmes informatiques et les données doivent être stockés dans d'autres espaces:
 
-* espace d'exécution de programmes informatiques: ce sont des environnements temporaires comme
-les services Rstudio, Jupyter, etc. [LIEN VERS PARTIE PERTINENTE]
-* espace de sauvegarde des codes: les environnements étant temporaires, pour conserver des codes
-au-delà de la durée de vie d'un service, il est nécessaire d'utiliser [Gitlab](www.gitlab.com)
-ou [Github](www.github.com) pour conserver des programmes informatiques. Cela est expliqué dans
-la fiche dédié [LIEN A FAIRE] ;
-* espace de sauvegarde des données: [Gitlab](www.gitlab.com)
-ou [Github](www.github.com) ne sont pas faits pour conserver des données. 
-Les services temporaires ne sont pas non plus 
-destinés à stocker des données puisque ces dernières disparaissent lorsque
-le service n'est plus fonctionnel. 
-Un système de stockage
-`S3` est proposé sur la plateforme SSP Cloud. Il permet de stocker des 
-données de manière plus durable que sur un service Rstudio.
-:warning: Ce système n'a pas vocation à stocker des données
-sensibles. 
+* *stockage des codes*: il est nécessaire d'utiliser une plate-forme de développement pour stocker des programmes informatiques, tel que [Gitlab](www.gitlab.com) ou [Github](www.github.com). L'usage du Gitlab interne de l'Insee est présenté dans la fiche [LIEN A FAIRE].
+* *stockage des données*:  la plateforme SSP Cloud propose un système de stockage de données nommé `S3`. Depuis votre service Rstudio, vous pourrez facilement accéder à des données stockées sur `S3` grâce au _package_ `aws.s3`.
 
-A la création d'un service, des droits d'accès temporaires sont initialisés.
-Ils permettent de communiquer avec le serveur de stockage grâce à une 
-librairie `aws.s3` dont la vocation est de simplifier les interactions
-avec `S3` de manière à offrir une syntaxe proche de celle qu'on suivrait
-pour sauvegarder ou lire un fichier depuis un poste personnel. 
+::: {.remarque data-latex=""}
+Voici deux remarques essentielles pour faire un bon du SSP Cloud: 
+
+* Les plate-formes telles que Gitlab ou Github ne doivent **jamais** être utilisées pour stocker des données.
+* **Le système de stockage `S3` ne doit pas être utilisé pour stocker des données confidentielles**.
+:::
 
 ## Fonctionnement du système S3
 
@@ -127,6 +114,9 @@ espace (privé ou partagé) où on peut stocker une arborescence de fichiers.
 Pour un *bucket* privé, il est nécessaire de montrer patte blanche en fournissant
 des jetons d'accès reconnus par le serveur de stockage. Ces derniers sont
 automatiquement générés lors de la création d'un service Rstudio.
+
+Lorsque vous créez un service Rstudio, des droits d'accès temporaires au système `S3` sont automatiquement initialisés. Ils permettent de communiquer avec le serveur de stockage grâce au _package_ `aws.s3` dont l'objectif est de simplifier les interactions entre votre service Rstudio avec `S3` de manière à offrir une syntaxe proche de celle qu'on suivrait pour sauvegarder ou lire un fichier depuis un poste personnel. 
+
 
 [Capture écran accès via interface sspcloud]
 
