@@ -189,105 +189,17 @@ df2 <-
 
 
 #### Ecrire un fichier dans un *bucket*
-Si les jetons d'accès à un bucket sont périmés, ou si le nom du bucket est mal
-orthographié, `R` renverra l'erreur suivante
-
-~~~r
-Error in parse_aws_s3_response(r, Sig, verbose = verbose) : 
-  Forbidden (HTTP 403).
-~~~
-
-Il est également possible de faire une requête pour chercher un fichier dans 
-un dossier au sein de l'arborescence du bucket. Par exemple, dans le *bucket*
-`donnees-insee` auquel tout utilisateur du SSP-Cloud a accès, on peut
-lister les fichiers présents dans le dossier `ETAT_CIVIL`:
-
 
 ```{r, eval = FALSE}
-aws.s3::get_bucket("donnees-insee", prefix = "ETAT_CIVIL", region = "")
-```
-~~~text
-Bucket: donnees-insee 
-
-$Contents
-Key:            ETAT_CIVIL/2018/DECES_COM_0817.csv 
-LastModified:   2020-10-06T20:58:14.674Z 
-ETag:           "96227fed503493eb5f1aa6fb85af3622" 
-Size (B):       1969776 
-Owner:           
-Storage class:  STANDARD 
-
-$Contents
-Key:            ETAT_CIVIL/2019/DECES_COM_0918.csv 
-LastModified:   2020-10-06T20:58:15.817Z 
-ETag:           "92ac1845874da27bb61e8f5173b3f312" 
-Size (B):       1950859 
-Owner:           
-Storage class:  STANDARD 
-
-$Contents
-Key:            ETAT_CIVIL/2019/NAISSANCES_COM_0918.csv 
-LastModified:   2020-10-06T21:18:52.326Z 
-ETag:           "609e8b42abd5b82b0a7b9aadabe08b5c" 
-Size (B):       1970893 
-Owner:           
-Storage class:  STANDARD 
-
-$Contents
-Key:            ETAT_CIVIL/2019/PRENOM_DEP.csv 
-LastModified:   2020-10-06T21:19:33.886Z 
-ETag:           "d550d74aed71db1862d74051a3795103-9" 
-Size (B):       88760691 
-Owner:           
-Storage class:  STANDARD 
-
-$Contents
-Key:            ETAT_CIVIL/2019/PRENOM_NAT.csv 
-LastModified:   2020-10-06T21:18:59.352Z 
-ETag:           "fc429c25afa83b68b1564aa2b89caeef-2" 
-Size (B):       13834168 
-Owner:           
-Storage class:  STANDARD 
-
-$Contents
-Key:            ETAT_CIVIL/2020/DECES_COM_1019.csv 
-LastModified:   2020-10-06T20:58:16.467Z 
-ETag:           "5cb9f547c306b64339419957b6d626ce" 
-Size (B):       1079283 
-Owner:           
-Storage class:  STANDARD 
-
-$Contents
-Key:            ETAT_CIVIL/2020/NAISSANCES_COM_1019.csv 
-LastModified:   2020-10-06T21:18:53.929Z 
-ETag:           "8650985234abd361bf0eb83ebe7946e3" 
-Size (B):       1097015 
-Owner:           
-Storage class:  STANDARD 
-~~~
-
-## Ecriture
-
-```{r, eval = FALSE}
-df <- data.frame(
-  x = rnorm(10),
-  y = rnorm(10)
-)
-
+# Attention, cet exemple n'est pas directement reproductible
+library(doremifasolData)
+cog_com_2019 <- doremifasolData::cog_com_2019
 
 aws.s3::s3write_using(
-  df,
+  cog_com_2019,
   FUN = data.table::fwrite,
-  object = "data/test.csv",
-  bucket = XXXXX,
-  opts = list("region" = "")
-)
-
-
-df2 <- aws.s3::s3read_using(
-  FUN = data.table::fread,
-  object = "data/test.csv",
-  bucket = XXXXX,
+  object = "data/cog_com_2019.csv",
+  bucket = "mon_bucket",
   opts = list("region" = "")
 )
 ```
