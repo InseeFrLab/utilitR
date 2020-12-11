@@ -133,7 +133,7 @@ Lorsqu'on crée un service Rstudio, des droits d'accès temporaires au système 
 
 #### Vérifier les droits d'accès à un *bucket*
 
-Imaginons qu'on souhaite accéder depuis un service Rstudio au _bucket_ nommé `donnees-insee` qui contient des fichiers de données d'exemples ([lien](https://datalab.sspcloud.fr/mes-fichiers/donnees-insee)). Le service Rstudio dispose déjà des droits d'accès au système S3, il n'y a donc pas besoin de les configurer. Pour lister l'ensemble des fichiers disponibles dans ce _bucket_, Il suffit de charger le _package_ `aws.s3` et d'exécuter la commande `get_bucket()`. Cette commande donne quelques informations sur les fichiers stockés dans le _bucket_: nom et emplacement, taille et date de dernière modification. 
+Imaginons qu'on souhaite accéder depuis un service Rstudio au _bucket_ nommé `donnees-insee` qui contient des fichiers d'exemples ([lien](https://datalab.sspcloud.fr/mes-fichiers/donnees-insee)). Le service Rstudio dispose déjà des droits d'accès au système S3, il n'y a donc pas besoin de les configurer. Pour lister l'ensemble des fichiers disponibles dans ce _bucket_, il suffit de charger le _package_ `aws.s3` et d'exécuter la commande `get_bucket()`. Cette commande donne quelques informations sur les fichiers stockés dans le _bucket_: nom et emplacement, taille et date de dernière modification. 
 
 ```{r, eval = FALSE}
 # Attention cet exemple renvoie un très nombre de résultats
@@ -142,7 +142,7 @@ get_bucket("donnees-insee", region = "")
 ```
 
 ::: {.conseil data-latex=""}
-La commande `get_bucket()` peut renvoyer un grand nombre de résultats si le _bucket_ contient un grand nombre de fichiers. Le _bucket_ `donnees-insee` contient ainsi plus de 1000 fichiers. Il est donc conseille d'utiliser l'option `prefix` permet de spécifier le chemin des fichiers que l'on souhaite lister. Par exemple, le code suivant fournit la liste des fichiers situés dans le répertoire `Estel/2015` du _bucket_ `donnees.insee`:
+La commande `get_bucket()` peut renvoyer un grand nombre de résultats si le _bucket_ contient un grand nombre de fichiers. Le _bucket_ `donnees-insee` contient ainsi plus de 1000 fichiers. Il est donc conseillé d'utiliser l'option `prefix` pour restreindre le chemin des fichiers que l'on souhaite lister. Par exemple, le code suivant fournit la liste des fichiers situés dans le répertoire `ESTEL/2015` du _bucket_ `donnees.insee`:
 
 ```{r}
 library(aws.s3)
@@ -150,23 +150,41 @@ get_bucket("donnees-insee", region = "", prefix = "ESTEL/2015")
 ```
 :::
 
-
 #### Lire les fichiers d'un *bucket*
 
-Les fichiers de données d'exemples
-[disponibles sur le SSP-Cloud](https://datalab.sspcloud.fr/mes-fichiers/donnees-insee)
-serviront à illustrer les fonctionalités de lecture de la librairie `aws.s3`.
+Une fois que l'on connaît l'emplacement d'un objet dans un _bucket_, on peut l'importer dans le service Rstudio avec la fonction `s3read_using()`. Cette fonction permet d'importer n'importe quel objet, mais nécessite que l'on précise la fonction à utiliser pour lire l'objet. Les arguments de `s3read_using()` sont les suivants:
 
-Supposons qu'on désire, au sein de ce *bucket* `donnees-insee`, accéder aux données Filosofi
-2014 qui sont stockées dans le chemin `/FILOSOFI/2014/FILOSOFI_COM.csv`. 
+- `FUN`: la fonction à utiliser pour lire le fichier; cet argument doit être écrit sous la forme `package::function`;
+- `object`: le chemin du fichier à importer;
+- `bucket`: le _bucket_ dans lequel se trouve l'objet;
+- `opts`: les options.
+
+Dans l'exemple qui suit, on souhaite importer données du dispositif Filosofi 2017 agrégées par communes, qui sont stockées dans le chemin `/FILOSOFI/2017/FILOSOFI_COM.csv` dans le *bucket* `donnees-insee`. On importe ces données avec la fonction `fread()` du _package_ `data.table`. Vous pouvez consulter la fiche [Importer des fichiers plats (`.csv`, `.tsv`, `.txt`)] pour une présentation détaillée de cette fonction.
 
 ```{r, eval = FALSE}
-df <- aws.s3::s3read_using(
-  FUN = data.table::fread,
-  object = "/FILOSOFI/2014/FILOSOFI_COM.csv",
-  bucket = "donnees-insee",
-  opts = list("region" = "")
-)
+df <- 
+  aws.s3::s3read_using(
+    FUN = data.table::fread,
+    # Mettre les options de FUN ici
+    object = "/FILOSOFI/2016/FILOSOFI_COM.csv",
+    bucket = "donnees-insee",
+    opts = list("region" = "")
+  )
+```
+
+Il est possible d'utiliser toutes les options de la fonction d'importation, en les ajoutant immédiatement après l'argument `FUN`. Ainsi, dans l'exemple qui suit, les options `nrows` et `select` de la fonction `fread()` sont utilisées pour importer uniquement les 1000 premières lignes du fichier, et pour sélectionner trois colonnes.
+
+```{r, eval = FALSE}
+df2 <- 
+  aws.s3::s3read_using(
+    FUN = data.table::fread,
+    # Les options de fread sont ici
+    nrows = 1000L,
+    select = c("CODGEO", "LIBGEO", "TP6016"),
+    object = "/FILOSOFI/2016/FILOSOFI_COM.csv",
+    bucket = "donnees-insee",
+    opts = list("region" = "")
+  )
 ```
 
 
