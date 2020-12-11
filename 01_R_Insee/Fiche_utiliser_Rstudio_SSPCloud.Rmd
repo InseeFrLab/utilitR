@@ -215,14 +215,28 @@ df2 <-
 
 #### Ecrire un fichier dans un *bucket*
 
+**La fonction `s3write_using()` permet d'exporter un objet depuis le service Rstudio vers un _bucket_, mais nécessite que l'on précise la fonction à utiliser pour écrire l'objet.** Exporter vers un _bucket_ nécessite évidemment d'avoir les droits en écriture sur le _bucket_ concerné. Les arguments de `s3write_using()` sont les suivants:
+
+- `x`: l'objet à exporter;
+- `FUN`: la fonction à utiliser pour écrire le fichier; cet argument doit être écrit sous la forme `package::function`;
+- `object`: le chemin du fichier à exporter;
+- `bucket`: le _bucket_ dans lequel l'objet sera exporté;
+- `opts`: les options.
+
+Comme pour la fonction `s3read_using`,  il est possible d'utiliser toutes les options de la fonction d'exportation, en les ajoutant immédiatement après l'argument `FUN`. Dans l'exemple suivant, on charge dans le service Rstudio la table du code officiel géographique 2019 disponible dans le _package_ `doremifasolData`, puis on l'exporte en format `csv` dans le fichier `data/cog_com_2019.csv` du _bucket_ `mon_bucket`. On utilise les options `sep` et `col.names` de la fonction `fwrite()` pour définir le séparateur et exporter les noms de colonnes.
+
 ```{r, eval = FALSE}
 # Attention, cet exemple n'est pas directement reproductible
+# Il faut avoir les droits en écriture sur le bucket
 library(doremifasolData)
 cog_com_2019 <- doremifasolData::cog_com_2019
 
 aws.s3::s3write_using(
   cog_com_2019,
   FUN = data.table::fwrite,
+  # Les options de fread sont ici
+  sep = ";",
+  col.names = TRUE,
   object = "data/cog_com_2019.csv",
   bucket = "mon_bucket",
   opts = list("region" = "")
