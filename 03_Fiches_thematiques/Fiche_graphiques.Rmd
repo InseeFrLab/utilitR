@@ -33,11 +33,11 @@ L'_add-in_ `esquisse` est disponible sous la forme d'un _package_, qu'il faut in
 install.packages("esquisse")
 ```
 
-Cette section illustre l'utilisation d'`esquisse` avec la table `data_iris_paris2017` du _package_ `doremifasolData`, qui contient des données économiques et sociales sur les iris de la ville de Paris en 2017. Il faut donc charger ces données dans `R`:
+Cette section illustre l'utilisation d'`esquisse` avec la table `data_iris_paris_2017` du _package_ `doremifasolData`, qui contient des données économiques et sociales sur les iris de la ville de Paris en 2017. Il faut donc charger ces données dans `R`:
 
 ```{r, message = FALSE}
 library(doremifasolData)
-data_iris_paris2017 <- doremifasolData::data_iris_paris2017
+data_iris_paris_2017 <- doremifasolData::data_iris_paris_2017
 ```
 
 Une fois qu'il est installé, vous pouvez accéder à cet _add-in_ en cliquant sur *'ggplot2' builder* dans le menu _Addins_ de Rstudio.
@@ -77,12 +77,12 @@ Une fois que le graphique est terminé, vous pouvez récupérer le code `ggplot2
 
 L'objectif du *package* `ggplot2` est de fournir une approche unique pour produire quasiment toute représentation graphique de données. Ce _package_ propose un grand nombre de fonctions permettant de personnaliser finement les représentations graphiques. Cette fiche n'est donc qu'une introduction succincte à `ggplot2`. Pour des formations plus détaillées, se référer à {#ggplot2Ressources}.
 
-Pour commencer, il faut charger le _package_ avec `library`. Cette fiche illustre l'utilisation de `ggplot2` avec la table `data_iris_paris2017` du _package_ `doremifasolData`, qui contient des données économiques et sociales sur les iris de la ville de Paris en 2017.
+Pour commencer, il faut charger le _package_ avec `library`. Cette fiche illustre l'utilisation de `ggplot2` avec la table `data_iris_paris_2017` du _package_ `doremifasolData`, qui contient des données économiques et sociales sur les iris de la ville de Paris en 2017.
 
 ```{r, message = FALSE}
 library(ggplot2)
 library(doremifasolData)
-data_iris_paris2017 <- doremifasolData::data_iris_paris2017
+data_iris_paris_2017 <- doremifasolData::data_iris_paris_2017
 ggplot2::theme_set(theme_minimal())
 ```
 
@@ -111,7 +111,7 @@ Le *mapping* désigne dans `ggplot2` la relation entre un **attribut graphique**
 **Les arguments fondamentaux de `aes()` sont les variables représentées sur l'axe des abscisses et l'axe des ordonnées (`x` et `y`).** Par exemple, on écrit `aes(x = niveau_vie_median, y = taux_chomage)` si l'on souhaite représenter pour chaque iris le taux de chômage (sur l'axe `y`) en fonction du niveau de vie médian (sur l'axe `x`).
 
 ```{r, warning = FALSE}
-ggplot(data_iris_paris2017) + 
+ggplot(data_iris_paris_2017) + 
   geom_point(aes(x = niveau_vie_median, y = taux_chomage))
 ```
 
@@ -130,14 +130,14 @@ Attribut   |Description
 Dans l'exemple qui suit, on représente pour chaque iris le taux de chômage (sur l'axe `y`) en fonction du niveau de vie médian (sur l'axe `x`), en colorant les points en fonction de la part des cadres et professions intellectuelles supérieures parmi les actifs de l'iris (`color = part_cadres`).
 
 ```{r, warning = FALSE}
-ggplot(data_iris_paris2017) + 
+ggplot(data_iris_paris_2017) + 
   geom_point(aes(x = niveau_vie_median, y = taux_chomage, color = part_cadres))
 ```
 
 Il est également possible d'utiliser ces mêmes arguments pour modifier un attribut graphique sans le lier à une variable. En ce cas, on définit l'attribut **à l'extérieur de l'_aesthetic_** (donc à l'extérieur de `aes()`). Voici l'exemple précédent, modifié pour que tous les points soient (rouge), et non en fonction d'une variable. L'argument `color` est donc à l'extérieur de `aes()`.
 
 ```{r, warning = FALSE}
-ggplot(data_iris_paris2017) + 
+ggplot(data_iris_paris_2017) + 
   geom_point(aes(x = niveau_vie_median, y = taux_chomage), color = "red")
 ```
 
@@ -176,7 +176,7 @@ Par ailleurs, de très nombreux *packages* proposent encore d'autres géométrie
 On peut représenter plusieurs formes géométriques simultanément sur un même graphique (un nuage de points et une droite de régression par exemple). il suffit de les ajouter les unes aux autres avec l’opérateur `+`. Voici un exemple:
 
 ```{r, warning = FALSE}
-ggplot(data_iris_paris2017) + 
+ggplot(data_iris_paris_2017) + 
   geom_point(aes(x = niveau_vie_median, y = taux_chomage), alpha = 0.2) + 
   geom_smooth(aes(x = niveau_vie_median, y = taux_chomage), method = "lm")
 ```
@@ -185,7 +185,7 @@ ggplot(data_iris_paris2017) +
 Il peut arriver qu'on définisse le même _mapping_ dans plusieurs formes géométriques, c'est-à-dire qu'on utilise les mêmes relations entre les variables et les attributs graphiques dans des formes géométriques différents (exemple: les variables `x` et `y` sont les mêmes dans un nuage de points et dans la droite de régression). Dans ce cas, il est possible de déclarer le _mapping_ directmement dans l’appel à `ggplot()` plutôt que de le répéter dans chaque forme géométrique. Le _mapping_ sera alors valable pour toutes les formes géométriques du graphique (sauf si celles-ci redéfinissent explicitement le _mapping_). Le code suivant produit exactement le même graphique que l'exemple précédent:
 
 ```{r, eval = FALSE}
-ggplot(data_iris_paris2017, aes(x = niveau_vie_median, y = taux_chomage)) + 
+ggplot(data_iris_paris_2017, aes(x = niveau_vie_median, y = taux_chomage)) + 
   geom_point(alpha = 0.2) + 
   geom_smooth(method = "lm")
 ```
@@ -197,7 +197,7 @@ ggplot(data_iris_paris2017, aes(x = niveau_vie_median, y = taux_chomage)) +
 La fonction `facet_wrap()` permet de représenter des données *en facettes*, c'est-à-dire décomposées par une variable de croisement. Chaque modalité de la variable catégorielle servira à découper les données pour générer un graphique. Par défaut, les échelles des axes $x$ et $y$ sont identiques mais il est possible de les distinguer avec le paramètre `scales` (qui prend la valeur `"free_x"` pour libérer l'axe des abscisses, `"free_y"` pour l'axe des ordonnées ou `"free"` pour les deux axes). Les arguments optionnels `nrow` et `ncol` permettent de contrôler le nombre lignes et de colonnes. Voici un exemple sur les iris parisiens:
 
 ```{r, warning = FALSE}
-ggplot(data_iris_paris2017) +
+ggplot(data_iris_paris_2017) +
 	geom_point(mapping = aes(x = niveau_vie_median, y = taux_chomage, color = part_cadres)) +
 	facet_wrap(~ categorie_arrondissement, scales = 'free', ncol = 1)
 ```
@@ -221,7 +221,7 @@ Les graphiques réalisés avec `ggplot2` peuvent être personnalisés finement. 
 La fonction `labs()` permet de définir les titres: le titre général du graphique (`title`), le sous-titre (`subtitle`), la note de bas de graphique (`caption`), les axes (`x`, `y`)... Il existe d'autres façons de définir les titres (`ggtitle`, `xlab`, `ylab`).
 
 ```{r, warning = FALSE}
-ggplot(data_iris_paris2017) +
+ggplot(data_iris_paris_2017) +
   geom_point(aes(x = niveau_vie_median, y = taux_chomage, color = part_cadres)) +
   labs(title="Taux de chômage par iris à Paris en fonction du niveau de vie médian",
        x="Taux de chômage",
@@ -261,7 +261,7 @@ Dans l'exemple suivant, on utilise deux _scales_:
 
 ```{r, warning = FALSE, message = FALSE}
 library(scales)
-ggplot(data_iris_paris2017) + 
+ggplot(data_iris_paris_2017) + 
   geom_point(aes(x = niveau_vie_median, y = taux_chomage, color = part_cadres)) +
   scale_x_log10(
     limits = c(10000, 70000), breaks = seq(10000, 60000, 10000),
@@ -285,7 +285,7 @@ Voici un exemple avec le graphique précédent, dans lequel on indique que la va
 
 ```{r, warning = FALSE, message = FALSE}
 library(viridis)
-ggplot(data_iris_paris2017) + 
+ggplot(data_iris_paris_2017) + 
   geom_point(aes(x = niveau_vie_median, y = taux_chomage, color = part_cadres)) +
   scale_x_log10(limits = c(10000, 70000), breaks = seq(10000, 60000, 10000)) +
   scale_y_continuous() +
@@ -298,7 +298,7 @@ ggplot(data_iris_paris2017) +
 Les fonctions `guide()` et `guides()` permettent de modifier finement la légende. Les guides peuvent être spécifiés dans chaque _scale_ ou dans une instruction `guides()`. Voici un exemple:
 
 ```{r, warning = FALSE, message = FALSE}
-ggplot(data_iris_paris2017) + 
+ggplot(data_iris_paris_2017) + 
   geom_point(aes(x = niveau_vie_median, y = taux_chomage, color = part_cadres)) +
   scale_y_continuous(labels = scales::percent) +
   scale_color_viridis(labels = scales::percent) +
@@ -336,7 +336,7 @@ La fonction `ggsave()` de `ggplot2` permet d'exporter des graphiques dans un fic
 Voici un exemple:
 
 ```{r, eval = FALSE}
-p <- ggplot(data_iris_paris2017) +
+p <- ggplot(data_iris_paris_2017) +
   geom_point(aes(x = niveau_vie_median, y = taux_chomage, color = part_cadres)) +
   labs(title="Taux de chômage par iris à Paris en fonction du niveau de vie médian",
        x="Taux de chômage",
