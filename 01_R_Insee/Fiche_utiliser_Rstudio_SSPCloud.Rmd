@@ -90,13 +90,13 @@ Les principales options sont les suivantes:
 
 ### Pourquoi utiliser S3 sur le SSP Cloud?
 
-Le SSP Cloud propose des environnements (comme les services Rstudio, Jupyter, etc. [LIEN VERS PARTIE PERTINENTE]) pour exécuter des programmes informatiques. Ces environnements sont **temporaires par définition** (quelques heures ou quelques jours), et ne sont donc pas destinés à stocker des données ou des programmes infomatiques. Cela a pour conséquence que les programmes informatiques et les données doivent être stockés dans d'autres espaces:
+Le SSP Cloud propose des environnements (comme les services Rstudio, Jupyter, etc. [LIEN VERS PARTIE PERTINENTE]) pour exécuter des programmes informatiques. Ces environnements sont **temporaires par définition** (quelques heures ou quelques jours), et ne peuvent donc pas servir à stocker des données ou des programmes infomatiques. Cela a pour conséquence que les programmes informatiques et les données doivent être stockés dans d'autres espaces:
 
 * *stockage des codes*: il est nécessaire d'utiliser une plate-forme de développement pour stocker des programmes informatiques, tel que [Gitlab](www.gitlab.com) ou [Github](www.github.com). L'usage du Gitlab interne de l'Insee est présenté dans la fiche [LIEN A FAIRE].
-* *stockage des données*:  la plateforme SSP Cloud propose un système de stockage de données nommé S3. Depuis votre service Rstudio, vous pourrez facilement accéder à des données stockées sur S3 grâ au _package_ `aws.s3`.
+* *stockage des données*:  la plateforme SSP Cloud propose un système de stockage de données nommé S3. Depuis votre service Rstudio, vous pourrez facilement accéder à des données stockées sur S3 grâce au _package_ `aws.s3`.
 
 ::: {.remarque data-latex=""}
-Voici deux règles à respecter pour faire un bon de ces deux espaces de stockage: 
+Voici deux règles à respecter pour faire un bon usage de ces deux espaces de stockage: 
 
 * Les plate-formes telles que Gitlab ou Github ne doivent **jamais** être utilisées pour stocker des données.
 * Le système de stockage S3 ne doit pas **jamais** être utilisé pour stocker des données confidentielles.
@@ -104,7 +104,7 @@ Voici deux règles à respecter pour faire un bon de ces deux espaces de stockag
 
 ### Qu'est-ce que le système de stockage S3?
 
-Le système S3 (*Simple Storage System*) est un système de stockage développé par Amazon et qui est maintenant devenu une référence. Il s'agit d'une architecture à la fois sécurisée (données cryptées, accès restreints) et performante.
+Le système S3 (*Simple Storage System*) est un système de stockage développé par Amazon et qui est maintenant devenu une référence pour le stockage en ligne. Il s'agit d'une architecture à la fois sécurisée (données cryptées, accès restreints) et performante.
 
 Le concept central du système S3 est le *bucket*. Un *bucket* est un espace (privé ou partagé) où on peut stocker une arborescence de fichiers. Pour accéder aux fichiers figurant dans un *bucket* privé, il fournir des jetons d'accès (l'équivalent d'un mot de passe) reconnus par le serveur de stockage. On peut alors lire et écrire dans le *bucket*.
 
@@ -124,16 +124,15 @@ par exemple, de récupérer un chemin qu'on va utiliser avec `R`
 
 ![](./pics/SSPcloud/minio/onyxia_files3.png){width=75%}
 
-
-
-
 ### Utiliser S3 avec un service Rstudio
 
-Lorsqu'on crée un service Rstudio, des droits d'accès temporaires au système S3 sont automatiquement initialisés. Ces droits permettent de communiquer avec le serveur de stockage, mais leur usage est complexe. Heureusement, il existe le _package_ `aws.s3` simplifie beaucoup les interactions entre le service Rstudio et S3 en proposant des fonctions de lecture et d'écritures similaires à celles existantes pour lire ou écrire un fichier depuis un poste personnel.
+**Lorsqu'on crée un service Rstudio sur le SSP Cloud, des droits d'accès temporaires au système S3 sont automatiquement initialisés.** Ces droits permettent de communiquer avec le serveur de stockage, mais leur usage est complexe. Heureusement, il existe le _package_ `aws.s3` simplifie beaucoup les interactions entre le service Rstudio et S3 en proposant des fonctions de lecture et d'écritures similaires à celles existantes pour lire ou écrire un fichier depuis un poste personnel.
 
 #### Vérifier les droits d'accès à un *bucket*
 
-Imaginons qu'on souhaite accéder depuis un service Rstudio au _bucket_ nommé `donnees-insee` qui contient des fichiers d'exemples ([lien](https://datalab.sspcloud.fr/mes-fichiers/donnees-insee)) et auquel tout utilisateur du SSP-Cloud a accès. Le service Rstudio dispose déjà des droits d'accès au système S3, il n'y a donc pas besoin de les configurer. Pour lister l'ensemble des fichiers disponibles dans ce _bucket_, il suffit de charger le _package_ `aws.s3` et d'exécuter la commande `get_bucket()`. Cette commande donne quelques informations sur les fichiers stockés dans le _bucket_: nom et emplacement, taille et date de dernière modification. 
+**Pour lister l'ensemble des fichiers disponibles dans un _bucket_, il suffit de charger le _package_ `aws.s3` et d'exécuter la commande `get_bucket()`.** Cette commande donne quelques informations sur les fichiers stockés dans le _bucket_: nom et emplacement, taille et date de dernière modification. Il n'est pas nécessaire de configurer les droits d'accès au système S3, car le service Rstudio en dispose dès son lancement.
+
+Imaginons qu'on souhaite accéder au _bucket_ nommé `donnees-insee` qui contient des fichiers d'exemples ([lien](https://datalab.sspcloud.fr/mes-fichiers/donnees-insee)) et auquel tout utilisateur du SSP-Cloud a accès. Voici comment afficher la liste des objets contenus dans ce _bucket_:
 
 ```{r, eval = FALSE}
 # Attention cet exemple renvoie un très nombre de résultats
@@ -150,16 +149,42 @@ get_bucket("donnees-insee", region = "", prefix = "ESTEL/2015")
 ```
 :::
 
+#### Renouveler des droits d'accès périmés
+
+**Les droits d'accès au S3 sont temporaires par définition et sont donc rapidement périmés.** Si vous utilisez un service Rstudio pendant plusieurs jours, il est probable que `R` renverra l'erreur suivante: 
+
+```{text}
+ $ Code      : chr "InvalidAccessKeyId"
+ $ Message   : chr "The Access Key Id you provided does not exist in our records."
+ $ BucketName: chr "donnees-insee"
+ $ Resource  : chr "/donnees-insee/"
+ [... lignes coupées ...]
+Error in parse_aws_s3_response(r, Sig, verbose = verbose) : 
+  Forbidden (HTTP 403).
+```
+
+Voici la procédure à suivre pour renouveler les droits d'accès à S3. Cliquer sur `Mon compte` (en haut à gauche dans le SSP Cloud).
+
+![](./pics/SSPcloud/99_SSPCloud_Mon_compte.png){width=50%}
+
+Aller en bas de la page dans la rubrique `Identifiants Minio (S3)`. La première ligne vous indiquent jusqu'à quand les droits d'accès sont valides (ligne jaune). Vérifier que les droits d'accès sont bien formatés pour `R` (cadre rouge), puis copier les droits d'accès (cadre bleu).
+
+![](./pics/SSPcloud/99_SSPCloud_credentials.png){width=75%}
+
+Coller les droits d'accès dans un script `R` de votre service Rstudio, puis exécuter les lignes de code sélectionnées dans la capture d'écran ci-dessous. Cette opération permet de renouveler les droits d'accès de votre service Rstudio.
+
+![](./pics/SSPcloud/99_SSPCloud_credentials2.png){width=75%}
+
 #### Lire les fichiers d'un *bucket*
 
-Une fois que l'on connaît l'emplacement d'un objet dans un _bucket_, on peut l'importer dans le service Rstudio avec la fonction `s3read_using()`. Cette fonction permet d'importer n'importe quel objet, mais nécessite que l'on précise la fonction à utiliser pour lire l'objet. Les arguments de `s3read_using()` sont les suivants:
+**Une fois que l'on connaît l'emplacement d'un objet dans un _bucket_, on peut l'importer dans le service Rstudio avec la fonction `s3read_using()`.** Cette fonction permet d'importer n'importe quel objet, mais nécessite que l'on précise la fonction à utiliser pour lire l'objet. Les arguments de `s3read_using()` sont les suivants:
 
 - `FUN`: la fonction à utiliser pour lire le fichier; cet argument doit être écrit sous la forme `package::function`;
 - `object`: le chemin du fichier à importer;
 - `bucket`: le _bucket_ dans lequel se trouve l'objet;
 - `opts`: les options.
 
-Dans l'exemple qui suit, on souhaite importer données du dispositif Filosofi 2017 agrégées par communes, qui sont stockées dans le chemin `/FILOSOFI/2017/FILOSOFI_COM.csv` dans le *bucket* `donnees-insee`. On importe ces données avec la fonction `fread()` du _package_ `data.table`. Vous pouvez consulter la fiche [Importer des fichiers plats (`.csv`, `.tsv`, `.txt`)] pour une présentation détaillée de cette fonction.
+Dans l'exemple qui suit, on souhaite importer les données du dispositif Filosofi 2017 agrégées par commune, qui sont stockées dans le chemin `/FILOSOFI/2017/FILOSOFI_COM.csv` dans le *bucket* `donnees-insee`. On importe ces données avec la fonction `fread()` du _package_ `data.table`. Vous pouvez consulter la fiche [Importer des fichiers plats (`.csv`, `.tsv`, `.txt`)] pour une présentation détaillée de cette fonction.
 
 ```{r, eval = FALSE}
 df <- 
