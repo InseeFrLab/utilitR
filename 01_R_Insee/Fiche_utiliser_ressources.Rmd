@@ -106,18 +106,24 @@ Un autre cas standard de saturation de la mémoire vive provient d'une erreur da
 
 Comme mentionné précédemment, une session `R` augmente automatiquement la quantité de mémoire vive qu'elle occupe lorsque les traitements réclament davantage de mémoire, mais ne la libère pas toujours lorsque les besoins en mémoire diminuent. Il est donc important de vérifier régulièrement que vous n'occupez pas plus de mémoire vive que nécessaire.
 
-Pour ce faire, **la solution la plus simple consiste à utiliser la fonction `gc()`** (_garbage collection_, qui signifie littéralement "enlèvement des ordures"). Cette fonction analyse la mémoire vive occupée par la session `R`, et libère la mémoire qui est occupée inutilement. Il est vivement recommandé d'exécuter la fonction `gc()` après un traitement portant sur des données volumineuses. Voici une liste indicative d'opérations après lesquelles vous pouvez exécuter `gc()`:
+Pour ce faire, **la solution la plus simple consiste à utiliser la fonction `gc()`** (_garbage collection_, qui signifie littéralement "enlèvement des ordures"). Cette fonction analyse la mémoire vive occupée par la session `R`, et libère la mémoire qui est occupée inutilement. Il est vivement recommandé d'exécuter la fonction `gc()` après un traitement portant sur des données volumineuses.
+
+Voici une liste indicative d'opérations après lesquelles vous pouvez exécuter `gc()`:
 
 - une jointure entre deux tables volumineuses;
 - la suppression d'objets volumineux avec la fonction `rm()`;
 - une estimation économétrique complexe;
 - toute opération statistique qui prend plus de quelques minutes.
 
+
 ::: {.remarque data-latex=""}
-Plus la session `R` occupe de mémoire vive, plus la fonction `gc()` met de temps à nettoyer la mémoire. Ce nettoyage peut prendre jusqu'à plusieurs minutes si vous manipulez des données volumineuses. 
+Voici deux remarques sur la fonction `gc()`:
+
+- Plus la session `R` occupe de mémoire vive, plus la fonction `gc()` met de temps à nettoyer la mémoire. Ce nettoyage peut prendre jusqu'à plusieurs minutes si vous manipulez des données volumineuses.
+- Certaines ressources documentaires sur `R` affirment qu'il est inutile de se servir de `gc()` car `R` nettoie automatiquement la mémoire vive lorsqu'elle est presque saturée. Ceci est vrai lorsque vous utilisez `R` sur votre poste local. En revanche, ce n'est pas vrai dans le cas où plusieurs sessions `R` partagent la mémoire vive comme dans AUS (car votre session `R` ne peut déclencher le nettoyage de la mémoire vive dans la session `R` d'un autre agent).
 :::
 
 ### Et si tout cela ne suffit pas?
 
-Il est possible que les conseils donnés ci-dessus ne suffisent pas, parce que vos traitements requièrent des ressources informatiques particulièrement importantes. En ce cas, il faut FAIRE CE QU'AURELIEN PRECISERA.
+Il est possible que les conseils donnés ci-dessus ne suffisent pas, parce que vos traitements requièrent des ressources informatiques particulièrement importantes. En ce cas, il faut déposer une demande métier dans Si\@moi.
 
