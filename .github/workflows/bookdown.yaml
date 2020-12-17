@@ -8,17 +8,16 @@ on:
 name: bookdown
 
 jobs:
-  bookdown:
-    name: Render-Book
-    runs-on: macOS-latest
-    container:
-      image: rocker/verse:latest # your docker image
+  build:
+    runs-on: ubuntu-18.04
+    container: rocker/verse:latest
     steps:
-      - uses: actions/checkout@v1
-      - uses: r-lib/actions/setup-r@v1
-      - uses: r-lib/actions/setup-pandoc@v1
-      - name: Install rmarkdown
-        run: Rscript -e 'install.packages(c("knitr","rmarkdown","bookdown"))'
+      - name: Checkout Repository
+        uses: actions/checkout@master
+      - name: Install Dependencies
+        run: |
+          Rscript -e "install.packages(c('remotes','rmarkdown','bookdown'))"
+          Rscript -e "remotes::install_deps(dependencies = TRUE)"
       - name: Render Book
         run: Rscript -e 'bookdown::render_book("index.Rmd")'
       - uses: actions/upload-artifact@v1
