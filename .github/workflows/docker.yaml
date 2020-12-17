@@ -37,21 +37,21 @@ jobs:
       -
         name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
-  build_bookdown:
-    runs-on: ubuntu-latest
-    needs: build_image
-    env:
-      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-    container:
-      image: inseefrlab/utilitr:latest # your docker image
-    steps:
+# build_bookdown:
+#   runs-on: ubuntu-latest
+#   needs: build_image
+#   env:
+#     GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+#   container:
+#     image: inseefrlab/utilitr:latest # your docker image
+#   steps:
 #      - name: Add apt install 
 #        run: |
 #          apt-get install software-properties-common
-
-      - name: Setup R
-        uses: r-lib/actions/setup-r@v1
-
+#
+#     - name: Setup R
+#       uses: r-lib/actions/setup-r@v1
+#
 #      - name: Install pandoc and pandoc citeproc
 #        run: |
 #          brew install pandoc
@@ -75,16 +75,16 @@ jobs:
 #        run: |
 #          R -e 'install.packages("renv")'
 #          R -e 'renv::restore()'
+#
+#     - name: Build site
+#       run: |
+#         R -e 'install.packages("knitr")'
+#         R -e 'remotes::install_deps(dependencies = TRUE, upgrade = FALSE)'
+#         R -e 'bookdown::render_book("index.Rmd", output_format = 'all', output_dir = '_public')'
 
-      - name: Build site
-        run: |
-          R -e 'install.packages("knitr")'
-          R -e 'remotes::install_deps(dependencies = TRUE, upgrade = FALSE)'
-          R -e 'bookdown::render_book("index.Rmd", output_format = 'all', output_dir = '_public')'
-
-      - name: Install npm
-        uses: actions/setup-node@v1
-
+#     - name: Install npm
+#       uses: actions/setup-node@v1
+#
 #      - name: Deploy to Netlify
 #        # NETLIFY_AUTH_TOKEN and NETLIFY_SITE_ID added in the repo's secrets
 #        env:
