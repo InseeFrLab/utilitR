@@ -22,8 +22,8 @@ jobs:
         run: Rscript -e 'bookdown::render_book("index.Rmd", output_dir = "public")'
       - uses: actions/upload-artifact@v1
         with:
-          name: public
-          path: public/
+          name: _public
+          path: _public/
       - name: Install npm
         uses: actions/setup-node@v1          
       - name: Deploy to Netlify
@@ -33,4 +33,4 @@ jobs:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
         run: |
           npm install netlify-cli -g
-          netlify deploy --alias=${CI_COMMIT_REF_NAME} --dir=public --site="$NETLIFY_SITE_ID" --auth="$NETLIFY_AUTH_TOKEN"
+          netlify deploy --alias=${CI_COMMIT_REF_NAME} --dir="_public" --site="$NETLIFY_SITE_ID" --auth="$NETLIFY_AUTH_TOKEN"
