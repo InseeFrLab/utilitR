@@ -1,15 +1,3 @@
-# :warning: :warning: :warning: :warning:
-## **Le dépôt officiel de la doc `utilitR` a migré sur InseeFrLab (https://github.com/InseeFrLab/utilitR) et celui de la page d'accueil également (https://github.com/InseeFrLab/utilitR-website) ! Merci de ne plus utiliser le dépôt sur ma page gitlab**
-# :warning: :warning: :warning: :warning:
-
-Ce dépôt est uniquement conservé à des fins d'archivage. Pour contribuer, il faut se rendre sur  https://github.com/InseeFrLab/utilitR :smile:
-
-
-<br><br><br><br><br><br><br><br>
-
-*Ancien README*
------
-
 # `UtilitR` : une documentation utile pour `R`  <a href='https://www.utilitr.org'><img src='resources/logo-utilitR.svg' align="right" height="139px" /></a>
 
 <!-- badges: start -->
