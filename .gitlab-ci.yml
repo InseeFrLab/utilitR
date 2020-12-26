@@ -49,19 +49,14 @@ pages:
 
 pagedown:
   stage: build
-  image: gitlab/dind
-  services:
-    - docker:dind
-  before_script:
-    - docker build --build-arg BASE_IMAGE=$BUILD_IMAGE -f "docker/Dockerfile_pagedown" -t pagedownenv:build .
+  image: $BUILD_IMAGE
   script:
-    - docker run --rm --entrypoint check.r pagedownenv:build
-    - docker run --rm -v $(pwd)/public:/home/rstudio/public --entrypoint coverage.r pagedownenv:build
-  artifacts:
-    paths:
-      - _public
-    expire_in: 1 week
-
+    - Rscript -e "install.packages('pagedown')"
+  # artifacts:
+  #   paths:
+  #     - _public
+  #   expire_in: 1 week
+  
 netlify-master:
   stage: deploy
   image: node:latest
