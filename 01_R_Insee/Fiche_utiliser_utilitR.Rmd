@@ -1,0 +1,181 @@
+# Introduction
+
+## Présentation du projet `utilitR`
+
+### Quel est l'objectif du projet `utilitR`?
+
+**Le projet `utilitR` vise à produire une documentation collaborative et _open source_ sur `R`, destinée en premier lieu aux agents de l'Insee.** Ce projet est parti du constat qu'il est difficile d'apprendre à utiliser `R` pour de multiples raisons: multiplicité de _packages_ faisant plus ou moins la même chose, abondance et éclatement de la documentation (souvent en anglais), difficultés supplémentaires pour effectuer des choix éclairés et adaptés à l'environnement informatique de travail...
+
+Les contributeurs du projet `utilitR` se sont fixés pour objectif de **rassembler  dans un seul document tous les éléments utiles pour l'usage de `R` à l'Insee, en cherchant à couvrir la plupart des cas d'usage courants.** Cette documentation a donc été élaborée en tenant compte du contexte de travail propre à l'institut. Cette documentation peut évidemment contenir des éléments pertinents pour un usage de `R` en dehors de l'Insee, mais ce n'est pas sa finalité première.
+
+### Que contient la documentation `utilitR`?
+
+**Cette documentation vise à aider les agents à réaliser des traitements statistiques usuels avec `R` et à produire des sorties (graphiques, cartes, documents).** Cette documentation présente succinctement les outils les plus adaptés à ces tâches, et oriente les agents vers les ressources documentaires pertinentes. En revanche, elle n'aborde pas les outils les plus avancés, notamment ceux utilisés dans un cadre de développement logiciel.
+
+Deux points importants sont à noter:
+
+* **Cette documentation recommande les outils et les *packages* les plus adaptés au contexte d'utilisation de `R` à l'Insee**. Ces recommandations ne sont pas nécessairement adaptées à d'autres contextes, et pourront évoluer lorsque ce contexte évoluera.
+* **Cette documentation recommande d'utiliser `R` avec `RStudio`**, qui apparaît comme la solution la plus simple et la plus complète pour un usage courant de `R`, et qui est par ailleurs le choix effectué par l'Insee.
+
+### Quelle est la spécificité du projet `utilitR`?
+
+**Le projet `utilitR` est un projet collaboratif, évolutif, *open source* et ouvert à tous, auquel tous les agents peuvent contribuer.** Tout agent qui le souhaite peut modifier la documentation ou la compléter en fonction de ses connaissances et de ses expériences (voir [Comment fonctionne le projet `utilitR`?]).
+
+Cette documentation ne prétend pas être exhaustive ou sans erreurs. **Elle doit être vue comme une mise en commun des connaissances que les agents détiennent sur l'usage de `R`.**
+
+## Comment utiliser la documentation `utilitR`
+
+### Structure de la documentation
+
+**La documentation `utilitR` est composée de fiches regroupées en deux grandes parties**: 
+
+- La première partie explique comment utiliser `R` et `RStudio` et les outils associés (`git`, Gitlab) dans les environnements informatiques proposés à l'Insee (AUSv3 et SSP Cloud). 
+- La seconde partie est constituée de fiches thématiques expliquant comment réaliser des tâches standards avec `R` (importation et manipulation de données, exploitation d'enquêtes, réalisation de graphiques, rédaction de documents...).
+
+### Contenu des fiches
+
+Chaque fiche porte sur une tâche précise, décrite dans le titre et éventuellement dans les premières lignes. Elle indique quels sont les _packages_ adaptés pour réaliser la tâche en question, et en présente en détail les principales fonctions. Les fiches n'ont toutefois pas la prétention d'être exhaustives; c'est pourquoi des références figurent à la fin de chaque fiche de façon à orienter le lecteur vers des ressources plus détaillées.
+
+Par ailleurs, les fiches comportent trois types de paragraphes mis en évidence par une icône et une couleur, afin de faciliter la lecture et le repérage des informations importantes.
+
+
+```{r echo = FALSE, message = FALSE, warning = FALSE}
+library(kableExtra)
+library(fontawesome)
+
+texte_recommandation <- "Ce paragraphe présente succinctement les outils et les approches les plus adaptés à la tâche concernée. Chaque fiche ne comprend qu'un seul paragraphe de ce type, au début de la fiche."
+texte_conseil        <- "Ce paragraphe détaille les bonnes pratiques à adopter."
+texte_remarque       <- "Ce paragraphe donne des informations supplémentaires ou formule une mise en garde."
+
+if (knitr::is_latex_output()) {
+  symb  <- 
+    c("{\\Huge \\color{Red} \\faHandPointRight}", 
+      "{\\Huge \\color{Cerulean} \\faLightbulb}", 
+      "{\\Huge \\color{Yellow} \\faInfoCircle}")
+} else if (knitr::is_html_output()) {
+  symb  <- 
+        c(fa("hand-point-right", fill = "rgba(220, 53, 69, 1)", height = 40),
+        fa("lightbulb", fill = "rgba(255, 193, 7, 1)", height = 40),
+        fa("info-circle", fill = "rgba(0, 123, 255, 1)", height = 40))
+}
+
+dt <- 
+  as.data.frame(list(
+    Nom = c("Recommandation", 
+            "Conseil", 
+            "Remarque"), 
+    Symbole = symb,
+    Signification = c(texte_recommandation, 
+                      texte_conseil, 
+                      texte_remarque)
+  )
+  )
+
+if (knitr::is_latex_output()) {
+  output <- 
+    dt %>% 
+    kable(escape = FALSE, position = "center", align="ccl") %>%
+  kable_classic_2(full_width = F)
+  row_spec(output, 0, bold=TRUE, align = "c") %>%
+    column_spec(1, width = "3cm", bold = TRUE) %>%
+    column_spec(2, width = "2cm") %>% 
+    column_spec(3, width = "10cm")
+} else if (knitr::is_html_output()) {
+  output <- 
+    dt %>% 
+    kable(escape = F, position = "center", full_width = F, align="ccl") %>%
+  kable_classic_2(full_width = F, html_font = '"Arial", arial, helvetica, sans-serif')
+  column_spec(output, 1, width = "3cm", bold = TRUE) %>%
+    column_spec(2, width = "2cm") %>% 
+    column_spec(3, width = "10cm") %>% 
+    row_spec(0,bold=TRUE, align = "c")
+}
+```
+
+### Des exemples reproductibles
+
+Même si certains lecteurs ont uniquement besoin de parcourir une fiche pour s'en imprégner, d'autres éprouveront le besoin d'exécuter des exemples de code pour se les approprier. C'est pourquoi la documentation `utilitR` propose un grand nombre d'exemples **reproductibles**. Cela signifie qu'en chargeant les _packages_ indiqués dans chaque fiche, le lecteur pourra exécuter le code des exemples présentés et reproduire le même résultat.
+
+Les exemples sont facilement repérables par leur mise en page. Voici un exemple:
+
+```{r, eval = FALSE}
+resultat <- 1 + 1
+resultat
+```
+
+Le résultat de l'exécution d'un exemple est également facile à repérer. Voici le résultat de l'exemple précédent (qui s'affichera dans la console) :
+
+```{r, echo = FALSE}
+resultat <- 1 + 1
+resultat
+```
+
+
+<!-- ::: {.conseil data-latex=""} -->
+
+<!-- Outre le fait de pouvoir vérifier que le code fonctionne bien sur son poste, un exemple reproductible offre la possibilité de pouvoir expérimenter par soi-même : modifications des paramètres d'une fonction, des données, etc. Il est par ailleurs reconnu que le fait d'avoir une attitude active (reproduire voire expérimenter) peut permettre de mieux assimiler qu'avec une seule lecture. -->
+<!-- ::: -->
+
+### Le package `doremifasolData`
+
+**Afin de se rapprocher le plus possible des situations de travail rencontrées par les agents de l'Insee, la plupart des exemples de la documentation `utilitR` reposent sur des données produites par l'Insee.** Ces données sont soit directement disponibles sur le site de l'Insee, soit construites à partir de données disponibles sur le site de l'Insee. 
+
+Ces jeux de données sont mis à disposition par l'intermédiaire d'un _package_ nommé **`doremifasolData`** développé par les contributeurs du projet `utilitR`. La documentation détaillée de ce _package_ est disponible [sur GitHub](https://inseefrlab.github.io/DoReMIFaSolData/).
+
+Voici la liste des tables disponibles dans `doremifasolData` :
+
+```{r "contenu_doremifasolData", echo = FALSE, results = "asis"}
+tables <- data(package = "doremifasolData")$result
+
+if (knitr::is_latex_output()) {
+output <- 
+  knitr::kable(
+  as.data.frame(list("Table" = tables[, "Item"], "Description" = tables[, "Title"])),
+  format = "latex",
+  escape = TRUE, position = "center", align="cl") %>%
+  kable_classic_2(full_width = F)
+  column_spec(output, 1, width = "4cm") %>%
+    column_spec(2, width = "13cm") %>% 
+    row_spec(0, bold=TRUE, align = "c")
+} else if (knitr::is_html_output()) {
+output <- 
+  knitr::kable(
+  as.data.frame(list("Table" = tables[, "Item"], "Description" = tables[, "Title"])),
+  format = "html",
+  escape = F, position = "center", full_width = F, align="cl") %>%
+  kable_classic_2(full_width = F, html_font = '"Arial", arial, helvetica, sans-serif')
+column_spec(output, 1, width = "4cm") %>%
+    column_spec(2, width = "13cm") %>% 
+    row_spec(0, bold=TRUE, align = "c")
+}
+
+```
+
+::: {.remarque data-latex=""}
+
+Le package tire son nom de son "grand frère", le _package_ [`doremifasol`](https://inseefrlab.github.io/DoReMIFaSol). Ce _package_ a pour finalité de charger dans `R` des données disponibles sur le site de l'Insee, sans que l'utilisateur n'ait ni à naviguer sur ce site, ni à effectuer l'import des données. Tous les jeux de données présents dans `doremifasolData` ont été téléchargés avec `doremifasol`.
+:::
+
+### Comment installer le _package_ `doremifasolData`
+
+Le _package_ `doremifasolData` n'est pas disponible sur le CRAN. Voici comment installer le _package_:
+
+- Si vous utilisez `R` sur un poste Insee (y compris en télétravail) ou dans l'environnement de travail AUS, il faut exécuter la commande suivante:
+
+    ```{r, eval = FALSE}
+    install.packages("doremifasolData", repos = "https://nexus.insee.fr/repository/r-public")
+    ```
+
+- Si vous utilisez `R` sur un autre ordinateur ou sur le SSP Cloud, il faut exécuter la commande suivante:
+
+    ```{r, eval = FALSE}
+    remotes::install_github("InseeFrLab/doremifasolData", ref = "main")
+    ```
+
+## Comment contribuer au projet `utilitR`
+
+**Le projet `UtilitR` est un projet collaboratif, évolutif, *open source* et ouvert à tous, auquel tous les agents peuvent contribuer.** Le projet est mené par un groupe de contributeurs qui en définissent eux-mêmes le contenu, la structure et le calendrier. Le dépôt de la documentation est situé [https://https://github.com/InseeFrLab/utilitR]. Les objectifs et l'approche collaborative du projet `UtilitR` sont détaillés dans le document `Manifeste.md`.
+
+**Tout agent qui le souhaite peut modifier ou compléter la documentation en fonction de ses connaissances et de ses expériences**, et toutes les contributions sont les bienvenues: compléments, corrections d'erreur, améliorations, questions... Il n'y a aucun prérequis, et aucun niveau minimal en `R` n'est demandé. Tout agent intéressé à contribuer au projet est invité à consulter le guide des contributeurs (`CONTRIBUTING.md`).
+
+

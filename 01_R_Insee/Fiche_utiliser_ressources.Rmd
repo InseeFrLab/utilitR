@@ -1,0 +1,134 @@
+# Superviser sa session `R` dans AUS
+
+::: {.recommandation data-latex=""}
+L'environnement de travail AUS est une infrastructure dans laquelle l'usage des ressources informatiques (mémoire vive et processeurs) est partagé entre les utilisateurs. Il est donc essentiel de veiller à faire un bon usage de ces ressources, de façon à ne pas gêner le travail des autres agents.
+
+Il est possible de prévenir la plupart des difficultés en adoptant quatre bonnes pratiques:
+
+- Suivre l'utilisation de la mémoire vive et des processeurs avec le gestionnaire des tâches;
+- Bien réfléchir avant d'importer des données volumineuses;
+- Utiliser régulièrement la fonction `gc()` pour nettoyer la mémoire;
+- Fermer sa session `R` lorsque les traitements sont terminés.
+
+Ces recommandations ne s'appliquent pas au SSP Cloud dont le fonctionnement est différent.
+:::
+
+
+## Pourquoi faut-il suivre son usage des ressources informatiques?
+
+Un usage inadapté des logiciels statistiques peut aboutir à deux problèmes: la saturation de la mémoire vive, et la saturation des processeurs. Le premier problème est plus fréquent avec `R` que le second.
+
+
+### `R` et la mémoire vive
+
+Contrairement à d'autres logiciels tels que SAS, `R` est un langage conçu pour traiter des données chargées dans la mémoire vive (RAM) de l'ordinateur. Cette caractéristique permet à `R` d'être relativement rapide, mais induit des difficultés lorsque les données sont volumineuses. **Le principal risque d'une mauvaise gestion de la mémoire est d'aboutir à une saturation de la mémoire vive**: la session `R` occupe l'intégralité de la mémoire vive, ce qui ralentit les traitements, voire paralyse l'ordinateur. Les problèmes de saturation de la RAM se traduisent généralement par un message du type `cannot allocate a vector of size ** Mb` (quand la session ne plante pas...).
+
+**Le risque de saturation de la mémoire vive est particulièrement fréquent lorsqu'on travaille sur une infrastructure informatique où la mémoire vive est partagée avec d'autres utilisateurs, comme c'est le cas dans l'environnement AUS.** Si plusieurs utilisateurs occupent chacun une grande quantité de mémoire vive sur la même machine virtuelle d'AUS, il est facile d'arriver à une situation de saturation qui paralyse tous les agents connectés (voire fait planter leur session `R`).
+
+**Le risque de saturation de la mémoire vive est aggravé par la façon dont `R` gère la mémoire.** En effet, une session `R` augmente automatiquement la quantité de mémoire vive qu'elle occupe lorsque les traitements réclament davantage de mémoire, mais elle ne la libère pas toujours lorsque les besoins en mémoire diminuent. Il est donc possible qu'une session `R` occupe beaucoup plus de mémoire que ce dont elle a besoin. Par exemple, si vous lancez une session `R`, que vous importez une table de données de 10 Go, puis que vous la supprimez immédiatement de votre session avec la fonction `rm()`, il est possible que votre session `R` continue à occuper inutilement 10 Go de mémoire vive, et ce quand bien même votre environnement `Rstudio` vous indique qu'il n'y a aucun objet en mémoire.
+
+La conclusion est simple: suivre attentivement l'usage que votre session `R` fait de la mémoire vive est essentiel pour votre efficacité comme pour celles des autres agents.
+
+### `R` et les processeurs
+
+**Le second risque est celui d'une saturation des processeurs: une session `R` consomme l'intégralité de la puissance de calcul du serveur, ce qui paralyse les sessions des autres utilisateurs.** Ce risque est relativement peu fréquent avec `R`, pour deux raisons. D'une part, le langage `R` est conçu pour réaliser des traitements en utilisant un seul processeur. D'autre part, toutes les machines virtuelles d'AUS disposent d'au moins une dizaine de processeurs.
+
+Toutefois, **il peut arriver qu'un traitement réalisé avec `R` sature l'ensemble des processeurs.** En effet, certains _packages_ `R` sont conçus pour utiliser un grand nombre de processeurs en parallèle, de façon à accélérer les calculs. Il est donc important de suivre l'usage que votre session `R` fait des processeurs.
+
+## Superviser sa session `R` avec le gestionnaire des tâches
+
+Vous pouvez facilement superviser votre session `R` avec le **gestionnaire des tâches**. Ce programme vous permet de suivre votre consommation de mémoire vive et votre usage des processeurs. Il offre également la possibilité de forcer l'arrêt de votre session `R` si elle est bloquée, mais cette manoeuvre ne doit être réalisée qu'en dernier recours.
+
+### Ouvrir le gestionnaire des tâches
+
+Pour ouvrir le gestionnaire des tâches, il suffit d'utiliser le raccourci présent sur le bureau de votre session AUS, ou d'utiliser le raccourci clavier suivant: <kbd>Ctrl</kbd> + <kbd>⇧ Shift</kbd> + <kbd>Echap</kbd>. Lorsque la fenêtre suivante s'affiche, il faut cliquer sur `Plus de détails`.
+
+<center>
+
+![Le gestionnaire des tâches Windows](./pics/utiliser_ressources/TskMngr1small.png){width=50%}
+
+</center>
+
+### Utiliser le gestionnaire des tâches
+
+L'onglet qui vous sera le plus utile est l'onglet `Utilisateurs`. Il affiche la liste de tous les agents connectés sur la machine virtuelle. Voici comment vous pouvez utiliser cet onglet pour superviser votre session `R`:
+
+- les deux pourcentages dans le cadre rouge indiquent le taux d'utilisation des processeurs et le taux d'occupation de la mémoire vive, _au niveau de l'ensemble des utilisateurs connectés sur cette machine virtuelle_. Vous pouvez constater sur l'image que le serveur n'est pas saturé: le taux d'utilisation est faible (moins de 15%) et le taux d'occupation de la mémoire vive est proche de 40%.
+- les lignes du tableau indiquent le taux d'utilisation des processeurs et le taux d'occupation de la mémoire vive, _au niveau de chaque utilisateur_. Vous devez normalement retrouver votre IDEP dans la première colonne. Le cadre bleu correspond par exemple à l'auteur de cette fiche. Vous pouvez constater qu'il utilise 7,5% des processeurs et qu'il occupe environ 10 Go de mémoire vive.
+- En cliquant sur la petite flèche grise (indiquée par la flèche noire), vous pouvez afficher la consommation de ressources de chacun des programmes que vous utilisez.
+
+<center>
+
+![L'onglet Utilisateurs du gestionnaire des tâches](./pics/utiliser_ressources/TskMngr2bis.png){width=75%}
+
+</center>
+
+Voici trois références à garder en tête pour superviser votre session `R`:
+
+- **Le serveur est proche de la saturation lorsque l'un des deux taux du cadre rouge dépasse 80%.**
+- **Votre utilisation de la mémoire vive est excessive lorsqu'elle dépasse durablement 40 Go.**
+- **Votre utilisation des processeurs est excessive lorsqu'elle dépasse durablement 25%.**
+
+### Que faire en cas de saturation?
+
+Il faut ouvrir un ticket Si\@moi pour signaler un problème de saturation à l'assistance informatique dans les deux cas suivants:
+
+- l'ensemble du serveur est durablement saturé (plus de 15 minutes);
+- votre session `R` fait un usage excessif des ressources informatiques et vous ne parvenez pas à arrêter votre traitement.
+
+## Comment limiter la consommation de mémoire vive avec `R`?
+
+Les paragraphes suivants donnent quelques conseils pour limiter votre consommation de mémoire vive.
+
+### Importer uniquement les données nécessaires
+
+La saturation de la mémoire vive est souvent provoquée par un utilisateur qui essaie d'importer des données très volumineuses. **Voici deux bonnes pratiques à adopter, en particulier lorsque l'ensemble des données que vous souhaitez importer avec `R` est volumineux (par exemple d'une taille supérieure à 2 Go):**
+
+- **Il est conseillé d'importer uniquement les colonnes dont vous avez besoin.** Toutes les fonctions d'importation de données présentées dans cette documentation comprennent une option permettant de choisir les colonnes. Le tableau qui suit vous indique le nom de l'option en fonction du format des données. Vous pouvez vous reporter à la fiche correspondante pour les détails sur son utilisation.
+
+    | Format des données  | Fonction      | _package_       | Option    |
+    |---------------------|---------------|-----------------|----------------------|
+    | Fichier plat (`.csv`, `.tsv`, `.txt`)   | `fread()`   | `data.table`    | `select`   |
+    | Table SAS          | `read_sas()`   | `haven`         | `col_select`   |
+    | Fichier `.xlsx`    | `read.xlsx()`  | `openxlsx`      | `cols`   |
+    | Fichier `.xls`     | `read_excel()` | `readxl`        | `range`   |
+    | Fichier `.ods`     | `read_ods()`   | `readODS`       | `range`   |
+    
+- Dans le cas où vous ne savez pas quelles sont les colonnes dont vous avez besoin (parce que vous découvrez les données par exemple), **il est conseillé de commencer par importer un petit nombre de lignes** (1\ 000 ou 10\ 000) afin d'étudier les données et de choisir ensuite les colonnes à importer. Toutes les fonctions d'importation de données présentées dans cette documentation comprennent une option permettant de définir le nombre de lignes à importer. Le tableau qui suit vous indique le nom de l'option en fonction du format des données. Vous pouvez vous reporter à la fiche correspondante pour les détails sur son utilisation.
+
+    | Format des données  | Fonction | _package_ | Option    |
+    |---------------------|-----------|----------|----------------------|
+    | Fichier plat (`.csv`, `.tsv`, `.txt`)   | `fread()`   | `data.table`    | `nrows`   |
+    | Fichier plat (`.csv`, `.tsv`, `.txt`)   | `read_csv()`   | `readr`    | `n_max`   |
+    | Table SAS   | `read_sas()`   | `haven`    | `n_max`   |
+    | Fichier `.xlsx`   | `read.xlsx()`   | `openxlsx`    | `rows`   |
+    | Fichier `.xls`   | `read_excel()`   | `readxl`      | `n_max`   |
+    | Fichier `.ods`   | `read_ods()`   | `readODS`      | `range`   |
+
+### Faire preuve de prudence en faisant des jointures
+
+Un autre cas standard de saturation de la mémoire vive provient d'une erreur dans la réalisation d'une jointure entre deux tables. En effet, une jointure mal réalisée peut aboutir à une table d'une taille largement supérieure à celle de la mémoire vive d'AUS. De façon générale, **une jointure entre des tables comprenant un grand nombre d'observations (par exemple plus de 500\ 000\ observations) doit être menée avec prudence.** Vous trouverez davantage de conseils dans la fiche\ [Joindre des tables de données], en particulier dans la dernière section.
+
+### Nettoyer régulièrement la mémoire vive
+
+Comme mentionné précédemment, une session `R` augmente automatiquement la quantité de mémoire vive qu'elle occupe lorsque les traitements réclament davantage de mémoire, mais ne la libère pas toujours lorsque les besoins en mémoire diminuent. Il est donc important de vérifier régulièrement que vous n'occupez pas plus de mémoire vive que nécessaire.
+
+Pour ce faire, **la solution la plus simple consiste à utiliser la fonction `gc()`** (_garbage collection_, qui signifie littéralement "enlèvement des ordures"). Cette fonction analyse la mémoire vive occupée par la session `R`, et libère la mémoire qui est occupée inutilement. Il est vivement recommandé d'exécuter la fonction `gc()` après un traitement portant sur des données volumineuses.
+
+Voici une liste indicative d'opérations après lesquelles vous pouvez exécuter `gc()`:
+
+- une jointure entre deux tables volumineuses;
+- la suppression d'objets volumineux avec la fonction `rm()`;
+- une estimation économétrique complexe;
+- toute opération statistique qui prend plus de quelques minutes.
+
+::: {.remarque data-latex=""}
+Voici deux remarques sur la fonction `gc()`:
+
+- Plus la session `R` occupe de mémoire vive, plus la fonction `gc()` met de temps à nettoyer la mémoire. Ce nettoyage peut prendre jusqu'à plusieurs minutes si vous manipulez des données volumineuses.
+- Certaines ressources documentaires sur `R` affirment qu'il est inutile de se servir de `gc()` car `R` nettoie automatiquement la mémoire vive lorsqu'elle est presque saturée. Ceci est vrai lorsque vous utilisez `R` sur votre poste local (et où il n'y a qu'une seule session `R`). En revanche, ce n'est pas vrai dans le cas où plusieurs sessions `R` partagent la mémoire vive comme dans AUS (car votre session `R` ne peut déclencher le nettoyage de la mémoire vive dans la session `R` d'un autre agent).
+:::
+
+### Et si tout cela ne suffit pas?
+
+Les conseils et les bonnes pratiques présentés dans cette fiche devraient suffire à résoudre la plupart des problèmes de saturation que vous pourriez rencontrer. Toutefois, il est possible que cela ne suffise pas, parce que vos traitements requièrent des ressources informatiques particulièrement importantes. En ce cas, il faut déposer une demande métier dans Si\@moi.

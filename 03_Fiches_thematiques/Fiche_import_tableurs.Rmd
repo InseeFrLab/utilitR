@@ -16,13 +16,14 @@ Il est déconseillé d'utiliser le _package_ `xlsx`.
 
 L'importation de fichiers `xlsx` et `xls` va être illustré à partir de deux jeux de données créés à partir de données présentes sur le site de l'Insee, en formats `xls` et `xlsx`. Pour reproduire les exemples ci-dessous, vous devez:
 
-- télécharger [les jeux de données ici](https://gitlab.com/linogaliana/documentationR/-/tree/master/import_donnees_tabulees_tests) puis le sauvegarder sur votre poste;
+- télécharger les jeux de données en format `xlsx` et `xls` ici: `https://github.com/InseeFrLab/utilitR > import_donnees_tabulees_tests` puis les sauvegarder sur votre poste;
 - définir dans `R` les chemins des fichiers nommés `chemin_xls` et `chemin_xlsx`. Voici un exemple:
-  ```{r, eval=FALSE}
-  chemin_xls  <- "C:/Users/mon_IDEP_Insee/Dossier_UtilitR/mes_donnees/mes_donnees.xls"  
-  chemin_xlsx <- "C:/Users/mon_IDEP_Insee/Dossier_UtilitR/mes_donnees/mes_donnees.xlsx"
-  ```
-  
+    ```{r, eval=FALSE}
+    # Attention, cet exemple doit être adapté à votre environnement de travail
+    chemin_xls  <- "C:/Users/mon_IDEP_Insee/Dossier_UtilitR/mes_donnees/mes_donnees.xls"  
+    chemin_xlsx <- "C:/Users/mon_IDEP_Insee/Dossier_UtilitR/mes_donnees/mes_donnees.xlsx"
+    ```
+    
 ```{r, eval=TRUE, echo = FALSE}
 # Définir le chemin du fichier
 chemin_xls  <- "./import_donnees_tabulees_tests/mes_donnees.xls"
@@ -200,19 +201,18 @@ mesDonnees <- readxl::read_excel(path = chemin_xls, skip = 5, col_names = FALSE)
 head(mesDonnees, 4)
 ```
 
-
-
 ## Importer un fichier `ods` avec le _package_ `readODS`
 
 ### Introduction
 
 Le _package_ `readODS` propose deux fonctions d'importation de fichiers `ods`: `read_ods` et `read.ods`. La documentation du _package_ recommande d'utiliser `read_ods`. L'usage de cette fonction va être illustré à partir d'un jeu de données créé à partir de données présentes sur le site de l'Insee. Pour reproduire les exemples ci-dessous, vous devez:
 
-- télécharger [le jeu de données ici](https://gitlab.com/linogaliana/documentationR/-/tree/master/import_donnees_tabulees_tests) puis le sauvegarder sur votre poste;
+- télécharger le jeu de données en format `ods` ici: `https://github.com/InseeFrLab/utilitR > import_donnees_tabulees_tests` puis le sauvegarder sur votre poste;
 - définir dans `R` le chemin du fichier nommé `chemin_ods`. Voici un exemple:
-  ```{r, eval=FALSE}
-  chemin_ods <- "C:/Users/mon_IDEP_Insee/Dossier_UtilitR/mes_donnees/mes_donnees.ods"
-  ```
+    ```{r, eval=FALSE}
+    # Attention, cet exemple doit être adapté à votre environnement de travail
+    chemin_ods <- "C:/Users/mon_IDEP_Insee/Dossier_UtilitR/mes_donnees/mes_donnees.ods"
+    ```
 
 ```{r, eval=TRUE, echo = FALSE}
 # Définir le chemin du fichier
@@ -220,7 +220,7 @@ chemin_ods <- "./import_donnees_tabulees_tests/mes_donnees.ods"
 ```
 Il ne faut pas oublier de charger le _package_ avec `library`.
 
-```{r}
+```{r, message = FALSE}
 library(readODS)
 ```
 
@@ -232,12 +232,12 @@ Voici les principaux arguments et options de `read_ods()`:
 | Argument            | Valeur par défaut     | Fonction                                                                                   |
 |---------------------|-----------------------|--------------------------------------------------------------------------------------------|
 | `path`              | Aucune                | Le chemin du fichier `ods` à importer                                                        |
-| `sheet`             | 1                     | Onglet à importer. Soit le nom de l'onglet, soit un numéro de l'onglet  |
+| `sheet`             | 1                     | Onglet à importer. Soit le nom de l'onglet, soit le numéro de l'onglet (utiliser de préférence le nom de l'onglet) |
 | `col_names`         | `TRUE`                  | Indique si la première ligne de l'onglet contient les noms des variables               |
 | `col_types`         | `NULL`                  | `NULL` pour laisser `R` deviner le type des variables à partir de l'onglet ou se reporter à `readr::type_convert` pour spécifier le type des variables | 
 | `na`                | `""`                    | Vecteur donnant les chaîne de caractères interprétées comme des valeurs manquantes. Par défaut, `read_ods` convertit les cellules vides en données manquantes |
-| `skip`              | `0`                     | le nombre de lignes du fichier de données à ignorer avant de commencer à importer les données  |
-| `range`             |  `NULL`                 | sélection d'un rectangle à l'aide d'une plage de cellules de type Excel, comme `range = "D12:F15"`. |
+| `skip`              | `0`                     | Le nombre de lignes du fichier de données à ignorer avant de commencer à importer les données  |
+| `range`             |  `NULL`                 | Sélection d'un rectangle à l'aide d'une plage de cellules de type Excel, comme `range = "D12:F15"`. |
 
 ### Quelques exemples
 
@@ -265,7 +265,7 @@ readODS::ods_sheets(chemin_ods)
 ```
 :::
 
-* **Ne pas importer les n premières lignes **: le paramètre `skip` permet de préciser à compter de quelle ligne commencer l'importation. Dans l'exemple ci-dessous, on n'importe les données qu'à compter de la cinquième ligne. Si on laisse le paramètre `col_names = TRUE`, la première de ces lignes est considérée comme noms de colonnes, ce qui peut donner des résultats absurdes. Si c'est le cas, on peut utiliser le paramètre `col_names=FALSE`.
+* **Ne pas importer les n premières lignes **: le paramètre `skip` permet de préciser à compter de quelle ligne commencer l'importation. Dans l'exemple ci-dessous, on n'importe les données qu'à compter de la cinquième ligne. Si on laisse le paramètre `col_names = TRUE`, la première de ces lignes est considérée comme noms de colonnes, ce qui peut donner des résultats absurdes. Si c'est le cas, on peut utiliser le paramètre `col_names = FALSE`.
 
 ```{r}
 mesDonnees <- readODS::read_ods(path = chemin_ods, skip = 5, col_names = FALSE)
@@ -285,4 +285,4 @@ head(mesDonnees, 3)
 * [Package `openxlsx`](https://cran.r-project.org/web/packages/openxlsx/openxlsx.pdf);
 * [Package `readxl`](https://cran.r-project.org/web/packages/readxl/readxl.pdf);
 * [Package `readODS`](https://cran.r-project.org/web/packages/readODS/readODS.pdf);
-* [vignette `readr`](https://cran.r-project.org/web/packages/readr/vignettes/readr.html)
+* [vignette `readr`](https://cran.r-project.org/web/packages/readr/vignettes/readr.html).

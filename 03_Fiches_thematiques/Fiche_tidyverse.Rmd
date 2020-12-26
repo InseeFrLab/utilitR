@@ -543,6 +543,7 @@ Une table de données stocke des informations sous forme de lignes et de colonne
 
 ![Transformation *long to wide*](./pics/datatable/longtowide.png)
 
+
 Pour illustrer ces transformations, nous allons utiliser les données du répertoire Filosofi 2016 agrégées au niveau des EPCI (table `filosofi_epci_2016`), et disponibles dans le _package_ `doremifasolData`. On convertit cette table en `tibble` et on conserve uniquement certaines variables grâce à la fonction `select`.
 
 ```{r}
@@ -560,16 +561,20 @@ La fonction `pivot_longer` permet de restructurer des données en transformant d
 - `names_to`: le nom de la nouvelle colonne qui va contenir les noms des colonnes transposées;
 - `values_to`: le nom de la nouvelle colonne qui va contenir les valeurs des colonnes transposées.
 
-Voici un exemple de l'usage de cette fonction avec les données Filosofi 2016 sur les EPCI. On peut voir que cette table contient deux types d'information: le code de l'EPCI (`CODGEO`), et des colonnes donnant le taux de pauvreté total (`TP6016`) et le taux de pauvreté par tranche d'âge (de `TP60AGE116` à `TP60AGE616`).
+
+Pour illustrer l'usage de cette fonction, nous allons utiliser les données du répertoire Filosofi 2016 agrégées au niveau des EPCI (table `filosofi_epci_2016`), et disponibles dans le _package_ `doremifasol`. On convertit cette table en `tibble` et on conserve uniquement certaines variables grâce à la fonction `select`.
 
 ```{r}
+filosofi_epci_2016_tbl <- as_tibble(filosofi_epci_2016) %>% 
+  select(CODGEO, TP6016, TP60AGE116, TP60AGE216,
+         TP60AGE316, TP60AGE416, TP60AGE516, TP60AGE616)
 filosofi_epci_2016_tbl
 ```
 
 Nous allons restructurer cette table pour obtenir une nouvelle table, avec une observation par EPCI et par tranche d'âge. Voici le code qui permet d'obtenir cette table: on transpose les valeurs des colonnes dont le nom commence par "TP" (`cols = starts_with("TP")`), le nom des colonnes transposées sera indiquée dans la nouvelle colonne "tranche_age" (`names_to = "tranche_age"`) et les valeurs des colonnes transposées seront indiquées dans la colonne "taux_pauvrete" (`values_to = "taux_pauvrete"`).
 
 ```{r, echo = FALSE}
-# On réduit le nombre de lignes imprimées pour gagner de la place
+# On augmente le nombre de lignes imprimées pour faire apparaître deux catégories
 options(tibble.print_min = 10)
 options(tibble.print_max = 10)
 options(dplyr.print_min  = 10)
@@ -595,7 +600,7 @@ options(dplyr.print_max  = 6)
 
 ::: {.conseil data-latex=""}
 
-**Il est recommandé de travailler avec des données en format `long` plutôt qu'en format `wide`, notamment lorsque vous voulez faire des graphiques.** En effet, le _package_ de visualisation graphique `ggplot2` est optimisé pour manipuler des données en format `long` (voir la fiche [Faire des graphiques avec `ggplot2`]). Ce conseil est particulièrement important si vous voulez représenter un graphique avec des groupes: il est préférable que les groupes soient empilés (format `long`) plutôt que juxtaposés (`format wide`), car le code est plus rapide et facile à écrire.
+**Il est recommandé de travailler avec des données en format `long` plutôt qu'en format `wide`, notamment lorsque vous voulez faire des graphiques.** En effet, le _package_ de visualisation graphique `ggplot2` est optimisé pour manipuler des données en format `long` (voir la fiche [Faire des graphiques avec `ggplot2`]). Ce conseil est particulièrement important si vous voulez représenter un graphique avec des groupes: il est préférable que les groupes soient empilés (format `long`) plutôt que juxtaposés (format `wide`), car le code est plus rapide et facile à écrire.
 :::
 
 
@@ -610,7 +615,7 @@ La fonction `pivot_wider` permet de restructurer des données en transformant de
 
 Par ailleurs, l'option `names_prefix` permet de définir le préfixe du nom des nouvelles colonnes, ce qui est utile pour avoir des noms explicites.
 
-```{r, eval=TRUE,message = FALSE}
+```{r, eval=TRUE, message = FALSE}
 bpe_ens_2018_tbl %>%
 	group_by(REG, TYPEQU) %>%
 	summarise(NB_EQUIP_TOT = sum(NB_EQUIP)) %>%
@@ -625,7 +630,7 @@ bpe_ens_2018_tbl %>%
 
 **Il est conseillé de bien réfléchir avant de restructurer en format *wide*, et de ne le faire que lorsque cela paraît indispensable**. En effet, s'il est tentant de restructurer les données sous format *wide* car ce format peut paraître plus intuitif, il est généralement plus simple et plus rigoureux de traiter les données en format *long*. Ceci dit, il existe des situations dans lesquelles il est indiqué de restructurer les données en format *wide*. Voici deux exemples:
 
-* produire un tableau synthétique de résultats, prêt à être diffusé, avec quelques colonnes donnant des indicateurs par catégorie (exemple: la table `filosofi_epci_2016_tbl` du _package_ `doremifasolData`);
+* produire un tableau synthétique de résultats, prêt à être diffusé, avec quelques colonnes donnant des indicateurs par catégorie (exemple: la table `filosofi_epci_2016` du _package_ `doremifasolData`);
 * produire une table avec une colonne par année, de façon à calculer facilement un taux d'évolution entre deux dates.
 :::
 

@@ -179,7 +179,7 @@ Nous attirons particulièrement votre attention sur la gestion des dépendances.
 #### Assurer la qualité du code
 
 * **Bien tester tous les exemples**;
-* **Pour les exemples, il est recommandé d'utiliser autant que possible les jeux de données figurant dans le _package_ [`doremifasol`](https://github.com/pierre-lamarche/DoReMIFaSol)**. Plus d'informations dans le paragraphe __Gérer les jeux de données utilisés dans les exemples__;
+* **Pour les exemples, il est recommandé d'utiliser autant que possible les jeux de données figurant dans le _package_ [`doremifasolData`](https://github.com/InseeFrLab/DoReMIFaSolData)**. Plus d'informations dans le paragraphe __Gérer les jeux de données utilisés dans les exemples__;
 * Pour présenter l'utilisation d'une fonction:
 
     + commencer par le comportement par défaut (avec le minimum d'arguments et d'options);
@@ -194,14 +194,14 @@ Voici comment on présente l'utilisation d'un `package`:
 * Rappeler systématiquement que le chargement de tous les *packages* doit se faire **au début** du code, et non au milieu du code;
 * **Les *packages* utilisés par une fiche doivent être listés dans le fichier `DESCRIPTION`.** Vous
 n'avez pas besoin de le modifier manuellement, vous pouvez utiliser une fonction du
-package `usethis` pour cela: `r usethis::use_package("monpackage")`. La dépendance sera alors automatiquement ajoutée au fichier `DESCRIPTION`, au niveau de la 
+package `usethis` pour cela: `usethis::use_package("monpackage")`. La dépendance sera alors automatiquement ajoutée au fichier `DESCRIPTION`, au niveau de la 
 liste des `Imports`. 
 
 #### Gérer les jeux de données utilisés dans les exemples
 
-* Il est recommandé d'utiliser autant que possible les jeux de données figurant dans le _package_ [`doremifasol`](https://github.com/pierre-lamarche/DoReMIFaSol). 
-* Il est évidemment possible d'ajouter un nouveau *dataset* à `doremifasol` si vous pensez qu'aucun des _datasets_ du _package_ ne convient pour vos exemples; pour ce faire il suffit d'ouvrir une _issue_ dans le dépôt Gitlab d'`UtilitR` ou dans le dépôt Github de `doremifasol`, puis de discuter avec les contributeurs;
+* Il est recommandé d'utiliser autant que possible les jeux de données figurant dans le _package_ [`doremifasolData`](https://github.com/InseeFrLab/DoReMIFaSolData), qui contient exclusivement des données téléchargées sur le site de l'Insee.
+* Il est évidemment possible d'ajouter un nouveau *dataset* à `doremifasolData` si vous pensez qu'aucun des _datasets_ du _package_ ne convient pour vos exemples; pour ce faire il suffit d'ouvrir une _issue_ dans le dépôt Gitlab d'`UtilitR` ou dans le dépôt Github de `doremifasolData`, puis de discuter avec les contributeurs;
 * Si vous souhaitez utiliser un jeu de données provenant d'un autre _package_, voici la marche à suivre:
     - demander systématiquement l'approbation des autres contributeurs du projet avant de le faire;
     - préciser systématiquement le *package* d'origine. Par exemple on écrit `data("World", package = "sf")` pour utiliser la table `World` du *package* `sf`. 
-* Dans le cas du _package_ [doremifasol](https://github.com/pierre-lamarche/DoReMIFaSol), on peut simplifier l'appel aux données, par exemple de la manière suivante: `data("filosofi_epci_2016")`.
+* Dans le cas du _package_ [doremifasolData](https://github.com/InseeFrLab/DoReMIFaSolData), on peut simplifier l'appel aux données, par exemple de la manière suivante: `data("filosofi_epci_2016")`.
