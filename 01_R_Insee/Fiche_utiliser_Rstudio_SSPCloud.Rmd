@@ -85,7 +85,7 @@ Les principales options sont les suivantes:
 - L'**option `mem`** (dans l'onglet `service`) définit la quantité maximale de mémoire vive (mesurée en Mo) que votre service Rstudio peut utiliser. **Cette option est particulièrement importante** et vous devez choisir soigneusement sa valeur: si vos traitements requièrent plus de mémoire que la valeur de `mem`, la seule solution consiste à lancer un autre service Rstudio avec une valeur de `mem` plus élevée. Il est conseillé d'utiliser 10000 comme valeur par défaut.
 - L'**option `cpu`** (dans l'onglet `service`) définit le nombre minimal de processeurs alloués à votre service Rstudio. Contrairement à l'option `mem`, il ne s'agit pas d'un maximum, une valeur basse ne risque donc pas de bloquer vos traitements. Il est conseillé d'utiliser 2 comme valeur par défaut.
 - L'**option `custom name`** (dans l'onglet `Onyxia`) permet de définir le nom de votre service. Cette option n'a aucun impact sur le fonctionnement de votre service, mais peut vous aider à vous y retrouver si vous avez plusieurs services Rstudio en parallèle.
-- L'**option `Enable IP protection`** (dans l'onglet `Networking`) est une option de sécurité informatique très contraignante, qui est activée par défaut. Il est conseillé de la désactiver, en particulier si vous souhaitez utiliser votre service Rstudio pendant plusieurs jours.
+- L'**option `Enable IP protection`** (dans l'onglet `Networking`) est une option de sécurité informatique assez contraignante, qui est activée par défaut. Il est conseillé de la laisser activée. Toutefois, vous pouvez éventuellement la désactiver, notamment si vous savez que vous allez devoir accéder à l'environnement RStudio depuis des addresses IP différentes (exemple: au bureau puis en télétravail).
 
 ### Sauvegarder son travail
 
@@ -163,7 +163,7 @@ get_bucket("donnees-insee", region = "")
 ::: {.conseil data-latex=""}
 La commande `get_bucket()` peut renvoyer un grand nombre de résultats si le _bucket_ contient un grand nombre de fichiers. Le _bucket_ `donnees-insee` contient ainsi plus de 1000 fichiers. Il est donc conseillé d'utiliser l'option `prefix` pour restreindre le chemin des fichiers que l'on souhaite lister. Par exemple, le code suivant fournit la liste des fichiers situés dans le répertoire `ESTEL/2015` du _bucket_ `donnees.insee`:
 
-```{r}
+```{r, eval = FALSE}
 library(aws.s3)
 get_bucket("donnees-insee", region = "", prefix = "ESTEL/2015")
 ```
