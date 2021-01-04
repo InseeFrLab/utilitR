@@ -20,7 +20,7 @@ Cette documentation ne prétend pas être exhaustive ou sans erreurs. **Elle doi
 
 ## Quelle est la place du projet `UtilitR` à l'Insee?
 
-**Le projet `UtilitR` est porté par les agents du réseau LS<sup>2</sup> (Logiciels statistiques en Libre Service) de l'Insee.** La documentation `UtilitR` s'attache à être cohérente avec les recommandations émises par le comité de certification des _packages_ `R` (COPS) et complète les supports du projet [`USSR`](https://info-ssm.insee.net/cms/sites/extranetSSM/home/methodologie/projet-palettes/ussr.html).
+**Le projet `UtilitR` est porté par les agents du réseau LS<sup>2</sup> (Logiciels statistiques en Libre Service) de l'Insee.** La documentation `UtilitR` s'attache à être cohérente avec les recommandations émises par le comité de certification des _packages_ `R` (COPS).
 
 ## Quelles sont les valeurs du projet `UtilitR`?
 

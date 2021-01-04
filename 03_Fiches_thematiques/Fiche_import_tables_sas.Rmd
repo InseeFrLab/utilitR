@@ -1,23 +1,27 @@
-# Importer des tables SAS
+# Importer des tables SAS®
 
 ## Tâches concernées et recommandations
 
 L'utilisateur souhaite importer dans `R` des données stockées sous forme de tables SAS.
 
 ::: {.recommandation data-latex=""}
-* **Pour des données de taille petite ou moyenne (moins de 1 Go), l'usage de la fonction `read_sas()` du *package* `haven` est recommandé.**
-* **Pour des fichiers de taille importante (plus de 1 Go), il est recommandé de procéder en deux temps**:
-    * Exporter les données SAS en format `.csv`.
-    * Importer en R les données `.csv`.
+Deux méthodes sont recommandées pour importer des tables SAS avec `R`:
 
-Il est **fortement déconseillé** d'utiliser les *packages*  suivants pour importer des données SAS : `sas7dbat`, `foreign`, `Hmisc`, `SASxport`.
+* méthode en une étape: **utiliser la fonction `read_sas()` du *package* `haven`.**
+* méthode en deux étapes: **Exporter les données SAS en format `.csv`, puis les importer en `R`**.
+
+Les particularités du format des tables SAS peuvent être source de difficultés lorsqu'on veut les importer avec `R`. **Il est fortement recommandé de tester la méthode d'importation choisie sur un petit échantillon de données avant d'importer les données**, en particulier lorsque celles-ci sont volumineuses. Il est également recommandé d'essayer l'autre méthode si la première ne fonctionne pas correctement.
+
+En revanche, il est **fortement déconseillé** d'utiliser les *packages*  suivants pour importer des données SAS : `sas7dbat`, `foreign`, `Hmisc`, `SASxport`.
 :::
 
-## Importer des tables SAS de taille limitée:  le *package* `haven`
+## Première méthode pour importer des tables SAS® avec `R`:  le *package* `haven`
+
+Utiliser le *package* `haven` est la méthode la plus simple pour importer des tables SAS avec `R`. Toutefois, cette méthode n'est pas entièrement fiable, et peut aboutir à des erreurs inattendues (notamment lorsque la table SAS est compressée en BINARY).
 
 ### Utiliser la fonction `read_sas()`
 
-Le *package* `haven` propose la fonction `read_sas()` pour importer des tables SAS de taille limitée (moins de 1 Go). Cette fonction est assez fiable et facile d'utilisation. Voici un exemple simple (qui ne peut être exécuté que dans AUS):
+Le *package* `haven` propose la fonction `read_sas()` pour importer des tables SAS. Voici un exemple simple (qui ne peut être exécuté que dans AUS):
 
 ```{r, eval = FALSE}
 # Charger le package haven
@@ -37,7 +41,7 @@ Voici les principaux arguments et options de `read_sas()`:
 | `n_max`          | `Inf`                 | Nombre maximum de lignes à importer (pas de limite par défaut)                             |
 | `encoding`       | `NULL`                | Préciser l'encodage de la table SAS (normalement `read_sas() le trouve automatiquement`)   |
 
-Remarque: la fonction `read_sas()` importe par défaut toutes les colonnes du fichier. Pour sélectionner les colonnes à importer, on peut utiliser l'option `col_select`. Cette option peut s'utiliser de plusieurs façons:
+La fonction `read_sas()` importe par défaut toutes les colonnes du fichier. Pour sélectionner les colonnes à importer, on peut utiliser l'option `col_select`. Cette option peut s'utiliser de plusieurs façons:
 
 * Sous la forme d'une liste de noms de variables. Exemple: `col_select = c("var1", "var3", "var4")`.
 * Avec des outils issus de `dplyr` pour sélectionner les variables selon leur nom (pour en savoir plus: `?dplyr::select`). Exemple: `col_select = starts_with("TYP")` permet de sélectionner toutes les variables dont le nom commence par "TYP".
@@ -45,51 +49,62 @@ Remarque: la fonction `read_sas()` importe par défaut toutes les colonnes du fi
 Voici un exemple de code qui importe les 100 premières lignes en sélectionnant les colonnes: 
 
 ```{r, eval = FALSE}
-# Importer une table SAS depuis GEN 
+# Importer une table SAS depuis GEN
+# Cet exemple fonctionne uniquement dans AUS
 dfRP <- read_sas("W:/A1090/GEN_A1090990_DINDISAS/RPADUDIF.sas7bdat",
                  n_max = 100,
                  col_select = starts_with("TYP"))
 ```
 
-La fonction `read_sas()` de `haven` importe les noms de variables, mais aussi les étiquettes des variables (`labels`). Il est possible de récupérer les étiquettes de colonnes de la table importée avec la fonction `get_label()` du *package* `sjlabelled`:
+::: {.conseil data-latex=""}
+**Si vous souhaitez utiliser `read_sas()` pour importer des données volumineuses (par exemple plus de 1 ou 2 Go), il est recommandé de faire des tests avant d'importer l'ensemble des données.** Un premier test consiste à importer les premières lignes de la table en utilisant l'option `n_max`, puis à vérifier que cet échantillon a été correctement importé.
+:::
+
+
+La fonction `read_sas()` importe les noms de variables, mais aussi les étiquettes des variables (`labels`). Il est possible de récupérer les étiquettes de colonnes de la table importée avec la fonction `get_label()` du *package* `sjlabelled`:
 
 ```{r, eval = FALSE}
 library(sjlabelled)
 get_label(dfRP)
 ```
 
-### Résoudre le problème des tables SAS compressées en BINARY
+### Résoudre le problème des tables SAS® compressées en BINARY
 
-Une limite de `read_sas()` est qu'elle ne peut pas importer les tables SAS compressées en BINARY. Si vous avez un bug à l'importation d'une table SAS, vous pouvez vérifier que la table est compressée en BINARY: `clic droit sur la table SAS > Propriétés > Onglet Détails`. 
+Une des limites de la fonction `read_sas()` est qu'elle ne peut pas importer les tables SAS compressées en BINARY. Si vous rencontrez une erreur à l'importation d'une table SAS, vous pouvez vérifier que la table est compressée en BINARY: `clic droit sur la table SAS > Propriétés > Onglet Détails`. 
 
 ![](./pics/Importer_donnees_SAS/donnees_SAS_compressees_BINARY.png){width=100%} 
 
 Si vous êtes dans cette situation, vous avez deux solutions:
 
 * Réenregistrer la table SAS en n'utilisant pas le format BINARY;
-* Procéder en deux temps (voir plus bas).
+* Importer les données avec `R` en procédant en deux temps (voir plus bas).
 
-## Importer des tables SAS de grande taille: procéder en deux temps
+## Seconde méthode pour importer des tables SAS® avec `R`: procéder en deux temps
 
-La fonction `read_sas()` de `haven` n'est pas performante lorsque les tables SAS sont volumineuses. C'est pourquoi, et à défaut d'une meilleure solution, **il est recommandé de procéder en deux temps pour des tables SAS de taille importante (plus de 1 Go environ)**:
+Il existe des situations dans lesquelles la fonction `read_sas()` de `haven` ne fonctionne pas (voir ci-dessus) ou se révèle peu performante. Voici donc une seconde méthode qui consiste à procéder en deux temps:
 
 * Exporter les données SAS en format `.csv`;
 * Importer en R les données `.csv`.
 
-Contrairement à ce que vous pourriez penser, cette solution n'est ni spécialement complexe ni particulièrement longue.
+**Cette méthode propose un haut niveau de fiabilité et de performance, et permet d"'importer les données avec `R` depuis un format très courant et non dépendant d'un logiciel.** Elle a toutefois l'inconvénient de nécessiter un espace de stockage pour les données intermédiaires en format `csv`.
 
-### Etape 1 : Exporter au format `csv` depuis SAS
+::: {.remarque data-latex=""}
+Contrairement à ce que vous pourriez penser, cette méthode en deux étapes n'est ni spécialement complexe ni particulièrement longue. Elle peut même être plus rapide que la méthode en une étape car la fonction `read_sas()` de `haven` est relativement peu performante lorsque les tables SAS sont volumineuses.
+
+:::
+
+### Etape 1 : Exporter au format `csv` depuis SAS®
 
 Il y a deux façons de faire pour exporter une table SAS vers un format `.csv`:
 
-* **la solution très simple** exporte uniquement la table SAS (dans un fichier qu'on appellera `data.csv`), mais pas les étiquettes des variables;
+* **la solution simple** exporte uniquement la table SAS (dans un fichier qu'on appellera `data.csv`), mais pas les étiquettes des variables;
 * **la solution complète**: si l'on souhaite disposer dans `R` des données et des étiquettes de variables, une bonne pratique consiste à exporter deux fichiers en `.csv`:
     - le fichier des données lui-même (`data.csv`) ;
     - un fichier contenant la liste des variables associées à leur `label` (`labelvariables.csv`).
     
     Il s'agit typiquement de la structure de données que les utilisateurs des données du *Household Finance and Consumption Survey* ont à leur disposition.
 
-#### Solution très simple
+#### Solution simple
 
 La solution la plus simple consiste à exporter uniquement la table de données de SAS vers un fichier `.csv`. Voici un exemple de code SAS qui exporte une table SAS en `.csv`. L'option `(keep = var1 var2 var3 var8)` permet de choisir les variables qu'on exporte. Vous pouvez le copier-coller dans SAS, et l'adapter.
 
@@ -110,7 +125,7 @@ RUN;
 
 #### Solution complète
 
-Voici un exemple de code SAS qui exporte l'intégralité d'une table SAS sous forme de trois fichiers `.csv`: un pour les données *stricto sensu*, un pour les *labels* des variables, et un pour les formats des variables. L'option `(keep = var1 var2 var3 var8)` permet de choisir les variables qu'on exporte. Vous pouvez le copier-coller dans SAS, et l'adapter.
+Voici un exemple de code SAS qui exporte l'intégralité d'une table SAS sous forme de trois fichiers `.csv`: un pour les données *stricto sensu*, un pour les étiquettes des variables, et un pour les formats des variables. L'option `(keep = var1 var2 var3 var8)` permet de choisir les variables qu'on exporte. Vous pouvez le copier-coller dans SAS, et l'adapter.
 
 ```
 * Définir le répertoire d'exportation ;
@@ -144,7 +159,7 @@ RUN;
 
 ### Etape 2 : Importer les données `csv` en `R` 
 
-Les méthodes pour importer les données `csv` en `R`  sont détaillées dans la fiche [Importer des fichiers plats (`.csv`, `.tsv`, `.txt`)][]. Si vous avez utilisé la méthode complète, voici comment réutiliser les étiquettes de variables avec `R`:
+Les méthodes pour importer les données `csv` en `R` sont détaillées dans la fiche [Importer des fichiers plats (`.csv`, `.tsv`, `.txt`)]. Si vous avez utilisé la méthode complète, voici comment réutiliser les étiquettes de variables avec `R`:
 
 * Importer le fichier `data.csv` sous le nom `df_sas`;
 * Importer le fichier `labelvariables.csv` sous le nom `labels_sas`;
@@ -152,4 +167,5 @@ Les méthodes pour importer les données `csv` en `R`  sont détaillées dans la
 
 ## Pour en savoir plus
 
-* Sur `haven`: la [documentation du *package*](https://www.rdocumentation.org/packages/haven) (en anglais).
+* Sur `haven`: la [documentation du *package*](https://www.rdocumentation.org/packages/haven) (en anglais);
+* Sur les méthodes d'importation de fichiers plats en `R`: voir la fiche [Importer des fichiers plats (`.csv`, `.tsv`, `.txt`)].
