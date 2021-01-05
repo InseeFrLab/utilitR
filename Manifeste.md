@@ -20,13 +20,13 @@ Cette documentation ne prétend pas être exhaustive ou sans erreurs. **Elle doi
 
 ## Quelle est la place du projet `UtilitR` à l'Insee?
 
-**Le projet `UtilitR` est porté par les agents du réseau LS<sup>2</sup> (Logiciels statistiques en Libre Service) de l'Insee.** La documentation `UtilitR` s'attache à être cohérente avec les recommandations émises par le comité de certification des _packages_ `R` (COPS) et complète les supports du projet [`USSR`](https://info-ssm.insee.net/cms/sites/extranetSSM/home/methodologie/projet-palettes/ussr.html).
+**Le projet `UtilitR` est porté par les agents du réseau LS<sup>2</sup> (Logiciels statistiques en Libre Service) de l'Insee.** La documentation `UtilitR` s'attache à être cohérente avec les recommandations émises par le comité de certification des _packages_ `R` (COPS).
 
 ## Quelles sont les valeurs du projet `UtilitR`?
 
 **Le projet `UtilitR` repose sur cinq principes: transparence, ouverture, bienveillance, exigence, reproductibilité.**
 
-- Transparence: l'ensemble du projet est librement accessible sur le [dépôt Gitlab](https://gitlab.com/linogaliana/documentationR), sous licence libre;
+- Transparence: l'ensemble du projet est librement accessible sur le [dépôt Github](https://github.com/InseeFrLab/utilitR), sous licence libre;
 - Ouverture: **tout agent de l'Insee qui le souhaite peut rejoindre le projet à tout moment**. Les modalités de contribution peuvent prendre différentes formes, détaillées dans le [guide des contributeurs](CONTRIBUTING.md);
 - Bienveillance: toutes les idées, initiatives et propositions sont les bienvenues, et les contributeurs veillent à se soutenir les uns les autres;
 - Exigence: les modifications de la documentation sont systématiquement soumises à une revue par les contributeurs du projet et ne sont acceptées que lorsqu'elles rencontrent une large approbation;
