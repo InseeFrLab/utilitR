@@ -1,7 +1,7 @@
 # `UtilitR` : une documentation utile pour `R`  <a href='https://www.utilitr.org'><img src='resources/logo-utilitR.svg' align="right" height="139px" /></a>
 
 <!-- badges: start -->
-[![pipeline status](https://gitlab.com/linogaliana/documentationR/badges/master/pipeline.svg)](https://gitlab.com/linogaliana/documentationR/-/commits/master)
+[![build-doc Actions Status](https://github.com/InseeFrLab/utilitR/workflows/bookdown/badge.svg)](https://github.com/InseeFrLab/utilitR/actions)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gl/linogaliana%2FdocumentationR/binder?urlpath=rstudio)
 <!-- badges: end -->
 
@@ -35,13 +35,13 @@ Deux points importants sont à noter:
 
 ##  Place du projet `UtilitR` au sein de l'Insee
 
-**Le projet `UtilitR` est porté par les agents du réseau LS<sup>2</sup> (Logiciels statistiques en Libre Service) de l'Insee.** La documentation `UtilitR` s'attache à être cohérente avec les recommandations émises par le comité de certification des _packages_ `R` (COPS) et complète les supports du projet `USSR` (LIEN A AJOUTER).
+**Le projet `UtilitR` est porté par les agents du réseau LS<sup>2</sup> (Logiciels statistiques en Libre Service) de l'Insee.** La documentation `UtilitR` s'attache à être cohérente avec les recommandations émises par le comité de certification des _packages_ `R` (COPS).
 
 ## Comment contribuer à la documentation
 
 **Le projet `UtilitR` est un projet collaboratif, évolutif, *open source* et ouvert à tous, auquel tous les agents peuvent contribuer.** Le projet est mené par un groupe de contributeurs qui en définissent eux-mêmes le contenu, la structure et le calendrier. Les objectifs et l'approche collaborative du projet `UtilitR` sont détaillés dans [`ce document`](Manifeste.md).
 
-**Tout agent qui le souhaite peut modifier ou compléter la documentation en fonction de ses connaissances et de ses expériences**, et toutes les contributions sont les bienvenues: compléments, corrections d'erreur, améliorations, questions... Il n'y a aucun prérequis, et aucun niveau minimal en `R` n'est demandé. Le dépôt de la documentation est situé [ici](https://gitlab.com/linogaliana/documentationR). Tout agent intéressé à contribuer au projet est invité à consulter le guide des contributeurs (`CONTRIBUTING.md`).
+**Tout agent qui le souhaite peut modifier ou compléter la documentation en fonction de ses connaissances et de ses expériences**, et toutes les contributions sont les bienvenues: compléments, corrections d'erreur, améliorations, questions... Il n'y a aucun prérequis, et aucun niveau minimal en `R` n'est demandé. Le dépôt de la documentation est situé [ici](https://github.com/InseeFrLab/utilitR). Toute personne intéressée à contribuer au projet est invité à consulter le guide des contributeurs (`CONTRIBUTING.md`).
 
 # Environnement de travail
 
@@ -66,7 +66,7 @@ remotes::install_deps(dependencies = TRUE)
 L'environnement de travail utilisé pour la compilation de la documentation est disponible sous la forme d'une image docker :
 
 ```
-registry.gitlab.com/linogaliana/documentationr:master
+docker.io/inseefrlab/utilitr:latest
 ```
 
 Cette image comprend toutes les dépendances système ainsi que les packages R nécessaires à la compilation du livre.  
@@ -88,7 +88,7 @@ Vous arrivez sur un environnement de travail RStudio avec tous les packages déj
 Si docker est installé sur votre machine, vous pouvez exécuter : 
 
 ```bash
-docker run --rm -p 8787:8787 -e PASSWORD=monpassword registry.gitlab.com/linogaliana/documentationr:master
+docker run --rm -p 8787:8787 -e PASSWORD=monpassword docker.io/inseefrlab/utilitr:latest
 ```
 
 Vous pouvez remplacer `monpassword` par le mot de passe de votre choix.
@@ -99,7 +99,7 @@ Pour vous connecter sur ce serveur, vous devez utiliser :
 - nom d'utilisateur : `rstudio`
 - mot de passe : le mot de passe choisi ci-dessus (`monpassword`) dans l'exemple.
 
-Une fois connecté à RStudio, vous devez ensuite cloner le projet <https://gitlab.com/linogaliana/documentationR.git>.  
+Une fois connecté à RStudio, vous devez ensuite cloner le projet <https://github.com/InseeFrLab/utilitR.git>.  
 Si vous opérez des modifications, n'oubliez pas de transmettre vos modifications à l'aide de `git` grâce à un `push`. En effet, l'utilisation de l'option `--rm` détruira automatiquement votre container et son système de fichiers.
 
 ### Container permanent
@@ -109,18 +109,18 @@ Il vous est possible de créer un container permanent (attention, celui peut-êt
 Créez un container appelé `mon_container` (vous pouvez changer ce nom) en mode détaché :
 
 ```bash
-docker run --name mon_container -d -p 8787:8787 -e PASSWORD=monpassword registry.gitlab.com/linogaliana/documentationr:master
+docker run --name mon_container -d -p 8787:8787 -e PASSWORD=monpassword docker.io/inseefrlab/utilitr:latest
 ```
 
 Vous pouvez aussi attacher un volume à ce container grâce à l'option `-v` (sous linux, n'oubliez pas de rajouter l'option `-e USERID=$UID`). Par exemple, pour ajouter vos clés `ssh` : 
 
 ```bash
-docker run --name mon_container -d -p 8787:8787 -v $HOME/.ssh:/home/rstudio/.ssh -e USERID=$UID -e PASSWORD=monpassword registry.gitlab.com/linogaliana/documentationr:master
+docker run --name mon_container -d -p 8787:8787 -v $HOME/.ssh:/home/rstudio/.ssh -e USERID=$UID -e PASSWORD=monpassword docker.io/inseefrlab/utilitr:latest
 ```
 
 Une fois ce container créé et lancé, vous pouvez vous connecter sur le serveur RStudio disponible à l'adresse <http://127.0.0.1:8787>. Pour se connecter, le nom d'utilisateur est `rstudio` et le mot de passe `monpassword`.
 
-Dans RStudio, vous pouvez ensuite cloner le projet <https://gitlab.com/linogaliana/documentationR.git> et travailler. N'oubliez pas de sauvegarder vos modifications.
+Dans RStudio, vous pouvez ensuite cloner le projet <https://github.com/InseeFrLab/utilitR.git> et travailler. N'oubliez pas de sauvegarder vos modifications.
 
 Une fois que vous avez fini de travailler :
 
