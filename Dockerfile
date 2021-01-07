@@ -40,7 +40,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /src/*.deb
 
-RUN at-get -qq install --no-install-recommends chromium-browser
+RUN apt-get -qq install --no-install-recommends chromium-browser
 
 # Change right permissions (see https://github.com/rocker-org/rocker-versioned/issues/104)
 RUN  chown -R root:staff /opt/texlive \
