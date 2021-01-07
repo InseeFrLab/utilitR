@@ -18,7 +18,9 @@ jobs:
           Rscript -e "install.packages(c('remotes','rmarkdown','bookdown','pagedown'))"
           Rscript -e "remotes::install_deps(dependencies = TRUE)"
       - name: Render Book
-        run: Rscript -e 'bookdown::render_book("index.Rmd", output_format = "pagedown::html_paged")'
+        run: |
+          Rscript -e 'bookdown::render_book("index.Rmd", output_format = "pagedown::html_paged")'
+          chrome --headless --print-to-pdf=pagedown.pdf DocumentationR.html
       - uses: actions/upload-artifact@v1
         with:
           name: DocumentationR_pagedown
