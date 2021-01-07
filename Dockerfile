@@ -9,6 +9,7 @@ RUN tlmgr update --self
 RUN tlmgr install `cat /tmp/build_image/_latex_requirements.txt | tr '\r\n' ' '`
 # R packages 
 COPY ./DESCRIPTION /tmp/build_image/
+RUN Rscript -e "install.packages('knitr')"
 RUN Rscript -e "remotes::install_deps('/tmp/build_image', dependencies = TRUE, upgrade = FALSE)"
 
 # Second stage: use the installed packages directories

@@ -1,0 +1,25 @@
+on:
+  push:
+    branches:
+      - main
+      - master
+
+name: documentation version PDF
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: inseefrlab/utilitr:latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@master
+      - name: Install Dependencies
+        run: |
+          Rscript -e "install.packages(c('remotes','rmarkdown','bookdown'))"
+          Rscript -e "remotes::install_deps(dependencies = TRUE)"
+      - name: Render Book
+        run: Rscript -e 'bookdown::render_book("index.Rmd", output_dir = "_public", output_format = "bookdown::pdf_book")'
+      - uses: actions/upload-artifact@v1
+        with:
+          name: _public
+          path: _public/
