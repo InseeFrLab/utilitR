@@ -31,7 +31,7 @@ RUN apt-get update \
        fonts-liberation \
        fonts-freefont-ttf \
        libssl-dev \
-       chromium \
+       chromium-browser \
        imagemagick \
        libmagick++-dev \
        ghostscript \
