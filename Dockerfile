@@ -48,6 +48,7 @@ RUN apt-get update && \
   apt-get update && \
   apt-get -yq install google-chrome-stable --no-install-recommends 
 
+RUN whereis google-chrome
 
 # Change right permissions (see https://github.com/rocker-org/rocker-versioned/issues/104)
 RUN  chown -R root:staff /opt/texlive \
