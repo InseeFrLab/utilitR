@@ -40,7 +40,13 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /src/*.deb
 
-RUN apt-get install -y chromium && ln -s /usr/bin/chromium-browser /usr/bin/google-chrome
+RUN apt-get update && \
+  apt-get -yq install wget apt-transport-https ca-certificates gnupg --no-install-recommends && \
+  apt-get -yq install libgconf-2-4 && \
+  wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
+  sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' &&\
+  apt-get update && \
+  apt-get -yq install google-chrome-stable --no-install-recommends
 
 # Change right permissions (see https://github.com/rocker-org/rocker-versioned/issues/104)
 RUN  chown -R root:staff /opt/texlive \
