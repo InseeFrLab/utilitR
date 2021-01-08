@@ -48,6 +48,8 @@ RUN apt-get update && \
   apt-get update && \
   apt-get -yq install google-chrome-stable --no-install-recommends 
 
+RUN whereis google-chrome-stable
+
 RUN ln -s /usr/bin/google-chrome-stable /usr/bin/google-chrome
 
 # Change right permissions (see https://github.com/rocker-org/rocker-versioned/issues/104)
