@@ -46,7 +46,9 @@ RUN apt-get update && \
   wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
   sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' &&\
   apt-get update && \
-  apt-get -yq install google-chrome-stable --no-install-recommends
+  apt-get -yq install google-chrome-stable --no-install-recommends 
+
+RUN ln -s /usr/bin/google-chrome-stable /usr/bin/google-chrome
 
 # Change right permissions (see https://github.com/rocker-org/rocker-versioned/issues/104)
 RUN  chown -R root:staff /opt/texlive \
