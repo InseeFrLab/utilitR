@@ -23,13 +23,14 @@ jobs:
           Rscript -e "remotes::install_deps(dependencies = TRUE)"
       - name: Render Book
         run: |
-          whereis google-chrome
-          bookdown::render_book("index.Rmd", output_format = "pagedown::html_paged")
+          mkdir _pagedown_output
+          Rscript -e "bookdown::render_book('index.Rmd', output_format = 'pagedown::html_paged', output_file = '_pagedown_output/index.html')"
+          Rscript -e "pagedown::chrome_print('_pagedown_output/index.html', '_pagedown_output/DocumentationR.pdf', extra_args = c('--disable-gpu', '--no-sandbox'))"
 #          Rscript -e 'pagedown::chrome_print(bookdown::render_book("index.Rmd", output_format = "pagedown::html_paged"), browser = "/usr/bin/google-chrome", extra_args = c("--disable-gpu", "--no-sandbox"), verbose = 2, timeout = 300)'
       - uses: actions/upload-artifact@v1
         with:
           name: DocumentationR_pagedown
-          path: DocumentationR_files/
+          path: _pagedown_output/
           # name: DocumentationR_pagedown
           # path: DocumentationR.pdf
 
