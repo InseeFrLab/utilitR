@@ -32,7 +32,7 @@ if (!dir.exists(dossier_images_compressees)) {
   dir.create(dossier_images_compressees)
 }
 # Copier les images si elles ne sont pas déja dans le dossier
-file.copy(list.files(dossier_images, full.names = TRUE), dossier_images_compressees, recursive=TRUE, overwrite = FALSE)
+file.copy(list.files(dossier_images, full.names = TRUE), dossier_images_compressees, recursive=TRUE, overwrite = TRUE)
 
 compresser_image <- 
   function(file_in, 
@@ -75,10 +75,12 @@ compresser_image <-
     }
   }
 
-include_image = function(x,  ratio_compression = 2, ...) {
+include_image = function(x, compression = TRUE, ratio_compression = 2, ...) {
   # Fonction qui 1/ compresse  l'image si nécessaire; 2/ l'inclut dans le Rmd
-  compresser_image(file_in = x, ...)
-  knitr::include_graphics(sub(dossier_images, dossier_images_compressees, x), ...)
+  if (compression) {
+    compresser_image(file_in = x, ...)
+  }
+  knitr::include_graphics(sub(dossier_images, dossier_images_compressees, x), ...)    
 }
 ```
 
