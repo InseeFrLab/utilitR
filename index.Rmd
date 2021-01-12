@@ -24,7 +24,6 @@ link-citations: yes
 knitr::opts_chunk$set(echo = TRUE)
 # resize and compress images ===
 library(magick)
-library(pbapply)  # just so we have a progress bar, because this thing takes a while
 
 # Créer un dossier pour les images compressées (s'il n'existe pas déjà)
 dossier_images <- './pics' # This folder must exist in the repo
@@ -37,8 +36,8 @@ file.copy(list.files(dossier_images, full.names = TRUE), dossier_images_compress
 
 compresser_image <- 
   function(file_in, 
-           file_out = NA, 
-           xmax = NA, quality = 0.7, cutoff = 30000) {
+           file_out = NA, ratio_compression = 2, 
+           xmax = 300, quality = 0.7, cutoff = 3000) {
     # Fonction de compression d'une image png
     # xmax <- 1920  # y pixel max
     # quality <- 0.7  # passed on to jpeg::writeJPEG()
@@ -57,11 +56,11 @@ compresser_image <-
     } else {# if larger than cutoff
       # magick workflow
       image_raw <- image_read(path = file_in)
-      if (is.na(xmax)) {
+      if (!is.na(ratio_compression)) {
         image_resized <- 
           image_scale(
             image = image_raw, 
-            geometry = as.character(as.integer(round(image_info(image_raw)["width"] / 2))))
+            geometry = as.character(as.integer(round(image_info(image_raw)["width"] / ratio_compression))))
       } else if (image_info(image_raw)["width"] > xmax) {  # only resize if smaller
         image_resized <- 
           image_scale(
@@ -76,7 +75,7 @@ compresser_image <-
     }
   }
 
-include_image = function(x, ...) {
+include_image = function(x,  ratio_compression = 2, ...) {
   # Fonction qui 1/ compresse  l'image si nécessaire; 2/ l'inclut dans le Rmd
   compresser_image(file_in = x, ...)
   knitr::include_graphics(sub(dossier_images, dossier_images_compressees, x), ...)
