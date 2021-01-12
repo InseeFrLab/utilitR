@@ -38,50 +38,51 @@ permet de proposer, automatiquement, des modifications via l'interface de
 
 ![](./pics/contributing/edit.png)
 
-En cliquant dessus, on se retrouve sur XXXX
+En cliquant dessus, on se retrouve sur une interface permettant d'éditer 
+de visualiser et proposer des modifications du fichier source. 
 
+![](./pics/contributing/edit2.png)
 
+La documentation officielle de Github sur cette manière de procéder est
+disponible
+[ici](https://docs.github.com/en/free-pro-team@latest/github/managing-files-in-a-repository/editing-files-in-another-users-repository).
 
-Le dépôt comprend une branche dédiée aux corrections typographiques, orthographiques et grammaticales nommée `typo`. Elle est accessible sur la [page suivante](https://gitlab.com/linogaliana/documentationR/-/merge_requests/52) ou via la page `Merge Requests` accessible sur la gauche. Voici la marche à suivre pour corriger une coquille.
+Après avoir fait les corrections nécessaires, se rendre en bas de la page et
+donner un titre au `commit` qui est intelligible.
+Si cela est nécessaire, il est possible d'ajouter un message au `commit`. 
 
-- Se rendre dans l'onglet `Changes`:
+![](./pics/contributing/edit3.png)
 
-    ![](./pics/contributing/MR.png)
+:exclamation: **Pour faciliter le suivi et l'intégration des modifications, 
+choisir l'option ` Create a new branch for this commit and start a pull request`.
+Le nom de la branche doit commencer par `typo-`**.
 
-    Les fiches thématiques apparaissent, en bas de la page (il faut descendre assez bas, ne soyez pas surpris). Il est fréquent que les modifications ne soient pas directement visibles (c'est une des difficultés de l'interface de GitLab), il faut alors cliquer sur le bouton **`Show unchanged lines`**, en dessous du nom de la fiche que vous voulez modifier, pour faire apparaître les modifications:
+Cliquer sur `Propose changes`. Automatiquement, une page pour soumettre cette
+modification au dépôt `UtilitR` s'ouvre:
 
-    ![](./pics/contributing/MR2.png)
+![](./pics/contributing/edit4.png)
 
-- Naviguer sur la ligne concernée et cliquer sur la bulle sur le commentaire. Cela ouvre un espace de discussion.
+Comme sur l'image ci-dessus, ajouter le label `typo`. Après avoir
+éventuellement révisé le titre de la `Pull Request` et la description associée,
+cliquer sur `Create pull request`. Cela permettra aux mainteneurs du projet
+`UtilitR` d'éventuellement intégrer les modifications ou de démarrer une
+discussion sur les propositions de modifications.
 
-    ![](./pics/contributing/MR3.png)
-
-    C'est dans cette fenêtre que va être faite la suggestion. Il est possible d'accompagner la suggestion d'un commentaire. On procède alors de la manière suivante:
-
-    ![](./pics/contributing/MR4.png)
-
-    1. Cliquer sur le bouton encadré pour automatiquement générer le bloc de suggestion. Il s'agit d'un bloc `markdown` avec `suggestion:-0+0`.
-    2. Modifier le texte dans le bloc pour proposer la suggestion de remplacement. 
-    3. Si cela apparaît nécessaire, laisser un commentaire explicatif.
-
-    Il est possible (et vivement recommandé) de prévisualiser la modification en cliquant sur l'onglet `Preview`:
-
-    ![](./pics/contributing/MR5.png)
-
-- Une fois la suggestion prête, vous pouvez choisir entre:
-    * `Start a review`: proposer une série de suggestions dans une unique relecture. Cliquer sur ce bouton permet de réitérer la procédure précédentes sur d'autres paragraphes du fichier, pour proposer d'autres modifications;
-    * `Add a comment now`: valider la publication de la suggestion, pour la soumettre aux autres contributeurs.
-
-- Pour mettre fin à une relecture initiée par `Start a review`, ne pas oublier de cliquer sur `Finish review`.
 
 ## Partie 2: Comment participer aux discussions collectives?
 
-L'équipe du projet `UtilitR` dispose d'un espace de discussion collective sur les problèmes techniques et les développements futurs du projet. Cet espace de discussion est stocké sur le dépôt Gitlab du projet et est structuré sous forme d'_issues_. Une *issue* est un fil de discussion permettant aux contributeurs du projet (mais aussi aux personnes extérieures) d'échanger sur un sujet précis (défini par le titre de l'*issue*). Vous pouvez consulter la liste des *issues* ouvertes en suivant [ce lien](https://gitlab.com/linogaliana/documentationR/-/issues).
+L'équipe du projet `UtilitR` dispose d'un espace de discussion collective
+sur les problèmes techniques et les développements futurs du projet.
+Cet espace de discussion est stocké sur le dépôt `Github` du projet et est
+structuré sous forme d'_issues_. Une *issue* est un fil de discussion permettant aux contributeurs du projet (mais aussi aux personnes extérieures) d'échanger sur un sujet précis (défini par le titre de l'*issue*). Vous
+pouvez consulter la liste des *issues* ouvertes
+en suivant [ce lien](https://github.com/InseeFrLab/utilitR/issues).
 
 Il est possible de contribuer aux discussions de deux façons:
 
 - en participant à la discussion dans une *issue* existante. Pour participer à la discussion dans un _issue_, il suffit de cliquer sur le titre de l'_issue_, de lire les discussions, et de réagit dans le champ en bas de la page.
-- en ouvrant une *issue* sur un nouveau sujet. Pour ouvrir une *issue*, il suffit de [cliquer ici](https://gitlab.com/linogaliana/documentationR/-/issues/new?issue%5Bassignee_id%5D=&issue%5Bmilestone_id%5D=).
+- en ouvrant une *issue* sur un nouveau sujet. Pour ouvrir une *issue*, il
+suffit de [cliquer ici](https://github.com/InseeFrLab/utilitR/issues/new).
 
 Pour des sujets plus transversaux, ou pour demander de l'aide aux autres contributeurs, il est possible de rejoindre le salon de discussion dédié sur le service de messagerie Tchap. Il s'agit d'un salon privé auquel vous pouvez demander l'accès en envoyant un message privé aux mainteneurs du projet (Lino Galiana et Olivier Meslin en ce moment).
 
