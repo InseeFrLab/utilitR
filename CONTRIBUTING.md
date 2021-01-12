@@ -20,10 +20,9 @@ Le document apporte une réponse aux questions suivantes:
 - [:arrow_down: Comment proposer des modifications d'une fiche?](#two-comment-proposer-des-modifications-dune-fiche)
 - [:arrow_down: Comment participer aux discussions collectives?](#three-comment-participer-aux-discussions-collectives)
 - [:arrow_down: Comment effectuer la relecture d'une fiche?](#comment-effectuer-la-relecture-dune-fiche)
-    - Comment suggérer des modifications de la fiche via Gitlab?
     - Comment suggérer des remarques sur une fiche via Gitlab?
     - Comment ouvrir une issue si la fiche pose un réel problème?
-- Comment ajouter en tant que contributeur une nouvelle fiche? 
+- [:arrow_down: Comment ajouter en tant que contributeur une nouvelle fiche?](#five-comment-ajouter-une-nouvelle-fiche-à-la-documentation)
     - Comment proposer une nouvelle fiche?
     - Comment élaborer une nouvelle fiche?
 
@@ -174,6 +173,9 @@ L'_issue_ doit avoir un titre qui renvoie explicitement à la fiche concernée (
 
 
 ## :five: Comment ajouter une nouvelle fiche à la documentation? 
+
+[:arrow_up: Retour à l'introduction](#one-introduction)
+
 
 Ajouter une nouvelle fiche thématique à la documentation représente un
 travail conséquent qui requiert l'approbation de la majorité des contributeurs du projet.
