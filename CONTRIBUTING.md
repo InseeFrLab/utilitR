@@ -1,6 +1,6 @@
 # Guide pour contribuer à la documentation `UtilitR`
 
-## Introduction
+## :one: Introduction
 
 Il est possible de contribuer au projet `UtilitR` de différentes manières, détaillées dans ce document. Les contributions peuvent prendre différentes formes, d'un avis argumenté suite à une relecture à des propositions de modification en passant par des propositions d'intégrations de nouveaux éléments dans le livre ou le site. 
 
@@ -8,9 +8,12 @@ Il est possible de contribuer au projet `UtilitR` de différentes manières, dé
 des contributeurs actuels, fonctionnement qui est orchestré autour de `Github` et de ses différents outils.
 Il est possible d'en acquérir très rapidement les bases à partir de ce document présentant le [Travail collaboratif avec `R`](https://linogaliana.gitlab.io/collaboratif/git.html#des-bases-de-git), ou à partir d'échanges avec les contributeurs actuels.
 
-Pour les relecteurs quelques notions de l'environnement Github suffisent (ou peuvent s'acquérir facilement) pour apporter sa pierre à l'édifice.
+Pour les relecteurs quelques notions de l'environnement `Github` suffisent (ou peuvent s'acquérir facilement) pour apporter sa pierre à l'édifice.
 
-Les mainteneurs et développeurs du projet `UtilitR` sont en effet disponibles pour aider tous les agents qui souhaitent contribuer, ce qui signifie qu'il est possible d'interagir avec eux pour être guidé en cas de difficultés. Toutefois, **le respect des règles de contribution détaillées ci-dessous est essentiel pour l'efficacité du travail collectif et pour assurer la qualité de cette documentation.**
+Les mainteneurs et développeurs du projet `UtilitR` sont en effet disponibles
+pour aider tous les personnes qui souhaitent contribuer, ce qui signifie
+qu'il est possible d'interagir avec eux pour être guidé en cas de difficultés.
+Toutefois, **le respect des règles de contribution détaillées ci-dessous est essentiel pour l'efficacité du travail collectif et pour assurer la qualité de cette documentation.**
 
 Le document apporte une réponse aux questions suivantes: 
 
@@ -24,7 +27,9 @@ Le document apporte une réponse aux questions suivantes:
     - Comment proposer une nouvelle fiche?
     - Comment élaborer une nouvelle fiche?
 
-## Partie 1: Comment corriger des coquilles?
+## :two: Partie 1: Comment corriger des coquilles?
+
+[Retour à l'introduction](#introduction)
 
 Pour ce type de modifications légères, il est demandé d'utiliser directement l'outil de suggestions de changements de `Gitlab`. Le dépôt comprend une branche dédiée aux corrections typographiques, orthographiques et grammaticales nommée `typo`. Elle est accessible sur la [page suivante](https://gitlab.com/linogaliana/documentationR/-/merge_requests/52) ou via la page `Merge Requests` accessible sur la gauche. Voici la marche à suivre pour corriger une coquille.
 
