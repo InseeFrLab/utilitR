@@ -17,8 +17,8 @@ Toutefois, **le respect des règles de contribution détaillées ci-dessous est 
 
 Le document apporte une réponse aux questions suivantes: 
 
-- [:arrow_down: Comment corriger des coquilles?](two-partie-1-comment-corriger-des-coquilles)
-- Comment participer aux discussions collectives?
+- [:arrow_down: Comment corriger des coquilles?](two-comment-corriger-des-coquilles)
+- [:arrow_down: Comment participer aux discussions collectives?](comment-participer-aux-discussions-collectives)
 - Comment effectuer la relecture d'une fiche?
     - Comment suggérer des modifications de la fiche via Gitlab?
     - Comment suggérer des remarques sur une fiche via Gitlab?
@@ -27,7 +27,7 @@ Le document apporte une réponse aux questions suivantes:
     - Comment proposer une nouvelle fiche?
     - Comment élaborer une nouvelle fiche?
 
-## :two: Partie 1: Comment corriger des coquilles?
+## :two: Comment corriger des coquilles?
 
 [:arrow_up: Retour à l'introduction](#one-introduction)
 
@@ -66,10 +66,17 @@ Comme sur l'image ci-dessus, ajouter le label `typo`. Après avoir
 éventuellement révisé le titre de la `Pull Request` et la description associée,
 cliquer sur `Create pull request`. Cela permettra aux mainteneurs du projet
 `UtilitR` d'éventuellement intégrer les modifications ou de démarrer une
-discussion sur les propositions de modifications.
+discussion sur les propositions de modifications. Celles-ci sont visibles
+en cliquant sur l'onglet `Files changed`:
+
+![](./pics/contributing/edit5.png)
 
 
-## Partie 2: Comment participer aux discussions collectives?
+
+## :three: Comment participer aux discussions collectives?
+
+[:arrow_up: Retour à l'introduction](#one-introduction)
+
 
 L'équipe du projet `UtilitR` dispose d'un espace de discussion collective
 sur les problèmes techniques et les développements futurs du projet.
