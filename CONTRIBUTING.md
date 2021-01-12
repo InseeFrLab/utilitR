@@ -17,7 +17,7 @@ Toutefois, **le respect des règles de contribution détaillées ci-dessous est 
 
 Le document apporte une réponse aux questions suivantes: 
 
-- Comment corriger des coquilles?
+- [:arrow_down: Comment corriger des coquilles?](two-partie-1-comment-corriger-des-coquilles)
 - Comment participer aux discussions collectives?
 - Comment effectuer la relecture d'une fiche?
     - Comment suggérer des modifications de la fiche via Gitlab?
@@ -31,7 +31,14 @@ Le document apporte une réponse aux questions suivantes:
 
 [:arrow_up: Retour à l'introduction](#one-introduction)
 
-Pour ce type de modifications légères, il est demandé d'utiliser directement l'outil de suggestions de changements de `Gitlab`. Le dépôt comprend une branche dédiée aux corrections typographiques, orthographiques et grammaticales nommée `typo`. Elle est accessible sur la [page suivante](https://gitlab.com/linogaliana/documentationR/-/merge_requests/52) ou via la page `Merge Requests` accessible sur la gauche. Voici la marche à suivre pour corriger une coquille.
+Pour ce type de modifications légères, il est demandé d'utiliser directement l'outil de suggestions de changements de `Github`.
+Le livre déployé sur <www.book.utilitr.org> comprend un bouton `Edit` qui
+permet de proposer, automatiquement, des modifications via l'interface de 
+`Github`:
+
+![](./pics/contributing/edit.png)
+
+Le dépôt comprend une branche dédiée aux corrections typographiques, orthographiques et grammaticales nommée `typo`. Elle est accessible sur la [page suivante](https://gitlab.com/linogaliana/documentationR/-/merge_requests/52) ou via la page `Merge Requests` accessible sur la gauche. Voici la marche à suivre pour corriger une coquille.
 
 - Se rendre dans l'onglet `Changes`:
 
