@@ -143,7 +143,15 @@ La relecture peut comprendre trois types de tâches:
 
 ### Comment faire des commentaires sur une fiche via Gitlab?
 
-Les commentaires peuvent être faits directement depuis `Github`. Le [dernier chapitre du livre](https://linogaliana.gitlab.io/-/documentationR/-/jobs/630938451/artifacts/_public/contribuer-aux-supports.html) propose une petite astuce pour se placer dans le dernier état du fichier (en jargon `git`, un *commit*) qui a servi à déployer le livre. 
+Les commentaires peuvent être faits directement depuis `Github`. 
+Dans le menu du site web www.book.utilitr.org,
+il faut d'abord se placer dans la fiche à
+relire et ensuite cliquer sur le bouton `History`, en haut à gauche.
+
+![](./pics/contributing/history.png)
+
+
+Le [dernier chapitre du livre](https://linogaliana.gitlab.io/-/documentationR/-/jobs/630938451/artifacts/_public/contribuer-aux-supports.html) propose une petite astuce pour se placer dans le dernier état du fichier (en jargon `git`, un *commit*) qui a servi à déployer le livre. 
 
 Il suffit de remplacer les `XXXXX` dans l'url d'exemple <https://gitlab.com/linogaliana/documentationR/-/commit/XXXXX> par le numéro associé au chapitre dans le tableau présent dans le chapitre [dernier chapitre](https://linogaliana.gitlab.io/-/documentationR/-/jobs/630938451/artifacts/_public/contribuer-aux-supports.html). Par exemple, en supposant que l'url est <https://gitlab.com/linogaliana/documentationR/-/commit/7587fd6>, on désire faire un commentaire sur la fiche données textuelles. Si celle-ci est masquée, il faut cliquer sur `Click to expand it`.
 
