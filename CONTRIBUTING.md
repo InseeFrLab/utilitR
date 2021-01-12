@@ -136,24 +136,35 @@ son organisation globale.
 
 La relecture peut comprendre trois types de tâches:
 
-* Proposer des corrections mineures (faute d'orthographes, formulations peu claires): ce travail de modification est décrit dans [:arrow_up: Comment proposer des modifications d'une fiche?](#two-comment-proposer-des-modifications-dune-fiche);
+* Proposer des corrections mineures (faute d'orthographes, formulations peu claires) : ce travail de modification est décrit dans [:arrow_up: Comment proposer des modifications d'une fiche?](#two-comment-proposer-des-modifications-dune-fiche). Il convient d'adopter la convention proposée de nommer la branche `typo-XXX`;
 * Faire des commentaires (exemple: je ne parviens pas à reproduire cet exemple): ce travail de modification est décrit dans __Comment faire des commentaires sur une fiche via Github?__;
 * Des signalements de problèmes: si le relecteur pense que l'organisation d'ensemble ou le déroulement de la fiche soulève une difficulté sérieuse, ou que des points importants n'ont pas été abordés, il est invité à le signaler en suivant la procédure décrite dans la partie __Comment ouvrir une _issue_ si la fiche soulève un problème?__.
 
+----
+début partie problématique
 
 ### Comment faire des commentaires sur une fiche via Gitlab?
 
-Les commentaires peuvent être faits directement depuis `Github`. 
+La démarche est un peu fastidieuse mais est possible directement depuis `Github`. 
 Dans le menu du site web www.book.utilitr.org,
 il faut d'abord se placer dans la fiche à
 relire et ensuite cliquer sur le bouton `History`, en haut à gauche.
 
 ![](./pics/contributing/history.png)
 
+Cela ouvre l'historique des modifications (`commits`) d'une fiche. Cliquer sur 
+le titre de la dernière modification. 
 
-Le [dernier chapitre du livre](https://linogaliana.gitlab.io/-/documentationR/-/jobs/630938451/artifacts/_public/contribuer-aux-supports.html) propose une petite astuce pour se placer dans le dernier état du fichier (en jargon `git`, un *commit*) qui a servi à déployer le livre. 
+![](./pics/contributing/history2.png)
 
-Il suffit de remplacer les `XXXXX` dans l'url d'exemple <https://gitlab.com/linogaliana/documentationR/-/commit/XXXXX> par le numéro associé au chapitre dans le tableau présent dans le chapitre [dernier chapitre](https://linogaliana.gitlab.io/-/documentationR/-/jobs/630938451/artifacts/_public/contribuer-aux-supports.html). Par exemple, en supposant que l'url est <https://gitlab.com/linogaliana/documentationR/-/commit/7587fd6>, on désire faire un commentaire sur la fiche données textuelles. Si celle-ci est masquée, il faut cliquer sur `Click to expand it`.
+La fiche concernée est en haut du navigateur. Cliquer sur le bouton 
+`Expand` pour l'ouvrir plus (si la fiche est longue, il faudra cliquer plusieurs
+fois). 
+
+![](./pics/contributing/history3.png)
+
+A la ligne où un commentaire 
+
 
 ![](./pics/contributing/commit.png)
 
@@ -169,19 +180,26 @@ Le commentaire devrait s'afficher sous le paragraphe concerné
 
 ![](./pics/contributing/comment3.png)
 
+fin partie problématique
+-----
+
+
 ### Comment ouvrir une _issue_ si la fiche soulève un problème?
 
-La procédure pour ouvrir une _issue_ est décrite dans la partie 2. L'_issue_ doit avoir un titre qui renvoie explicitement à la fiche concernée (exemple: problème avec la fiche graphiques), et mentionner clairement la nature du problème.
+La procédure pour ouvrir une _issue_ est décrite dans la partie
+[:arrow_up: Comment participer aux discussions collectives?](#three-comment-participer-aux-discussions-collectives)
+L'_issue_ doit avoir un titre qui renvoie explicitement à la fiche concernée (exemple: problème avec la fiche graphiques), et mentionner clairement la nature du problème.
 
 -----------------
 
-## Partie 4: Comment ajouter une nouvelle fiche à la documentation? 
+## :five: Comment ajouter une nouvelle fiche à la documentation? 
 
-Ajouter une nouvelle fiche thématique à la documentation représente un travail conséquent qui requiert l'approbation de la majorité des contributeurs du projet.
+Ajouter une nouvelle fiche thématique à la documentation représente un
+travail conséquent qui requiert l'approbation de la majorité des contributeurs du projet.
 
 ### Comment proposer une nouvelle fiche?
 
-La première étape consiste à __ouvrir une *issue*__ dans le dépôt `Gitlab`. L'_issue_ doit avoir:
+La première étape consiste à __ouvrir une *issue*__ dans le dépôt `Github`. L'_issue_ doit avoir:
 
 - un titre explicite indiquant sur quel sujet vous voulez proposer une fiche (toutes suggestions bienvenues);
 - un contenu détaillant l'objet de la fiche et les grandes lignes de son contenu. 
@@ -190,6 +208,8 @@ Une fois que l'équipe de contributeurs est d'accord sur l'objet de la fiche et 
 
 ### Comment élaborer une nouvelle fiche? 
 
+* Forker le dépôt `utilitR` afin d'obtenir une version avec droits de
+modification
 * Créer une branche portant un nom reflétant le contenu de la fiche (exemple: `fiche_graphiques`, `fiche_cartographie`);
 * Rédiger la fiche en `Rmarkdown` à partir du modèle de fiche (`03_Fiches_thematiques/Modele_de_fiche.Rmd`); 
     - il est fortement conseillé de lire des fiches existantes pour comprendre la démarche et le niveau de détail retenus par les autres contributeurs;
