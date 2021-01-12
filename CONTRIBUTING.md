@@ -17,8 +17,8 @@ Toutefois, **le respect des règles de contribution détaillées ci-dessous est 
 
 Le document apporte une réponse aux questions suivantes: 
 
-- [:arrow_down: Comment corriger des coquilles?](two-comment-corriger-des-coquilles)
-- [:arrow_down: Comment participer aux discussions collectives?](comment-participer-aux-discussions-collectives)
+- [:arrow_down: Comment corriger des coquilles?](#two-comment-corriger-des-coquilles)
+- [:arrow_down: Comment participer aux discussions collectives?](#three-comment-participer-aux-discussions-collectives)
 - Comment effectuer la relecture d'une fiche?
     - Comment suggérer des modifications de la fiche via Gitlab?
     - Comment suggérer des remarques sur une fiche via Gitlab?
