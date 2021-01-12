@@ -140,48 +140,30 @@ La relecture peut comprendre trois types de tâches:
 * Faire des commentaires (exemple: je ne parviens pas à reproduire cet exemple): ce travail de modification est décrit dans __Comment faire des commentaires sur une fiche via Github?__;
 * Des signalements de problèmes: si le relecteur pense que l'organisation d'ensemble ou le déroulement de la fiche soulève une difficulté sérieuse, ou que des points importants n'ont pas été abordés, il est invité à le signaler en suivant la procédure décrite dans la partie __Comment ouvrir une _issue_ si la fiche soulève un problème?__.
 
-----
-début partie problématique
 
 ### Comment faire des commentaires sur une fiche via Gitlab?
 
 La démarche est un peu fastidieuse mais est possible directement depuis `Github`. 
 Dans le menu du site web www.book.utilitr.org,
 il faut d'abord se placer dans la fiche à
-relire et ensuite cliquer sur le bouton `History`, en haut à gauche.
+relire et ensuite cliquer sur le bouton `View`, en haut à gauche.
 
-![](./pics/contributing/history.png)
+![](./pics/contributing/view.png)
 
-Cela ouvre l'historique des modifications (`commits`) d'une fiche. Cliquer sur 
-le titre de la dernière modification. 
+Cela ouvre l'état actuel d'une fiche avec, à gauche, pour chaque bloc, la
+modification (`commit`) ayant amené à l'état actuel du bloc.
 
-![](./pics/contributing/history2.png)
+![](./pics/contributing/view2.png)
 
-La fiche concernée est en haut du navigateur. Cliquer sur le bouton 
-`Expand` pour l'ouvrir plus (si la fiche est longue, il faudra cliquer plusieurs
-fois). 
+Cliquer sur le titre de la modification dans le bloc d'intérêt, par exemple
+comme ci-dessus `Quelques reformulations`.
 
-![](./pics/contributing/history3.png)
+Cela ouvre le `commit` en question. Dans la marge, cliquer sur le bouton qui 
+s'affiche (croix bleue):
 
-A la ligne où un commentaire 
+![](./pics/contributing/view3.png)
 
-
-![](./pics/contributing/commit.png)
-
-Il convient ensuite de naviguer à l'endroit du fichier où on désire faire les modifications. Dans le paragraphe concerné, cliquer sur la bulle de commentaire
-
-![](./pics/contributing/comment.png)
-
-Rédiger son commentaire dans la fenêtre qui s'affiche. Il est recommandé de visualiser son commentaire (avec la fenêtre `Preview`) avant de valider le commentaire (bouton `Comment`).
-
-![](./pics/contributing/comment2.png)
-
-Le commentaire devrait s'afficher sous le paragraphe concerné
-
-![](./pics/contributing/comment3.png)
-
-fin partie problématique
------
+Rédiger le commentaire et cliquer sur `Add single comment`
 
 
 ### Comment ouvrir une _issue_ si la fiche soulève un problème?
@@ -190,7 +172,6 @@ La procédure pour ouvrir une _issue_ est décrite dans la partie
 [:arrow_up: Comment participer aux discussions collectives?](#three-comment-participer-aux-discussions-collectives)
 L'_issue_ doit avoir un titre qui renvoie explicitement à la fiche concernée (exemple: problème avec la fiche graphiques), et mentionner clairement la nature du problème.
 
------------------
 
 ## :five: Comment ajouter une nouvelle fiche à la documentation? 
 
