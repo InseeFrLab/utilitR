@@ -38,6 +38,10 @@ permet de proposer, automatiquement, des modifications via l'interface de
 
 ![](./pics/contributing/edit.png)
 
+En cliquant dessus, on se retrouve sur XXXX
+
+
+
 Le dépôt comprend une branche dédiée aux corrections typographiques, orthographiques et grammaticales nommée `typo`. Elle est accessible sur la [page suivante](https://gitlab.com/linogaliana/documentationR/-/merge_requests/52) ou via la page `Merge Requests` accessible sur la gauche. Voici la marche à suivre pour corriger une coquille.
 
 - Se rendre dans l'onglet `Changes`:
