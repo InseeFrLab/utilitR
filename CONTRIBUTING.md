@@ -17,9 +17,9 @@ Toutefois, **le respect des règles de contribution détaillées ci-dessous est 
 
 Le document apporte une réponse aux questions suivantes: 
 
-- [:arrow_down: Comment corriger des coquilles?](#two-comment-corriger-des-coquilles)
+- [:arrow_down: Comment corriger des coquilles?](#two-comment-proposer-des-modifications-dune-fiche)
 - [:arrow_down: Comment participer aux discussions collectives?](#three-comment-participer-aux-discussions-collectives)
-- Comment effectuer la relecture d'une fiche?
+- [:arrow_down: Comment effectuer la relecture d'une fiche?](#comment-effectuer-la-relecture-dune-fiche)
     - Comment suggérer des modifications de la fiche via Gitlab?
     - Comment suggérer des remarques sur une fiche via Gitlab?
     - Comment ouvrir une issue si la fiche pose un réel problème?
@@ -27,14 +27,22 @@ Le document apporte une réponse aux questions suivantes:
     - Comment proposer une nouvelle fiche?
     - Comment élaborer une nouvelle fiche?
 
-## :two: Comment corriger des coquilles?
+## :two: Comment proposer des modifications d'une fiche?
 
 [:arrow_up: Retour à l'introduction](#one-introduction)
 
-Pour ce type de modifications légères, il est demandé d'utiliser directement l'outil de suggestions de changements de `Github`.
-Le livre déployé sur <www.book.utilitr.org> comprend un bouton `Edit` qui
+Pour ce type de modifications, il est demandé d'utiliser directement
+l'outil de suggestions de changements de `Github`.
+Le livre déployé sur www.book.utilitr.org comprend un bouton `Edit` qui
 permet de proposer, automatiquement, des modifications via l'interface de 
-`Github`:
+`Github`. 
+
+Dans le menu du document, il faut d'abord se placer dans la fiche à
+relire et ensuite cliquer sur le bouton `Edit`, en haut à gauche.
+Un lien s'ouvre automatiquement sur la fiche `.Rmd` et permet d'éditer le
+contenu depuis `Github`. Cette fonctionnalité est utilisable même
+lorsque vous n'avez pas les droits en écriture sur le dépôt (droits attachés
+au statut de *mainteneur* sur le projet):
 
 ![](./pics/contributing/edit.png)
 
@@ -47,22 +55,34 @@ La documentation officielle de Github sur cette manière de procéder est
 disponible
 [ici](https://docs.github.com/en/free-pro-team@latest/github/managing-files-in-a-repository/editing-files-in-another-users-repository).
 
-Après avoir fait les corrections nécessaires, se rendre en bas de la page et
-donner un titre au `commit` qui est intelligible.
-Si cela est nécessaire, il est possible d'ajouter un message au `commit`. 
+Dans ce menu, vous avez accès au code de la fiche en `R markdown`. C'est directement dans cette fenêtre que les modifications sont à écrire. Il est recommandé de prévisualiser la modification en cliquant sur l'onglet `Preview`.
+
+![](./pics/contributing/Relecture_preview.png)
+
+Enfin, une fois la modification écrite, il convient de la valider.
+Cette opération, nommée `commit` dans la terminologie `Git`
+peut être effectuée en: 
+
+* écrivant un message signifiant dans la fenêtre `Commit message`. Les messages cryptiques du type `modification` sont proscrits. 
+* sélectionnant la branche dans laquelle la modification s'applique. Si la modification est à appliquer aux supports déployés, il est nécessaire de sélectionner `master`. Les modifications proposées dans `master` ne sont intégrées qu'après validation des mainteneurs du projets, seuls utilisateurs à avoir les droits en écriture sur la version maître. 
 
 ![](./pics/contributing/edit3.png)
 
 :exclamation: **Pour faciliter le suivi et l'intégration des modifications, 
 choisir l'option ` Create a new branch for this commit and start a pull request`.
-Le nom de la branche doit commencer par `typo-`**.
+Si la modification ne concerne que des corrections de coquilles,
+le nom de la branche doit commencer par `typo-`**. Si les propositions sont plus
+substantielles que des coquilles, le nom de la branche est libre. 
 
 Cliquer sur `Propose changes`. Automatiquement, une page pour soumettre cette
 modification au dépôt `UtilitR` s'ouvre:
 
 ![](./pics/contributing/edit4.png)
 
-Comme sur l'image ci-dessus, ajouter le label `typo`. Après avoir
+Si la modification concerne uniquement des coquilles, ajouter le label `typo`
+comme sur l'image ci-dessus.
+
+Après avoir
 éventuellement révisé le titre de la `Pull Request` et la description associée,
 cliquer sur `Create pull request`. Cela permettra aux mainteneurs du projet
 `UtilitR` d'éventuellement intégrer les modifications ou de démarrer une
@@ -81,7 +101,9 @@ en cliquant sur l'onglet `Files changed`:
 L'équipe du projet `UtilitR` dispose d'un espace de discussion collective
 sur les problèmes techniques et les développements futurs du projet.
 Cet espace de discussion est stocké sur le dépôt `Github` du projet et est
-structuré sous forme d'_issues_. Une *issue* est un fil de discussion permettant aux contributeurs du projet (mais aussi aux personnes extérieures) d'échanger sur un sujet précis (défini par le titre de l'*issue*). Vous
+structuré sous forme d'_issues_.
+
+Une *issue* est un fil de discussion permettant aux contributeurs du projet (mais aussi aux personnes extérieures) d'échanger sur un sujet précis (défini par le titre de l'*issue*). Vous
 pouvez consulter la liste des *issues* ouvertes
 en suivant [ce lien](https://github.com/InseeFrLab/utilitR/issues).
 
@@ -91,38 +113,34 @@ Il est possible de contribuer aux discussions de deux façons:
 - en ouvrant une *issue* sur un nouveau sujet. Pour ouvrir une *issue*, il
 suffit de [cliquer ici](https://github.com/InseeFrLab/utilitR/issues/new).
 
-Pour des sujets plus transversaux, ou pour demander de l'aide aux autres contributeurs, il est possible de rejoindre le salon de discussion dédié sur le service de messagerie Tchap. Il s'agit d'un salon privé auquel vous pouvez demander l'accès en envoyant un message privé aux mainteneurs du projet (Lino Galiana et Olivier Meslin en ce moment).
+Pour des sujets plus transversaux, ou pour demander de l'aide aux autres
+contributeurs, il est possible de rejoindre le salon de discussion dédié
+sur le service de messagerie `Tchap`. Il s'agit d'un salon privé auquel vous
+pouvez demander l'accès en envoyant un message privé aux
+mainteneurs du projet (Lino Galiana et Olivier Meslin en ce moment).
 
-## Partie 3: Comment effectuer la relecture d'une fiche?
+## :four: Comment effectuer la relecture d'une fiche?
 
-Un relecteur peut proposer de relire une ou plusieurs fiches de son choix, ou suivre les indications des contributeurs du projet.
+[:arrow_up: Retour à l'introduction](#one-introduction)
 
-**Attention: relire une fiche ne consiste pas à la remanier intégralement.** La relecture doit porter sur les éléments suivants: clarté de l'exposé, cohérence de l'organisation des paragraphes, correction de l'expression, pertinence des conseils, reproductibilité des exemples. Autrement dit, le relecteur a pour rôle de vérifier que la fiche est compréhensible par un utilisateur standard. En revanche, la relecture ne porte pas sur les recommandations formulées dans la fiche, ni sur son organisation globale.
+Un relecteur peut proposer de relire une ou plusieurs fiches de son choix,
+ou suivre les indications des contributeurs du projet.
+
+**Attention: relire une fiche ne consiste pas à la remanier intégralement.**
+La relecture doit porter sur les éléments suivants: clarté de
+l'exposé, cohérence de l'organisation des paragraphes, correction de
+l'expression, pertinence des conseils, reproductibilité des exemples.
+Autrement dit, le relecteur a pour rôle de vérifier que la fiche est
+compréhensible par un utilisateur standard. En revanche, la relecture ne porte
+pas sur les recommandations formulées dans la fiche, ni sur
+son organisation globale.
 
 La relecture peut comprendre trois types de tâches:
 
-* Proposer des corrections mineures (faute d'orthographes, formulations peu claires): ce travail de modification est décrit dans __Comment suggérer des modifications de la fiche via Gitlab?__;
-* Faire des commentaires (exemple: je ne parviens pas à reproduire cet exemple): ce travail de modification est décrit dans __Comment faire des commentaires sur une fiche via Gitlab?__;
+* Proposer des corrections mineures (faute d'orthographes, formulations peu claires): ce travail de modification est décrit dans [:arrow_up: Comment corriger des coquilles?](#two-comment-proposer-des-modifications-dune-fiche);
+* Faire des commentaires (exemple: je ne parviens pas à reproduire cet exemple): ce travail de modification est décrit dans __Comment faire des commentaires sur une fiche via Github?__;
 * Des signalements de problèmes: si le relecteur pense que l'organisation d'ensemble ou le déroulement de la fiche soulève une difficulté sérieuse, ou que des points importants n'ont pas été abordés, il est invité à le signaler en suivant la procédure décrite dans la partie __Comment ouvrir une _issue_ si la fiche soulève un problème?__.
 
-### Comment suggérer des modifications de la fiche via Gitlab?
-
-Pour proposer des modifications plus substantielles que des coquilles, erreurs orthographiques et grammaticales, il est possible d'utiliser le bouton `Edit` du site *web*. Cet outil permet de proposer une autre formulation ou d'ajouter une phrase complémentaire pour plus de clareté.  
-
-Le site web correspond à la publication de la documentation au format html. Pour y accèder, il suffit de [cliquer ici](https://linogaliana.gitlab.io/documentationR/index.html).
-
-Dans le menu du document, il faut d'abord se placer dans la fiche à relire et ensuite cliquer sur le bouton `Edit`, en haut à gauche. Un lien s'ouvre automatiquement sur la fiche `.Rmd` et permet d'éditer le contenu depuis `Gitlab`. Cette fonctionnalité est utilisable même lorsque vous n'avez pas les droits en écriture sur le dépôt (droits attachés au statut de *développeur* sur le projet).
-
-![](./pics/contributing/edit1.png)
-
-Dans ce menu, vous avez accès au code de la fiche en `R markdown` (Write). C'est directement dans cette fenêtre que les modifications sont à écrire. Il est recommandé de prévisualiser la modification en cliquant sur l'onglet `Preview`.
-
-![](./pics/contributing/Relecture_preview.png)
-
-Enfin, une fois la modification écrite, il convient de la valider. Cette opération, nommée `commit` dans la terminologie `git` peut être effectuée en: 
-
-* écrivant un message signifiant dans la fenêtre `Commit message`. Les messages cryptiques du type `modification` sont proscrits. 
-* sélectionnant la branche dans laquelle la modification s'applique. Si la modification est à appliquer aux supports déployés, il est nécessaire de sélectionner `master`. Les modifications proposées dans `master` ne sont intégrées qu'après validation des mainteneurs du projets, seuls utilisateurs à avoir les droits en écriture sur la version maître. 
 
 ### Comment faire des commentaires sur une fiche via Gitlab?
 
