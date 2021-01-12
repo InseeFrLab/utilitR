@@ -17,7 +17,7 @@ Toutefois, **le respect des règles de contribution détaillées ci-dessous est 
 
 Le document apporte une réponse aux questions suivantes: 
 
-- [:arrow_down: Comment corriger des coquilles?](#two-comment-proposer-des-modifications-dune-fiche)
+- [:arrow_down: Comment proposer des modifications d'une fiche?](#two-comment-proposer-des-modifications-dune-fiche)
 - [:arrow_down: Comment participer aux discussions collectives?](#three-comment-participer-aux-discussions-collectives)
 - [:arrow_down: Comment effectuer la relecture d'une fiche?](#comment-effectuer-la-relecture-dune-fiche)
     - Comment suggérer des modifications de la fiche via Gitlab?
@@ -97,7 +97,6 @@ en cliquant sur l'onglet `Files changed`:
 
 [:arrow_up: Retour à l'introduction](#one-introduction)
 
-
 L'équipe du projet `UtilitR` dispose d'un espace de discussion collective
 sur les problèmes techniques et les développements futurs du projet.
 Cet espace de discussion est stocké sur le dépôt `Github` du projet et est
@@ -137,14 +136,14 @@ son organisation globale.
 
 La relecture peut comprendre trois types de tâches:
 
-* Proposer des corrections mineures (faute d'orthographes, formulations peu claires): ce travail de modification est décrit dans [:arrow_up: Comment corriger des coquilles?](#two-comment-proposer-des-modifications-dune-fiche);
+* Proposer des corrections mineures (faute d'orthographes, formulations peu claires): ce travail de modification est décrit dans [:arrow_up: Comment proposer des modifications d'une fiche?](#two-comment-proposer-des-modifications-dune-fiche);
 * Faire des commentaires (exemple: je ne parviens pas à reproduire cet exemple): ce travail de modification est décrit dans __Comment faire des commentaires sur une fiche via Github?__;
 * Des signalements de problèmes: si le relecteur pense que l'organisation d'ensemble ou le déroulement de la fiche soulève une difficulté sérieuse, ou que des points importants n'ont pas été abordés, il est invité à le signaler en suivant la procédure décrite dans la partie __Comment ouvrir une _issue_ si la fiche soulève un problème?__.
 
 
 ### Comment faire des commentaires sur une fiche via Gitlab?
 
-Les commentaires peuvent être faits directement depuis `Gitlab`. Le [dernier chapitre du livre](https://linogaliana.gitlab.io/-/documentationR/-/jobs/630938451/artifacts/_public/contribuer-aux-supports.html) propose une petite astuce pour se placer dans le dernier état du fichier (en jargon `git`, un *commit*) qui a servi à déployer le livre. 
+Les commentaires peuvent être faits directement depuis `Github`. Le [dernier chapitre du livre](https://linogaliana.gitlab.io/-/documentationR/-/jobs/630938451/artifacts/_public/contribuer-aux-supports.html) propose une petite astuce pour se placer dans le dernier état du fichier (en jargon `git`, un *commit*) qui a servi à déployer le livre. 
 
 Il suffit de remplacer les `XXXXX` dans l'url d'exemple <https://gitlab.com/linogaliana/documentationR/-/commit/XXXXX> par le numéro associé au chapitre dans le tableau présent dans le chapitre [dernier chapitre](https://linogaliana.gitlab.io/-/documentationR/-/jobs/630938451/artifacts/_public/contribuer-aux-supports.html). Par exemple, en supposant que l'url est <https://gitlab.com/linogaliana/documentationR/-/commit/7587fd6>, on désire faire un commentaire sur la fiche données textuelles. Si celle-ci est masquée, il faut cliquer sur `Click to expand it`.
 
