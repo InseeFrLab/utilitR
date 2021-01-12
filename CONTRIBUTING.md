@@ -29,7 +29,7 @@ Le document apporte une réponse aux questions suivantes:
 
 ## :two: Partie 1: Comment corriger des coquilles?
 
-[Retour à l'introduction](#one-introduction)
+[:arrow_up: Retour à l'introduction](#one-introduction)
 
 Pour ce type de modifications légères, il est demandé d'utiliser directement l'outil de suggestions de changements de `Gitlab`. Le dépôt comprend une branche dédiée aux corrections typographiques, orthographiques et grammaticales nommée `typo`. Elle est accessible sur la [page suivante](https://gitlab.com/linogaliana/documentationR/-/merge_requests/52) ou via la page `Merge Requests` accessible sur la gauche. Voici la marche à suivre pour corriger une coquille.
 
