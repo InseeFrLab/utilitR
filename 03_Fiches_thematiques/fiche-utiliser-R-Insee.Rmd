@@ -1,27 +1,91 @@
-# Modèle de fiche
+# Utiliser R à l'Insee
 
-Le nom de la fiche décrit la tâche qu'on veut réaliser en quelques mots.
+[^1]: l'impossibilité pour une autre personne de reproduire vos travaux.
 
 ## Tâches concernées et recommandations
 
-Quelques détails sur la tâche dont il s'agit
+Cette fiche décrit la manière dont on peut personnaliser R, pour l'adapter à ses besoins spécifiques.
 
 ::: {.recommandation data-latex=""}
 
-Dire en 4-5 lignes comment il est recommandé de procéder:
+La personnalisation de son environnement de travail est possible via deux fichiers principaux :
 
-* le ou les *package*(*s*) dont l'usage est recommandé; si on recommande plusieurs *packages*, expliquer comment choisir lequel (en fonction de la taille des données, du format...)
-* les *packages* dont l'usage est déconseillé; 
-* les autres points de méthode essentiels.
+* `.Renviron` : c'est un fichier qui contient du code, qui n'est *pas* du R ;
+* `.Rprofile ` : ce fichier contient du code R, lancé à l'ouverture de la session.
+
+Personnaliser son environnement est très agréable, mais peut conduire à des effets indésirables, et notamment de la non-reproductibilité[^1]. A manipuler avec (beaucoup de) précaution !
 :::
 
-## Quelques détails sur comment réaliser la tâche avec les outils recommandés
+## Comprendre le lancement de R ?
+
+R a été conçu, dès le début, pour permettre une très grande flexibilité d'utilisation. Cette flexibilité engendre toutefois une complexité dans ses procédures d'initialisation. 
+
+La documentation sur le lancement de R montre d'ailleurs toute la complexité de la chose :
+```{r, eval = FALSE}
+help("Startup")
+```
+
+Néanmoins, et pour simplifier grandement, la procédure se déroule en trois temps :
+
+1. R cherche des fichiers de type *environment*. Ces fichiers permettent notamment d'indiquer des chemins spécifiques où se trouvent les autres fichiers, ou certaines caractéristiques comme le proxy.
+2. R cherche des fichiers de type *profile*. Ces fichiers contiennent du code R qui se lance automatiquement. Ils permettent par exemple d'indiquer des packages supplémentaires à charger, de personnaliser le message d'accueil de R, ou de sauvegarder automatiquement les informations de la session lorsqu'on la quitte.
+3. R prépare la session, avec les informations récupérées précédemment, mais également d'autres, comme par exemple les données qu'il aurait pu conserver dans un .Rdata, puis il charge les packages de base, avant par exemple de charger l'historique des commandes (s'il existe).
+
+Sans complexifier outre mesure, sachez que les deux premiers temps se décomposent eux-mêmes en deux sous-temps : il est possible de définir des fichiers *environment* ou *profile* plus génériques que d'autres (c'est le `Renviron.site` ou `Rprofile.site`).
+
+## .Renviron
+
+Le fichier d'environnement `.Renviron` sert à définir des... variables d'environnement ! Ces variables sont utiles à des applications externes, pour bien collaborer avec R. Ces variables d'environnement peuvent également modifier la manière dont R réalise certains calculs. Encore une fois, il ne faut pas faire n'importe quoi ! 
+
+Par exemple, un `.Renviron` fictif pourrait ressembler à: 
+
+```{r, eval=FALSE}
+MON_API_INSEE=MaCleSecreteVraiementTresSecrete
+_R_CHECK_LENGTH_1_LOGIC2_=verbose
+_R_CHECK_LENGTH_1_CONDITION_=true
+http_proxy="voici-un-proxy:port"
+```
+
+Comme vous pouvez le constater, un tel fichier n'est pas constitué de code R, mais de paires **nom=valeur**. Chaque paire définit une variable d'environnement qui sera exploitée par R pour interagir avec d'autres logiciels, ou directement pour lui.
+
+Plusieurs remarques sont ici nécessaires :
+
+* certaines informations sensibles peuvent être présentes dans un fichier `.Renviron`, et notamment des mots de passe ou des clés secretes d'API (`MaCleSecreteVraiementTresSecrete` dans l'exemple précédent). Si vous travaillez de manière collaborative (cf Fiche XXX), il est impératif d'exclure le fichier .Renviron de vos *commit* ! Si une information sensible a été, dévoilée à tort, même pendant un temps très court, il est impératif de les modifier immédiatement. 
+* certaines variables d'environnement modifient la manière dont R fonctionne ! C'est le cas de `_R_CHECK_LENGTH_1_CONDITION_` . 
+
+Par exemple, sans avoir modifié notre `.Renviron`, que renvoie le code suivant ?
+
+```{r, eval=FALSE}
+cond <- c(TRUE, FALSE, NULL)
+if (cond) {
+    cat("Ma condition est vraie !\n ")
+} else {
+  cat("ma condition est fausse !\n")
+}
+```
+
+Et, en modifiant le `.Renviron`, le même code renvoit désormais autre chose !
+```{r, eval=FALSE}
+Sys.setenv("_R_CHECK_LENGTH_1_CONDITION_" = "TRUE") 
+#Cette ligne sert à modifier directement l'environnement en cours de session
+cond <- c(TRUE, FALSE, NULL)
+if (cond) {
+    cat("Ma condition est vraie !\n ")
+} else {
+  cat("ma condition est fausse !\n")
+}
+```
+
+Vous comprenez mieux les raisons pour lesquels modifier l'environnement peut conduire à des résultats non reproductibles ! 
+
 
 ::: {.conseil data-latex=""}
-
-Cette boîte colorée sert à donner un conseil. Son usage n'est évidemment pas obligatoire.
-
+Pour modifier son `.Renviron`, le plus simple est probablement d'utiliser le package *usethis* via la commande `usethis::edit_r_environ()`.  
+Cette commande va automatiquement ouvrir le fichier `.Renviron` exploité dans la version de R.  
+Il suffit ensuite de modifier le fichier, de le sauvegarder, et de relancer R (via Ctrl+Shift+F10) pour prendre en compte ces modifications !
 :::
+
+Sys.getenv()
 
 ::: {.remarque data-latex=""}
 
