@@ -25,8 +25,12 @@ Le document apporte une réponse aux questions suivantes:
 - [:arrow_down: Comment ajouter en tant que contributeur une nouvelle fiche?](#five-comment-ajouter-une-nouvelle-fiche-à-la-documentation)
     - Comment faire un `fork` du dépôt `utilitR`?
     - Comment mettre à jour son `fork`?
-    - Comment proposer sa fiche ?
+    - Comment proposer sa fiche à la relecture ?
 - [:arrow_down: Quelles contraintes formelles doivent respecter les fiches?](#six-contraintes-formelles)
+
+La partie [:arrow_down: Comment ajouter en tant que contributeur une nouvelle fiche?](#five-comment-ajouter-une-nouvelle-fiche-à-la-documentation)
+est la plus technique. Elle ne concerne néanmoins qu'un type de contribution
+et n'intéressera ainsi pas toutes les modalités de contribution.
 
 ## :two: Comment proposer des modifications d'une fiche?
 
