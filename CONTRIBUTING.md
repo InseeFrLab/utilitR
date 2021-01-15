@@ -334,11 +334,33 @@ de son `fork` est à jour. Si elle ne l'est pas, la mettre à jour
 
 # :four: Proposer sa fiche à la relecture
 
-Quand une première version de la fiche est prête, faire une *pull request* vers
+Quand une première version de la fiche est prête, vous allez pouvoir
+faire une *pull request* vers
 le dépôt `utilitR`. La cible est la branche `master` du dépôt `utilitR`
 (`utilitr/master`) la source est votre branche.
 
-1. Bérifier que le code est bien fonctionnel (c'est-à-dire que la branche compile bien, ce que `Github` indique par une croix verte :heavy_check_mark:);
+:exclamation: Avant cela, mettez à jour votre branche `master` (comme expliqué
+ci-dessus) et intégrez les modifications de `master` dans votre branche. 
+Pour cela, une fois faites les manipulations expliquées dans la partie
+[:arrow_up: Mettre à jour son fork](two-mettre-a-jour-son-fork). 
+
+En supposant que la branche en question s'appelle `fiche_toto`. Se placer
+sur celle-ci:
+
+```shell
+git checkout fiche_toto
+```
+
+Intégrer les dernières modifications de `master`:
+
+```shell
+git merge master
+```
+
+S'il y a des conflits les régler. S'il n'y en a pas, la branche est prête
+à être proposée au dépôt officiel: la `pull request` peut-être ouverte. 
+
+1. Vérifier que le code est bien fonctionnel (c'est-à-dire que la branche compile bien, ce que `Github` indique par une croix verte :heavy_check_mark:);
 2. Pour chaque branche, un site temporaire est disponible afin de prévisualiser le résultat déployé à chaque fois que les tests automatiques aboutissent, ce que `Github` signale par une croix verte :heavy_check_mark:.
 
 La structure de l'url est la suivante: `https://{BRANCH_NAME}--preview-documentationr.netlify.app/` (faire attention aux deux tirets qui se suivent). Par exemple, si la branche en question s'appelle `toto`, l'adresse de prévisualisation est `https://toto--preview-documentationr.netlify.app/`. Le résultat d'une modification met approximativement 5 minutes à être validé (croix verte) dont à être disponible en prévisualisation .
@@ -347,7 +369,7 @@ Prévisualiser le résultat sur le site temporaire
     
 * Une discussion s'engage dans la *merge request* sur les améliorations/corrections à apporter à la fiche;
 * **La validation d'une fiche est une décision collective**. La règle approximative est qu'une fiche est intégrée à la documentation si quatre ou cinq contributeurs considèrent qu'elle est acceptable en l'état;
-* Une fois que la fiche est acceptée, l'un des mainteneurs accepte la *merge request* (ajout de la fiche dans la branche `master`).
+* Une fois que la fiche est acceptée, l'un des mainteneurs accepte la *pull request* (ajout de la fiche dans la branche `master`).
 
 
 ## :six: Contraintes formelles
