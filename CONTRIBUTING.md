@@ -230,6 +230,10 @@ Un fork ne suit pas automatiquement les évolutions du dépôt dont il est issu.
 La mise à jour doit être faite par le propriétaire du `fork`, c'est-à-dire
 vous. 
 
+La [documentation officielle](https://docs.github.com/en/free-pro-team@latest/github/collaborating-with-issues-and-pull-requests/syncing-a-fork) résume les 
+manipulations à faire pour garder un `fork` à jour. Nous allons un peu développer
+cela.
+
 Généralement, `Github` indique au propriétaire d'un `fork` que sa version
 est en retard, ou au contraire en avance, par rapport à la version copiée. 
 
@@ -253,8 +257,67 @@ origin  https://github.com/{GITHUB_USERNAME}/utilitR.git (fetch)
 origin  https://github.com/{GITHUB_USERNAME}/utilitR.git (push)
 ```
 
-avec `{GITHUB_USERNAME}` votre nom d'utilisateur sur `Github`. 
+L'adresse porte normalement le nom `origin`. `{GITHUB_USERNAME}` est
+votre nom d'utilisateur sur `Github`. 
 
+Ajouter l'adresse du dépôt officiel `utilitr` avec le nom `upstream` :
+
+```shell
+# résultat de git remote -v
+git remote add upstream https://github.com/InseeFrLab/utilitR.git
+```
+
+Maintenant, pour vérifier, 
+
+```shell
+git remote -v
+```
+
+devrait maintenant intégrer une adresse supplémentaire:
+
+```shell
+origin  https://github.com/{GITHUB_USERNAME}/utilitR.git (fetch)
+origin  https://github.com/{GITHUB_USERNAME}/utilitR.git (push)
+upstream        https://github.com/InseeFrLab/utilitR.git (fetch
+upstream        https://github.com/InseeFrLab/utilitR.git (push)
+```
+
+Le fait d'avoir un dépôt `upstream` et un dépôt `origin` va nous permettre de
+mettre à jour ce dernier en utilisant la copie locale comme passe-plat.
+
+En local, se placer sur la branche `master` :
+
+```shell
+git checkout master
+```
+
+Récupérer les références des dernières modifications du dépôt `utilitR` en
+faisant
+
+```shell
+git fetch upstream
+```
+
+Toutes les conditions sont réunies pour mettre à jour le dépôt local.
+Taper
+
+```shell
+git merge upstream/master
+```
+
+`Git` va tenter l'intégration des dernières modifications de la branche
+`master` d'`utilitR` avec la vôtre. Normalement, si la préconisation faite
+plus haut de ne pas modifier la branche `master` a été suivie, l'intégration
+devrait se faire sans heurt. Sinon, résoudre les conflits à la main et valider.
+
+Une fois que la copie est propre, c'est-à-dire mise à jour, il faut envoyer ces 
+modifications à la version en ligne. Pour cela, exécuter la commande suivante
+
+```shell
+git push origin master
+```
+
+Votre version personnelle (`fork`) a maintenant une branche `master` à jour
 
 
 * Créer une branche portant un nom reflétant le contenu de la fiche (exemple: `fiche_graphiques`, `fiche_cartographie`);
