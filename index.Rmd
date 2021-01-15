@@ -1,24 +1,113 @@
 --- 
-title: "`UtilitR`: Une documentation utile à `R`"
+title: "`UtilitR`: Une documentation utile sur `R`"
+subtitle: "Documentation collaborative développée par les agents de l'Insee"
 author: "Une documentation collaborative coordonnée par Lino Galiana et Olivier Meslin"
 date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 documentclass: book
 classoption: dvipsnames
-bibliography: [book.bib, packages.bib]
-biblio-style: apalike
-link-citations: yes
 subparagraph: true
 cover-image: "resources/logo-utilitr.png"
 description: "UtilitR: Une documentation utile à R"
-favicon: resources/logo-utilitr.png
+# favicon: resources/logo-utilitr.png
+toc-title: Table des matières
+paged-footnotes: true
+lot: false
+lof: false
+bibliography: [book.bib, packages.bib]
+biblio-style: apalike
+link-citations: yes
 ---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  # Les options de mise en page des chunks
+  # On n'utilise pas formatR (via tidy = TRUE)
+  # car cela détruit la mise en forme des codes utilisant le pipe
+  tidy = FALSE,
+  tidy.opts = list(width.cutoff = 70, 
+                   arrow = TRUE,
+                   blank = TRUE,
+                   brace.newline = FALSE,
+                   comment = TRUE,
+                   wrap = TRUE
+                   )
+)
+options(
+  tibble.print_min = 6,
+  tibble.print_max = 6,
+  dplyr.print_min  = 6,
+  dplyr.print_max  = 6,
+  tibble.width = 70)
+# resize and compress images ===
+library(magick)
+
+# Créer un dossier pour les images compressées (s'il n'existe pas déjà)
+dossier_images <- './pics' # This folder must exist in the repo
+dossier_images_compressees <- './pics_resized'
+if (!dir.exists(dossier_images_compressees)) { 
+  dir.create(dossier_images_compressees)
+}
+# Copier les images si elles ne sont pas déja dans le dossier
+file.copy(list.files(dossier_images, full.names = TRUE), dossier_images_compressees, recursive=TRUE, overwrite = TRUE)
+
+compresser_image <- 
+  function(file_in, 
+           file_out = NA, ratio_compression = 2, 
+           xmax = 300, quality = 0.7, cutoff = 3000) {
+    # Fonction de compression d'une image png
+    # xmax <- 1920  # y pixel max
+    # quality <- 0.7  # passed on to jpeg::writeJPEG()
+    # cutoff <- 100000  # files smaller than this will not be touched
+    # file_out <- "test.jpg"
+    if (is.na(file_out)) {
+      file_out <- sub(dossier_images, dossier_images_compressees, file_in)
+    }
+    if (is.na(file.size(file_in))) {
+      stop(paste0("File ", file_in, " not found."))
+    }
+    else if (file.size(file_in) < cutoff) {  # in this case, just copy file
+      if (!(file_in == file_out)) {
+        file.copy(from = file_in, to = file_out, overwrite = TRUE)
+      }
+    } else {# if larger than cutoff
+      # magick workflow
+      image_raw <- image_read(path = file_in)
+      if (!is.na(ratio_compression)) {
+        image_resized <- 
+          image_scale(
+            image = image_raw, 
+            geometry = as.character(as.integer(round(image_info(image_raw)["width"] / ratio_compression))))
+      } else if (image_info(image_raw)["width"] > xmax) {  # only resize if smaller
+        image_resized <- 
+          image_scale(
+            image = image_raw, 
+            geometry = as.character(xmax))
+      } else {
+        image_resized      <- image_raw
+      }
+      image_write(image = image_resized, 
+                  path = file_out, 
+                  format = "png")
+    }
+  }
+
+include_image = function(x, compression = TRUE, ratio_compression = 2, ...) {
+  # Fonction qui 1/ compresse  l'image si nécessaire; 2/ l'inclut dans le Rmd
+  if (compression) {
+    compresser_image(file_in = x, ...)
+  }
+  knitr::include_graphics(sub(dossier_images, dossier_images_compressees, x), ...)    
+}
+```
 
 
 # Une documentation collaborative développée à l'Insee {-}
 
 ```{=html}
-<a href='https://www.utilitr.org'><img src='resources/logo-utilitr.png' align="right" height="139px" /></a>
+<a href='https://www.utilitr.org'><img src='resources/logo-utilitr.png' align="left" height="139px" /></a>
 ```
 
 `r colorize("VERSION TEMPORAIRE VOUEE A EVOLUER", "red")`
@@ -44,7 +133,7 @@ liste_contrib <- liste_contrib[, c("prenom","nom") := data.table::tstrsplit(
 ```
 
 *Ont contribué à cette documentation*:
-`r paste(liste_contrib$pseudo, collapse = ", ")`
+`r paste0(paste(liste_contrib$pseudo, collapse = ", "), ".")`
 
 
 ```{r include=FALSE}
