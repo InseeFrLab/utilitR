@@ -193,6 +193,10 @@ dépôt `Github`. L'_issue_ doit avoir:
 Une fois que l'équipe de contributeurs est d'accord sur l'objet de la fiche et les grandes lignes de son contenu, la fiche peut être rédigée en suivant la procédure décrite ci-dessous et les
 [contraintes formelles indiquées dans la partie suivante](#six-contraintes-formelles)
 
+:important: Ne pas travailler sur la branche `master` de son fork. Celle-ci
+servira à mettre à jour le fork pour intégrer les dernières mises à jour
+de la documentation `utilitR`.
+
 ### :one: Forker le dépôt `utilitR`
 
 Seuls les mainteneurs du dépôt `utilitR` ont les droits d'écriture sur le dépôt
@@ -207,7 +211,7 @@ pas forcément dans le même sens que le dépôt d'origine (d'où l'image
 de la fourchette, qui représente la bifurcation). Néanmoins, si on désire
 à un moment soumettre une modification faite sur le fork au dépôt d'origine,
 il faudra mettre à jour sa copie personnelle. C'est expliqué dans la 
-partie XXX
+[partie dédiée](#two-mettre-a-jour-son-fork).
 
 
 Pour forker le dépôt, il est nécessaire d'avoir un compte `Github`. Une fois
@@ -215,6 +219,41 @@ connecté sur ce compte, on fork le dépôt en cliquant à droite de la page:
 
 ![](./pics/contributing/fork1.png)
 
+Pour travailler dessus, il est recommandé de suivre la démarche habituelle
+quand on travaille sur un projet associé à `Git`, c'est-à-dire faire une
+copie locale du dépôt (`clone`) et de temps en temps, interagir avec le dépôt
+distant (votre `fork`). 
+
+### :two: Mettre à jour son fork
+
+Un fork ne suit pas automatiquement les évolutions du dépôt dont il est issu.
+La mise à jour doit être faite par le propriétaire du `fork`, c'est-à-dire
+vous. 
+
+Généralement, `Github` indique au propriétaire d'un `fork` que sa version
+est en retard, ou au contraire en avance, par rapport à la version copiée. 
+
+Pour mettre à jour son `fork`, le plus simple est d'utiliser une copie
+locale comme intermédiaire. Supposons que le `fork` a été
+cloné afin de disposer d'une copie locale (la Fiche XXXX
+expliqué la manipulation `clone` si cela n'a pas été fait).
+
+Ouvrir un terminal Git bash (cf. Fiche XXXX). Taper
+
+```shell
+git remote -v
+```
+
+pour vérifier l'adresse du dépôt distant prise en compte par `Git`. Le
+résultat doit normalement avoir la forme suivant
+
+```shell
+# résultat de git remote -v
+origin  https://github.com/{GITHUB_USERNAME}/utilitR.git (fetch)
+origin  https://github.com/{GITHUB_USERNAME}/utilitR.git (push)
+```
+
+avec `{GITHUB_USERNAME}` votre nom d'utilisateur sur `Github`. 
 
 
 
