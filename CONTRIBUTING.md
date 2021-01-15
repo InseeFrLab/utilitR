@@ -23,8 +23,9 @@ Le document apporte une réponse aux questions suivantes:
     - Comment suggérer des remarques sur une fiche via Gitlab?
     - Comment ouvrir une issue si la fiche pose un réel problème?
 - [:arrow_down: Comment ajouter en tant que contributeur une nouvelle fiche?](#five-comment-ajouter-une-nouvelle-fiche-à-la-documentation)
-    - Comment proposer une nouvelle fiche?
-    - Comment élaborer une nouvelle fiche?
+    - Comment faire un `fork` du dépôt `utilitR`?
+    - Comment mettre à jour son `fork`?
+    - Comment proposer sa fiche ?
 - [:arrow_down: Quelles contraintes formelles doivent respecter les fiches?](#six-contraintes-formelles)
 
 ## :two: Comment proposer des modifications d'une fiche?
