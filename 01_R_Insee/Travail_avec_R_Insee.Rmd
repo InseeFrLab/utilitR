@@ -35,8 +35,149 @@ Reprendre (en version très allégée) la partie 3 de la formation Travail Colla
 
 ## Personnaliser sa configuration
 
-Il faut probablement distinguer les différents environnements.
-Parler du fichier `.Rprofile`, et dire ce qui peut être configuré.
+La personnalisation de R, ou de RStudio doit être réalisée avec précaution, car personnaliser son environnement de travail, c'est prendre le risque de perdre la reproductabilité de ses travaux.
+
+Il convient donc de bien comprendre ce que la personnalisation peut apporter, et ce qu'elle ne doit surtout pas faire.
+
+::: {.recommandation data-latex=""}
+
+Ne personnalisez pas R, sauf dans des cas très précis :
+
+* pour masquer des informations qui **ont vocation à être masquées**, comme des clés d'API dans le fichier `.Renviron`.
+* pour modifier des paramètres qui n'ont pas vocation à être bien configurés dans R à l'Insee, comme le proxy.
+* pour changer des éléments qui n'ont aucun impact sur les calculs, mais peuvent vous faciliter la vie, comme l'augmentation de la taille de l'historique, le repos, le prompt, etc.
+
+D'autres paramètres, notamment l'affichage de RStudio, sont aisément modifiables (et probablement à modifier) !
+:::
+
+### Comprendre le lancement de R ?
+
+R a été conçu, dès le début, pour permettre une très grande flexibilité d'utilisation. Cette flexibilité engendre toutefois une complexité dans ses procédures d'initialisation. 
+
+La documentation sur le lancement de R montre d'ailleurs toute la complexité de la chose :
+```{r, eval = FALSE}
+help("Startup")
+```
+
+Néanmoins, et pour simplifier grandement, la procédure se déroule en trois temps :
+
+1. R cherche des fichiers de type *environment*. Ces fichiers permettent notamment d'indiquer des chemins spécifiques où se trouvent d'autres fichiers, ou certaines caractéristiques comme le proxy.
+2. R cherche des fichiers de type *profile*. Ces fichiers contiennent du code R qui se lance automatiquement. Ils permettent par exemple d'indiquer des packages supplémentaires à charger, de personnaliser le message d'accueil de R, ou de sauvegarder automatiquement les informations de la session lorsqu'on la quitte.
+3. R prépare la session, avec les informations récupérées précédemment, mais également d'autres, comme par exemple les données qu'il aurait pu conserver dans un .Rdata, puis il charge les packages de base, avant par exemple de charger l'historique des commandes (s'il existe).
+
+Sans complexifier outre mesure, sachez que les deux premiers temps se décomposent eux-mêmes en deux sous-temps : il est possible de définir des fichiers *environment* ou *profile* plus génériques que d'autres (c'est le `Renviron.site` ou `Rprofile.site`).
+
+#### .Renviron
+
+Le fichier d'environnement `.Renviron` sert à définir des... variables d'environnement ! Ces variables sont utiles à l'interaction entre R et d'autres processus, ou uniquemnent à R. Ces variables d'environnement peuvent également modifier la manière dont R réalise certains calculs. Encore une fois, il ne faut pas faire n'importe quoi ! 
+
+Par exemple, un `.Renviron` fictif pourrait ressembler à: 
+
+```
+MON_API_INSEE=MaCleSecreteVraimentTresSecrete
+http_proxy="proxy-rie.http.insee.fr:8080"
+https_proxy="proxy-rie.http.insee.fr:8080"
+no_proxy = "innovation.insee.eu"
+_R_CHECK_LENGTH_1_LOGIC2_=verbose
+_R_CHECK_LENGTH_1_CONDITION_=true
+
+
+```
+
+Comme vous pouvez le constater, un tel fichier n'est pas constitué de code R, mais de paires **nom=valeur**. Chaque paire définit une variable d'environnement qui sera exploitée par R pour interagir avec d'autres logiciels, ou directement pour lui. Ce fichier fictif réalise les opérations suivantes :
+
+* il définit sa clé d'API dans une variable MON_API_INSEE . Ultérieurement le code pourra faire appel à cette variable via `Sys.getenv("MON_API_INSEE")`. Ce faisant la clé confidentielle n'est pas directement visible dans le code, et ce dernier peut donc être librement partagé sans risque de sécurité. Inversement, comme le fichier `.Renviron` peut contenir des informations sensibles, il ne doit pas être partagé (notamment via Git !);
+* il modifie les paramètres du proxy pour permettre à R de se connecter à Internet. Sous AUS, ces lignes ne servent à rien, car il n'est pas possible de se connecter à Internet. Sous la plateforme SSP Cloud, **je ne sais pas du tout**;
+* il modifie des variables internes à R (`_R_CHECK_LENGTH_1_CONDITION_`  et `_R_CHECK_LENGTH_1_LOGIC2_`) ;
+* il **contient une ligne vide finale** : cette ligne vide est indispensable, ne l'oubliez jamais !
+
+Pour modifier le fichier `.Renviron`, le plus simple est sans doute de procéder ainsi : 
+
+1. Tapez la commande `usethis::edit_r_environ()`, le fichier `.Renviron` de votre profil utilisateur s'ouvrira. Si vous travaillez dans un *RProject*, l'option `scope="project"` permet de définir des options spécifiques à votre projet !
+2. Modifiez le fichier, sans oublier la ligne vide en fin de document. Sauvegardez le.
+3. Relancez R, via *Session/Restart* ou *Ctrl+Shift+F10*
+
+::: {.remarque data-latex=""}
+
+La modification de variables internes à R est à utiliser avec précaution, car elle est susceptible de générer de la non-reproductabilité.
+
+Par exemple, R a un comportement assez étrange dans le cas suivant : 
+
+```{r}
+vecteurboolean <- c(TRUE, FALSE, NULL)
+if (vecteurboolean) {
+    cat("Je suis vrai ! \n")
+} else {
+    cat("Je suis faux ! \n")
+}
+```
+
+Lorsqu'il teste un vecteur de booléen, R se contente de tester la première valeur, et met un simple avertissement. Toutefois, avec la modification de `.Renviron` de type `_R_CHECK_LENGTH_1_CONDITION_ = "TRUE"`, il est possible de modifier ce comportement et de générer une erreur (qui stoppera le code), si on fournit à R un vecteur au lieu de fournir un simple scalaire. Le code précédent... n'imprimera donc rien du tout et s'arretera avec une erreur ! Vous comprenez mieux les raisons pour lesquels modifier l'environnement peut conduire à des résultats non reproductibles ! 
+:::
+
+Il est toutefois possible de modifier les paramètres de son environnement ou en générer d'autres, une fois R chargé, via la commande `Sys.setenv()`. par exemple `Sys.setenv("MON_API_INSEE"="jamais")`. De même la fonction `Sys.getenv()` permet de lister certaines valeurs présentes dans l'environnement actuel. Toutefois, toutes les procédures d'initialisation de R se seront déjà déroulées alors avec les anciennes valeurs, définies par défault. Cette subtilité peut être importante !
+
+
+### .Rprofile
+
+Le fichier `.RProfile` contient du code R qui sera lancé par R après les fichiers `.Renviron`. Typiquement, on peut utiliser ce fichier pour :
+
+* modifier le miroir par défault du CRAN
+* modifier le message d'accueil
+* personnaliser l'affichage de R
+
+Un fichier `.Rprofile` pourrait typiquement ressembler à quelque chose comme :
+
+```{r, eval=FALSE}
+options(repos = c(CRAN = "https://cran.rstudio.org"))
+options(prompt="R> ", digits=4)
+options(continue= "+++ ")
+if (interactive()) {
+  options(width = 120)
+}
+
+.First <- function(){
+  cat("\n Allez, hop hop hop, au travail !\n\n")
+}
+.Last <- function(){
+  cat("\n Je m'en vais comme un prince...\n\n")
+}
+
+```
+Ce fichier permet de :
+
+* définir un miroir par défault pour le CRAN ;
+* modifier l'affichage de l'invite de commande (le ">" de début de ligne devient "R> ") ;
+* modiifer l'affichage des nombres décimaux  ;
+* modifier l'affichage de la console lorsqu'une partie du code reste à écrire (le "+ " en début de ligne devient "+++ ") ;
+* dans le cadre d'un appel à la console, la largeur des impressions est fixée à 120 ;
+* les fonctions `.First` et `.Last` permettent d'effectuer des opérations spécifiques au lancement et à la fermeture de la session R (ici imprimer du texte) ;
+* Attention, comme précédemment, **un fichier `.Rprofile` doit se terminer par une ligne vierge.** 
+
+Pour voir certaines options aisément modifiables, la fonction `options()` affiche les valeurs actuellement chargées, et il est possible de les modifier à la volée via `options(nom_de_l_option=valeur_de_l_option)`.
+
+::: {.conseil data-latex=""}
+
+Il est ainsi fortement déconseillé de réaliser les choses suivantes dans le `.Rprofile`:
+
+* charger des packages ;
+* définir des alias de fonctions ;
+* modifier le comportement par défault, comme par exemple `options(stringAsFactors=FALSE)` ;
+
+En effet, toute personne sans ce fichier de configuration ne sera pas en mesure de reproduire vos travaux !
+:::
+
+
+### Pour en savoir plus
+
+La trés grande majorité de la documentation sur cette exploitation de R avancée est en Anglais : 
+
+* [Using .Rprofile and .Renviron, by Nicholas Tierney](https://github.com/numbats/resources/blob/b2fdc170277ecebea9a6358d7d222b55a206d70e/rprofile-renviron.Rmd) ;
+* [Rstats What they forgot to teach you - chapter 7, by Jennifer Bryan \& Jim Hester](https://rstats.wtf/r-startup.html) ;
+* [Managing R with .Rprofile, .Renviron, Rprofile.site, Renviron.site, rsession.conf, and repos.conf by Alex Gold](https://support.rstudio.com/hc/en-us/articles/360047157094-Managing-R-with-Rprofile-Renviron-Rprofile-site-Renviron-site-rsession-conf-and-repos-conf) ;
+* [Efficient R Programing - chapter 2.5, by Colin Gillespie \& Robin Lovelace](https://csgillespie.github.io/efficientR/set-up.html#r-startup) ;
+*[R for Enterprise: Understanding R’s Startup, by Sean Lopp (RStudio)]https://rviews.rstudio.com/2017/04/19/r-for-enterprise-understanding-r-s-startup/.
+
 
 ## Les _packages_ `R`
 
