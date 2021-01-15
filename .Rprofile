@@ -114,7 +114,7 @@ compresser_image <-
       }
     } else {# if larger than cutoff
       # magick workflow
-      image_raw <- image_read(path = file_in)
+      image_raw <- magick::image_read(path = file_in)
       if (!is.na(ratio_compression)) {
         image_resized <- 
           image_scale(
