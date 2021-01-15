@@ -320,7 +320,7 @@ git push origin master
 Votre version personnelle (`fork`) a maintenant une branche `master` à jour.
 
 
-# :three: Rédiger sa fiche dans une branche dédiée
+### :three: Rédiger sa fiche dans une branche dédiée
 
 :exclamation: Avant de créer une branche, s'assurer que la branche `master` 
 de son `fork` est à jour. Si elle ne l'est pas, la mettre à jour
@@ -332,7 +332,7 @@ de son `fork` est à jour. Si elle ne l'est pas, la mettre à jour
     - il est impératif de respecter les règles de fond et de forme détaillées ci-dessous;
 
 
-# :four: Proposer sa fiche à la relecture
+### :four: Proposer sa fiche à la relecture
 
 Quand une première version de la fiche est prête, vous allez pouvoir
 faire une *pull request* vers
