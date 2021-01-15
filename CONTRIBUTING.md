@@ -25,6 +25,7 @@ Le document apporte une réponse aux questions suivantes:
 - [:arrow_down: Comment ajouter en tant que contributeur une nouvelle fiche?](#five-comment-ajouter-une-nouvelle-fiche-à-la-documentation)
     - Comment proposer une nouvelle fiche?
     - Comment élaborer une nouvelle fiche?
+- [:arrow_down: Quelles contraintes formelles doivent respecter les fiches?](#six-contraintes-formelles)
 
 ## :two: Comment proposer des modifications d'une fiche?
 
@@ -178,16 +179,19 @@ L'_issue_ doit avoir un titre qui renvoie explicitement à la fiche concernée (
 
 
 Ajouter une nouvelle fiche thématique à la documentation représente un
-travail conséquent qui requiert l'approbation de la majorité des contributeurs du projet.
+travail conséquent qui requiert l'approbation de la
+majorité des contributeurs du projet.
 
 ### Comment proposer une nouvelle fiche?
 
-La première étape consiste à __ouvrir une *issue*__ dans le dépôt `Github`. L'_issue_ doit avoir:
+La première étape consiste à __ouvrir une *issue*__ dans le
+dépôt `Github`. L'_issue_ doit avoir:
 
 - un titre explicite indiquant sur quel sujet vous voulez proposer une fiche (toutes suggestions bienvenues);
 - un contenu détaillant l'objet de la fiche et les grandes lignes de son contenu. 
 
-Une fois que l'équipe de contributeurs est d'accord sur l'objet de la fiche et les grandes lignes de son contenu, la fiche peut être rédigée en suivant la procédure décrite ci-dessous.
+Une fois que l'équipe de contributeurs est d'accord sur l'objet de la fiche et les grandes lignes de son contenu, la fiche peut être rédigée en suivant la procédure décrite ci-dessous et les
+[contraintes formelles indiquées dans la partie suivante](#six-contraintes-formelles)
 
 ### Comment élaborer une nouvelle fiche? 
 
@@ -197,7 +201,7 @@ modification
 * Rédiger la fiche en `Rmarkdown` à partir du modèle de fiche (`03_Fiches_thematiques/Modele_de_fiche.Rmd`); 
     - il est fortement conseillé de lire des fiches existantes pour comprendre la démarche et le niveau de détail retenus par les autres contributeurs;
     - il est impératif de respecter les règles de fond et de forme détaillées ci-dessous;
-* Pour chaque branche, un site temporaire est disponible afin de prévisualiser le résultat déployé à chaque fois que les tests automatiques aboutissent, ce que `Gitlab` signale par une croix verte :heavy_check_mark:. La structure de l'url est la suivante: `https://{BRANCH_NAME}--preview-documentationr.netlify.app/` (faire attention aux deux tirets qui se suivent). Par exemple, si la branche en question s'appelle `toto`, l'adresse de prévisualisation est `https://toto--preview-documentationr.netlify.app/`. Le résultat d'une modification met approximativement 5 minutes à être validé (croix verte) dont à être disponible en prévisualisation .
+* Pour chaque branche, un site temporaire est disponible afin de prévisualiser le résultat déployé à chaque fois que les tests automatiques aboutissent, ce que `Github` signale par une croix verte :heavy_check_mark:. La structure de l'url est la suivante: `https://{BRANCH_NAME}--preview-documentationr.netlify.app/` (faire attention aux deux tirets qui se suivent). Par exemple, si la branche en question s'appelle `toto`, l'adresse de prévisualisation est `https://toto--preview-documentationr.netlify.app/`. Le résultat d'une modification met approximativement 5 minutes à être validé (croix verte) dont à être disponible en prévisualisation .
 Prévisualiser le résultat sur le site temporaire
 * Quand une première version de la fiche est prête:
     - vérifier que le code est bien fonctionnel (c'est-à-dire que la branche compile bien, ce que `Gitlab` indique par une croix verte :heavy_check_mark:);
@@ -206,11 +210,18 @@ Prévisualiser le résultat sur le site temporaire
 * **La validation d'une fiche est une décision collective**. La règle approximative est qu'une fiche est intégrée à la documentation si quatre ou cinq contributeurs considèrent qu'elle est acceptable en l'état;
 * Une fois que la fiche est acceptée, l'un des mainteneurs accepte la *merge request* (ajout de la fiche dans la branche `master`).
 
-### Cahier des charges des fiches de documentation
 
-Toute proposition de fiche doit respecter au maximum les règles suivantes. Si la proposition de fiche ne les respecte pas, les autres contributeurs du projet pourront demander que le contributeur corrige sa proposition.
+## :six: Contraintes formelles
 
-#### Contraintes formelles
+[:arrow_up: Retour à l'introduction](#one-introduction)
+
+
+Toute proposition de fiche doit respecter au maximum les règles
+suivantes. Si la proposition de fiche ne les respecte pas, les
+autres contributeurs du projet pourront demander que le
+contributeur corrige sa proposition.
+
+### Contraintes générales
 
 * Rédiger la fiche en `Rmarkdown` à partir du modèle (`03_Fiches_thematiques/Modele_de_fiche.Rmd`);
 * Les extensions des images doivent être en minuscules. Cela veut dire qu'il faut éviter l'extension
@@ -219,7 +230,7 @@ ou plusieurs fichiers `.PNG` ont été générés,
 vous pouvez utiliser ce [*snippet* de code `R`](https://gitlab.com/linogaliana/documentationR/snippets/1954584) pour le convertir en 
 `.png`.
 
-#### Bonnes pratiques de codage en `R`
+### Bonnes pratiques de codage en `R`
 
 Dans la mesure où les exemple de code `R` ont vocation à être réutilisés 
 directement par les agents de l'Insee, il est demandé aux contributeurs 
@@ -228,7 +239,7 @@ Le principe général est que la documentation doit être reproductible,
 c'est-à-dire avec des exemples exécutables pris isolément. 
 Nous attirons particulièrement votre attention sur la gestion des dépendances.
 
-#### Assurer la qualité du code
+### Assurer la qualité du code
 
 * **Bien tester tous les exemples**;
 * **Pour les exemples, il est recommandé d'utiliser autant que possible les jeux de données figurant dans le _package_ [`doremifasolData`](https://github.com/InseeFrLab/DoReMIFaSolData)**. Plus d'informations dans le paragraphe __Gérer les jeux de données utilisés dans les exemples__;
@@ -238,7 +249,7 @@ Nous attirons particulièrement votre attention sur la gestion des dépendances.
     + présenter les principales options, avec un ou deux exemples;
 * Ne pas faire de *merge request* sur un code qui n'est pas entièrement fonctionnel.
 
-#### Gérer et savoir présenter les dépendances
+### Gérer et savoir présenter les dépendances
 
 Voici comment on présente l'utilisation d'un `package`:
 
@@ -249,7 +260,7 @@ n'avez pas besoin de le modifier manuellement, vous pouvez utiliser une fonction
 package `usethis` pour cela: `usethis::use_package("monpackage")`. La dépendance sera alors automatiquement ajoutée au fichier `DESCRIPTION`, au niveau de la 
 liste des `Imports`. 
 
-#### Gérer les jeux de données utilisés dans les exemples
+### Gérer les jeux de données utilisés dans les exemples
 
 * Il est recommandé d'utiliser autant que possible les jeux de données figurant dans le _package_ [`doremifasolData`](https://github.com/InseeFrLab/DoReMIFaSolData), qui contient exclusivement des données téléchargées sur le site de l'Insee.
 * Il est évidemment possible d'ajouter un nouveau *dataset* à `doremifasolData` si vous pensez qu'aucun des _datasets_ du _package_ ne convient pour vos exemples; pour ce faire il suffit d'ouvrir une _issue_ dans le dépôt Gitlab d'`UtilitR` ou dans le dépôt Github de `doremifasolData`, puis de discuter avec les contributeurs;
