@@ -117,12 +117,12 @@ compresser_image <-
       image_raw <- magick::image_read(path = file_in)
       if (!is.na(ratio_compression)) {
         image_resized <- 
-          image_scale(
+          magick::image_scale(
             image = image_raw, 
             geometry = as.character(as.integer(round(magick::image_info(image_raw)["width"] / ratio_compression))))
       } else if (magick::image_info(image_raw)["width"] > xmax) {  # only resize if smaller
         image_resized <- 
-          image_scale(
+          magick::image_scale(
             image = image_raw, 
             geometry = as.character(xmax))
       } else {
