@@ -193,7 +193,7 @@ dépôt `Github`. L'_issue_ doit avoir:
 Une fois que l'équipe de contributeurs est d'accord sur l'objet de la fiche et les grandes lignes de son contenu, la fiche peut être rédigée en suivant la procédure décrite ci-dessous et les
 [contraintes formelles indiquées dans la partie suivante](#six-contraintes-formelles)
 
-:important: Ne pas travailler sur la branche `master` de son fork. Celle-ci
+:exclamation: Ne pas travailler sur la branche `master` de son fork. Celle-ci
 servira à mettre à jour le fork pour intégrer les dernières mises à jour
 de la documentation `utilitR`.
 
@@ -317,18 +317,34 @@ modifications à la version en ligne. Pour cela, exécuter la commande suivante
 git push origin master
 ```
 
-Votre version personnelle (`fork`) a maintenant une branche `master` à jour
+Votre version personnelle (`fork`) a maintenant une branche `master` à jour.
+
+
+# :three: Rédiger sa fiche dans une branche dédiée
+
+:exclamation: Avant de créer une branche, s'assurer que la branche `master` 
+de son `fork` est à jour. Si elle ne l'est pas, la mettre à jour
 
 
 * Créer une branche portant un nom reflétant le contenu de la fiche (exemple: `fiche_graphiques`, `fiche_cartographie`);
 * Rédiger la fiche en `Rmarkdown` à partir du modèle de fiche (`03_Fiches_thematiques/Modele_de_fiche.Rmd`); 
     - il est fortement conseillé de lire des fiches existantes pour comprendre la démarche et le niveau de détail retenus par les autres contributeurs;
     - il est impératif de respecter les règles de fond et de forme détaillées ci-dessous;
-* Pour chaque branche, un site temporaire est disponible afin de prévisualiser le résultat déployé à chaque fois que les tests automatiques aboutissent, ce que `Github` signale par une croix verte :heavy_check_mark:. La structure de l'url est la suivante: `https://{BRANCH_NAME}--preview-documentationr.netlify.app/` (faire attention aux deux tirets qui se suivent). Par exemple, si la branche en question s'appelle `toto`, l'adresse de prévisualisation est `https://toto--preview-documentationr.netlify.app/`. Le résultat d'une modification met approximativement 5 minutes à être validé (croix verte) dont à être disponible en prévisualisation .
+
+
+# :four: Proposer sa fiche à la relecture
+
+Quand une première version de la fiche est prête, faire une *pull request* vers
+le dépôt `utilitR`. La cible est la branche `master` du dépôt `utilitR`
+(`utilitr/master`) la source est votre branche.
+
+1. Bérifier que le code est bien fonctionnel (c'est-à-dire que la branche compile bien, ce que `Github` indique par une croix verte :heavy_check_mark:);
+2. Pour chaque branche, un site temporaire est disponible afin de prévisualiser le résultat déployé à chaque fois que les tests automatiques aboutissent, ce que `Github` signale par une croix verte :heavy_check_mark:.
+
+La structure de l'url est la suivante: `https://{BRANCH_NAME}--preview-documentationr.netlify.app/` (faire attention aux deux tirets qui se suivent). Par exemple, si la branche en question s'appelle `toto`, l'adresse de prévisualisation est `https://toto--preview-documentationr.netlify.app/`. Le résultat d'une modification met approximativement 5 minutes à être validé (croix verte) dont à être disponible en prévisualisation .
 Prévisualiser le résultat sur le site temporaire
-* Quand une première version de la fiche est prête:
-    - vérifier que le code est bien fonctionnel (c'est-à-dire que la branche compile bien, ce que `Gitlab` indique par une croix verte :heavy_check_mark:);
-    - faire un *merge request* vers la branche `master` du dépôt, avec les options `squash commits` et `WIP` (Work In Progress);
+
+    
 * Une discussion s'engage dans la *merge request* sur les améliorations/corrections à apporter à la fiche;
 * **La validation d'une fiche est une décision collective**. La règle approximative est qu'une fiche est intégrée à la documentation si quatre ou cinq contributeurs considèrent qu'elle est acceptable en l'état;
 * Une fois que la fiche est acceptée, l'un des mainteneurs accepte la *merge request* (ajout de la fiche dans la branche `master`).
