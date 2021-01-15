@@ -182,7 +182,7 @@ Ajouter une nouvelle fiche thématique à la documentation représente un
 travail conséquent qui requiert l'approbation de la
 majorité des contributeurs du projet.
 
-### Comment proposer une nouvelle fiche?
+### Comment proposer et élaborer une nouvelle fiche?
 
 La première étape consiste à __ouvrir une *issue*__ dans le
 dépôt `Github`. L'_issue_ doit avoir:
@@ -193,10 +193,31 @@ dépôt `Github`. L'_issue_ doit avoir:
 Une fois que l'équipe de contributeurs est d'accord sur l'objet de la fiche et les grandes lignes de son contenu, la fiche peut être rédigée en suivant la procédure décrite ci-dessous et les
 [contraintes formelles indiquées dans la partie suivante](#six-contraintes-formelles)
 
-### Comment élaborer une nouvelle fiche? 
+### :one: Forker le dépôt `utilitR`
 
-* Forker le dépôt `utilitR` afin d'obtenir une version avec droits de
-modification
+Seuls les mainteneurs du dépôt `utilitR` ont les droits d'écriture sur le dépôt
+officiel de la documentation. Pour pouvoir proposer de nouvelles fiches, il est
+pour un contributeur de passer par un dépôt intermédiaire sur lequel il/elle 
+dispose de droits d'écritures.
+
+On appelle ce dépôt un `fork`: c'est une copie
+personnelle en ligne d'un dépôt sur lequel on n'a pas les droits en écriture.
+Cette version représente une copie à l'instant *t* d'un dépôt, elle n'évolue
+pas forcément dans le même sens que le dépôt d'origine (d'où l'image
+de la fourchette, qui représente la bifurcation). Néanmoins, si on désire
+à un moment soumettre une modification faite sur le fork au dépôt d'origine,
+il faudra mettre à jour sa copie personnelle. C'est expliqué dans la 
+partie XXX
+
+
+Pour forker le dépôt, il est nécessaire d'avoir un compte `Github`. Une fois
+connecté sur ce compte, on fork le dépôt en cliquant à droite de la page:
+
+![](./pics/contributing/fork1.png)
+
+
+
+
 * Créer une branche portant un nom reflétant le contenu de la fiche (exemple: `fiche_graphiques`, `fiche_cartographie`);
 * Rédiger la fiche en `Rmarkdown` à partir du modèle de fiche (`03_Fiches_thematiques/Modele_de_fiche.Rmd`); 
     - il est fortement conseillé de lire des fiches existantes pour comprendre la démarche et le niveau de détail retenus par les autres contributeurs;
