@@ -51,6 +51,7 @@ Plusieurs solutions sont possibles pour disposer de l'environnement de travail n
 
 - [l'utilisation d'un container](#utilisation-dun-container). _Cette solution vous offre des garanties élevées de reproductibilité._
 
+
 ## Installation des _packages_
 
 Les _packages_ nécessaires sont déclarés dans le fichier [DESCRIPTION](DESCRIPTION).  
