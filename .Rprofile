@@ -129,8 +129,8 @@ compresser_image <-
         image_resized      <- image_raw
       }
       magick::image_write(image = image_resized, 
-                  path = file_out, 
-                  format = "png")
+                          path = file_out, 
+                          format = "png")
     }
   }
 
@@ -140,4 +140,17 @@ include_image <- function(x, compression = TRUE, ratio_compression = 2, ...) {
     compresser_image(file_in = x, ...)
   }
   knitr::include_graphics(sub(dossier_images, dossier_images_compressees, x), ...)    
+}
+
+
+reminder_image <- function(path = "moncheminperso"){
+  cat(
+    sprintf(
+      paste(
+        "```{r, echo = FALSE}",
+        "include_image(\"%s\")",
+        "```",
+        sep = "\n"
+      ), path)
+  )
 }
