@@ -96,13 +96,20 @@ Les connaisseurs du format `LaTeX` reconnaîtront une grande proximité entre `L
 * Transformation du `.Rmd` (`R Markdown`) en `.md` (`Markdown`): le _package_ `knitr` se charge de transformer le texte et les sorties `R` en un document `markdown` standard. 
 * Transformation du `.md` en un format de sortie standard (`html`, `pdf`, etc.): tâche effectuée par le logiciel nommé `pandoc`. Ce dernier est automatiquement installé lorsqu'on a installé le package `rmarkdown`, il n'y a donc pas à le télécharger.
 
-![Comment `R Markdown` produit-il un document?](./pics/rmarkdown/schema_rmd.png)
+
+```{r, echo = FALSE, fig.cap= "Comment R Markdown produit-il un document?"}
+include_image("pics/rmarkdown/schema_rmd.png")
+```
+
 
 Pour obtenir la sortie désirée d'un document `R Markdown` on peut utiliser deux méthodes:
 
 * Pour les usages courants, le bouton `Knit` de Rstudio convient bien: 
 
-![](./pics/rmarkdown/knit.png) 
+```{r, echo = FALSE, fig.cap= "Le bouton knit"}
+include_image("pics/rmarkdown/knit.png")
+```
+
 
 * Pour des processus de production des fichiers plus complexes, il est possible d'exécuter la commande `rmarkdown::render` pour générer de manière automatique un fichier `R Markdown`.
 
@@ -205,7 +212,11 @@ render_rmd("resources/rmarkdown/titres.Rmd")
 
 Quand des titres ont été définis, si vous cliquez sur l’icône `Show document outline` totalement à droite de la barre d’outils associée au fichier `R Markdown`, une table des matières générée automatiquement à partir des titres s’affiche et vous permet de naviguer facilement dans le document :
 
-![](./pics/rmarkdown/toc.png)
+
+```{r, echo = FALSE}
+include_image("pics/rmarkdown/toc.png")
+```
+
 
 La syntaxe Markdown permet d’autres mises en forme, comme la possibilité d’insérer des liens ou des images. Par exemple, le code suivant :
 
@@ -283,7 +294,10 @@ Dans `RStudio` les blocs de code `R` sont en général affichés avec une couleu
 2. exécuter tous les blocs avant celui-ci;
 3. exécuter ce bloc exclusivement.
 
-![](./pics/rmarkdown/chunk.png)
+
+```{r, echo = FALSE}
+include_image("pics/rmarkdown/chunk.png")
+```
 
 Lorsque le document est compilé au format HTML, PDF ou docx, chaque bloc est exécuté tour à tour, et le résultat inclus dans le document final, qu’il s’agisse de texte, d’un tableau ou d’un graphique. Les blocs sont liés entre eux, dans le sens où les données importées ou calculées dans un bloc sont accessibles aux blocs suivants. On peut donc aussi concevoir un document `R Markdown` comme un script `R` dans lequel on aurait intercalé des blocs de texte au format `Markdown`.
 
@@ -307,7 +321,10 @@ Un point important est que deux blocs ne peuvent pas porter le même nom, il fau
 * en cas d'erreur lors de la compilation du document, `R` donne le nom du bloc qui provoque l'erreur. Avec des blocs non nommés, on a pour seule information `unnamed-chunk-XX` ce qui rend difficile d'identifier la source de l'erreur dans un document très long;
 * le bloc peut facilement être retrouvé dans l'arborescence Rstudio (voir capture d'écran).
 
-![Le nom des blocs figure dans l'arboresence Rstudio](./pics/rmarkdown/namedbloc.png)
+
+```{r, echo = FALSE, fig.cap="Le nom des blocs figure dans l'arboresence Rstudio"}
+include_image("pics/rmarkdown/namedbloc.png")
+```
 
 **Outre un nom, on peut passer à un bloc une série d’options sous la forme `option = valeur`.** Ces options permettent de contrôler le comportement du bloc lors de la compilation du document. Les blocs de code acceptent de nombreuses options. Les principales options sont les suivantes:
 
@@ -361,7 +378,9 @@ Au premier niveau (sans indentation) se trouvent les options générales, par ex
 
 La personnalisation du document généré se fait en modifiant des options dans le préambule du document. `RStudio` propose également une petite interface graphique permettant de changer ces options plus facilement. Pour cela, cliquez sur l’icône en forme d’engrenage à droite du bouton `Knit` et choisissez `Output Options`:
 
-![](./pics/rmarkdown/perso_options.png)
+```{r, echo = FALSE}
+include_image("pics/rmarkdown/perso_options.png")
+```
 
 Lorsque vous changez des options par cette interface, `RStudio` va en fait modifier le préambule de votre document. Ainsi, si vous choisissez d’afficher une table des matières et de modifier le thème de coloration syntaxique, votre en-tête va devenir quelque chose comme :
 
@@ -417,16 +436,19 @@ La bibliographie se trouve généralement à la fin du document, sauf si un fich
 ```{r, echo = FALSE}
 render_rmd("resources/rmarkdown/chunk07.Rmd")
 ```
-donnera l'*output* suivant:
+donnera l'*output* suivant :
 
-`r if(knitr::is_html_output()){"![](resources/rmarkdown/chunk07.html){width=100%}"}`
-`r if(knitr::is_latex_output()){"\\includepdf[clip=0mm 0mm 0mm 0mm, trim=20mm 40mm 20mm 15mm,pages=-,frame,scale=.65,pagecommand={}]{resources/rmarkdown/chunk07.pdf}"}`
-
+```{r, echo = FALSE, fig.cap= "Exemple de rendu de la bibliographie"}
+include_image("resources/rmarkdown/chunk07.png")
+```
 
 ::: {.conseil data-latex=""}
 Il est rare qu'il soit nécessaire de devoir écrire soi-même la bibliographie lorsqu'on écrit un article académique. En effet, on trouve souvent des références au format `bibtex` sur les bases de données scientifiques, notamment sur [google scholar](https://scholar.google.fr/) ou sur le site [ideas.repec](https://ideas.repec.org/) (pour les articles d'économie). Sur `scholar`, pour récupérer une citation, on clique sur le guillemet puis sur `bibtex` :
 
-![](./pics/rmarkdown/googlescholar.png)
+```{r, echo = FALSE, fig.cap= "Google Scholar"}
+include_image("pics/rmarkdown/googlescholar.png")
+```
+
 
 Cela ouvre alors un onglet vierge avec la citation en question, en l'occurence 
 
