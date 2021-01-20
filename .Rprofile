@@ -91,8 +91,9 @@ if (!dir.exists(dossier_images_compressees)) {
   dir.create(dossier_images_compressees)
 }
 # Copier les images si elles ne sont pas déja dans le dossier
-file.copy(list.files(dossier_images, full.names = TRUE), dossier_images_compressees, recursive=TRUE, overwrite = TRUE)
-
+invisible(
+  file.copy(list.files(dossier_images, full.names = TRUE), dossier_images_compressees, recursive=TRUE, overwrite = TRUE)
+)
 compresser_image <- 
   function(file_in, 
            file_out = NA, ratio_compression = 2, 
@@ -154,3 +155,16 @@ reminder_image <- function(path = "moncheminperso"){
       ), path)
   )
 }
+
+
+message(
+  cat(
+    c("Projet source de la documentation utilitR",
+      "-----------------------------------------",
+      "",
+      "Pour pr\u00E9visualiser la version web de l'ouvrage: ",
+      "   * Option 1: utiliser l'onglet 'Build' dans Rstudio;",
+      "   * Option 2: taper dans la commande R: bookdown::render_book(\"index.Rmd\", output_dir = \"_public\")"),
+    sep = "\n"
+  )
+)
