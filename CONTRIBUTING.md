@@ -368,7 +368,26 @@ S'il y a des conflits les régler. S'il n'y en a pas, la branche est prête
 1. Vérifier que le code est bien fonctionnel (c'est-à-dire que la branche compile bien, ce que `Github` indique par une croix verte :heavy_check_mark:);
 2. Pour chaque branche, un site temporaire est disponible afin de prévisualiser le résultat déployé à chaque fois que les tests automatiques aboutissent, ce que `Github` signale par une croix verte :heavy_check_mark:.
 
-La structure de l'url est la suivante: `https://{BRANCH_NAME}--preview-documentationr.netlify.app/` (faire attention aux deux tirets qui se suivent). Par exemple, si la branche en question s'appelle `toto`, l'adresse de prévisualisation est `https://toto--preview-documentationr.netlify.app/`. Le résultat d'une modification met approximativement 5 minutes à être validé (croix verte) dont à être disponible en prévisualisation .
+Si tout va bien, `Github` nous indique le succès
+
+![](./pics/contributing/fork3.png)
+
+
+Cliquer, pour dérouler les tests sur `Show all checks`.
+En cliquant sur `Details`, on peut accéder au document compilé. 
+En bas, on peut télécharger résultat de la
+compilation.
+
+![](./pics/contributing/fork4.png)
+
+Et vérifier, après avoir dézippé et ouvert le fichier `index.html`,
+que le résultat mis en forme correspond
+à ce qui est désiré. 
+
+
+Le résultat d'une modification met approximativement 5 minutes à être validé
+(croix verte si succès, rouge si échec)
+donc à être disponible en prévisualisation .
 Prévisualiser le résultat sur le site temporaire
 
     
