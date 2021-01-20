@@ -20,6 +20,7 @@ ou les  fichiers `html` pour les consulter hors-connexion en cliquant
 
 ## Objectifs de la documentation `UtilitR`
 
+
 **Cette documentation s'adresse à tous utilisateur de `R` dans le cadre d'un usage courant pour l'analyse de données.** Elle est conçue pour aider les utilisateurs à réaliser des traitements statistiques usuels avec `R` et à produire des sorties (graphiques, cartes, documents). Cette documentation présente succinctement les outils les plus adaptés à ces tâches, et oriente les agents vers les ressources documentaires pertinentes. En revanche, elle n'aborde pas les outils les plus avancés, notamment ceux utilisés dans un cadre de développement logiciel.
 
 Cette documentation a pour ambition de répondre à trois questions générales:
