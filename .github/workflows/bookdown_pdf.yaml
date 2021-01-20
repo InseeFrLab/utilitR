@@ -18,11 +18,16 @@ jobs:
         env:
           GITHUB_PAT: ${{ secrets.PAT }}
         run: |
-          Rscript -e "install.packages(c('remotes','rmarkdown','bookdown'))"
+          Rscript -e "install.packages(c('remotes'))"
+          Rscript -e "remotes::install_github('rstudio/pagedown')"
           Rscript -e "remotes::install_deps(dependencies = TRUE)"
       - name: Render Book
-        run: Rscript -e 'bookdown::render_book("index.Rmd", output_dir = "_public", output_format = "bookdown::pdf_book")'
-      - uses: actions/upload-artifact@v1
+        run: |
+          mkdir _pagedown_output -p
+          Rscript -e "bookdown::render_book('index.Rmd', output_format = 'pagedown::html_paged', output_file = '_pagedown_output/index.html')"
+          Rscript -e "pagedown::chrome_print('_pagedown_output/index.html', '_pagedown_output/DocumentationR.pdf', extra_args = c('--disable-gpu', '--no-sandbox'), timeout = 600, options = list(transferMode = 'ReturnAsStream'), verbose = 1)"
+      - uses: actions/upload-artifact
         with:
-          name: _public
-          path: _public/
+          name: DocumentationR_pagedown
+          path: _pagedown_output/DocumentationR.pdf
+          retention-days: 5
