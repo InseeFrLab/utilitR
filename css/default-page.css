@@ -1,0 +1,306 @@
+/* two pages in a row if possible on screen */
+@media screen {
+  body {
+    background-color: var(--background);
+    margin: var(--screen-pages-spacing) auto 0 auto;
+  }
+  .pagedjs_pages {
+    display: flex;
+    max-width: calc(var(--pagedjs-width) * 2);
+    flex: 0;
+    flex-wrap: wrap;
+    margin: 0 auto;
+  }
+  .pagedjs_page {
+    background-color: var(--color-paper);
+    box-shadow: 0 0 0 1px var(--color-mbox);
+    flex-shrink: 0;
+    flex-grow: 0;
+    margin: auto auto var(--screen-pages-spacing) auto;
+  }
+}
+
+/* when a row can hold two pages, start first page on the right */
+@media screen and (min-width: 12.32in) {
+  .pagedjs_page {
+    margin: auto 0 var(--screen-pages-spacing) 0;
+  }
+  .pagedjs_first_page {
+    margin-left: var(--pagedjs-width);
+  }
+}
+
+/* use a fixed width body for mobiles */
+@media screen and (max-width:1180px)  {
+  body {
+    width: calc(var(--pagedjs-width) + 2 * var(--screen-pages-spacing));
+  }
+}
+
+/* ------------------------ Front Cover --------------------- */
+@page:first{
+  text-align-last: center;
+  text-align: center;
+  margin-right: 2cm;
+  margin-left : 2cm;
+  background-image: var(--front-cover);
+  background-repeat: no-repeat;
+  background-position: 10.5cm 2cm;
+  background-size: 6cm;
+  padding-top: 9cm;
+
+  @top-left-corner {
+    display: none;
+  }
+
+  @bottom-left {
+    text-align: center;
+    text-align-last: center;
+    margin-top: -3cm;
+    margin-left: 6cm;
+    min-width: 10cm;
+    font-size:200%;
+    content: "Version 1 - Mai 2021";
+    display: none;
+  }
+}
+
+div.front-page h1.title {
+  font-size: 300%;
+}
+div.front-page h1.subtitle {
+  font-size: 200%;
+}
+div.front-page h2.date {
+  padding-top: 5cm;
+}
+/* ------------------------ Other settings --------------------- */
+
+/* page size */
+@page {
+  size: 21cm 29.7cm; /* var(--pagedjs-width) doesn't work in browser when printing */
+  /* Filigrane draft */
+  @left-middle {
+    content: "Draft - Ne pas diffuser";
+    font-family: sans-serif;
+    margin-left: -6cm;
+    font-size: 25pt;
+    font-weight: bold;
+    color: rgba(255, 0, 0, 0.8);
+    min-width: 14cm; 
+    text-align-last: center;
+     /* Rotate the text */
+    transform: rotate(-90deg);
+    /* Disable the selection */
+    user-select: none;  
+  } 
+  @bottom-center {
+    content: "Draft - Ne pas diffuser";
+    font-family: sans-serif;
+    font-size: 25pt;
+    font-weight: bold;
+    min-width: 14cm; 
+    color: rgba(255, 0, 0, 0.8);
+    width: 80%;
+    text-align-last: left;
+    /* Disable the selection */
+    user-select: none;  
+  }    
+}
+@page :blank {
+
+}
+/* Define the margins of both pages */
+@page:left {
+    margin-left: 2cm;
+    margin-right: 3cm;
+}
+@page:right {
+    margin-left: 3cm;
+    margin-right: 2cm;
+}
+
+/* store some string variables */
+.shorttitle1 {
+  string-set: h1-text content(text);
+}
+
+.shorttitle2 {
+  string-set: h2-text content(text);
+}
+
+/* left page */
+.running-h1-title {
+  position: running(runningH1Title);
+  width: var(--running-title-width);
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.running-h1-title:before {
+  content: string(h1-text);
+}
+
+@page chapter:left {
+  @top-left {
+    content: counter(page);
+  }
+  @top-right {
+    content: element(runningH1Title);
+    white-space: nowrap !important;
+    text-align-last: right;
+  }
+}
+
+/* right page */
+.running-h2-title {
+  position: running(runningH2Title);
+  width: var(--running-title-width);
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.running-h2-title:before {
+  /* We would want to write: */
+  /* content: string(h2-text, start); */
+  /* However, this is yet unsupported by Paged.js, see https://gitlab.pagedmedia.org/tools/pagedjs/issues/38 */
+  content: string(h2-text);
+}
+@page chapter:right {
+  @top-right {
+    content: counter(page);
+    text-align-last: right;
+ }
+  @top-left {
+    content: element(runningH2Title);
+    white-space: nowrap !important;
+  }
+}
+
+/* New chapter page */
+@page chapter:first {
+  @top-left {
+    content: none;
+  }
+  @top-right {
+    content: none;
+  }
+  @bottom-right {
+    content: counter(page);
+  }
+}
+/*
+@page :first {
+  @top-left {
+    content: none;
+  }
+  @top-right {
+    content: none;
+  }
+  @bottom-right {
+    content: none !important;
+  }
+  background-image: var(--front-cover);
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+*/
+/* Front cover */
+.front-cover {
+  break-after: recto;
+}
+
+/* Front page or title page */
+.front-page {
+  counter-reset: page;
+}
+
+/* Front matter*/
+@page frontmatter:left {
+  @top-left {
+    content: counter(page, lower-roman);
+  }
+  @top-right {
+    content: element(runningH1Title);
+    white-space: nowrap !important;
+  }
+}
+@page frontmatter:right {
+  @top-right {
+    content: counter(page, lower-roman);
+  }
+  @top-left {
+    content: element(runningH1Title);
+    white-space: nowrap !important;
+  }
+}
+@page frontmatter:first {
+  @top-left {
+    content: none;
+  }
+  @top-right {
+    content: none;
+  }
+  @bottom-right {
+    content: counter(page, lower-roman);
+  }
+}
+
+/* last page or back cover */
+.back-cover {
+  break-before: verso;
+}
+.pagedjs_page:last-of-type {
+  background-image: var(--back-cover);
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+/* page breaks; aka CSS fragmentation */
+.level1 {
+  break-before: recto;
+  page: chapter;
+}
+.front-matter-container .level1 {
+  page: frontmatter;
+}
+.section > h1, .section > h2, .section > h3, .section > h4, .section > h5, .section > h6 {
+  break-after: avoid;
+}
+.footenotes {
+  break-before: always;
+  break-after: always;
+}
+.figure {
+  break-inside: avoid;
+}
+
+/* reset page numbering for main content */
+.main .level1:first-child h1 {
+  counter-reset: page;
+}
+
+/* do not break captions */
+caption {
+  break-inside: avoid;
+  break-after: avoid;
+}
+/* Filigrane draft */
+/*
+.pagedjs_sheet:after {
+  position: absolute;
+  content: "Version provisoire - Ne pas diffuser";
+  top: 50%;
+  left: 50%;
+  margin-left: -40%;
+  margin-top: -50%;
+  font-family: sans-serif;
+  font-size: 80pt;
+  font-weight: bold;
+  color: rgba(255, 0, 0, 0.2);
+  width: 80%;
+  text-align: center;
+  transform: rotate(-45deg);
+  user-select: none;
+}
+*/

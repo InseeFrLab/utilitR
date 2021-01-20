@@ -60,12 +60,12 @@ Les objets récupérés en sortie de `doremifasolData` sont tous des `data.frame
 
 **Pour convertir un `data.frame` en `tibble` on utilise la fonction `tibble::as_tibble()`.** Dans l'exemple suivant, on charge la table de la base permanente des équipements puis on la convertit en `tibble`.
 
-    ```{r}
-    # Charger la base permanente des équipements
-    bpe_ens_2018 <- bpe_ens_2018
-    # Convertir ce data.frame en tibble
-    bpe_ens_2018_tbl <- as_tibble(bpe_ens_2018)
-    ```
+```{r}
+# Charger la base permanente des équipements
+bpe_ens_2018 <- doremifasolData::bpe_ens_2018
+# Convertir ce data.frame en tibble
+bpe_ens_2018_tbl <- as_tibble(bpe_ens_2018)
+```
 
 Il y a deux différences principales entre un `tibble` et un `data.frame`:
 
@@ -74,10 +74,14 @@ Il y a deux différences principales entre un `tibble` et un `data.frame`:
   options(max.print = 10)
   ```
   ```{r}
+  # Si on sélectionne une colonne dans un data.frame,
+  # on obtient un vecteur.
   bpe_ens_2018[ , 1]
   ```
   
   ```{r}
+  # Si on sélectionne une colonne dans un tibble,
+  # on obtient un tibble avec une seule colonne.
   bpe_ens_2018_tbl[ , 1]
   ```
   
@@ -397,9 +401,9 @@ head(table_jointe_tbl)
 
 La syntaxe pour réaliser les autres types de jointure est très similaire:
 
-| Type de jointure  | Syntaxe `dplyr`                                                                        |
+| Type\ de\ jointure  | Syntaxe `dplyr`                                                                        |
 |-------------------|----------------------------------------------------------------------------------------|
-| Jointure à gauche | `left_join(x = filosofi_com_2016_tbl, y = cog_com_2019_tbl, by = c("CODGEO" = "com"))` |
+| Jointure\ à\ gauche | `left_join(x = filosofi_com_2016_tbl, y = cog_com_2019_tbl, by = c("CODGEO" = "com"))` |
 | Jointure à droite | `right_join(x = filosofi_com_2016_tbl, y = cog_com_2019_tbl, by = c("CODGEO" = "com"))`|
 | Jointure externe  | `full_join(x = filosofi_com_2016_tbl, y = cog_com_2019_tbl, by = c("CODGEO" = "com"))` |
 | Anti-jointure     | `anti_join(x = filosofi_com_2016_tbl, y = cog_com_2019_tbl, by = c("CODGEO" = "com"))` |
@@ -630,7 +634,7 @@ bpe_ens_2018_tbl %>%
 
 **Il est conseillé de bien réfléchir avant de restructurer en format *wide*, et de ne le faire que lorsque cela paraît indispensable**. En effet, s'il est tentant de restructurer les données sous format *wide* car ce format peut paraître plus intuitif, il est généralement plus simple et plus rigoureux de traiter les données en format *long*. Ceci dit, il existe des situations dans lesquelles il est indiqué de restructurer les données en format *wide*. Voici deux exemples:
 
-* produire un tableau synthétique de résultats, prêt à être diffusé, avec quelques colonnes donnant des indicateurs par catégorie (exemple: la table `filosofi_epci_2016` du _package_ `doremifasolData`);
+* produire un tableau synthétique de résultats, prêt à être diffusé, avec quelques colonnes donnant des indicateurs par catégorie (exemple : la table `filosofi_epci_2016` du _package_ `doremifasolData`, qui contient plusieurs colonnes contenant le taux de pauvreté pour différentes tranches d'âge);
 * produire une table avec une colonne par année, de façon à calculer facilement un taux d'évolution entre deux dates.
 :::
 
