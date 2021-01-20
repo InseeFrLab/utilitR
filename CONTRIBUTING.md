@@ -365,8 +365,10 @@ git merge master
 S'il y a des conflits les régler. S'il n'y en a pas, la branche est prête
 à être proposée au dépôt officiel: la `pull request` peut-être ouverte. 
 
-1. Vérifier que le code est bien fonctionnel (c'est-à-dire que la branche compile bien, ce que `Github` indique par une croix verte :heavy_check_mark:);
-2. Pour chaque branche, un site temporaire est disponible afin de prévisualiser le résultat déployé à chaque fois que les tests automatiques aboutissent, ce que `Github` signale par une croix verte :heavy_check_mark:.
+Vérifier que le code est bien fonctionnel. `Github` indique par une
+croix verte :heavy_check_mark: le succès de 
+la compilation, c'est-à-dire la compilation de l'ensemble des 
+fichiers `R Markdown` en un site HTML et un fichier PDF. 
 
 Si tout va bien, `Github` nous indique le succès
 
