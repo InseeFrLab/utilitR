@@ -3,15 +3,22 @@ on:
     branches-ignore:
       - master
       - main
+  pull_request:
+    branches:
+      - main
+      - master 
 
 name: preview bookdown
 
 jobs:
   build:
+    if: "!contains(github.event.commits[0].message, '[skip ci]')"
     runs-on: ubuntu-latest
     container: inseefrlab/utilitr:latest
     steps:
       - name: Checkout Repository
+        env:
+          GITHUB_PAT: ${{ secrets.PAT }}
         uses: actions/checkout@master
       - name: Install Dependencies
         run: |
@@ -23,6 +30,7 @@ jobs:
         with:
           name: _public
           path: _public/
+          retention-days: 5
       - name: Install npm
         uses: actions/setup-node@v1          
       - name: Deploy to Netlify
@@ -33,6 +41,6 @@ jobs:
         run: |
           npm install netlify-cli -g
           netlify init
-          netlify deploy --alias=${CI_COMMIT_REF_NAME} --dir="_public"
+          netlify deploy --alias=${CI_COMMIT_REF_NAME} --dir="_public" --message "Deploy from ${GITHUB_REF}"
 
 #--site="$NETLIFY_SITE_ID" --auth="$NETLIFY_AUTH_TOKEN"
