@@ -24,7 +24,8 @@ jobs:
           Rscript -e "pagedown::chrome_print('_pagedown_output/index.html', '_pagedown_output/DocumentationR.pdf', extra_args = c('--disable-gpu', '--no-sandbox'), timeout = 600, options = list(transferMode = 'ReturnAsStream'), verbose = 1)"
       - name: Compress pdf
         run : |
-          gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook -dNOPAUSE -dQUIET -dBATCH -sOutputFile='_pagedown_output/DocumentationR.pdf' '_pagedown_output/DocumentationR.pdf'
+#          gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook -dNOPAUSE -dQUIET -dBATCH -sOutputFile='_pagedown_output/DocumentationR.pdf' '_pagedown_output/DocumentationR.pdf'
+          ps2pdf -dPDFSETTINGS=/ebook "_pagedown_output/DocumentationR.pdf" "_pagedown_output/DocumentationR.pdf"   
       - uses: actions/upload-artifact@v2
         with:
           name: DocumentationR_pagedown
