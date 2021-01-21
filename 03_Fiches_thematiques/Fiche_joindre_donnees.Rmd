@@ -5,7 +5,7 @@
 Vous souhaitez apparier deux tables de données selon une ou plusieurs variables de jointure.
 
 ::: {.recommandation data-latex=""}
-* Pour des tables de données de taille petite et moyenne (inférieure à 1 Go ou moins d'un million d'observations), il est recommandé d'utiliser le _package_ `dplyr` ou `R base`. Le _package_ `dplyr` est présenté en détail dans la fiche [Manipuler des données avec le `tidyverse`];
+* Pour des tables de données de taille petite et moyenne (inférieure à 1 Go ou moins d'un million d'observations), il est recommandé d'utiliser le _package_ `dplyr` ou `R base`. Le _package_ `dplyr` est présenté en détail dans la fiche [Manipuler des données avec le `tidyverse`] ;
 * Pour des tables de données de grande taille (plus de 1 Go ou plus d'un million d'observations), il est recommandé d'utiliser le _package_ `data.table` qui fait l'objet d'une autre fiche. Ce _package_ est présenté en détail dans la fiche [Manipuler des données avec `data.table`].
 * Il est vivement recommandé de lire la section [Quelques bonnes pratiques sur les jointures] avant de réaliser des jointures.
 :::
@@ -35,15 +35,15 @@ Le graphique ci-dessous illustre les différentes méthodes de jointures :
 ::: {.remarque data-latex=""}
 Pour vous aider à comprendre le principe des jointures, voici une rapide description des opérations que `R` réalise quand on fait une jointure interne entre deux tables :
 
-* `R` isole la première observation de la table de gauche et en extrait l'identifiant (la (ou les) variable(s) de jointures);
+* `R` isole la première observation de la table de gauche et en extrait l'identifiant (la (ou les) variable(s) de jointures) ;
 * il compare cet identifiant avec l'identifiant de chacune des observations de la table de droite :
-    * soit l'identifiant est identique, auquel cas il rajoute dans la table de sortie une nouvelle observation avec les valeurs de l'observation extraite de la table de gauche et celle de l'observation extraite de la table de droite;
+    * soit l'identifiant est identique, auquel cas il rajoute dans la table de sortie une nouvelle observation avec les valeurs de l'observation extraite de la table de gauche et celle de l'observation extraite de la table de droite ;
     * soit l'identifiant est différent, auquel cas il passe à la suivante de la table de droite.
 * `R` passe ensuite à la deuxième observation de la table de gauche, et ainsi de suite.
   
 Il est très important de comprendre qu'une ligne présente dans une des deux tables peut ainsi se retrouver dans la table finale en plusieurs exemplaires, ou pas du tout.
 
-Dans le cas d'une jointure à gauche (*left join*), le fonctionnement est le même. La différence est que, pour chaque ligne de la table de gauche, si après avoir balayé toutes les lignes de la table de droite aucune correspondance n'a été trouvée, `R` ajoute quand même la ligne de gauche dans la table de sortie et met des valeurs manquantes dans les colonnes correspondant à la table de droite. On ne peut donc avoir moins de lignes en sortie que dans la table de gauche; en revanche on peut en avoir plus si on a des doublons d'identifiant.
+Dans le cas d'une jointure à gauche (*left join*), le fonctionnement est le même. La différence est que, pour chaque ligne de la table de gauche, si après avoir balayé toutes les lignes de la table de droite aucune correspondance n'a été trouvée, `R` ajoute quand même la ligne de gauche dans la table de sortie et met des valeurs manquantes dans les colonnes correspondant à la table de droite. On ne peut donc avoir moins de lignes en sortie que dans la table de gauche ; en revanche on peut en avoir plus si on a des doublons d'identifiant.
 
 Le cas d'une jointure à droite est tout à fait symétrique, et on déduit facilement le cas d'une jointure complète (*full join*).
 :::
@@ -91,13 +91,13 @@ Contrairement à d'autres logiciels statistiques, **il n'est pas nécessaire ni 
 
 La fonction pour effectuer des jointures en `base R` est la fonction `merge` (fusionner). Elle prend les arguments suivants :
 
-- le nom des deux `data.frame` à joindre;
-- les variables de jointure, défini par les arguments `by.x` et `by.y` ou par l'argument `by`;
+- le nom des deux `data.frame` à joindre ;
+- les variables de jointure, défini par les arguments `by.x` et `by.y` ou par l'argument `by` ;
 - le type de jointure défini par les arguments `all`, `all.x` et `all.y`.
 
 Voici quelques remarques sur l'usage de `merge` :
 
-- Lorsque les variables de jointure portent exactement le même nom dans les deux tables, on les définit par l'argument `by`. Sinon, il faut préciser `by.x = nom_var_joint_table_gauche` et `by.y = nom_var_joint_table_droite`;
+- Lorsque les variables de jointure portent exactement le même nom dans les deux tables, on les définit par l'argument `by`. Sinon, il faut préciser `by.x = nom_var_joint_table_gauche` et `by.y = nom_var_joint_table_droite` ;
 - Par défaut, `merge` réalise une jointure interne. On peut obtenir d'autres types de jointure avec les arguments `all`, `all.x` et `all.y`. Voici un aide mémoire :
 
     | Type de jointure                      | Argument de la fonction `merge`  |
@@ -123,7 +123,7 @@ head(table_jointe)
 
 **Avec `dplyr`, les jointures se réalisent grâce aux fonctions `left_join`, `right_join`, `inner_join`, `full_join` et `anti_join`.** Ces fonctions prennent les arguments suivants :
 
-- le nom des deux `data.frame` à joindre;
+- le nom des deux `data.frame` à joindre ;
 - les variables de jointure, défini par l'argument `by`. Lorsque la variable de jointure ne porte pas le même nom dans les deux tables, on utilise le paramètre `by = c("var_x" = "var_y")`. S'il y a plusieurs variables de jointures, on écrit `by = c("var_x1" = "var_y1", "var_x2" = "var_y2")`.
 
 Il est préférable d'utiliser ces fonctions sur des objets `tibble` plutôt que `data.frame`. On va donc convertir les deux tables avant de présenter un exemple :
@@ -156,7 +156,7 @@ La syntaxe pour réaliser les autres types de jointure est très similaire :
 
 **Il existe deux façons de réaliser des jointures avec `data.table`** :
 
-+ **la fonction `merge` de `data.table`**, dont le fonctionnement est identique à celui de la fonction `merge` de `R base`; de façon générale, c'est cette approche qu'il faut privilégier pour faire des jointures avec `data.table`;
++ **la fonction `merge` de `data.table`**, dont le fonctionnement est identique à celui de la fonction `merge` de `R base` ; de façon générale, c'est cette approche qu'il faut privilégier pour faire des jointures avec `data.table` ;
 + **l'opérateur crochet `[]`**. Cette approche convient pour des utilisations avancées, lorsque l'approche `merge` ne peut pas être utilisée.
 
 Il est préférable d'utiliser ces fonctions sur des objets `data.table` plutôt que `data.frame`. On va donc convertir les deux tables avant de présenter des exemples.
@@ -177,8 +177,8 @@ Il et possible de définir une (ou plusieurs) clé(s) grâce à la commande `set
 
 **La fonction `merge` de `data.table` a un fonctionnement identique à celui de la fonction `merge` de `R base`, mais elle est plus rapide lorsqu'on l'utilise pour joindre des objets `data.table`** plutôt que des objets `data.frame`. Elle prend les arguments suivants :
 
-- le nom des deux `data.frame` à joindre;
-- les variables de jointure, défini par les arguments `by.x` et `by.y` ou par l'argument `by`;
+- le nom des deux `data.frame` à joindre ;
+- les variables de jointure, défini par les arguments `by.x` et `by.y` ou par l'argument `by` ;
 - le type de jointure défini par les arguments `all`, `all.x` et `all.y`.
 
 Voici un exemple dans lequel on utilise la fonction `merge` de `data.table` pour réaliser une jointure à gauche entre la table des données Filosofi et la table des communes du COG.
@@ -376,11 +376,11 @@ Si vous faites des jointures avec `dplyr`, vous pouvez utiliser le _package_ [`t
 
 ## Pour en savoir plus {#RessourcesJointures}
 
-* Fiche [Manipuler des données avec le `tidyverse`];
-* Fiche [Manipuler des données avec `data.table`];
-* un [tutoriel sur les jointures en SQL](https://sql.sh/cours/jointures) (entièrement en français);
-* un [tutoriel de Lise Vaudor sur les jointures en `dplyr`](http://perso.ens-lyon.fr/lise.vaudor/combinaisons-et-jointures-de-tables-avec-dplyr);
-* la [section consacrée à `dplyr` de la formation de Julien Barnier](https://juba.github.io/tidyverse/10-dplyr.html);
-* les [formations du MTES](https://mtes-mct.github.io/parcours-r/);
+* Fiche [Manipuler des données avec le `tidyverse`] ;
+* Fiche [Manipuler des données avec `data.table`] ;
+* un [tutoriel sur les jointures en SQL](https://sql.sh/cours/jointures) (entièrement en français) ;
+* un [tutoriel de Lise Vaudor sur les jointures en `dplyr`](http://perso.ens-lyon.fr/lise.vaudor/combinaisons-et-jointures-de-tables-avec-dplyr) ;
+* la [section consacrée à `dplyr` de la formation de Julien Barnier](https://juba.github.io/tidyverse/10-dplyr.html) ;
+* les [formations du MTES](https://mtes-mct.github.io/parcours-r/) ;
 * ce [tutoriel sur les jointures avec data.table](https://rstudio-pubs-static.s3.amazonaws.com/52230_5ae0d25125b544caab32f75f0360e775.html).
 * la [vignette du _package_ `tidylog`](https://cran.r-project.org/web/packages/tidylog/readme/README.html)

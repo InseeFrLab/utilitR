@@ -7,7 +7,7 @@ L'utilisateur souhaite accéder à des données stockées dans une base de donn�
 ::: {.recommandation data-latex=""}
 
 * **Il est recommandé d'utiliser le *package* `DBI`** qui fournit une boîte à outils génériques pour de multiples bases de données. Ce *package* doit être complété par un autre *package* spécifique au type de base de données concernées :
-    - pour une base de données de type Oracle : `ROracle`;
+    - pour une base de données de type Oracle : `ROracle` ;
     - pour une base de données de type PostgreSQL : `RPostgres` (ou `odbc` pour les utilisateurs qui souhaitent visualiser l'architecture de la base de données dans RStudio).
 * Les utilisateurs débutants peuvent utiliser le _package_ `dbplyr` pour se familiariser avec les requêtes SQL. 
 * L'usage de ces *packages* peut être conditionné à l'installation préalable de **librairies système** sur lesquelles l'utilisateur standard n'a pas la main. Il faudra le cas échéant contacter les services informatiques pour obtenir l'installation de ces librairies systèmes.
@@ -44,7 +44,7 @@ Dans les grandes lignes, une requête SQL ressemble généralement à ce qui sui
 SELECT var1, var2
 FROM ma_table
 WHERE var3=1
-ORDER BY var1;
+ORDER BY var1 ;
 ```
 
 Un grand nombre de sites internet proposent des tutoriels sur le langage SQL.
@@ -53,15 +53,15 @@ Un grand nombre de sites internet proposent des tutoriels sur le langage SQL.
 
 Pour interagir avec une base de données avec `R`, les fonctionnalités se décomposent en deux grands ensembles :
 
-- une **interface utilisateur** (_front-end_) : le _package_ `DBI` contient les fonctions nécessaires à l'utilisateur de `R` pour établir, gérer et terminer la connexion à la base de données, ainsi que pour lancer des requêtes sur la base, quelle que soit la nature de celle-ci. Il s'agit d'un composant indépendant des caractéristiques techniques de la base de données;
+- une **interface utilisateur** (_front-end_) : le _package_ `DBI` contient les fonctions nécessaires à l'utilisateur de `R` pour établir, gérer et terminer la connexion à la base de données, ainsi que pour lancer des requêtes sur la base, quelle que soit la nature de celle-ci. Il s'agit d'un composant indépendant des caractéristiques techniques de la base de données ;
 - une **interface technique** (_back-end_) : il faut utiliser des _drivers_ qui varient selon le type de la base de données (PostgreSQL, Oracle, MySQL, etc.) et qui permettent de transcrire les commandes issues du _front-end_ d'une manière qui soit intelligible pour la base de données. Ces _drivers_ sont contenus dans des _packages_ (`RPostgres`, `ROracle`, `odbc`).
 
 Le travail sur une base de données avec `DBI` se déroule toujours en trois temps, détaillés dans la suite de cette fiche :
 
 1. On se connecte à la base de données avec la fonction `dbConnect` ;
 2. On envoie des requêtes au serveur. Il y a deux méthodes pour écrire des requêtes :
-    - écrire des requêtes en langage SQL en utilisant les fonctions `dbGetQuery` et `dbSendQuery` de `DBI`;
-    - écrire des requêtes selon la syntaxe `dplyr` en utilisant le _package_ `dbplyr`;
+    - écrire des requêtes en langage SQL en utilisant les fonctions `dbGetQuery` et `dbSendQuery` de `DBI` ;
+    - écrire des requêtes selon la syntaxe `dplyr` en utilisant le _package_ `dbplyr` ;
 3. On se déconnecte de la base de données à l'aide de la fonction `dbDisconnect`.
 
 
@@ -81,10 +81,10 @@ Lorsqu'on découvre une base de données Postgres, il est fréquent de vouloir e
 
 Pour se connecter à une base de données Postgres avec `RPostgres`, il faut utiliser la fonction `dbConnect` de `DBI` avec les informations suivantes :
 
-* l'URL de la base de données (autrement appelé *host*) : elle la forme d'une adresse `mabasededonnees.monsite.fr` ou d'une adresse IP `123.123.456.789`;
-* le port de la base de données : par exemple `1983`;
-* le nom de la base de données : `nom.basededonnees` par exemple;
-* l'identifiant de connexion (autrement appelé *user*) : `monIdep`;
+* l'URL de la base de données (autrement appelé *host*) : elle la forme d'une adresse `mabasededonnees.monsite.fr` ou d'une adresse IP `123.123.456.789` ;
+* le port de la base de données : par exemple `1983` ;
+* le nom de la base de données : `nom.basededonnees` par exemple ;
+* l'identifiant de connexion (autrement appelé *user*) : `monIdep` ;
 * le mot de passe associé : `mdp123`.
 
 En voici un exemple :
@@ -144,7 +144,7 @@ conn <- DBI::dbConnect(drv = ROracle::Oracle(),
 
 Pour lancer des requêtes sur la base de données, l'utilisateur a la possibilité d'utiliser les fonctions `dbSendQuery` et `dbGetQuery` du *package* `DBI`. La fonction `dbSendQuery` demande au serveur PostgreSQL d'exécuter une requête **sans renvoyer de résultats**. La fonction `dbGetQuery` demande au serveur PostgreSQL de **renvoyer vers `R` les résultats de la requête**. Les deux fonctions ont la même syntaxe : `dbSendQuery(conn, requete)` :
 
-* `conn` est l'objet `DBIConnection` créé par la fonction `dbConnect` (voir [Se connecter à une base de données]);
+* `conn` est l'objet `DBIConnection` créé par la fonction `dbConnect` (voir [Se connecter à une base de données]) ;
 * `requete` est une requête SQL sous forme de chaîne de caractères (exemple : `"SELECT var2, var3 FROM table1"`).
 
 Ainsi, pour un utilisateur qui est connecté à la base de données PostgreSQL qui contient le schéma de diffusion - une sorte de librairie SAS - de Fidéli (`s_diff_2018`) et qui souhaite requêter la table des logements (`d_logement`) pour compter le nombre de logements par commune et selon le critère du type de local (critère n°2 dans la documentation utilisateur), on peut lancer les requêtes SQL suivantes :
@@ -238,11 +238,11 @@ Cette fiche reprend partiellement ce [tutoriel RStudio](https://db.rstudio.com/d
 ## Pour en savoir plus
 
 * la documentation de RStudio sur la connexion aux bases de données (en anglais) : 
-    * une [introduction aux bases de données](https://db.rstudio.com/databases);
-    * une [introduction à `DBI`](https://db.rstudio.com/dbi/) (en anglais);
-    * la [documentation associée à Postgre](https://db.rstudio.com/databases/postgresql/);
-* la [documentation du *package* `DBI`](https://cran.r-project.org/web/packages/DBI/DBI.pdf) (en anglais);
-* le [site de Rstudio](https://db.rstudio.com/dbi/) sur `DBI`;
-* la [documentation du *package* `RPostgres`](hhttps://cran.r-project.org/web/packages/RPostgres/RPostgres.pdf) (en anglais);
+    * une [introduction aux bases de données](https://db.rstudio.com/databases) ;
+    * une [introduction à `DBI`](https://db.rstudio.com/dbi/) (en anglais) ;
+    * la [documentation associée à Postgre](https://db.rstudio.com/databases/postgresql/) ;
+* la [documentation du *package* `DBI`](https://cran.r-project.org/web/packages/DBI/DBI.pdf) (en anglais) ;
+* le [site de Rstudio](https://db.rstudio.com/dbi/) sur `DBI` ;
+* la [documentation du *package* `RPostgres`](hhttps://cran.r-project.org/web/packages/RPostgres/RPostgres.pdf) (en anglais) ;
 * la [documentation au sujet du *package* `dbplyr`](https://dbplyr.tidyverse.org/).
 

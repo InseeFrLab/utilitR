@@ -80,14 +80,14 @@ include_image("./pics/Importer_donnees_SAS/donnees_SAS_compressees_BINARY.png")
 
 Si vous êtes dans cette situation, vous avez deux solutions :
 
-* Réenregistrer la table SAS en n'utilisant pas le format BINARY;
+* Réenregistrer la table SAS en n'utilisant pas le format BINARY ;
 * Importer les données avec `R` en procédant en deux temps (voir plus bas).
 
 ## Seconde méthode : procéder en deux temps
 
 Il existe des situations dans lesquelles la fonction `read_sas()` de `haven` ne fonctionne pas (voir ci-dessus) ou se révèle peu performante. Voici donc une seconde méthode qui consiste à procéder en deux temps :
 
-* Exporter les données SAS en format `.csv`;
+* Exporter les données SAS en format `.csv` ;
 * Importer en R les données `.csv`.
 
 **Cette méthode propose un haut niveau de fiabilité et de performance, et permet d"'importer les données avec `R` depuis un format très courant et non dépendant d'un logiciel.** Elle a toutefois l'inconvénient de nécessiter un espace de stockage pour les données intermédiaires en format `csv`.
@@ -101,7 +101,7 @@ Contrairement à ce que vous pourriez penser, cette méthode en deux étapes n'e
 
 Il y a deux façons de faire pour exporter une table SAS vers un format `.csv` :
 
-* **la solution simple** exporte uniquement la table SAS (dans un fichier qu'on appellera `data.csv`), mais pas les étiquettes des variables;
+* **la solution simple** exporte uniquement la table SAS (dans un fichier qu'on appellera `data.csv`), mais pas les étiquettes des variables ;
 * **la solution complète** : si l'on souhaite disposer dans `R` des données et des étiquettes de variables, une bonne pratique consiste à exporter deux fichiers en `.csv` :
     - le fichier des données lui-même (`data.csv`) ;
     - un fichier contenant la liste des variables associées à leur `label` (`labelvariables.csv`).
@@ -114,17 +114,17 @@ La solution la plus simple consiste à exporter uniquement la table de données 
 
 ```
 * Définir le répertoire d'exportation ;
-%let versR = "D:/le/dossier/pour/exporter/le/fichier/csv";
+%let versR = "D:/le/dossier/pour/exporter/le/fichier/csv" ;
 
 * Définir le nom du fichier CSV et son encodage ;
-filename f "&versR./data.csv" encoding = "utf8";
+filename f "&versR./data.csv" encoding = "utf8" ;
 
 * Exporter les données en sélectionnant des colonnes ;
 PROC EXPORT DATA= ma_table_SAS (keep = var1 var2 var3 var8)
             OUTFILE= f
-            DBMS=CSV REPLACE;
-     PUTNAMES=YES;
-RUN;
+            DBMS=CSV REPLACE ;
+     PUTNAMES=YES ;
+RUN ;
 ```
 
 #### Solution complète
@@ -133,43 +133,43 @@ Voici un exemple de code SAS qui exporte l'intégralité d'une table SAS sous fo
 
 ```
 * Définir le répertoire d'exportation ;
-%let versR = "D:/le/dossier/pour/exporter/le/fichier/csv";
+%let versR = "D:/le/dossier/pour/exporter/le/fichier/csv" ;
 
 * Définir le nom du fichier CSV et son encodage ;
-filename f1 "&versR./data.csv" encoding = "utf8";
-filename f2 "&versR./labelvariables.csv" encoding = "utf8";
+filename f1 "&versR./data.csv" encoding = "utf8" ;
+filename f2 "&versR./labelvariables.csv" encoding = "utf8" ;
 
 * Exporter les données en sélectionnant des colonnes ;
 PROC EXPORT DATA= ma_table_SAS (keep = var1 var2 var3 var8)
             OUTFILE= f1
-            DBMS=CSV REPLACE;
-     PUTNAMES=YES;
-RUN;
+            DBMS=CSV REPLACE ;
+     PUTNAMES=YES ;
+RUN ;
 
 * Exporter les étiquettes des variables ;
 PROC CONTENT DATA = ma_table_SAS OUT = labelVar ;
-RUN;
+RUN ;
 
-DATA labelVar (RENAME = (_name_ = name _label_ = label));
-SET labelVar;
-RUN;
+DATA labelVar (RENAME = (_name_ = name _label_ = label)) ;
+SET labelVar ;
+RUN ;
 
 PROC EXPORT DATA= labelVar (keep = name label)
             OUTFILE= f2
-            DBMS=CSV REPLACE;
-     PUTNAMES=NO;
-RUN;
+            DBMS=CSV REPLACE ;
+     PUTNAMES=NO ;
+RUN ;
 ```
 
 ### Etape 2 : Importer les données `csv` en `R` 
 
 Les méthodes pour importer les données `csv` en `R` sont détaillées dans la fiche [Importer des fichiers plats (`.csv`, `.tsv`, `.txt`)]. Si vous avez utilisé la méthode complète, voici comment réutiliser les étiquettes de variables avec `R` :
 
-* Importer le fichier `data.csv` sous le nom `df_sas`;
-* Importer le fichier `labelvariables.csv` sous le nom `labels_sas`;
+* Importer le fichier `data.csv` sous le nom `df_sas` ;
+* Importer le fichier `labelvariables.csv` sous le nom `labels_sas` ;
 * Associer les étiquettes avec les variables avec la commande `label(df_sas) <- lapply(labels_sas, function(x) x)`.
 
 ## Pour en savoir plus
 
-* Sur `haven` : la [documentation du *package*](https://www.rdocumentation.org/packages/haven) (en anglais);
+* Sur `haven` : la [documentation du *package*](https://www.rdocumentation.org/packages/haven) (en anglais) ;
 * Sur les méthodes d'importation de fichiers plats en `R` : voir la fiche [Importer des fichiers plats (`.csv`, `.tsv`, `.txt`)].

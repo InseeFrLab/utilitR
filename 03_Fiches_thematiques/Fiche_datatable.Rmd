@@ -5,7 +5,7 @@
 L'utilisateur souhaite manipuler des données stucturées sous forme de `data.frame` (sélectionner des variables, sélectionner des observations, créer des variables, joindre des tables).
 
 ::: {.recommandation data-latex=""}
-* Pour des tables de données de taille petite et moyenne (inférieure à 1 Go ou moins d'un million d'observations), il est recommandé d'utiliser le package `dplyr`;
+* Pour des tables de données de taille petite et moyenne (inférieure à 1 Go ou moins d'un million d'observations), il est recommandé d'utiliser le package `dplyr` ;
 * Pour des tables de données de grande taille (plus de 1 Go ou plus d'un million d'observations), il est recommandé d'utiliser le package `data.table` qui fait l'objet de la présente fiche.
 :::
 
@@ -37,7 +37,7 @@ dt
 
 **La forme générale de l'opérateur `[...]` est la suivante : `DT[i, j, by]`**. Cette grammaire peut se lire comme ceci : "on part du `data.table` `DT`, on sélectionne certaines lignes avec `i`, puis on calcule `j` pour chaque groupe défini par `by`. Si on fait un parallèle avec `SQL`, `i` correspond au `WHERE`, `j` au `SELECT` et `by` au `GROUP BY`. La fonction `[...]` présente deux grands avantages :
 
-- Il n'est pas nécessaire d'utiliser le préfixe `DT$` pour se référer aux variables à l'intérieur de `[...]`;
+- Il n'est pas nécessaire d'utiliser le préfixe `DT$` pour se référer aux variables à l'intérieur de `[...]` ;
 - Le code est très concis, ce qui aide à le rendre lisible.
 
 Voici un exemple simple. A partir des données générées ci-dessus, on veut calculer la moyenne de `y` par groupe défini par `x`, uniquement sur les observations pour lesquelles `x` est supérieur à 3. Voici comment on peut réaliser cette opération avec `Base R`, `dplyr` et `data.table`. Vous pouvez juger vous-même de la concision du code.
@@ -241,7 +241,7 @@ library(doremifasolData)
 
 Il y a principalement deux méthodes pour mettre des données sous forme d'un `data.table` :
 
-- la fonction `fread()` importe un fichier plat comme les `.csv` (voir la fiche [Importer des fichiers plats (`.csv`, `.tsv`, `.txt`)]);
+- la fonction `fread()` importe un fichier plat comme les `.csv` (voir la fiche [Importer des fichiers plats (`.csv`, `.tsv`, `.txt`)]) ;
 - Les fonctions `setDT()` et `as.data.table()` convertissent un `data.frame` en `data.table`.
 
 Dans la suite de cette section, on va illustrer les opérations de base en `data.table` avec la base permanente des équipements (table `bpe_ens_2018`), qu'on transforme en `data.table`.
@@ -310,7 +310,7 @@ bpe_ens_2018_dt[order(DEPCOM, -TYPEQU)]
 bpe_ens_2018_dt[ , .(sum(NB_EQUIP, na.rm = TRUE))]
 ```
 
-Il est possible de calculer plusieurs statistiques à la fois, et de donner des noms aux variables; il suffit de séparer les formules par une virgule. Le code suivant calcule le nombre total d’équipements dans la BPE (`sum(NB_EQUIP, na.rm = TRUE)`), et le nombre total de boulangeries (`sum(NB_EQUIP * (TYPEQU == "B203"), na.rm = TRUE)`).
+Il est possible de calculer plusieurs statistiques à la fois, et de donner des noms aux variables ; il suffit de séparer les formules par une virgule. Le code suivant calcule le nombre total d’équipements dans la BPE (`sum(NB_EQUIP, na.rm = TRUE)`), et le nombre total de boulangeries (`sum(NB_EQUIP * (TYPEQU == "B203"), na.rm = TRUE)`).
 
 ```{r}
 bpe_ens_2018_dt[ , 
@@ -341,7 +341,7 @@ Vous pouvez utiliser toutes les fonctions statistiques de `R` avec `data.table`.
 
 **Toutes les opérations précédentes peuvent être réalisées par groupe.** il suffit d'ajouter le nom des variables de groupe dans `by` (c'est l'équivalent du `group_by()` du _package_ `dplyr`). Lorsqu'il y a plusieurs variables de groupe, on peut écrire l'argument `by` de deux façons : 
 
-- soit `by = c("var1", "var2", "var3")` (attention aux guillemets);
+- soit `by = c("var1", "var2", "var3")` (attention aux guillemets) ;
 - soit `by = .(var1, var2, var3)` (attention à la notation `.()`).
 
 Le code suivant groupe les données de la BPE par département (`by = .(DEP)`) puis calcule le nombre total d’équipements (`sum(NB_EQUIP, na.rm = TRUE)`) et le nombre total de boulangeries (`sum(NB_EQUIP * (TYPEQU == "B203"), na.rm = TRUE)`).
@@ -394,10 +394,10 @@ Pour savoir si `un data.table` est déjà indexé, on peut exécuter la commande
 
 La fonction `melt()` réorganise les donnée dans un format long. Elle prend les arguments suivants :
 
-* `data` : les données;
-* `id.vars` : les variables qui identifient les lignes de table d'arrivée; elles restent inchangées lors de l'utilisation de `melt()`;
-*  `measure.vars` : les variables qui sont transposées;
-* `variable.name` : le nom de la nouvelle colonne qui contient le nom des variables transposées;
+* `data` : les données ;
+* `id.vars` : les variables qui identifient les lignes de table d'arrivée ; elles restent inchangées lors de l'utilisation de `melt()` ;
+*  `measure.vars` : les variables qui sont transposées ;
+* `variable.name` : le nom de la nouvelle colonne qui contient le nom des variables transposées ;
 * `value.name` : le nom de la nouvelle colonne qui contient la valeur des variables transposées.
 
 Pour illustrer l'usage de cette fonction, nous allons utiliser les données du répertoire Filosofi 2016 agrégées au niveau des EPCI (table `filosofi_epci_2016`), et disponibles dans le package `doremifasolData`. On convertit cette table en `data.table` et on conserve uniquement certaines variables.
@@ -437,12 +437,12 @@ donnees_pauvrete_long
 
 La fonction `dcast()` réorganise les donnée dans un format large. Elle prend les arguments suivants :
 
-* `data` : les données;
-* `formula` : une formule de la forme `var_ligne ~ var_colonne` qui définit la structure de la nouvelle table; 
-    - s'il y a plusieurs variables, la formule prend la forme `var1 + var2 ~ var3`;
-    - `dcast()` conserve une ligne par valeur de la partie gauche, et crée (au moins) une colonne par valeur de la partie droite;
-* `fun.aggregate` : une liste contenant la ou les fonction(s) utilisées pour agréger les données le cas échéant; exemple : `list(mean, sum, sd)`;
-*  `value.var` : un vecteur contenant le nom de la ou des colonne(s) dont les valeurs vont être transposées; exemple : `c("var1", "var2")`.
+* `data` : les données ;
+* `formula` : une formule de la forme `var_ligne ~ var_colonne` qui définit la structure de la nouvelle table ; 
+    - s'il y a plusieurs variables, la formule prend la forme `var1 + var2 ~ var3` ;
+    - `dcast()` conserve une ligne par valeur de la partie gauche, et crée (au moins) une colonne par valeur de la partie droite ;
+* `fun.aggregate` : une liste contenant la ou les fonction(s) utilisées pour agréger les données le cas échéant ; exemple : `list(mean, sum, sd)` ;
+*  `value.var` : un vecteur contenant le nom de la ou des colonne(s) dont les valeurs vont être transposées ; exemple : `c("var1", "var2")`.
 
 Dans l'exemple qui suit, on réorganise la table `bpe_ens_2018_dt` de façon à obtenir une table qui contient une ligne par type d'équipement et une colonne par région (`TYPEQU ~ REG`). Ces colonnes vont contenir la somme (`fun.aggregate = sum`) du nombre d'équipements (`value.var = "NB_EQUIP"`).
 
@@ -480,7 +480,7 @@ bpe_ens_2018_wide2
 
 **Il est conseillé de bien réfléchir avant de restructurer des données en format *wide*, et de ne le faire que lorsque cela paraît indispensable**. En effet, s'il est tentant de restructurer les données sous format *wide* car ce format peut paraître plus intuitif, il est généralement plus simple et plus rigoureux de traiter les données en format *long*. Ceci dit, il existe des situations dans lesquelles il est indiqué de restructurer les données en format *wide*. Voici deux exemples :
 
-* produire un tableau synthétique de résultats, prêt à être diffusé, avec quelques colonnes donnant des indicateurs par catégorie (exemple : la table `filosofi_epci_2016` du _package_ `doremifasolData`);
+* produire un tableau synthétique de résultats, prêt à être diffusé, avec quelques colonnes donnant des indicateurs par catégorie (exemple : la table `filosofi_epci_2016` du _package_ `doremifasolData`) ;
 * produire une table avec une colonne par année, de façon à calculer facilement un taux d'évolution entre deux dates.
 :::
   
@@ -729,13 +729,13 @@ Lorsqu'on définit des fonctions pour effectuer des traitements génériques, il
 
 ## Pour en savoir plus
 
-- la [documentation officielle](https://www.rdocumentation.org/packages/data.table) de `data.table` (en anglais);
+- la [documentation officielle](https://www.rdocumentation.org/packages/data.table) de `data.table` (en anglais) ;
 - les [vignettes](https://github.com/Rdatatable/data.table/wiki/Getting-started) de `data.table` :
-    - [Introduction à `data.table`](https://cloud.r-project.org/web/packages/data.table/vignettes/datatable-intro.html) (en anglais);
-    - [Modification par référence](https://cloud.r-project.org/web/packages/data.table/vignettes/datatable-reference-semantics.html) (en anglais);
-    - [la foire aux questions de `data.table`](https://cran.r-project.org/web/packages/data.table/vignettes/datatable-faq.html) (en anglais);
-- une [_cheatsheet_](https://github.com/rstudio/cheatsheets/raw/master/datatable.pdf) sur `data.table` (en anglais);
-- une [introduction à l'utilisation de l'opérateur `[...]`](https://stt4230.rbind.io/tutoriels_etudiants/hiver_2017/data.table) (en français);
+    - [Introduction à `data.table`](https://cloud.r-project.org/web/packages/data.table/vignettes/datatable-intro.html) (en anglais) ;
+    - [Modification par référence](https://cloud.r-project.org/web/packages/data.table/vignettes/datatable-reference-semantics.html) (en anglais) ;
+    - [la foire aux questions de `data.table`](https://cran.r-project.org/web/packages/data.table/vignettes/datatable-faq.html) (en anglais) ;
+- une [_cheatsheet_](https://github.com/rstudio/cheatsheets/raw/master/datatable.pdf) sur `data.table` (en anglais) ;
+- une [introduction à l'utilisation de l'opérateur `[...]`](https://stt4230.rbind.io/tutoriels_etudiants/hiver_2017/data.table) (en français) ;
 - Ce [cours complet sur `data.table`](https://gitlab.com/linogaliana/bigr/-/blob/master/04-datatable.Rmd) (en français).
-- Cette [présentation des fonctionnalités du package](https://dreamrs.github.io/talks/20180528_RAddicts_datatable.pdf) (en français);
+- Cette [présentation des fonctionnalités du package](https://dreamrs.github.io/talks/20180528_RAddicts_datatable.pdf) (en français) ;
 - Ce [post sur les fonctions utilisant data.table](https://linogaliana.netlify.com/post/datatable/datatable-nse/).

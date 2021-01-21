@@ -9,8 +9,8 @@ library(magrittr)
 L’utilisateur souhaite traiter avec `R` des données spatiales (données géolocalisées, polygones...). Si vous ne savez pas si cette fiche répond à votre besoin, les données spatiales sont définies dans le paragraphe [Définition des données spatiales].
 
 ::: {.recommandation data-latex=""}
-* **Il est recommandé d'utiliser le *package* `sf` qui couvre les principaux besoins** (lecture des formats de données géographiques, traitements des données spatiales, représentations graphiques et cartographiques);
-* **Sauf cas particuliers, il est recommandé de ne pas utiliser le *package* `sp`, qui est rendu obsolète par `sf`**;
+* **Il est recommandé d'utiliser le *package* `sf` qui couvre les principaux besoins** (lecture des formats de données géographiques, traitements des données spatiales, représentations graphiques et cartographiques) ;
+* **Sauf cas particuliers, il est recommandé de ne pas utiliser le *package* `sp`, qui est rendu obsolète par `sf`** ;
 * Selon le besoin exact, plusieurs autres *packages* proposent des fonctionnalités complémentaires (voir section [Pour aller plus loin]).
 :::
 
@@ -19,13 +19,13 @@ L’utilisateur souhaite traiter avec `R` des données spatiales (données géol
 
 **Le terme "données spatiales" désigne les données qui portent sur les caractéristiques géographiques des objets (localisation, contours, liens)**. Les caractéristiques géographiques des objets sont décrites à l'aide d'un **système de coordonnées** qui permetent une représentation dans un espace euclidien ($(x,y)$). Le passage de l'espace réel (la Terre, qui est une sphère) à l'espace plan se fait grâce à un **système de projection**. Voici quelques exemples de données spatiales :
 
-* Une table décrivant des bâtiments, avec les coordonnées géographiques de chaque bâtiment;
-* Le découpage communal du territoire, avec le contour du territoire de chaque commune;
+* Une table décrivant des bâtiments, avec les coordonnées géographiques de chaque bâtiment ;
+* Le découpage communal du territoire, avec le contour du territoire de chaque commune ;
 * Les routes terrestres, avec les coordonnées décrivant leur parcours.
 
 Les données spatiales rassemblent classiquement deux types de données :
 
-1. des **données géographiques** (ou géométries) : objets géométriques tels que des points, des vecteurs, des polygones, ou des maillages (*raster*). Exemple : la forme de chaque chaque commune, les coordonnées d'un bâtiment;
+1. des **données géographiques** (ou géométries) : objets géométriques tels que des points, des vecteurs, des polygones, ou des maillages (*raster*). Exemple : la forme de chaque chaque commune, les coordonnées d'un bâtiment ;
 2. des **données attributaires** (ou attributs) : des mesures et des caractéristiques associés aux objets géométriques. Exemple : la population de chaque commune, le nombre de fenêtres et le nombre d'étages d'un bâtiment.
 
 **Les données spatiales sont fréquemment traitées à l'aide d'un système d'information géographique (SIG)**, c'est-à-dire un système d'information capable de stocker, d'organiser et de présenter des données alphanumériques spatialement référencées par des coordonnées dans un système de référence (CRS). `R` dispose de fonctionnalités lui permettant de réaliser les mêmes tâches qu'un SIG (traitement de données spatiales, représentations cartographiques).
@@ -43,9 +43,9 @@ Le *package* `sf` est une boîte à outils conçue pour faciliter la manipulatio
 
 Les fonctions de `sf` sont pour la plupart préfixées par `st_` et permettent notamment de :
 
-* Calculer des distances et des surfaces;
-* Agréger rapidement des zonages (regrouper les communes en département par exemple);
-* Trouver dans quelle commune se trouve un bâtiment à partir de ses coordonnées géographiques;
+* Calculer des distances et des surfaces ;
+* Agréger rapidement des zonages (regrouper les communes en département par exemple) ;
+* Trouver dans quelle commune se trouve un bâtiment à partir de ses coordonnées géographiques ;
 * Recalculer des coordonnées dans un autre système de projection.
 
 **Le *package* `sf` introduit un objet géographique particulier : la table de données spatiale appelée `sf`. Un `sf` est simplement une table de données `R` traditionnelle (un `data.frame`), enrichie d'une colonne supplémentaire `geometry` qui contient l'information géographique.** Par conséquent, toutes les fonctions qui s'appliquent à un `data.frame` s'appliquent exactement de la même façon aux attributs des objets `sf`.
@@ -62,8 +62,8 @@ Créer une table de données spatiales avec `sf` est très simple. Il y a deux m
 
 La fonction **`sf::st_read()`** permet de lire différents formats de données géographiques. Les paramètres attendus par la fonction sont :
 
-* `dsn`, le nom de la source de donnée (nom du fichier ou chemin vers le répertoire contenant les données géographiques). Le format le plus commun est le `.shp` mais `sf` peut lire d'autres formats (`.map`, `.geojson`...);
-* `layer`, le nom de la couche. Ce paramètre est facultatif si les données ne contiennent qu'une seule couche;
+* `dsn`, le nom de la source de donnée (nom du fichier ou chemin vers le répertoire contenant les données géographiques). Le format le plus commun est le `.shp` mais `sf` peut lire d'autres formats (`.map`, `.geojson`...) ;
+* `layer`, le nom de la couche. Ce paramètre est facultatif si les données ne contiennent qu'une seule couche ;
 * `crs`, pour définir le système de projection. Ce paramètre est facultatif. Si le système de projection a été défini à l'écriture du fichier, `sf` peut le repérer automatiquement à la lecture. Sinon, il faut le définir à la lecture avec l'argument `crs`.
 
 ```{r}
@@ -77,7 +77,7 @@ martinique <- sf::st_read(
 
 Il peut arrive que les données géographiques ne soient pas stockées dans un format adapté. Par exemple, vous pouvez disposer d'un fichier `.csv` qui contient une table géolocalisées de logements avec leurs caractéristiques. En ce cas, vous pouvez créer une table de donnée géographiques en deux temps :
 
-- Importer les données brutes (ou tabulées, cf + haut) dans `R` voir la fiche [Importer des fichiers plats (`.csv`, `.tsv`, `.txt`)];
+- Importer les données brutes (ou tabulées, cf + haut) dans `R` voir la fiche [Importer des fichiers plats (`.csv`, `.tsv`, `.txt`)] ;
 - Transformer le `data.frame` en objet `sf` grâce à la commande `sf::st_set_geometry()`. Par exemple, si les variables `lon` et `lat` contiennent des données GPS (code epsg `4326`) alors on peut faire :
   ```{r, eval = FALSE}
   df_spatial <- sf::st_as_sf(x = df,                         
@@ -172,7 +172,7 @@ Deux objets géométriques peuvent également être associés en fonction de leu
 
 La fonction `sf::st_join()` permet d'appliquer ces fonctions pour réaliser la jointure à partir de la dimension spatiale. Deux arguments sont importants :
 
-* l'argument `join = ` indique la méthode à utiliser pour la jointure. Par défaut, la méthode est `st_intersects`, ce qui signifie que la table de sortie contient une observation pour chaque couple de géométrie qui a une intersection non vide;
+* l'argument `join = ` indique la méthode à utiliser pour la jointure. Par défaut, la méthode est `st_intersects`, ce qui signifie que la table de sortie contient une observation pour chaque couple de géométrie qui a une intersection non vide ;
 * On utilise l'argument `left = TRUE` si on désire effectuer une jointure sur la gauche (par défaut, un `inner join` est effectué). 
 
 La [vignette du package](https://r-spatial.github.io/sf/articles/sf4.html#joining-two-feature-sets-based-on-attributes) permet d'aller plus loin sur le sujet.
@@ -181,7 +181,7 @@ La [vignette du package](https://r-spatial.github.io/sf/articles/sf4.html#joinin
 Les jointures spatiales peuvent être très gourmandes en ressources (car il peut être nécessaire de croiser toutes les géométries de `x` avec toutes les géométries de `y`). Voici deux conseils qui peuvent vous aider :
 
 - Il est préférable de tester les jointures géographiques sur un petit échantillon de données, pour estimer le temps et les ressources nécessaires à la réalisation de la jointure.
-- Il est parfois possible d'écrire une fonction qui réduit la taille du problème. Exemple : vous voulez déterminer dans quelle commune se situe un logement dont vous connaissez les coordonnées et le département; vous pouvez écrire une fonction qui réalise pour chaque département une jointure spatiale entre les logements situés dans ce département et les communes de ce département, puis empiler les 101 tables de sorties.
+- Il est parfois possible d'écrire une fonction qui réduit la taille du problème. Exemple : vous voulez déterminer dans quelle commune se situe un logement dont vous connaissez les coordonnées et le département ; vous pouvez écrire une fonction qui réalise pour chaque département une jointure spatiale entre les logements situés dans ce département et les communes de ce département, puis empiler les 101 tables de sorties.
 :::
 
 ### Gérer le système de projection
@@ -214,12 +214,12 @@ martinique <- martinique %>% sf::st_transform(4326)
 
 Selon le besoin exact, plusieurs autres *packages* proposent des fonctionnalités complémentaires :
 
-* le *package* `raster` pour gérer le format de données de type maillage;
+* le *package* `raster` pour gérer le format de données de type maillage ;
 * les *packages* pour l'analyse statistique spatiale :
     * `spdep` pour l'économétrie spatiale : relations de voisinage entre objets spatiaux, indices d'autocorrélation spatiale, ... ;
-    * `spatstat` pour l'économétrie spatiale;
-    * `gstat` et `geoR` pour la géostatistique;
-* `btb` (produit par l'Insee) pour du lissage;
+    * `spatstat` pour l'économétrie spatiale ;
+    * `gstat` et `geoR` pour la géostatistique ;
+* `btb` (produit par l'Insee) pour du lissage ;
 * le *package* `rpostgis` pour interfacer `R` à une base de données `PostGIS`.
 
 ## Où trouver des données géographiques et des *shapefiles* ?
@@ -231,7 +231,7 @@ L'Insee propose un outil pour sélectionner et télécharger des données géogr
 ## Pour en savoir plus
 
 * la documentation du *package* `sf` :
-    - le [site officiel](http://r-spatial.github.io/sf) du *package*;
-    - la [documentation](https://www.rdocumentation.org/packages/sf) du *package*;
-    - la [*cheeatsheet*](https://github.com/rstudio/cheatsheets/raw/master/sf.pdf) du *package* (en anglais);
+    - le [site officiel](http://r-spatial.github.io/sf) du *package* ;
+    - la [documentation](https://www.rdocumentation.org/packages/sf) du *package* ;
+    - la [*cheeatsheet*](https://github.com/rstudio/cheatsheets/raw/master/sf.pdf) du *package* (en anglais) ;
 * un [tutoriel](https://rcarto.github.io/carto_avec_r) détaillé sur les données spatiale et sur la cartographie avec `R` (en français).

@@ -19,7 +19,7 @@ En revanche, **le SSP Cloud n'est pas une infrastructure de production, et n'off
 
 Il est nécessaire de disposer d'un compte personnel **SSP Cloud** pour en utiliser les services. Si vous n'avez pas de compte sur le **SSP Cloud**, vous pouvez vous en créer un en [cliquant sur ce lien (https://datalab.sspcloud.fr/accueil)](https://datalab.sspcloud.fr/accueil) puis suivre les indications. Deux points sont importants à noter :
 
-- vous devez utiliser votre adresse mail professionnelle (de l'Insee ou de votre SSM);
+- vous devez utiliser votre adresse mail professionnelle (de l'Insee ou de votre SSM) ;
 - **votre nom d'utilisateur ne doit contenir ni caractères accentués, ni caractère spécial, ni signe de ponctuation**. Ce point est essentiel, car votre compte ne fonctionnera pas si votre nom d'utilisateur comprend l'un de ces caractères. Le plus simple est que votre nom d'utilisateur respecte le format `prenomnom`. Par exemple, si vous vous appelez Jérôme-Gérard L'Hâltère, votre nom d'utilisateur pourra être `jeromegerardlhaltere`.
 
 ::: {.remarque data-latex=""}
@@ -77,7 +77,7 @@ include_image("./pics/SSPCloud/99_SSPCloud_4bis.png")
 
 Vous pouvez ensuite vous connecter au service en cliquant sur l'icône ![](./pics/SSPCloud/Se_connecter_service.png){width="40"} (voir image précédente). Les identifiants sont :  
 
-- `Username` : `rstudio`;
+- `Username` : `rstudio` ;
 - `Password` : le _password_ copié précédemment (il suffit de faire `Ctrl + V`).
 
 ```{r, echo = FALSE, fig.cap= "Dudu"}
@@ -244,9 +244,9 @@ include_image("./pics/SSPCloud/99_SSPCloud_credentials2.png")
 
 **Une fois que l'on connaît l'emplacement d'un objet dans un _bucket_, on peut l'importer dans le service Rstudio avec la fonction `s3read_using()`.** Cette fonction permet d'importer n'importe quel objet, mais nécessite que l'on précise la fonction à utiliser pour lire l'objet. Les arguments de `s3read_using()` sont les suivants :
 
-- `FUN` : la fonction à utiliser pour lire le fichier; cet argument doit être écrit sous la forme `package::function`;
-- `object` : le chemin du fichier à importer;
-- `bucket` : le _bucket_ dans lequel se trouve l'objet;
+- `FUN` : la fonction à utiliser pour lire le fichier ; cet argument doit être écrit sous la forme `package::function` ;
+- `object` : le chemin du fichier à importer ;
+- `bucket` : le _bucket_ dans lequel se trouve l'objet ;
 - `opts` : les options.
 
 Dans l'exemple qui suit, on souhaite importer les données du dispositif Filosofi 2017 agrégées par commune, qui sont stockées dans le chemin `/FILOSOFI/2017/FILOSOFI_COM.csv` dans le *bucket* `donnees-insee`. On importe ces données avec la fonction `fread()` du _package_ `data.table`. Vous pouvez consulter la fiche [Importer des fichiers plats (`.csv`, `.tsv`, `.txt`)] pour une présentation détaillée de cette fonction.
@@ -282,10 +282,10 @@ df2 <-
 
 **La fonction `s3write_using()` permet d'exporter un objet depuis le service Rstudio vers un _bucket_, mais nécessite que l'on précise la fonction à utiliser pour écrire l'objet.** Exporter vers un _bucket_ nécessite évidemment d'avoir les droits en écriture sur le _bucket_ concerné. Les arguments de `s3write_using()` sont les suivants :
 
-- `x` : l'objet à exporter;
-- `FUN` : la fonction à utiliser pour écrire le fichier; cet argument doit être écrit sous la forme `package::function`;
-- `object` : le chemin du fichier à exporter;
-- `bucket` : le _bucket_ dans lequel l'objet sera exporté;
+- `x` : l'objet à exporter ;
+- `FUN` : la fonction à utiliser pour écrire le fichier ; cet argument doit être écrit sous la forme `package::function` ;
+- `object` : le chemin du fichier à exporter ;
+- `bucket` : le _bucket_ dans lequel l'objet sera exporté ;
 - `opts` : les options.
 
 Comme pour la fonction `s3read_using`,  il est possible d'utiliser toutes les options de la fonction d'exportation, en les ajoutant immédiatement après l'argument `FUN`. Dans l'exemple suivant, on charge dans le service Rstudio la table du code officiel géographique 2019 disponible dans le _package_ `doremifasolData`, puis on l'exporte en format `csv` dans le fichier `data/cog_com_2019.csv` du _bucket_ `mon_bucket`. On utilise les options `sep` et `col.names` de la fonction `fwrite()` pour définir le séparateur et exporter les noms de colonnes.
@@ -300,7 +300,7 @@ aws.s3::s3write_using(
   cog_com_2019,
   FUN = data.table::fwrite,
   # Les options de fread sont ici
-  sep = ";",
+  sep = " ;",
   col.names = TRUE,
   object = "data/cog_com_2019.csv",
   bucket = "mon_bucket",
@@ -311,6 +311,6 @@ aws.s3::s3write_using(
 
 ## Liens utiles
 
-- Le salon Tchap [SSPCloud](https://www.tchap.gouv.fr/#/room/#SSPCloudXDpAw6v:agent.finances.tchap.gouv.fr);
-- Le salon Tchap d'assistance aux utilisateurs des **Logiciels Statistiques et Libre Service** [Insee - Outils Stats V2](https://www.tchap.gouv.fr/#/room/#InseeOutilsStatsv2wtxSdth:agent.finances.tchap.gouv.fr);
+- Le salon Tchap [SSPCloud](https://www.tchap.gouv.fr/#/room/#SSPCloudXDpAw6v:agent.finances.tchap.gouv.fr) ;
+- Le salon Tchap d'assistance aux utilisateurs des **Logiciels Statistiques et Libre Service** [Insee - Outils Stats V2](https://www.tchap.gouv.fr/#/room/#InseeOutilsStatsv2wtxSdth:agent.finances.tchap.gouv.fr) ;
 - un [tutoriel sur le SSP Cloud](https://github.com/RLesur/sspcloud-demo).

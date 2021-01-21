@@ -5,7 +5,7 @@
 L'utilisateur souhaite importer dans `R` des données stockées sous forme de fichiers plats (formats `.txt`, `.csv`, `.tsv`).
 
 ::: {.recommandation data-latex=""}
-* Pour importer des données de taille réduite (jusqu'à 1 Go), **il est recommandé d'utiliser les fonctions `read_csv()` et `read_delim()` du *package* `readr`**;
+* Pour importer des données de taille réduite (jusqu'à 1 Go), **il est recommandé d'utiliser les fonctions `read_csv()` et `read_delim()` du *package* `readr`** ;
 * Pour importer des données de taille plus importante (supérieure à 1 Go), **il est recommandé d'utiliser la fonction `fread()` du *package* `data.table`**.
 * **L'usage du *package* `csvread` est déconseillé**, de même que l'utilisation des fonctions natives de `R` `read.csv()` et `read.delim()`.
 :::
@@ -14,8 +14,8 @@ L'utilisateur souhaite importer dans `R` des données stockées sous forme de fi
 
 Le *package* `readr` propose plusieurs fonctions adaptées pour importer des fichiers plats de taille limitée (moins de 1 Go) :
 
-* `read_csv()` : lecture d'un csv délimité par des virgules, avec un point comme marqueur décimal;
-* `read_csv2()` : lecture d'un csv séparé par des points-virgules, avec une virgule comme marqueur décimal;
+* `read_csv()` : lecture d'un csv délimité par des virgules, avec un point comme marqueur décimal ;
+* `read_csv2()` : lecture d'un csv séparé par des points-virgules, avec une virgule comme marqueur décimal ;
 * `read_delim()` : fonction plus générale et paramétrable, pour lire des fichiers délimités.
 
 Il faut charger le *package* `readr` pour utiliser ces fonctions :
@@ -40,17 +40,17 @@ Pour les utilisateurs débutants, `Rstudio` propose une interface graphique trè
 
 Une fois que le fichier à importer a été sélectionné, un aperçu des premières lignes du fichier s'affiche dans la fenêtre. Dans l'exemple ci-dessous, on essaie d'importer le fichier des communes du Code Officiel Géographique (version 2019). La fenêtre comprend deux panneaux très utiles :
 
-* Un panneau qui permet de définir les **options d'importation** (rectangle orange);
+* Un panneau qui permet de définir les **options d'importation** (rectangle orange) ;
 * Un panneau qui donne le **code qui réalise l'importation demandée** (rectangle vert).
 
 ![](./pics/Importer_csv/Interface_readr2-1.png){width=100%} 
 
 Les principales options d'importation comprennent notamment :
 
-* `Name` : Le nom du `data.frame` dans lequel les donnée seront stockées;
-* `First Row as Names` : à cocher si la première ligne contient les noms de colonnes;
-* `Delimiter` : Indique le délimiteur des données. Pour mémoire : `Comma` = virgule, `Semicolon` = point virgule, `Tab` = tabulation, `Whitespace` = espace, `Other...` = autre (à définir);
-* `Locale...` : définit les options locales d'importation, notamment l'encodage et le marqueur décimal qui sont des sources récurrentes de problèmes;
+* `Name` : Le nom du `data.frame` dans lequel les donnée seront stockées ;
+* `First Row as Names` : à cocher si la première ligne contient les noms de colonnes ;
+* `Delimiter` : Indique le délimiteur des données. Pour mémoire : `Comma` = virgule, `Semicolon` = point virgule, `Tab` = tabulation, `Whitespace` = espace, `Other...` = autre (à définir) ;
+* `Locale...` : définit les options locales d'importation, notamment l'encodage et le marqueur décimal qui sont des sources récurrentes de problèmes ;
 * `NA` : indique la valeur retenue lorsqu'une valeur est manquante.
 
 Enfin, il est possible de modifier le type des données en cliquant sur la petite flèches à côté de l'en-tête de colonne (flèches noires).
@@ -99,7 +99,7 @@ La fonction `read_delim()` est faite pour lire toutes sortes de fichiers plats, 
 
 La fonction `read_delim()` propose les mêmes options que `read_csv()` et `read_csv2()`, avec deux ajouts principaux :
 
-* `delim` : le délimiteur du fichier plat;
+* `delim` : le délimiteur du fichier plat ;
 * `escape_backslash` (`TRUE`/`FALSE`) : les caractères spéciaux du fichier plat ont-ils un échappement (`\`)?
 
 Pour en savoir plus sur `read_delim()`, il suffit de consulter l'aide avec `?read_delim`.
@@ -110,8 +110,8 @@ Pour en savoir plus sur `read_delim()`, il suffit de consulter l'aide avec `?rea
 
 Le *package* `data.table` permet d'importer des fichiers plats avec la fonction `fread()`. Cette fonction présente trois avantages :
 
-* Elle est très rapide pour importer de gros volumes de données (et nettement plus rapide que les fonctions du *package* `readr`);
-* Elle permet de sélectionner facilement les colonnes qu'on veut importer (option `select`);
+* Elle est très rapide pour importer de gros volumes de données (et nettement plus rapide que les fonctions du *package* `readr`) ;
+* Elle permet de sélectionner facilement les colonnes qu'on veut importer (option `select`) ;
 * Elle propose un grand nombre d'options, adaptées pour les usages avancés.
 
 Pour utiliser `fread()`, il faut charger le *package* `data.table` :
@@ -143,11 +143,11 @@ Quelques remarques sur les options de `fread()` :
 
 * `fread()` importe par défaut toutes les colonnes
 
-    - L'option `select` permet de sélectionner les colonnes, et doit être égale à un vecteur de noms. Exemple : `select = c("var1", "var2", "var4")`;
+    - L'option `select` permet de sélectionner les colonnes, et doit être égale à un vecteur de noms. Exemple : `select = c("var1", "var2", "var4")` ;
     - Inversement, l'option `drop` permet de préciser quelles colonnes ne seront pas importées. Les options `select` et `drop` ne peuvent pas être utilisées en même temps.
 
-* `fread()` essaie par défaut de deviner le type des colonnes (*integer* pour les nombres entiers, *character* pour les chaînes de caractères...). L'option `colClasses` permet de choisir le type des colonnes, et doit égale à un vecteur dont chaque élément est de la forme `nom_variable = "type"`. Exemple : `colClasses = c(var1 = "character", var2 = "logical", var4 = "double")`;
-* l'option `stringsAsFactors = TRUE` peut ralentir sensiblement l'importation des données; il faut l'utiliser avec circonspection.
+* `fread()` essaie par défaut de deviner le type des colonnes (*integer* pour les nombres entiers, *character* pour les chaînes de caractères...). L'option `colClasses` permet de choisir le type des colonnes, et doit égale à un vecteur dont chaque élément est de la forme `nom_variable = "type"`. Exemple : `colClasses = c(var1 = "character", var2 = "logical", var4 = "double")` ;
+* l'option `stringsAsFactors = TRUE` peut ralentir sensiblement l'importation des données ; il faut l'utiliser avec circonspection.
 
 Exemple 1 : on veut à nouveau importer le fichier des communes du code officiel géographique, en déclarant que le fichier est encodé en UTF-8 et en imposant que le code commune soit lu comme une chaîne de caractères et le code région comme un nombre entier. On écrit le code suivant :
 
@@ -181,9 +181,9 @@ Voici quelques bonnes pratiques à avoir en tête pour importer des données :
 
 * Sur `readr` :
 
-    - la [documentation du *package*](https://www.rdocumentation.org/packages/readr) (en anglais);
-    - une [introduction à `readr`](https://cran.r-project.org/web/packages/readr/vignettes/readr.html) (en anglais);
-    - l'[aide-mémoire du *package*](https://rawgit.com/rstudio/cheatsheets/master/data-import.pdf) (en anglais);
+    - la [documentation du *package*](https://www.rdocumentation.org/packages/readr) (en anglais) ;
+    - une [introduction à `readr`](https://cran.r-project.org/web/packages/readr/vignettes/readr.html) (en anglais) ;
+    - l'[aide-mémoire du *package*](https://rawgit.com/rstudio/cheatsheets/master/data-import.pdf) (en anglais) ;
     
 * sur `data.table` :
     - la [documentation du *package*](https://www.rdocumentation.org/packages/data.table) (en anglais).
