@@ -24,7 +24,7 @@ library(data.table)
 
 ### Principes structurants
 
-**Le *package* `data.table` propose une version améliorée du `data.frame` de base: le `data.table`.** La principale différence visible est que la visualisation d'un objet `data.table` est meilleure que celle d'un `data.frame` standard: le data.table indique automatiquement le type des variables (sous le nom de variable), et donne le nombre total d'observations de la table.
+**Le *package* `data.table` propose une version améliorée du `data.frame` de base : le `data.table`.** La principale différence visible est que la visualisation d'un objet `data.table` est meilleure que celle d'un `data.frame` standard : le data.table indique automatiquement le type des variables (sous le nom de variable), et donne le nombre total d'observations de la table.
 
 ```{r}
 dt <- data.table(x = c("A", "B", "C"),
@@ -35,7 +35,7 @@ dt
 
 **La fonction fondamentale de `data.table` est l'opérateur `[...]` (crochets).** Lorsqu'on les applique à un objet `data.frame` de base, les crochets `df[...]` servent uniquement à sélectionner des lignes ou des colonnes. Dans un `data.table`, les crochets `dt[...]` permettent de faire beaucoup plus de choses (quasiment tout, en pratique). En fait, les instructions à l'intérieur des crochets peuvent être envisagées comme des requêtes `SQL` mises en forme différemment. 
 
-**La forme générale de l'opérateur `[...]` est la suivante: `DT[i, j, by]`**. Cette grammaire peut se lire comme ceci: "on part du `data.table` `DT`, on sélectionne certaines lignes avec `i`, puis on calcule `j` pour chaque groupe défini par `by`. Si on fait un parallèle avec `SQL`, `i` correspond au `WHERE`, `j` au `SELECT` et `by` au `GROUP BY`. La fonction `[...]` présente deux grands avantages:
+**La forme générale de l'opérateur `[...]` est la suivante : `DT[i, j, by]`**. Cette grammaire peut se lire comme ceci : "on part du `data.table` `DT`, on sélectionne certaines lignes avec `i`, puis on calcule `j` pour chaque groupe défini par `by`. Si on fait un parallèle avec `SQL`, `i` correspond au `WHERE`, `j` au `SELECT` et `by` au `GROUP BY`. La fonction `[...]` présente deux grands avantages :
 
 - Il n'est pas nécessaire d'utiliser le préfixe `DT$` pour se référer aux variables à l'intérieur de `[...]`;
 - Le code est très concis, ce qui aide à le rendre lisible.
@@ -99,14 +99,14 @@ dt[x > 3, sum(y), by = z]
 
 ### Quelles fonctions peut-on utiliser avec un `data.table`?
 
-**Les `data.tables` sont simplement des `data.frames` particuliers, donc on peut normalement leur appliquer toutes les méthodes valables pour les `data.frames`.** En particulier, on peut utiliser avec `data.table` toutes les fonctions des *packages* habituellement associés à `dplyr`: `stringr` pour le maniement de chaînes de caractères, `lubridate` pour les colonnes temporelles, `forcats` pour les colonnes de type `factor`, _etc_. Toutefois, il est utile de vérifier que le *package* `data.table` ne propose pas déjà une fonction adaptée. Par exemple, plutôt que d'utiliser la fonction `str_split_fixed()` du _package_ `stringr` pour séparer une colonne en fonction d'un caractère, on utilisera `tstrsplit()` de `data.table`.
+**Les `data.tables` sont simplement des `data.frames` particuliers, donc on peut normalement leur appliquer toutes les méthodes valables pour les `data.frames`.** En particulier, on peut utiliser avec `data.table` toutes les fonctions des *packages* habituellement associés à `dplyr` : `stringr` pour le maniement de chaînes de caractères, `lubridate` pour les colonnes temporelles, `forcats` pour les colonnes de type `factor`, _etc_. Toutefois, il est utile de vérifier que le *package* `data.table` ne propose pas déjà une fonction adaptée. Par exemple, plutôt que d'utiliser la fonction `str_split_fixed()` du _package_ `stringr` pour séparer une colonne en fonction d'un caractère, on utilisera `tstrsplit()` de `data.table`.
 
 
 ### Enchaîner les opérations en `data.table`
 
 #### Le principe est simple...
 
-**Il est facile d'enchaîner des opérations avec `data.table`: il suffit d'accoler les opérateurs `[]`.** Votre code `data.table` prendra alors la forme suivante: `dt[opération 1][opération 2][opération 3][...]`. Voici un exemple simple, dans lequel on calcule la moyenne d'une variable par groupe, puis on trie la table.
+**Il est facile d'enchaîner des opérations avec `data.table` : il suffit d'accoler les opérateurs `[]`.** Votre code `data.table` prendra alors la forme suivante : `dt[opération 1][opération 2][opération 3][...]`. Voici un exemple simple, dans lequel on calcule la moyenne d'une variable par groupe, puis on trie la table.
 
 ```{r}
 # En chaînant
@@ -118,7 +118,7 @@ ans
 
 Le problème avec l'enchaînement d'opérations multiples est qu'on aboutit rapidement à des lignes de codes extrèmement longues. C'est pourquoi **il est préférable de revenir régulièrement à la ligne, de façon à garder un code qui reste lisible.** Il y a évidemment plusieurs façons d'organiser le code. La seule obligation est que le crochet qui commence une nouvelle opération doit être accolé au crochet qui termine l'opération précédente (`...][...`). Voici deux organisations possibles, à vous de choisir celle qui vous paraît la plus claire et la plus adaptée à votre travail.
 
-La première organisation enchaîne toutes les opérations en une seule fois:
+La première organisation enchaîne toutes les opérations en une seule fois :
 
 ```{r, eval = FALSE}
 resultat <- 
@@ -131,7 +131,7 @@ resultat <-
        ]
 ```
 
-La seconde organisation sépare les opérations en utilisant une table intermédiaire nommée `resultat`:
+La seconde organisation sépare les opérations en utilisant une table intermédiaire nommée `resultat` :
 
 ```{r, eval = FALSE}
 resultat <- dt[i = ...,
@@ -144,7 +144,7 @@ resultat <- resultat[i = ...,
                      ]
 ```
 
-Comme indiqué précédemment, `i`, `j` et `by` ne sont pas forcément présents dans toutes les étapes. Voici ce que cette organisation du code donne sur un exemple légèrement plus complexe que le précédent:
+Comme indiqué précédemment, `i`, `j` et `by` ne sont pas forcément présents dans toutes les étapes. Voici ce que cette organisation du code donne sur un exemple légèrement plus complexe que le précédent :
 
 ```{r}
 dt[ , total := y + z]
@@ -213,7 +213,7 @@ Partir de `dt`, créer une nouvelle variable `newvar` qui vaut 1 pour les observ
 <!-- Output LaTeX -->
 
 ```{asis, eval=(knitr::is_latex_output()), echo=TRUE}
-**Exemple 1**: Partir de `dt`, conserver uniquement les observations pour lesquelles `x > 3`, et créer une nouvelle variable `newvar` qui vaut 1 partout
+**Exemple 1** : Partir de `dt`, conserver uniquement les observations pour lesquelles `x > 3`, et créer une nouvelle variable `newvar` qui vaut 1 partout
 ```
 
 ```{r, echo=(knitr::is_latex_output()), eval=FALSE}
@@ -221,7 +221,7 @@ dt[x > 3][ , newvar := 1]
 ```
 
 ```{asis, eval=(knitr::is_latex_output()), echo=TRUE}
-**Exemple 2**: Partir de `dt`, créer une nouvelle variable `newvar` qui vaut 1 pour les observations pour lesquelles `x > 3` et `NA` ailleurs
+**Exemple 2** : Partir de `dt`, créer une nouvelle variable `newvar` qui vaut 1 pour les observations pour lesquelles `x > 3` et `NA` ailleurs
 ```
 
 ```{r, echo=(knitr::is_latex_output()), eval=FALSE}
@@ -239,7 +239,7 @@ library(doremifasolData)
 
 ### Mettre des données dans un `data.table`
 
-Il y a principalement deux méthodes pour mettre des données sous forme d'un `data.table`:
+Il y a principalement deux méthodes pour mettre des données sous forme d'un `data.table` :
 
 - la fonction `fread()` importe un fichier plat comme les `.csv` (voir la fiche [Importer des fichiers plats (`.csv`, `.tsv`, `.txt`)]);
 - Les fonctions `setDT()` et `as.data.table()` convertissent un `data.frame` en `data.table`.
@@ -257,21 +257,21 @@ bpe_ens_2018_dt <- as.data.table(bpe_ens_2018)
 
 #### Sélectionner des lignes
 
-**On peut sélectionner des lignes dans un `data.table` avec `dt[i]`.** Voici un exemple de code qui sélectionne les magasins de chaussures (`TYPEQU == "B304"`) dans le premier arrondissement de Paris (`DEPCOM == "75101"`) dans la table `bpe_ens_2018_dt`:
+**On peut sélectionner des lignes dans un `data.table` avec `dt[i]`.** Voici un exemple de code qui sélectionne les magasins de chaussures (`TYPEQU == "B304"`) dans le premier arrondissement de Paris (`DEPCOM == "75101"`) dans la table `bpe_ens_2018_dt` :
 
 ```{r}
 selection <- bpe_ens_2018_dt[DEPCOM == "75101" & TYPEQU == "B304"]
 ```
 
 ::: {.remarque data-latex=""}
-Voici une remarque très importante sur le fonctionnement de `data.table`: **lorsqu'on souhaite conserver toutes les lignes d'un `data.table`, il faut laisser vide l'emplacement pour `i`, sans oublier la virgule.** Par exemple, pour connaître le nombre de lignes de `iris_dt`, on écrit: `iris_dt[ , .N]`.  Notez bien l'emplacement vide et la virgule après `[`.
+Voici une remarque très importante sur le fonctionnement de `data.table` : **lorsqu'on souhaite conserver toutes les lignes d'un `data.table`, il faut laisser vide l'emplacement pour `i`, sans oublier la virgule.** Par exemple, pour connaître le nombre de lignes de `iris_dt`, on écrit : `iris_dt[ , .N]`.  Notez bien l'emplacement vide et la virgule après `[`.
 :::
 
 #### Sélectionner des colonnes
 
 **On peut sélectionner des colonnes dans un `data.table` et renvoyer un `data.table` de plusieurs façons**. 
 
-- La première consiste à indiquer les colonnes à conserver sous forme de liste. La notation `.()` est un alias pour `list()` qui est pratique et concis dans un code `data.table`. Le code suivant sélectionne le code commune, le type d’équipement et le nombre d’équipement dans la base permanente des équipements:
+- La première consiste à indiquer les colonnes à conserver sous forme de liste. La notation `.()` est un alias pour `list()` qui est pratique et concis dans un code `data.table`. Le code suivant sélectionne le code commune, le type d’équipement et le nombre d’équipement dans la base permanente des équipements :
 
 ```{r, eval = FALSE}
 bpe_ens_2018_dt[ , list(DEPCOM, TYPEQU, NB_EQUIP)]
@@ -304,7 +304,7 @@ bpe_ens_2018_dt[order(DEPCOM, -TYPEQU)]
 
 #### Calculer des statistiques
 
-**La méthode pour sélectionner des colonnes est également valable pour calculer des statistiques, car `data.table` accepte les expressions dans `j`.** Le code suivant calcule le nombre total d’équipements dans la BPE (`sum(NB_EQUIP, na.rm = TRUE`):
+**La méthode pour sélectionner des colonnes est également valable pour calculer des statistiques, car `data.table` accepte les expressions dans `j`.** Le code suivant calcule le nombre total d’équipements dans la BPE (`sum(NB_EQUIP, na.rm = TRUE`) :
 
 ```{r}
 bpe_ens_2018_dt[ , .(sum(NB_EQUIP, na.rm = TRUE))]
@@ -326,7 +326,7 @@ bpe_ens_2018_dt[TYPEQU == "B203", .(NB_BOULANG_TOT = sum(NB_EQUIP, na.rm = TRUE)
 
 #### Les fonctions statistiques utiles de `data.table`
 
-Vous pouvez utiliser toutes les fonctions statistiques de `R` avec `data.table`. Le *package* `data.table` propose par ailleurs des fonctions optimisées qui peuvent vous être utiles. En voici quelques-unes:
+Vous pouvez utiliser toutes les fonctions statistiques de `R` avec `data.table`. Le *package* `data.table` propose par ailleurs des fonctions optimisées qui peuvent vous être utiles. En voici quelques-unes :
 
 | Fonction        | Opération                                         | Exemple     |
 |-----------------|---------------------------------------------------|-------------------------------------------------------------|
@@ -339,7 +339,7 @@ Vous pouvez utiliser toutes les fonctions statistiques de `R` avec `data.table`.
 
 #### Opérations par groupe
 
-**Toutes les opérations précédentes peuvent être réalisées par groupe.** il suffit d'ajouter le nom des variables de groupe dans `by` (c'est l'équivalent du `group_by()` du _package_ `dplyr`). Lorsqu'il y a plusieurs variables de groupe, on peut écrire l'argument `by` de deux façons: 
+**Toutes les opérations précédentes peuvent être réalisées par groupe.** il suffit d'ajouter le nom des variables de groupe dans `by` (c'est l'équivalent du `group_by()` du _package_ `dplyr`). Lorsqu'il y a plusieurs variables de groupe, on peut écrire l'argument `by` de deux façons : 
 
 - soit `by = c("var1", "var2", "var3")` (attention aux guillemets);
 - soit `by = .(var1, var2, var3)` (attention à la notation `.()`).
@@ -359,7 +359,7 @@ L'argument `by` fonctionne également avec l'opérateur `:=`. Vous pouvez en app
 
 ### Joindre des tables avec `data.table`
 
-Pour joindre des données, `data.table` propose une fonction `merge()` plus rapide que la fonction de base. La syntaxe générale est `z <- merge(x, y, [options])`. Voici une liste des principales options (les autres options sont visibles avec `?data.table::merge`):
+Pour joindre des données, `data.table` propose une fonction `merge()` plus rapide que la fonction de base. La syntaxe générale est `z <- merge(x, y, [options])`. Voici une liste des principales options (les autres options sont visibles avec `?data.table::merge`) :
 
 | **Option**                                | **Signification**                                                        |
 |-------------------------------------------|--------------------------------------------------------------------------|
@@ -373,7 +373,7 @@ Enfin, il est possible de réalier des jointures plus sophistiquées avec `data.
 
 ### Indexer une table avec `data.table`
 
-**L'indexation est une fonctionalité très puissante pour accélérer les opérations sur les lignes (filtres, jointures, etc.) en `data.table`**. Pour indexer une table il faut déclarer les variables faisant office de clé (appelées `key`). C'est possible de la manière suivante: `setkey(dt, a)`  ou `setkeyv(dt, "a")`. Le `data.table` sera réordonné en fonction de cette variable et l'algorithme de recherche sur les lignes sera ainsi beaucoup plus efficace. Lorsqu'il y a plusieurs variables-clé, on écrit `setkey(dt, a, b)` ou `setkeyv(dt, c("a","b"))`. 
+**L'indexation est une fonctionalité très puissante pour accélérer les opérations sur les lignes (filtres, jointures, etc.) en `data.table`**. Pour indexer une table il faut déclarer les variables faisant office de clé (appelées `key`). C'est possible de la manière suivante : `setkey(dt, a)`  ou `setkeyv(dt, "a")`. Le `data.table` sera réordonné en fonction de cette variable et l'algorithme de recherche sur les lignes sera ainsi beaucoup plus efficace. Lorsqu'il y a plusieurs variables-clé, on écrit `setkey(dt, a, b)` ou `setkeyv(dt, c("a","b"))`. 
 
 Pour savoir si `un data.table` est déjà indexé, on peut exécuter la commande `key(dt)` qui renvoie le nom des clés s'il y en a, et `NULL` sinon.
 
@@ -390,15 +390,15 @@ Pour savoir si `un data.table` est déjà indexé, on peut exécuter la commande
 | Réorganiser les donnée dans un format `long`           | Réorganise les donnée dans un format `wide`       |
 |![](./pics/datatable/widetolong.png){width=55%}       |![](./pics/datatable/longtowide.png){width=62%}   |
 
-#### `melt`: transformer des colonnes en lignes
+#### `melt` : transformer des colonnes en lignes
 
-La fonction `melt()` réorganise les donnée dans un format long. Elle prend les arguments suivants:
+La fonction `melt()` réorganise les donnée dans un format long. Elle prend les arguments suivants :
 
-* `data`: les données;
-* `id.vars`: les variables qui identifient les lignes de table d'arrivée; elles restent inchangées lors de l'utilisation de `melt()`;
-*  `measure.vars`: les variables qui sont transposées;
-* `variable.name`: le nom de la nouvelle colonne qui contient le nom des variables transposées;
-* `value.name`: le nom de la nouvelle colonne qui contient la valeur des variables transposées.
+* `data` : les données;
+* `id.vars` : les variables qui identifient les lignes de table d'arrivée; elles restent inchangées lors de l'utilisation de `melt()`;
+*  `measure.vars` : les variables qui sont transposées;
+* `variable.name` : le nom de la nouvelle colonne qui contient le nom des variables transposées;
+* `value.name` : le nom de la nouvelle colonne qui contient la valeur des variables transposées.
 
 Pour illustrer l'usage de cette fonction, nous allons utiliser les données du répertoire Filosofi 2016 agrégées au niveau des EPCI (table `filosofi_epci_2016`), et disponibles dans le package `doremifasolData`. On convertit cette table en `data.table` et on conserve uniquement certaines variables.
 
@@ -413,7 +413,7 @@ filosofi_epci_2016_dt <-
                             TP60AGE316, TP60AGE416, TP60AGE516, TP60AGE616)]
 ```
 
-Nous allons restructurer cette table pour obtenir une nouvelle table, avec une observation par EPCI et par tranche d’âge. Voici le code qui permet d’obtenir cette table: on indique dans `measure.vars` le nom des colonnes qui seront transposées, le nom des colonnes transposées sera indiqué dans la nouvelle colonne “tranche_age” (`variable.name = "tranche_age"`) et les valeurs des colonnes transposées seront stockées dans la colonne “taux_pauvrete” (`value.name = "taux_pauvrete"`).
+Nous allons restructurer cette table pour obtenir une nouvelle table, avec une observation par EPCI et par tranche d’âge. Voici le code qui permet d’obtenir cette table : on indique dans `measure.vars` le nom des colonnes qui seront transposées, le nom des colonnes transposées sera indiqué dans la nouvelle colonne “tranche_age” (`variable.name = "tranche_age"`) et les valeurs des colonnes transposées seront stockées dans la colonne “taux_pauvrete” (`value.name = "taux_pauvrete"`).
 
 ```{r}
 donnees_pauvrete_long <- 
@@ -429,20 +429,20 @@ donnees_pauvrete_long
 
 ::: {.conseil data-latex=""}
 
-**Il est recommandé de travailler avec des données en format `long` plutôt qu'en format `wide`, notamment lorsque vous voulez faire des graphiques.** En effet, le _package_ de visualisation graphique `ggplot2` est optimisé pour manipuler des données en format `long` (voir la fiche [Faire des graphiques avec `ggplot2`]). Ce conseil est particulièrement important si vous voulez représenter un graphique avec des groupes: il est préférable que les groupes soient empilés (format `long`) plutôt que juxtaposés (format `wide`), car le code est plus rapide et facile à écrire.
+**Il est recommandé de travailler avec des données en format `long` plutôt qu'en format `wide`, notamment lorsque vous voulez faire des graphiques.** En effet, le _package_ de visualisation graphique `ggplot2` est optimisé pour manipuler des données en format `long` (voir la fiche [Faire des graphiques avec `ggplot2`]). Ce conseil est particulièrement important si vous voulez représenter un graphique avec des groupes : il est préférable que les groupes soient empilés (format `long`) plutôt que juxtaposés (format `wide`), car le code est plus rapide et facile à écrire.
 :::
 
 
-#### `dcast`: transformer des lignes en colonnes
+#### `dcast` : transformer des lignes en colonnes
 
-La fonction `dcast()` réorganise les donnée dans un format large. Elle prend les arguments suivants:
+La fonction `dcast()` réorganise les donnée dans un format large. Elle prend les arguments suivants :
 
-* `data`: les données;
-* `formula`: une formule de la forme `var_ligne ~ var_colonne` qui définit la structure de la nouvelle table; 
+* `data` : les données;
+* `formula` : une formule de la forme `var_ligne ~ var_colonne` qui définit la structure de la nouvelle table; 
     - s'il y a plusieurs variables, la formule prend la forme `var1 + var2 ~ var3`;
     - `dcast()` conserve une ligne par valeur de la partie gauche, et crée (au moins) une colonne par valeur de la partie droite;
-* `fun.aggregate`: une liste contenant la ou les fonction(s) utilisées pour agréger les données le cas échéant; exemple: `list(mean, sum, sd)`;
-*  `value.var`: un vecteur contenant le nom de la ou des colonne(s) dont les valeurs vont être transposées; exemple: `c("var1", "var2")`.
+* `fun.aggregate` : une liste contenant la ou les fonction(s) utilisées pour agréger les données le cas échéant; exemple : `list(mean, sum, sd)`;
+*  `value.var` : un vecteur contenant le nom de la ou des colonne(s) dont les valeurs vont être transposées; exemple : `c("var1", "var2")`.
 
 Dans l'exemple qui suit, on réorganise la table `bpe_ens_2018_dt` de façon à obtenir une table qui contient une ligne par type d'équipement et une colonne par région (`TYPEQU ~ REG`). Ces colonnes vont contenir la somme (`fun.aggregate = sum`) du nombre d'équipements (`value.var = "NB_EQUIP"`).
 
@@ -466,7 +466,7 @@ bpe_ens_2018_wide2
 
 ::: {.conseil data-latex=""}
 * La fonction `dcast()` crée une colonne par valeur des variables utilisées dans la partie droite de la formule (trois colonnes pour les trois valeurs de `cyl` dans l'exemple qui précède). **Il faut donc faire attention à ce que ces variables aient un nombre limité de valeurs**, pour ne pas obtenir une table *extrêmement* large. On peut éventuellement discrétiser les variables continues, ou regrouper les modalités avant d'utiliser `dcast()`.
-* On peut obtenir des **noms de colonnes peu significatifs** lorsqu'on utilise `dcast()` avec une fonction d'agrégation (`01`, `02`, `03`... dans l'exemple précédent). Il est conseillé de modifier légèrement la partie droite de la formule pour obtenir des noms plus significatifs. Voici un exemple où on ajoute le préfixe `resultat_region`:
+* On peut obtenir des **noms de colonnes peu significatifs** lorsqu'on utilise `dcast()` avec une fonction d'agrégation (`01`, `02`, `03`... dans l'exemple précédent). Il est conseillé de modifier légèrement la partie droite de la formule pour obtenir des noms plus significatifs. Voici un exemple où on ajoute le préfixe `resultat_region` :
   ```{r}
   bpe_ens_2018_wide2 <- dcast(bpe_ens_2018_dt, 
                            TYPEQU ~ paste0("resultat_region",REG), 
@@ -478,9 +478,9 @@ bpe_ens_2018_wide2
 
 ::: {.remarque data-latex=""}
 
-**Il est conseillé de bien réfléchir avant de restructurer des données en format *wide*, et de ne le faire que lorsque cela paraît indispensable**. En effet, s'il est tentant de restructurer les données sous format *wide* car ce format peut paraître plus intuitif, il est généralement plus simple et plus rigoureux de traiter les données en format *long*. Ceci dit, il existe des situations dans lesquelles il est indiqué de restructurer les données en format *wide*. Voici deux exemples:
+**Il est conseillé de bien réfléchir avant de restructurer des données en format *wide*, et de ne le faire que lorsque cela paraît indispensable**. En effet, s'il est tentant de restructurer les données sous format *wide* car ce format peut paraître plus intuitif, il est généralement plus simple et plus rigoureux de traiter les données en format *long*. Ceci dit, il existe des situations dans lesquelles il est indiqué de restructurer les données en format *wide*. Voici deux exemples :
 
-* produire un tableau synthétique de résultats, prêt à être diffusé, avec quelques colonnes donnant des indicateurs par catégorie (exemple: la table `filosofi_epci_2016` du _package_ `doremifasolData`);
+* produire un tableau synthétique de résultats, prêt à être diffusé, avec quelques colonnes donnant des indicateurs par catégorie (exemple : la table `filosofi_epci_2016` du _package_ `doremifasolData`);
 * produire une table avec une colonne par année, de façon à calculer facilement un taux d'évolution entre deux dates.
 :::
   
@@ -489,7 +489,7 @@ bpe_ens_2018_wide2
 <!-- **Conseils** -->
 
 <!-- * La fonction `dcast()` crée une colonne par valeur des variables utilisées dans la partie droite de la formule (trois colonnes pour les trois valeurs de `cyl` dans l'exemple qui précède). **Il faut donc faire attention à ce que ces variables aient un nombre limité de valeurs**, pour ne pas obtenir une table *extrêmement* large. On peut éventuellement discrétiser les variables continues, ou regrouper les modalités avant d'utiliser `dcast()`. -->
-<!-- * On peut obtenir des **noms de colonnes peu significatifs** lorsqu'on utilise `dcast()` avec une colonne numérique et une fonction d'agrégation (`4`, `6`, `8` dans l'exemple précédent). Il est conseillé de modifier légèrement la partie droite de la formule pour obtenir des noms plus significatifs. Voici un exemple où on ajoute le préfixe "cyl": -->
+<!-- * On peut obtenir des **noms de colonnes peu significatifs** lorsqu'on utilise `dcast()` avec une colonne numérique et une fonction d'agrégation (`4`, `6`, `8` dans l'exemple précédent). Il est conseillé de modifier légèrement la partie droite de la formule pour obtenir des noms plus significatifs. Voici un exemple où on ajoute le préfixe "cyl" : -->
 <!--   ```{r} -->
 <!--   head(mtcars_dt_casted2 <- dcast(mtcars_dt, -->
 <!--                                   gear ~ paste0("cyl", cyl), -->
@@ -500,19 +500,19 @@ bpe_ens_2018_wide2
 
 ## La fonction d'assignation par référence (ou `:=`)
 
-Jusqu'à présent, mous avons manipulé un `data.table` existant, mais nous ne lui avons pas ajouté de nouvelles colonnes. Pour ce faire, nous allons utiliser la fonction `:=` (qui s'appelle "*assignation par référence*" et qui peut également s'écrire `` `:=`() ``). Voici comment on crée une nouvelle colonne dans `bpe_ens_2018_dt`:
+Jusqu'à présent, mous avons manipulé un `data.table` existant, mais nous ne lui avons pas ajouté de nouvelles colonnes. Pour ce faire, nous allons utiliser la fonction `:=` (qui s'appelle "*assignation par référence*" et qui peut également s'écrire `` `:=`() ``). Voici comment on crée une nouvelle colonne dans `bpe_ens_2018_dt` :
 
 ```{r}
 bpe_ens_2018_dt[ , nouvelle_colonne :=  NB_EQUIP * 10]
 head(bpe_ens_2018_dt)
 ``` 
 
-### La spécificité de `data.table`: la modification par référence
+### La spécificité de `data.table` : la modification par référence
 
 **A première vue, on peut penser que la fonction `:=` est l'équivalent de la fonction `dplyr::mutate()` dans la grammaire `data.table`.** C'est vrai dans la mesure où elle permet de faire des choses similaires, mais il faut garder en tête que son fonctionnement est complètement différent de celui de `dplyr::mutate()`. En effet, **la grande spécificité de `data.table` par rapport à `dplyr` est que l'utilisation de la fonction `:=` modifie directement la table de données**, car  `data.table` fonctionne sur le principe de la modification par référence (voir [ce lien](https://gitlab.com/linogaliana/bigr/-/blob/master/04-datatable.Rmd)
 pour plus de détails). Cela signifie en pratique qu'**il ne faut pas réassigner l'objet lorsqu'on modifie une de ses colonnes**. C'est ce comportement qui permet à `data.table` d'être très rapide et très économe en mémoire vive, rendant son usage approprié pour des données volumineuses. 
 
-Pour créer une colonne, on écrit donc directement `dt[ , nouvelle_colonne := une_formule]` et non `dt <- dt[ , nouvelle_colonne := une_formule]`. Voici un exemple qui compare `dplyr` et `data.table`:
+Pour créer une colonne, on écrit donc directement `dt[ , nouvelle_colonne := une_formule]` et non `dt <- dt[ , nouvelle_colonne := une_formule]`. Voici un exemple qui compare `dplyr` et `data.table` :
 
 
 <!-- Output html -->
@@ -525,7 +525,7 @@ Pour créer une colonne, on écrit donc directement `dt[ , nouvelle_colonne := u
 </th> 
 <th>
 ```{asis, eval=(knitr::is_html_output()), echo=TRUE}
-`data.table`: Il ne faut pas d'assignation pour modifier `bpe_ens_2018_dt`
+`data.table` : Il ne faut pas d'assignation pour modifier `bpe_ens_2018_dt`
 ```
 </th> <tr>
 <tr>
@@ -547,7 +547,7 @@ bpe_ens_2018_dt[ , nouvelle_colonne :=  NB_EQUIP * 10]
 <!-- output LaTeX -->
 
 ```{asis, eval=(knitr::is_latex_output()), echo=TRUE}
-**`dplyr`: Il faut une assignation (`<-`) pour modifier `bpe_ens_2018`**
+**`dplyr` : Il faut une assignation (`<-`) pour modifier `bpe_ens_2018`**
 ```
 ```{r, echo=(knitr::is_latex_output()), eval=FALSE}
 bpe_ens_2018 <- bpe_ens_2018 %>%
@@ -555,7 +555,7 @@ bpe_ens_2018 <- bpe_ens_2018 %>%
 ```
 
 ```{asis, eval=(knitr::is_latex_output()), echo=TRUE}
-**`data.table`: Il ne faut pas d'assignation pour modifier `bpe_ens_2018_dt`**
+**`data.table` : Il ne faut pas d'assignation pour modifier `bpe_ens_2018_dt`**
 ```
 ```{r, echo=(knitr::is_latex_output()), eval=FALSE}
 bpe_ens_2018_dt[ , nouvelle_colonne :=  NB_EQUIP * 10]
@@ -567,7 +567,7 @@ On peut se servir de la fonction `:=` de multiples façons, et avec plusieurs no
 
 #### Créer plusieurs variables à la fois
 
-Voici comment créer plusieurs variables à la fois avec `:=`, en utilisant une notation vectorielle:
+Voici comment créer plusieurs variables à la fois avec `:=`, en utilisant une notation vectorielle :
 ```{r, eval = FALSE}
 bpe_ens_2018_dt[ , c("nouvelle_colonne1", "nouvelle_colonne2") :=  
                    list(NB_EQUIP * 2, NB_EQUIP + 3)]
@@ -581,7 +581,7 @@ bpe_ens_2018_dt[ , `:=`(nouvelle_colonne1 = NB_EQUIP * 2,
 ```
 
 ::: {.remarque data-latex=""}
-Si vous utilisez la notation`` `:=`() ``, alors il faut utiliser uniquement `=` à l'intérieur des parenthèses pour créer ou modifier des variables, et non `:=`. Exemple:
+Si vous utilisez la notation`` `:=`() ``, alors il faut utiliser uniquement `=` à l'intérieur des parenthèses pour créer ou modifier des variables, et non `:=`. Exemple :
 ```{r, eval = FALSE}
 dt[ , `:=`(var1 = "Hello", var2 = "world")]
 ```
@@ -589,14 +589,14 @@ dt[ , `:=`(var1 = "Hello", var2 = "world")]
 
 #### Supprimer une colonne
 
-On peut facilement supprimer une colonne en lui assignant la valeur `NULL` (c'est hyper rapide!). Voici un exemple:
+On peut facilement supprimer une colonne en lui assignant la valeur `NULL` (c'est hyper rapide!). Voici un exemple :
 ```{r, eval = FALSE}
 bpe_ens_2018_dt[ , NB_EQUIP := NULL]
 ```
 
 #### Faire un remplacement conditionnel
 
-La fonction `:=` peut être utilisée pour modifier une colonne pour certaines lignes seulement, en fonction d'une condition logique. C'est beaucoup plus efficace qu'un terme `dplyr::if_else()` ou `dplyr::case_when()`. Imaginons qu'on veuille créer une colonne `EQUIP_HORS_CHAUSS` égale au nombre d'équipements (`NB_EQUIP`) sauf pour les lignes correspondantes à des magasins de chaussures (`TYPEQU == "B304"`) où elle vaut `NA`. Dans ce cas, le code `dplyr` serait:
+La fonction `:=` peut être utilisée pour modifier une colonne pour certaines lignes seulement, en fonction d'une condition logique. C'est beaucoup plus efficace qu'un terme `dplyr::if_else()` ou `dplyr::case_when()`. Imaginons qu'on veuille créer une colonne `EQUIP_HORS_CHAUSS` égale au nombre d'équipements (`NB_EQUIP`) sauf pour les lignes correspondantes à des magasins de chaussures (`TYPEQU == "B304"`) où elle vaut `NA`. Dans ce cas, le code `dplyr` serait :
 
 ```{r, eval = FALSE}
 bpe_ens_2018 %>% 
@@ -606,7 +606,7 @@ bpe_ens_2018 %>%
   )
 ```
 
-et le code équivalent en `data.table`, nécessitant beaucoup moins de mémoire vive:
+et le code équivalent en `data.table`, nécessitant beaucoup moins de mémoire vive :
 
 ```{r}
 bpe_ens_2018_dt[ , NB_EQUIP_HORS_CHAUSS := NB_EQUIP
@@ -615,27 +615,27 @@ bpe_ens_2018_dt[ , NB_EQUIP_HORS_CHAUSS := NB_EQUIP
 
 ### Attention en utilisant `:=`
 
-L'utilisation de la fonction `:=` est déroutante lorsqu'on découvre `data.table`. Voici trois remarques qui vous feront gagner du temps:
+L'utilisation de la fonction `:=` est déroutante lorsqu'on découvre `data.table`. Voici trois remarques qui vous feront gagner du temps :
 
-- **Vous pouvez faire appel à d'autres fonctions à l'intérieur de la fonction `:=`.** Par exemple, si on veut mettre la variable `name` en minuscules, on peut utiliser la fonction `tolower()`. On écrit alors: 
+- **Vous pouvez faire appel à d'autres fonctions à l'intérieur de la fonction `:=`.** Par exemple, si on veut mettre la variable `name` en minuscules, on peut utiliser la fonction `tolower()`. On écrit alors : 
   ```{r, eval = FALSE}
   dt[ , name_minuscule := tolower(name)]
   ```
 
-- Lorsque l'on crée plusieurs variables avec la fonction `:=`, elles sont créées en même temps. **On ne peut donc pas faire appel dans une formule à une variable qu'on crée dans le même appel à la fonction `:=`.** Par exemple, le code suivant _ne fonctionne pas_:
+- Lorsque l'on crée plusieurs variables avec la fonction `:=`, elles sont créées en même temps. **On ne peut donc pas faire appel dans une formule à une variable qu'on crée dans le même appel à la fonction `:=`.** Par exemple, le code suivant _ne fonctionne pas_ :
   ```{r, eval = FALSE}
   bpe_ens_2018_dt[ , `:=`(nouvelle_colonne1 =  NB_EQUIP * 2,
                           nouvelle_colonne2 =  nouvelle_colonne1 + 3)]
   ```
 
-  En effet, au moment où la fonction `:=` est exécutée, la colonne `nouvelle_colonne1` n'existe pas encore, donc la formule `nouvelle_colonne2 = nouvelle_colonne1 + 3` n'a pas encore de sens. Si vous créez des variables en chaîne, il faut décomposer l'opération en plusieurs étapes enchaînées. Voici le code qui permet de créer les deux colonnes à la suite:
+  En effet, au moment où la fonction `:=` est exécutée, la colonne `nouvelle_colonne1` n'existe pas encore, donc la formule `nouvelle_colonne2 = nouvelle_colonne1 + 3` n'a pas encore de sens. Si vous créez des variables en chaîne, il faut décomposer l'opération en plusieurs étapes enchaînées. Voici le code qui permet de créer les deux colonnes à la suite :
   
   ```{r, eval = FALSE}
   bpe_ens_2018_dt[ , `:=`(nouvelle_colonne1 :=  NB_EQUIP * 2
                   ][ , nouvelle_colonne2 :=  nouvelle_colonne1 + 3)]
   ```
 
-- **Un mauvais usage de la fonction `:=` peut vous amener à écraser par erreur vos données.** En effet, si vous exécuter par erreur la commande `dt[ , ma_variable_importante := 0]`, vous écrasez la variable `ma_variable_importante`. Vous devez alors recharger vos données... Il faut donc bien réfléchir à ce que vous voulez faire avant de remplacer ou modifier une variable existante avec la fonction `:=`. Si vous modifiez un `data.table` dans une fonction, un filet de sécurité consiste à d'abord copier le `data.table` initial et ainsi faire les modifications sur le nouvel objet, de la manière suivante:
+- **Un mauvais usage de la fonction `:=` peut vous amener à écraser par erreur vos données.** En effet, si vous exécuter par erreur la commande `dt[ , ma_variable_importante := 0]`, vous écrasez la variable `ma_variable_importante`. Vous devez alors recharger vos données... Il faut donc bien réfléchir à ce que vous voulez faire avant de remplacer ou modifier une variable existante avec la fonction `:=`. Si vous modifiez un `data.table` dans une fonction, un filet de sécurité consiste à d'abord copier le `data.table` initial et ainsi faire les modifications sur le nouvel objet, de la manière suivante :
 
   ```{r, eval = FALSE}
     dt_copy <- data.table::copy(dt)
@@ -664,7 +664,7 @@ filosofi_com_2016_dt <-
 
 Le mot clé `.SD` (*Subset of Data*) permet d'appliquer la même opération sur plusieurs colonnes. Les colonnes auxquelles l'opération s'applique sont contrôlées par l'argument `.SDcols` (par défaut, toutes les colonnes sont traitées). Le mot clé `.SD` est régulièrement utilisé en conjonction avec la fonction `lapply`. **Cette syntaxe, très puissante, permet également d'avoir des codes assez compacts, ce qui les rend plus lisible.**
 
-Un usage classique de ce duo `lapply`+`.SD` consiste à écrire des fonctions de statistiques descriptives. Par exemple, imaginons qu'on souhaite calculer la moyenne, l'écart-type et les quantiles (P25, P50 et P75) de nombreuses colonnes. On peut alors définir la fonction suivante:
+Un usage classique de ce duo `lapply`+`.SD` consiste à écrire des fonctions de statistiques descriptives. Par exemple, imaginons qu'on souhaite calculer la moyenne, l'écart-type et les quantiles (P25, P50 et P75) de nombreuses colonnes. On peut alors définir la fonction suivante :
 
 ```{r}
 mes_statistiques <- 
@@ -673,7 +673,7 @@ mes_statistiques <-
                        quantile(x, probs = c(.25,.5,.75), na.rm = TRUE)))
 ```
 
-Voici comment on peut appliquer cette fonction aux colonnes `NBMENFISC16` (nombre de ménages fiscaux) et `NBPERSMENFISC16` (nombre de personnes dans les ménages fiscaux) de la table `filosofi_com_2016_dt`:
+Voici comment on peut appliquer cette fonction aux colonnes `NBMENFISC16` (nombre de ménages fiscaux) et `NBPERSMENFISC16` (nombre de personnes dans les ménages fiscaux) de la table `filosofi_com_2016_dt` :
 
 ```{r}
 data_agregee <- 
@@ -712,7 +712,7 @@ head(creation_var(filosofi_com_2016_dt,
 `c(nouveau_nom)` permet de s'assurer que `data.table` crée une nouvelle colonne dont le nom est défini en argument (et qui ne s'appelle donc pas `nouveau_nom`).
 
 ::: {.remarque data-latex=""}
-Il est particulièrement complexe d'écrire avec `dplyr` des fonctions génériques faisant appel à des noms de variables en arguments: il est nécessaire de faire appel à plusieurs fonctionnalités de `rlang` pour être en mesure d'effectuer une opération équivalente. Voici pour information la version `dplyr` de l'exemple précédent:
+Il est particulièrement complexe d'écrire avec `dplyr` des fonctions génériques faisant appel à des noms de variables en arguments : il est nécessaire de faire appel à plusieurs fonctionnalités de `rlang` pour être en mesure d'effectuer une opération équivalente. Voici pour information la version `dplyr` de l'exemple précédent :
 
 ```{r, eval = FALSE}
 modif_var <- function(data, nom_variable){
@@ -730,7 +730,7 @@ Lorsqu'on définit des fonctions pour effectuer des traitements génériques, il
 ## Pour en savoir plus
 
 - la [documentation officielle](https://www.rdocumentation.org/packages/data.table) de `data.table` (en anglais);
-- les [vignettes](https://github.com/Rdatatable/data.table/wiki/Getting-started) de `data.table`:
+- les [vignettes](https://github.com/Rdatatable/data.table/wiki/Getting-started) de `data.table` :
     - [Introduction à `data.table`](https://cloud.r-project.org/web/packages/data.table/vignettes/datatable-intro.html) (en anglais);
     - [Modification par référence](https://cloud.r-project.org/web/packages/data.table/vignettes/datatable-reference-semantics.html) (en anglais);
     - [la foire aux questions de `data.table`](https://cran.r-project.org/web/packages/data.table/vignettes/datatable-faq.html) (en anglais);
