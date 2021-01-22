@@ -5,22 +5,22 @@
 Vous souhaitez apparier deux tables de données selon une ou plusieurs variables de jointure.
 
 ::: {.recommandation data-latex=""}
-* Pour des tables de données de taille petite et moyenne (inférieure à 1 Go ou moins d'un million d'observations), il est recommandé d'utiliser le _package_ `dplyr` ou `R base`. Le _package_ `dplyr` est présenté en détail dans la fiche [Manipuler des données avec le `tidyverse`];
+* Pour des tables de données de taille petite et moyenne (inférieure à 1 Go ou moins d'un million d'observations), il est recommandé d'utiliser le _package_ `dplyr` ou `R base`. Le _package_ `dplyr` est présenté en détail dans la fiche [Manipuler des données avec le `tidyverse`] ;
 * Pour des tables de données de grande taille (plus de 1 Go ou plus d'un million d'observations), il est recommandé d'utiliser le _package_ `data.table` qui fait l'objet d'une autre fiche. Ce _package_ est présenté en détail dans la fiche [Manipuler des données avec `data.table`].
 * Il est vivement recommandé de lire la section [Quelques bonnes pratiques sur les jointures] avant de réaliser des jointures.
 :::
 
 ## Les différents types de jointure
 
-**Une jointure consiste à associer les observations de deux tables à l'aide d'un identifiant présent dans les deux tables**, qui prend généralement la forme d'une ou plusieurs variables de jointure. Il existe plusieurs types de jointure. Les principales sont:
+**Une jointure consiste à associer les observations de deux tables à l'aide d'un identifiant présent dans les deux tables**, qui prend généralement la forme d'une ou plusieurs variables de jointure. Il existe plusieurs types de jointure. Les principales sont :
 
-+ _jointure interne_ (*inner join*): la plus courante. Il s'agit de retourner les observations lorsque l'identifiant est présent **dans les deux tables**.
-+ _jointure à gauche_ (*left join*): renvoie toutes les observations de la table de gauche, même si l'identifiant n'est pas présent dans la table de droite.
-+ _jointure à droite_ (*right join*): l'inverse de la jointure à gauche ; toutes les observations de la table de droite.
-+ _jointure externe_ (*full join*): retourne l'ensemble des observations des deux tables, même lorsque l'identifiant ne se retrouve que dans l'une des tables.
-+ _anti-jointures_: retourne les observations de la table de gauche seulement si l'identifiant n'est pas trouvé dans la table de droite (renvoyer les observations dont l'identifiant n'existe pas dans l'autre table). Ce type de jointure est peu utilisé en pratique.
++ _jointure interne_ (*inner join*) : la plus courante. Il s'agit de retourner les observations lorsque l'identifiant est présent **dans les deux tables**.
++ _jointure à gauche_ (*left join*) : renvoie toutes les observations de la table de gauche, même si l'identifiant n'est pas présent dans la table de droite.
++ _jointure à droite_ (*right join*) : l'inverse de la jointure à gauche ; toutes les observations de la table de droite.
++ _jointure externe_ (*full join*) : retourne l'ensemble des observations des deux tables, même lorsque l'identifiant ne se retrouve que dans l'une des tables.
++ _anti-jointures_ : retourne les observations de la table de gauche seulement si l'identifiant n'est pas trouvé dans la table de droite (renvoyer les observations dont l'identifiant n'existe pas dans l'autre table). Ce type de jointure est peu utilisé en pratique.
 
-Le graphique ci-dessous illustre les différentes méthodes de jointures:
+Le graphique ci-dessous illustre les différentes méthodes de jointures :
 
 | **Type de jointure** | **Exemple** |
 | :--------------------------------------------------: | :----------------------------------------------: |
@@ -33,24 +33,24 @@ Le graphique ci-dessous illustre les différentes méthodes de jointures:
 
 
 ::: {.remarque data-latex=""}
-Pour vous aider à comprendre le principe des jointures, voici une rapide description des opérations que `R` réalise quand on fait une jointure interne entre deux tables:
+Pour vous aider à comprendre le principe des jointures, voici une rapide description des opérations que `R` réalise quand on fait une jointure interne entre deux tables :
 
-* `R` isole la première observation de la table de gauche et en extrait l'identifiant (la (ou les) variable(s) de jointures);
-* il compare cet identifiant avec l'identifiant de chacune des observations de la table de droite:
-    * soit l'identifiant est identique, auquel cas il rajoute dans la table de sortie une nouvelle observation avec les valeurs de l'observation extraite de la table de gauche et celle de l'observation extraite de la table de droite;
+* `R` isole la première observation de la table de gauche et en extrait l'identifiant (la (ou les) variable(s) de jointures) ;
+* il compare cet identifiant avec l'identifiant de chacune des observations de la table de droite :
+    * soit l'identifiant est identique, auquel cas il rajoute dans la table de sortie une nouvelle observation avec les valeurs de l'observation extraite de la table de gauche et celle de l'observation extraite de la table de droite ;
     * soit l'identifiant est différent, auquel cas il passe à la suivante de la table de droite.
 * `R` passe ensuite à la deuxième observation de la table de gauche, et ainsi de suite.
   
 Il est très important de comprendre qu'une ligne présente dans une des deux tables peut ainsi se retrouver dans la table finale en plusieurs exemplaires, ou pas du tout.
 
-Dans le cas d'une jointure à gauche (*left join*), le fonctionnement est le même. La différence est que, pour chaque ligne de la table de gauche, si après avoir balayé toutes les lignes de la table de droite aucune correspondance n'a été trouvée, `R` ajoute quand même la ligne de gauche dans la table de sortie et met des valeurs manquantes dans les colonnes correspondant à la table de droite. On ne peut donc avoir moins de lignes en sortie que dans la table de gauche; en revanche on peut en avoir plus si on a des doublons d'identifiant.
+Dans le cas d'une jointure à gauche (*left join*), le fonctionnement est le même. La différence est que, pour chaque ligne de la table de gauche, si après avoir balayé toutes les lignes de la table de droite aucune correspondance n'a été trouvée, `R` ajoute quand même la ligne de gauche dans la table de sortie et met des valeurs manquantes dans les colonnes correspondant à la table de droite. On ne peut donc avoir moins de lignes en sortie que dans la table de gauche ; en revanche on peut en avoir plus si on a des doublons d'identifiant.
 
 Le cas d'une jointure à droite est tout à fait symétrique, et on déduit facilement le cas d'une jointure complète (*full join*).
 :::
 
 ## Réaliser une jointure avec `R`
 
-Cette section présente les principales fonctions permettant de réaliser des jointures selon trois approches de manipulation de données: `R base`, `dplyr` et `data.table`. Les deux dernières approches font l'objet de présentations détaillées dans les fiches [Manipuler des données avec le `tidyverse`] et [Manipuler des données avec `data.table`].
+Cette section présente les principales fonctions permettant de réaliser des jointures selon trois approches de manipulation de données : `R base`, `dplyr` et `data.table`. Les deux dernières approches font l'objet de présentations détaillées dans les fiches [Manipuler des données avec le `tidyverse`] et [Manipuler des données avec `data.table`].
 
 
 ::: {.conseil data-latex=""}
@@ -73,7 +73,7 @@ options(dplyr.print_min  = 6)
 options(dplyr.print_max  = 6)
 ```
 
-Voici un aperçu des données:
+Voici un aperçu des données :
 
 ```{r apercu1}
 head(filosofi_com_2016)
@@ -89,16 +89,16 @@ Contrairement à d'autres logiciels statistiques, **il n'est pas nécessaire ni 
 
 ### Jointure avec `R base`
 
-La fonction pour effectuer des jointures en `base R` est la fonction `merge` (fusionner). Elle prend les arguments suivants:
+La fonction pour effectuer des jointures en `base R` est la fonction `merge` (fusionner). Elle prend les arguments suivants :
 
-- le nom des deux `data.frame` à joindre;
-- les variables de jointure, défini par les arguments `by.x` et `by.y` ou par l'argument `by`;
+- le nom des deux `data.frame` à joindre ;
+- les variables de jointure, défini par les arguments `by.x` et `by.y` ou par l'argument `by` ;
 - le type de jointure défini par les arguments `all`, `all.x` et `all.y`.
 
-Voici quelques remarques sur l'usage de `merge`:
+Voici quelques remarques sur l'usage de `merge` :
 
-- Lorsque les variables de jointure portent exactement le même nom dans les deux tables, on les définit par l'argument `by`. Sinon, il faut préciser `by.x = nom_var_joint_table_gauche` et `by.y = nom_var_joint_table_droite`;
-- Par défaut, `merge` réalise une jointure interne. On peut obtenir d'autres types de jointure avec les arguments `all`, `all.x` et `all.y`. Voici un aide mémoire:
+- Lorsque les variables de jointure portent exactement le même nom dans les deux tables, on les définit par l'argument `by`. Sinon, il faut préciser `by.x = nom_var_joint_table_gauche` et `by.y = nom_var_joint_table_droite` ;
+- Par défaut, `merge` réalise une jointure interne. On peut obtenir d'autres types de jointure avec les arguments `all`, `all.x` et `all.y`. Voici un aide mémoire :
 
     | Type de jointure                      | Argument de la fonction `merge`  |
     |---------------------------------------|----------------------------------|
@@ -121,12 +121,12 @@ head(table_jointe)
 
 ### Jointure avec `dplyr`
 
-**Avec `dplyr`, les jointures se réalisent grâce aux fonctions `left_join`, `right_join`, `inner_join`, `full_join` et `anti_join`.** Ces fonctions prennent les arguments suivants:
+**Avec `dplyr`, les jointures se réalisent grâce aux fonctions `left_join`, `right_join`, `inner_join`, `full_join` et `anti_join`.** Ces fonctions prennent les arguments suivants :
 
-- le nom des deux `data.frame` à joindre;
+- le nom des deux `data.frame` à joindre ;
 - les variables de jointure, défini par l'argument `by`. Lorsque la variable de jointure ne porte pas le même nom dans les deux tables, on utilise le paramètre `by = c("var_x" = "var_y")`. S'il y a plusieurs variables de jointures, on écrit `by = c("var_x1" = "var_y1", "var_x2" = "var_y2")`.
 
-Il est préférable d'utiliser ces fonctions sur des objets `tibble` plutôt que `data.frame`. On va donc convertir les deux tables avant de présenter un exemple:
+Il est préférable d'utiliser ces fonctions sur des objets `tibble` plutôt que `data.frame`. On va donc convertir les deux tables avant de présenter un exemple :
 
 ```{r, message = FALSE, warning = FALSE}
 library(dplyr)
@@ -143,7 +143,7 @@ table_jointe_tbl <- filosofi_com_2016_tbl %>%
 head(table_jointe_tbl)
 ```
 
-La syntaxe pour réaliser les autres types de jointure est très similaire:
+La syntaxe pour réaliser les autres types de jointure est très similaire :
 
 | Type de jointure  | Syntaxe `dplyr`                                                                        |
 |-------------------|----------------------------------------------------------------------------------------|
@@ -154,9 +154,9 @@ La syntaxe pour réaliser les autres types de jointure est très similaire:
 
 ### Jointure avec `data.table`
 
-**Il existe deux façons de réaliser des jointures avec `data.table`**:
+**Il existe deux façons de réaliser des jointures avec `data.table`** :
 
-+ **la fonction `merge` de `data.table`**, dont le fonctionnement est identique à celui de la fonction `merge` de `R base`; de façon générale, c'est cette approche qu'il faut privilégier pour faire des jointures avec `data.table`;
++ **la fonction `merge` de `data.table`**, dont le fonctionnement est identique à celui de la fonction `merge` de `R base` ; de façon générale, c'est cette approche qu'il faut privilégier pour faire des jointures avec `data.table` ;
 + **l'opérateur crochet `[]`**. Cette approche convient pour des utilisations avancées, lorsque l'approche `merge` ne peut pas être utilisée.
 
 Il est préférable d'utiliser ces fonctions sur des objets `data.table` plutôt que `data.frame`. On va donc convertir les deux tables avant de présenter des exemples.
@@ -175,10 +175,10 @@ Il et possible de définir une (ou plusieurs) clé(s) grâce à la commande `set
 
 #### Joindre des objets `data.table` avec `merge`
 
-**La fonction `merge` de `data.table` a un fonctionnement identique à celui de la fonction `merge` de `R base`, mais elle est plus rapide lorsqu'on l'utilise pour joindre des objets `data.table`** plutôt que des objets `data.frame`. Elle prend les arguments suivants:
+**La fonction `merge` de `data.table` a un fonctionnement identique à celui de la fonction `merge` de `R base`, mais elle est plus rapide lorsqu'on l'utilise pour joindre des objets `data.table`** plutôt que des objets `data.frame`. Elle prend les arguments suivants :
 
-- le nom des deux `data.frame` à joindre;
-- les variables de jointure, défini par les arguments `by.x` et `by.y` ou par l'argument `by`;
+- le nom des deux `data.frame` à joindre ;
+- les variables de jointure, défini par les arguments `by.x` et `by.y` ou par l'argument `by` ;
 - le type de jointure défini par les arguments `all`, `all.x` et `all.y`.
 
 Voici un exemple dans lequel on utilise la fonction `merge` de `data.table` pour réaliser une jointure à gauche entre la table des données Filosofi et la table des communes du COG.
@@ -193,7 +193,7 @@ table_jointe_dt <-
 head(table_jointe_dt)
 ```
 
-Comme pour les jointures avec `base R`, la syntaxe pour réaliser les autres types de jointure est très similaire, il suffit de modifier l'option `all`, `all.x` ou `all.y`. Voici un aide mémoire:
+Comme pour les jointures avec `base R`, la syntaxe pour réaliser les autres types de jointure est très similaire, il suffit de modifier l'option `all`, `all.x` ou `all.y`. Voici un aide mémoire :
 
 | Type de jointure                      | Argument de la fonction `merge`  |
 |---------------------------------------|----------------------------------|
@@ -210,7 +210,7 @@ Il est difficile de réaliser une anti-jointure avec la commande `merge`. Pour c
 :::
 
 
-Une manière équivalente mais moins lisible que `merge` pour effectuer des appariements consiste à utiliser la syntaxe `x[y, on = c(xvar1 = yvar1, ...)]`. On peut voir `x[y, on = c(xvar1 = yvar1)]` comme une manière concise d'écrire `x[x$var1 %in% y$yvar1, ]` en `R` base. Les personnes habituées à la syntaxe SQL retrouveront une similarité avec la requête suivante:
+Une manière équivalente mais moins lisible que `merge` pour effectuer des appariements consiste à utiliser la syntaxe `x[y, on = c(xvar1 = yvar1, ...)]`. On peut voir `x[y, on = c(xvar1 = yvar1)]` comme une manière concise d'écrire `x[x$var1 %in% y$yvar1, ]` en `R` base. Les personnes habituées à la syntaxe SQL retrouveront une similarité avec la requête suivante :
 
 ```sql
 SELECT *
@@ -218,22 +218,22 @@ FROM x
 INNER JOIN y ON x.var1 = y.var1
 ```
 
-Par exemple, pour faire une jointure interne, on pourrait écrire `merge(x = filosofi_com_2016_dt, y = cog_com_2019_dt, by.x = "CODGEO", by.y = "com", all = FALSE)`. Avec la syntaxe alternative, on peut écrire:
+Par exemple, pour faire une jointure interne, on pourrait écrire `merge(x = filosofi_com_2016_dt, y = cog_com_2019_dt, by.x = "CODGEO", by.y = "com", all = FALSE)`. Avec la syntaxe alternative, on peut écrire :
 
 ```{r, eval=TRUE}
 filosofi_com_2016_dt[cog_com_2019_dt, on = c("CODGEO" = "com"), nomatch=NULL]
 ```
 
-L'argument `nomatch` sert à définir le comportement pour les valeurs des observations de la table de gauche (`filosofi_com_2016_dt`) n'ayant pas de clé correspondante dans la table de droite (`cog_com_2019_dt`). La valeur par défaut est `NA`, qui signifie que les valeurs de gauche sans correspondance auront des valeurs `NA`. Avec `nomatch=NULL` (ou `nomatch=0`), on retire les observations de `x` sans correspondance dans `y`: on effectue ainsi une jointure interne. 
+L'argument `nomatch` sert à définir le comportement pour les valeurs des observations de la table de gauche (`filosofi_com_2016_dt`) n'ayant pas de clé correspondante dans la table de droite (`cog_com_2019_dt`). La valeur par défaut est `NA`, qui signifie que les valeurs de gauche sans correspondance auront des valeurs `NA`. Avec `nomatch=NULL` (ou `nomatch=0`), on retire les observations de `x` sans correspondance dans `y` : on effectue ainsi une jointure interne. 
 
-Pour effectuer une anti-jointure, il faut sélectionner les clés de `x` qui n'ont pas de contrepartie dans `y` ce qui s'écrit de manière générale `x[!y]`. Dans notre exemple, cela donne:
+Pour effectuer une anti-jointure, il faut sélectionner les clés de `x` qui n'ont pas de contrepartie dans `y` ce qui s'écrit de manière générale `x[!y]`. Dans notre exemple, cela donne :
 
 ```{r, eval=TRUE}
 filosofi_com_2016_dt[!cog_com_2019_dt, on = c("CODGEO" = "com")]
 ```
 
 
-Le tableau précédent peut être enrichi:
+Le tableau précédent peut être enrichi :
 
 
 | Type de jointure                      | Argument(s) de la fonction `merge`  | Approche alternative  |
@@ -256,22 +256,22 @@ De manière générale, **il est important de bien préparer une jointure**. Voi
 
 Avant de procéder à une jointure, il est essentiel de **vérifier la qualité des identifiants dans les deux tables** que l'on veut joindre.
 
-- **Règle n°1: vérifier la présence de valeurs manquantes dans les variables de jointure**.
+- **Règle n°1 : vérifier la présence de valeurs manquantes dans les variables de jointure**.
 
-  Une première approche consiste à rechercher les valeurs manquantes (`NA`) dans les variables de jointures. Le code suivant permet de calculer le nombre d'observations pour lesquelles l'identifiant est manquant:
+  Une première approche consiste à rechercher les valeurs manquantes (`NA`) dans les variables de jointures. Le code suivant permet de calculer le nombre d'observations pour lesquelles l'identifiant est manquant :
 
   ```{r, eval=TRUE}
   sum(is.na(filosofi_com_2016$CODGEO))
   sum(is.na(cog_com_2019$com))
   ```
   
-  On voit ici que les variables de jointure ne contiennent aucun `NA` dans les deux tables. Toutefois, les valeurs manquantes peuvent prendre des formes plus complexes que `NA`: `0`, `.`, `999`... c'est pourquoi il est important de procéder à une inspection visuelle des variables de jointures. Pour ce faire, vous pouvez utilisez la fonction `unique()`, qui permet d'afficher la liste des valeurs qui apparaissent dans une variable.
+  On voit ici que les variables de jointure ne contiennent aucun `NA` dans les deux tables. Toutefois, les valeurs manquantes peuvent prendre des formes plus complexes que `NA` : `0`, `.`, `999`... c'est pourquoi il est important de procéder à une inspection visuelle des variables de jointures. Pour ce faire, vous pouvez utilisez la fonction `unique()`, qui permet d'afficher la liste des valeurs qui apparaissent dans une variable.
 
   ```{r, eval=TRUE}
   unique(filosofi_com_2016$CODGEO)
   ```
 
-- **Règle n°2: vérifier la présence de doublons dans les variables de jointure**.
+- **Règle n°2 : vérifier la présence de doublons dans les variables de jointure**.
 
   Si les variables de jointures contiennent un grand nombre de fois les mêmes valeurs, la jointure peut devenir très gourmande en ressources, voire irréalisable. Il est donc indispensable de repérer les doublons, et de les traiter si nécessaire. Les deux codes suivants calculent le nombre d'observations dans la table pour chaque valeur des variables de jointure, et affichent les premières lignes par nombre d'observations décroissant. Si la variable `nb_obs` est supérieure ou égale à 2, alors il y a des doublons. Le premier code est adapté si vous utilisez `tidyverse` pour manipuler des données, le second si vous utilisez `data.table`.
 
@@ -305,15 +305,15 @@ Avant de procéder à une jointure, il est essentiel de **vérifier la qualité 
   ```
   
 ::: {.conseil data-latex=""}
-Le fait que les variables de jointure contiennent des valeurs manquantes ou des doublons n'est pas nécessairement un problème. C'est à vous de déterminer si cela pose un problème. Voici deux questions que vous pouvez vous poser pour analyser la situation:
+Le fait que les variables de jointure contiennent des valeurs manquantes ou des doublons n'est pas nécessairement un problème. C'est à vous de déterminer si cela pose un problème. Voici deux questions que vous pouvez vous poser pour analyser la situation :
 
-- La (ou les) variable(s) de jointure doi(ven)t-elle(s) impérativement être renseignée(s) pour chaque observation? Si oui, il ne doit pas y avoir de valeurs manquantes.
-- La (ou les) variable(s) de jointure doivent-elles identifier de façon unique chaque observation? Si oui, il ne doit pas y avoir de doublons.
+- La (ou les) variable(s) de jointure doi(ven)t-elle(s) impérativement être renseignée(s) pour chaque observation ? Si oui, il ne doit pas y avoir de valeurs manquantes.
+- La (ou les) variable(s) de jointure doivent-elles identifier de façon unique chaque observation ? Si oui, il ne doit pas y avoir de doublons.
 :::
 
-+ **Règle n°3: vérifier la compatibilité des variables de jointures**. 
++ **Règle n°3 : vérifier la compatibilité des variables de jointures**. 
   
-  Il faut vérifier deux choses:
+  Il faut vérifier deux choses :
   
   - **Une jointure ne peut être réalisée avec `R` que si les variables de jointures sont de même type.** Il faut donc vérifier que c'est le cas. Les types de variables les plus fréquemment utilisées pour des jointures avec `R` sont `integer` (nombre entier), `character` (chaîne de caractères) et `factor` (catégorie). Vous pouvez utiliser la fonction `class` pour connaître le type d'une variable. Dans l'exemple suivant, on voit que les deux variables de jointures sont de type `character`.
   
@@ -348,7 +348,7 @@ Le fait que les variables de jointure contiennent des valeurs manquantes ou des 
 
 Après une jointure, il est essentiel de **vérifier que la jointure a bien produit le résultat attendu**.
 
-- **Règle n°4: vérifier que le nombre d'observations de la table de sortie est cohérent.** 
+- **Règle n°4 : vérifier que le nombre d'observations de la table de sortie est cohérent.** 
 
   Par exemple, dans le cas d'une jointure à gauche (_left join_) et si les variables de la table de droite ne présentent aucun doublon, alors la table de sortie doit avoir le même nombre d'observations que la table de gauche. Dans l'exemple qui suit, on voit que la table issue de la jointure comprend 35609 observations, tandis que la table communale de Filosofi n'en comprenait que 34932. La jointure présente donc un problème (due aux doublons dans la table du COG 2019).
 
@@ -361,7 +361,7 @@ Après une jointure, il est essentiel de **vérifier que la jointure a bien prod
   dim(table_jointe_tbl)
   ```
 
-- **Règle n°5: vérifier la présence éventuelle de valeurs manquantes (`NA`) dans les variables d'intérêt.** 
+- **Règle n°5 : vérifier la présence éventuelle de valeurs manquantes (`NA`) dans les variables d'intérêt.** 
 
   Vous pouvez par exemple utiliser la fonction `is.na()` qui permet de repérer les observations manquantes dans les variables provenant de la table de droite. S'il y a des valeurs manquantes, cela peut indiquer que cette variable contient des valeurs manquantes dans la table de droite, ou que certaines observations de la table de gauche n'ont pas de correspondances dans la table de droite. Dans l'exemple qui suit, on voit que le département est manquant pour plusieurs centaines d'observations de la table jointe.
 
@@ -376,11 +376,11 @@ Si vous faites des jointures avec `dplyr`, vous pouvez utiliser le _package_ [`t
 
 ## Pour en savoir plus {#RessourcesJointures}
 
-* Fiche [Manipuler des données avec le `tidyverse`];
-* Fiche [Manipuler des données avec `data.table`];
-* un [tutoriel sur les jointures en SQL](https://sql.sh/cours/jointures) (entièrement en français);
-* un [tutoriel de Lise Vaudor sur les jointures en `dplyr`](http://perso.ens-lyon.fr/lise.vaudor/combinaisons-et-jointures-de-tables-avec-dplyr);
-* la [section consacrée à `dplyr` de la formation de Julien Barnier](https://juba.github.io/tidyverse/10-dplyr.html);
-* les [formations du MTES](https://mtes-mct.github.io/parcours-r/);
+* Fiche [Manipuler des données avec le `tidyverse`] ;
+* Fiche [Manipuler des données avec `data.table`] ;
+* un [tutoriel sur les jointures en SQL](https://sql.sh/cours/jointures) (entièrement en français) ;
+* un [tutoriel de Lise Vaudor sur les jointures en `dplyr`](http://perso.ens-lyon.fr/lise.vaudor/combinaisons-et-jointures-de-tables-avec-dplyr) ;
+* la [section consacrée à `dplyr` de la formation de Julien Barnier](https://juba.github.io/tidyverse/10-dplyr.html) ;
+* les [formations du MTES](https://mtes-mct.github.io/parcours-r/) ;
 * ce [tutoriel sur les jointures avec data.table](https://rstudio-pubs-static.s3.amazonaws.com/52230_5ae0d25125b544caab32f75f0360e775.html).
 * la [vignette du _package_ `tidylog`](https://cran.r-project.org/web/packages/tidylog/readme/README.html)
