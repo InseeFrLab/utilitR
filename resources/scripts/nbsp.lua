@@ -32,7 +32,7 @@ Inlines = function(inlines)
 
   return inlines
 end
-
+--[[
 Quoted = function(elem)
   if elem.quotetype ~= "DoubleQuote" then return nil end
 
@@ -41,3 +41,4 @@ Quoted = function(elem)
   content[#content].c = content[#content].c .. "\u{00a0}\u{00bb}"
   return content
 end
+--]]
