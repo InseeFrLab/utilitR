@@ -1,18 +1,39 @@
- bookdown::gitbook:
-   css: css/style.css
-   config:
-     toc_depth: 2
-     toc:
-       before: |
-         <li><a href="./">Documentation R</a></li>
-       after: |
-         <li><a href="https://gitlab.com/linogaliana/documentationR" target="blank">Code source</a></li>
+bookdown::gitbook:
+  css:
+# - css/default-fonts.css
+  - css/default.css
+  - css/style.css
+  new_session: yes
+  config:
+    toc_depth: 2
+    toc:
+      before: |
+        <li><a href="./">Documentation R</a></li>
+      after: |
+        <li><a href="https://github.com/InseeFrLab/utilitR.git" target="blank">Code source</a></li>
 #     download: ["pdf", "epub"]
- bookdown::pdf_book:
-  includes:
-    in_header: preamble_draft.tex
-    #before_body: before.tex
-  latex_engine: xelatex
+bookdown::pdf_book:
+ includes:
+   in_header: preamble_draft.tex
+   #before_body: before.tex
+ latex_engine: xelatex
 #  citation_package: natbib
-  keep_tex: yes
+ keep_tex: yes
 # bookdown::epub_book: default
+pagedown::html_paged:
+  css:
+  - css/default-fonts.css
+  - css/default-page.css 
+  - css/default.css
+  - css/style.css
+  new_session: yes
+  toc: true
+  toc_depth: 2
+  self_contained: false
+  copy_resources: true
+  front_cover: "resources/logo-utilitR.svg"
+  pandoc_args: ["--lua-filter", "resources/scripts/nbsp.lua"]
+  extra_dependencies:
+  - !expr rmarkdown::html_dependency_font_awesome()
+#  knit: 
+#    pagedown::chrome_print
