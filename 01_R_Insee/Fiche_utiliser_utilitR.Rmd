@@ -22,17 +22,11 @@ texte_recommandation <- "Ce paragraphe présente succinctement les outils et les
 texte_conseil        <- "Ce paragraphe détaille les bonnes pratiques à adopter."
 texte_remarque       <- "Ce paragraphe donne des informations supplémentaires ou formule une mise en garde."
 
-if (knitr::is_latex_output()) {
-  symb  <- 
-    c("{\\Huge \\color{Red} \\faHandPointRight}", 
-      "{\\Huge \\color{Cerulean} \\faLightbulb}", 
-      "{\\Huge \\color{Yellow} \\faInfoCircle}")
-} else if (knitr::is_html_output()) {
-  symb  <- 
-        c(fa("hand-point-right", fill = "rgba(220, 53, 69, 1)", height = 40),
-        fa("lightbulb", fill = "rgba(255, 193, 7, 1)", height = 40),
-        fa("info-circle", fill = "rgba(0, 123, 255, 1)", height = 40))
-}
+
+symb  <- 
+  c(fa("hand-point-right", fill = "rgba(220, 53, 69, 1)", height = 40),
+    fa("lightbulb", fill = "rgba(255, 193, 7, 1)", height = 40),
+    fa("info-circle", fill = "rgba(0, 123, 255, 1)", height = 40))
 
 dt <- 
   as.data.frame(list(
@@ -46,25 +40,15 @@ dt <-
   )
   )
 
-if (knitr::is_latex_output()) {
-  output <- 
-    dt %>% 
-    kable(escape = FALSE, position = "center", align="ccl") %>%
-  kable_classic_2(full_width = F)
-  row_spec(output, 0, bold=TRUE, align = "c") %>%
-    column_spec(1, width = "3cm", bold = TRUE) %>%
-    column_spec(2, width = "2cm") %>% 
-    column_spec(3, width = "10cm")
-} else if (knitr::is_html_output()) {
-  output <- 
-    dt %>% 
-    kable(escape = F, position = "center", full_width = F, align="ccl") %>%
+
+output <- 
+  dt %>% 
+  kable(escape = F, position = "center", full_width = F, align="ccl") %>%
   kable_classic_2(full_width = F, html_font = '"Arial", arial, helvetica, sans-serif')
-  column_spec(output, 1, width = "3cm", bold = TRUE) %>%
-    column_spec(2, width = "2cm") %>% 
-    column_spec(3, width = "10cm") %>% 
-    row_spec(0,bold=TRUE, align = "c")
-}
+column_spec(output, 1, width = "3cm", bold = TRUE) %>%
+  column_spec(2, width = "2cm") %>% 
+  column_spec(3, width = "10cm") %>% 
+  row_spec(0,bold=TRUE, align = "c")
 ```
 
 ## Des exemples reproductibles
@@ -102,17 +86,6 @@ Voici la liste des tables disponibles dans `doremifasolData` :
 ```{r "contenu_doremifasolData", echo = FALSE, results = "asis"}
 tables <- data(package = "doremifasolData")$result
 
-if (knitr::is_latex_output()) {
-output <- 
-  knitr::kable(
-  as.data.frame(list("Table" = tables[, "Item"], "Description" = tables[, "Title"])),
-  format = "latex",
-  escape = TRUE, position = "center", align="cl") %>%
-  kable_classic_2(full_width = F)
-  column_spec(output, 1, width = "4cm") %>%
-    column_spec(2, width = "13cm") %>% 
-    row_spec(0, bold=TRUE, align = "c")
-} else if (knitr::is_html_output()) {
 output <- 
   knitr::kable(
   as.data.frame(list("Table" = tables[, "Item"], "Description" = tables[, "Title"])),
@@ -122,7 +95,6 @@ output <-
 column_spec(output, 1, width = "4cm") %>%
     column_spec(2, width = "13cm") %>% 
     row_spec(0, bold=TRUE, align = "c")
-}
 
 ```
 
