@@ -81,11 +81,12 @@ Quelques remarques sur les options de `read_csv()` :
 Exemple : si on importe une variable comme nombre entier et une variable comme caractère, on écrit : `col_types = c(var1 = col_integer(), var2 = col_character())`.
 * `read_csv()` importe par défaut toutes les colonnes du fichier. Il est possible de sélectionner les colonnes qu'on veut importer avec certaines options, mais l'usage de `read_csv()` devient vraiment complexe. Si vous avez besoin de sélectionner des colonnes, **il est fortement recommandé d'utiliser `fread()`** plutôt que `read_csv` (voir plus bas).
 
-**Exemple** : on veut importer le fichier des communes du code officiel géographique (version 2019, [disponible ici](https://www.insee.fr/fr/information/3720946)), en déclarant que le fichier est encodé en UTF-8 et en imposant que le code commune soit lu comme une chaîne de caractères et le code région comme un nombre entier. On écrit le code suivant : 
+**Exemple** : on veut importer le fichier des communes du code officiel géographique (version 2019, [disponible ici](https://www.insee.fr/fr/information/3720946)), en déclarant que le fichier est encodé en UTF-8 et en imposant que le code commune (`com`) soit lu comme une chaîne de caractères et le code région (`reg`) comme un nombre entier. On écrit le code suivant : 
 
 ```{r, eval = FALSE}
+# Dans cet exemple, il faut remplacer "mon_IDEP" par votre IDEP
 library(readr)
-communes <- read_csv("D:/K2KFED/communes-01012019.csv", 
+communes <- read_csv("Z:/mon_IDEP/communes-01012019.csv", 
                      locale = locale(encoding ="UTF-8"),
                      col_types = c(com = col_character(),
                                    reg = col_integer())
@@ -149,19 +150,21 @@ Quelques remarques sur les options de `fread()` :
 * `fread()` essaie par défaut de deviner le type des colonnes (*integer* pour les nombres entiers, *character* pour les chaînes de caractères...). L'option `colClasses` permet de choisir le type des colonnes, et doit égale à un vecteur dont chaque élément est de la forme `nom_variable = "type"`. Exemple : `colClasses = c(var1 = "character", var2 = "logical", var4 = "double")` ;
 * l'option `stringsAsFactors = TRUE` peut ralentir sensiblement l'importation des données ; il faut l'utiliser avec circonspection.
 
-Exemple 1 : on veut à nouveau importer le fichier des communes du code officiel géographique, en déclarant que le fichier est encodé en UTF-8 et en imposant que le code commune soit lu comme une chaîne de caractères et le code région comme un nombre entier. On écrit le code suivant :
+Exemple 1 : on veut à nouveau importer le fichier des communes du code officiel géographique, en déclarant que le fichier est encodé en UTF-8 et en imposant que le code commune (`com`) soit lu comme une chaîne de caractères et le code région (`reg`) comme un nombre entier. On écrit le code suivant :
 
 ```{r, eval = FALSE}
-communes <- fread("D:/K2KFED/communes-01012019.csv",
+# Dans cet exemple, il faut remplacer "mon_IDEP" par votre IDEP
+communes <- fread("Z:/mon_IDEP/communes-01012019.csv",
                   colClasses = c(com = "character",
                                  reg = "integer"),
                   encoding = "UTF-8")
 ```
 
-Exemple 2 : on veut réaliser la même importation que précédemment, mais en sélectionnant uniquement le code commune, le nom de la commune et la région. On écrit le code suivant :
+Exemple 2 : on veut réaliser la même importation que précédemment, mais en sélectionnant uniquement le code commune (`com`), le nom de la commune (`libelle`) et la région (`reg`). On écrit le code suivant :
 
 ```{r, eval = FALSE}
-communes <- fread("D:/K2KFED/communes-01012019.csv",
+# Dans cet exemple, il faut remplacer "mon_IDEP" par votre IDEP
+communes <- fread("Z:/mon_IDEP/communes-01012019.csv",
                   select = c("com", "libelle", "reg"),
                   colClasses = c(com = "character",
                                  reg = "integer"),
