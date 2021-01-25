@@ -9,7 +9,7 @@ convert_extension <- function(ext){
 upper_extension <- function(ext){
   pattern <- paste0(ext, '$')
   from <- list.files(pattern = pattern, recursive = TRUE)
-  if (from != ''){
+  if (identical(from, character(0))){
     stop(
       sprintf("Les fichiers suivants ont une majuscule:\n %s",
               paste(from, collapse = ";\n  "))
