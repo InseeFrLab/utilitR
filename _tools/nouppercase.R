@@ -9,10 +9,10 @@ convert_extension <- function(ext){
 upper_extension <- function(ext){
   pattern <- paste0(ext, '$')
   from <- list.files(pattern = pattern, recursive = TRUE)
-  if (length(from)>1L){
+  if (from != ''){
     stop(
-      sprintf("Les fichiers suivants ont une majustcule %s",
-              paste(from, collapse = "; "))
+      sprintf("Les fichiers suivants ont une majuscule:\n %s",
+              paste(from, collapse = ";\n  "))
     )
   } else{
     message("Pas de probleme d'extension")
