@@ -1,0 +1,29 @@
+on: [pull_request]
+
+name: test compilation PDF
+
+jobs:
+  build:
+    if: "!contains(github.event.commits[0].message, '[skip ci]')"
+    runs-on: ubuntu-latest
+    container: inseefrlab/utilitr:latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@master
+      - name: Install Dependencies
+        env:
+          GITHUB_PAT: ${{ secrets.PAT }}
+        run: |
+          Rscript -e "install.packages(c('remotes'))"
+          Rscript -e "remotes::install_github('rstudio/pagedown')"
+          Rscript -e "remotes::install_deps(dependencies = TRUE)"
+      - name: Render Book
+        run: |
+          mkdir _pagedown_output -p
+          Rscript -e "bookdown::render_book('index.Rmd', output_format = 'pagedown::html_paged', output_file = '_pagedown_output/index.html')"
+          Rscript -e "pagedown::chrome_print('_pagedown_output/index.html', '_pagedown_output/DocumentationR.pdf', extra_args = c('--disable-gpu', '--no-sandbox'), timeout = 600, options = list(transferMode = 'ReturnAsStream'), verbose = 1)"
+      - uses: actions/upload-artifact@v2
+        with:
+          name: DocumentationR_pagedown
+          path: _pagedown_output/DocumentationR.pdf
+          retention-days: 5

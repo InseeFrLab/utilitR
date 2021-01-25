@@ -1,12 +1,14 @@
-# `UtilitR` : une documentation utile pour `R`  <a href='https://www.utilitr.org'><img src='resources/logo-utilitR.svg' align="right" height="139px" /></a>
+# `utilitR` : une documentation utile pour `R`  <a href='https://www.utilitr.org'><img src='resources/logo-utilitR.svg' align="right" height="139px" /></a>
 
 <!-- badges: start -->
 [![build-doc Actions Status](https://github.com/InseeFrLab/utilitR/workflows/bookdown/badge.svg)](https://github.com/InseeFrLab/utilitR/actions)
+[![build-doc Actions Status](https://github.com/InseeFrLab/utilitR/workflows/pagedown%20PDF/badge.svg)](https://github.com/InseeFrLab/utilitR/actions)
+[![build-doc Actions Status](https://github.com/InseeFrLab/utilitR/workflows/construction%20image%20docker/badge.svg)](https://github.com/InseeFrLab/utilitR/actions)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gl/linogaliana%2FdocumentationR/binder?urlpath=rstudio)
 <!-- badges: end -->
 
  
-Code source pour le projet `UtilitR`, documentation collaborative `R` 
+Code source pour le projet `utilitR`, documentation collaborative `R` 
 à l'usage des agents de l'Insee. Elle a vocation à être validée annuellement 
 afin de produire un guide des bonnes pratiques et des fiches techniques.
 
@@ -16,9 +18,9 @@ Il est également possible de télécharger le fichier au format `pdf`
 ou les  fichiers `html` pour les consulter hors-connexion en cliquant
 [ici](https://gitlab.com/linogaliana/documentationR/-/jobs/artifacts/master/download?job=bookdown)
 
-# Présentation du projet `UtilitR`
+# Présentation du projet `utilitR`
 
-## Objectifs de la documentation `UtilitR`
+## Objectifs de la documentation `utilitR`
 
 **Cette documentation s'adresse à tous utilisateur de `R` dans le cadre d'un usage courant pour l'analyse de données.** Elle est conçue pour aider les utilisateurs à réaliser des traitements statistiques usuels avec `R` et à produire des sorties (graphiques, cartes, documents). Cette documentation présente succinctement les outils les plus adaptés à ces tâches, et oriente les agents vers les ressources documentaires pertinentes. En revanche, elle n'aborde pas les outils les plus avancés, notamment ceux utilisés dans un cadre de développement logiciel.
 
@@ -33,9 +35,9 @@ Deux points importants sont à noter:
 * **Cette documentation recommande les outils et les *packages* les plus adaptés au contexte d'utilisation de `R` à l'Insee**. Ces recommandations ne sont pas nécessairement adaptées à d'autres contextes, et pourront évoluer lorsque ce contexte évoluera.
 * **Cette documentation recommande d'utiliser `R` avec `Rstudio`**, qui apparaît comme la solution la plus simple et la plus complète pour un usage courant de `R`, et qui est par ailleurs le choix effectué par l'Insee.
 
-##  Place du projet `UtilitR` au sein de l'Insee
+##  Place du projet `utilitR` au sein de l'Insee
 
-**Le projet `UtilitR` est porté par les agents du réseau LS<sup>2</sup> (Logiciels statistiques en Libre Service) de l'Insee.** La documentation `UtilitR` s'attache à être cohérente avec les recommandations émises par le comité de certification des _packages_ `R` (COPS).
+**Le projet `utilitR` est porté par les agents du réseau LS<sup>2</sup> (Logiciels statistiques en Libre Service) de l'Insee.** La documentation `UtilitR` s'attache à être cohérente avec les recommandations émises par le comité de certification des _packages_ `R` (COPS).
 
 ## Comment contribuer à la documentation
 

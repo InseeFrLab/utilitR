@@ -414,8 +414,16 @@ contributeur corrige sa proposition.
 * Les extensions des images doivent être en minuscules. Cela veut dire qu'il faut éviter l'extension
 `.PNG` que `Windows` génère parfois (notamment via l'outil capture). Si un 
 ou plusieurs fichiers `.PNG` ont été générés,
-vous pouvez utiliser ce [*snippet* de code `R`](https://gitlab.com/linogaliana/documentationR/snippets/1954584) pour le convertir en 
-`.png`.
+`Github` vous enverra une informera d'une erreur de la manière suivante:
+
+![](./pics/contributing/PR1.png)
+
+vous pouvez naviguer dans le fichier `_tools/nouppercase.R`, tout sélectionner
+et appuyer sur `CTRL`+ `Entrée` pour exécuter le code. Cela vous donnera la
+liste des fichiers incriminés. Avec la fonction 
+`convert_extension("PNG")` ces fichiers seront renommés avec la bonne
+extension. Ne pas oublier de faire un commit et un push pour envoyer ces
+modifications sur `Github`. 
 
 ### Bonnes pratiques de codage en `R`
 

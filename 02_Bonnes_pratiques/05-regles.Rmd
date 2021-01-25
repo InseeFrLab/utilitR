@@ -1,8 +1,8 @@
-# Comment renforcer la réplicabilité?
+# Comment renforcer la réplicabilité ?
 
 ## Conflits entre *packages*
 
-**Lorsqu'on utilise une fonction issue d'un *package*, il est recommandé de mettre le nom du *package* suivi de `::`.** Cela alourdit quelque peu le code mais permet à la personne reprenant celui-ci de comprendre quelle fonction issue de quel *package* est utilisée. En effet, cela permet d'être certain que l'on exécute le même script que la personne ayant écrit le code, indépendamment de son environnement. Par exemple, le code suivant:
+**Lorsqu'on utilise une fonction issue d'un *package*, il est recommandé de mettre le nom du *package* suivi de `::`.** Cela alourdit quelque peu le code mais permet à la personne reprenant celui-ci de comprendre quelle fonction issue de quel *package* est utilisée. En effet, cela permet d'être certain que l'on exécute le même script que la personne ayant écrit le code, indépendamment de son environnement. Par exemple, le code suivant :
 
 ```{r include = FALSE, eval = TRUE}
 try(detach("package:MASS", unload=TRUE))
@@ -16,7 +16,7 @@ library(MASS)
 cars %>% select(dist) %>% head()
 ```
 <!----</div>----->
-produira l'erreur suivante:
+produira l'erreur suivante :
 <!----<div class="fold o">------>
 ```{r eval = TRUE, error=TRUE, message = FALSE, echo = FALSE}
 library(dplyr)
@@ -25,7 +25,7 @@ cars %>% select(dist) %>% head()
 ```
 <!----</div>----->
 
-alors que le code suivant:
+alors que le code suivant :
 
 ```{r include = FALSE, eval = TRUE}
 try(detach("package:MASS", unload=TRUE))
@@ -50,7 +50,7 @@ cars %>% select(dist) %>% head()
 ```
 <!---</div>----->
 
-Le code est le même dans les deux cas à l'exception de l'ordre dans lequel les *packages* sont chargés. Pour éviter cela, la syntaxe avec `::` est préférable:
+Le code est le même dans les deux cas à l'exception de l'ordre dans lequel les *packages* sont chargés. Pour éviter cela, la syntaxe avec `::` est préférable :
 <!----<div class="fold o">----->
 ```{r eval = T}
 cars %>% dplyr::select(dist)  %>% head()
@@ -62,14 +62,14 @@ fonctionnera quels que soient les *packages* chargés en mémoire et l'ordre dan
 
 <span style="color:DarkBlue">**En production**</span> L'utilisation de l'opérateur `::` est particulièrement importante en production où le code doit être robuste quelque soit l'environnement d'un utilisateur. Une bonne pratique est de systématiquement associer une chaîne de production à une série de fonctions gérées sous forme de *packages* (cf. formation INSEE <span style="color:DarkBlue">**Travail collaboratif sous R**</span>).
 
-Les utilisateurs de `Python` sont plus habitués à cette syntaxe rigoureuse:
+Les utilisateurs de `Python` sont plus habitués à cette syntaxe rigoureuse :
 
 ```{r, eval = FALSE}
 # Code Python
 import numpy as np
 np.array([1, 2, 3])
 ```
-Il n'y a pas d'ambiguïté ici: `np.array` renvoie à la fonction `array` dans l'espace `np` qui est un raccourci comme on l'a déclaré en ligne 1 de `numpy`. Adopter une approche similaire en `R` avec les `::` est fondamental en équipe. 
+Il n'y a pas d'ambiguïté ici : `np.array` renvoie à la fonction `array` dans l'espace `np` qui est un raccourci comme on l'a déclaré en ligne 1 de `numpy`. Adopter une approche similaire en `R` avec les `::` est fondamental en équipe. 
 
 ## Utiliser l'écriture vectorielle
 
@@ -80,7 +80,7 @@ Lorsqu'on doit appliquer de multiples reprises une fonction, on utilisera les fo
 
 ## Gérer la casse
 
-Si vous ne souhaitez pas avoir trop de problème de casse, choisissez la norme de code en underscore (`_`) et lorsque vous importez des données, transformez tous les noms de variables en minuscules (à l'aide de la commande `tolower`). Exemple: `names(mon_dataframe) <- tolower(names(mon_dataframe))`.
+Si vous ne souhaitez pas avoir trop de problème de casse, choisissez la norme de code en underscore (`_`) et lorsque vous importez des données, transformez tous les noms de variables en minuscules (à l'aide de la commande `tolower`). Exemple : `names(mon_dataframe) <- tolower(names(mon_dataframe))`.
 
 ## A éviter
 
