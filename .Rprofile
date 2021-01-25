@@ -91,8 +91,14 @@ if (!dir.exists(dossier_images_compressees)) {
   dir.create(dossier_images_compressees)
 }
 # Copier les images si elles ne sont pas déja dans le dossier
+<<<<<<< HEAD
 file.copy(list.files(dossier_images, full.names = TRUE), dossier_images_compressees, recursive=TRUE, overwrite = TRUE)
 
+=======
+invisible(
+  file.copy(list.files(dossier_images, full.names = TRUE), dossier_images_compressees, recursive=TRUE, overwrite = TRUE)
+)
+>>>>>>> master
 compresser_image <- 
   function(file_in, 
            file_out = NA, ratio_compression = 2, 
@@ -129,8 +135,8 @@ compresser_image <-
         image_resized      <- image_raw
       }
       magick::image_write(image = image_resized, 
-                  path = file_out, 
-                  format = "png")
+                          path = file_out, 
+                          format = "png")
     }
   }
 
@@ -141,3 +147,30 @@ include_image <- function(x, compression = TRUE, ratio_compression = 2, ...) {
   }
   knitr::include_graphics(sub(dossier_images, dossier_images_compressees, x), ...)    
 }
+
+
+reminder_image <- function(path = "moncheminperso"){
+  cat(
+    sprintf(
+      paste(
+        "```{r, echo = FALSE}",
+        "include_image(\"%s\")",
+        "```",
+        sep = "\n"
+      ), path)
+  )
+}
+
+
+message(
+  cat(
+    c("Projet source de la documentation utilitR",
+      "-----------------------------------------",
+      "",
+      "Pour pr\u00E9visualiser la version web de l'ouvrage: ",
+      "   * Option 1: utiliser l'onglet 'Build' dans Rstudio;",
+      "   * Option 2: taper dans la commande R: bookdown::render_book(\"index.Rmd\", output_dir = \"_public\")"),
+    sep = "\n"
+  )
+)
+
