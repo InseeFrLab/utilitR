@@ -414,6 +414,10 @@ contributeur corrige sa proposition.
 * Les extensions des images doivent être en minuscules. Cela veut dire qu'il faut éviter l'extension
 `.PNG` que `Windows` génère parfois (notamment via l'outil capture). Si un 
 ou plusieurs fichiers `.PNG` ont été générés,
+`Github` vous enverra une informera d'une erreur de la manière suivante:
+
+![](./pics/contributing/PR1.png)
+
 vous pouvez utiliser ce [*snippet* de code `R`](https://gitlab.com/linogaliana/documentationR/snippets/1954584) pour le convertir en 
 `.png`.
 
