@@ -90,15 +90,10 @@ dossier_images_compressees <- './pics_resized'
 if (!dir.exists(dossier_images_compressees)) { 
   dir.create(dossier_images_compressees)
 }
-# Copier les images si elles ne sont pas déja dans le dossier
-<<<<<<< HEAD
-file.copy(list.files(dossier_images, full.names = TRUE), dossier_images_compressees, recursive=TRUE, overwrite = TRUE)
-
-=======
 invisible(
   file.copy(list.files(dossier_images, full.names = TRUE), dossier_images_compressees, recursive=TRUE, overwrite = TRUE)
 )
->>>>>>> master
+
 compresser_image <- 
   function(file_in, 
            file_out = NA, ratio_compression = 2, 
