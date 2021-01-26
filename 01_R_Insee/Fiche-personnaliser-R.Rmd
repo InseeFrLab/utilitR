@@ -33,9 +33,17 @@ Néanmoins, et pour simplifier grandement, la procédure se déroule en trois te
 3. R prépare la session, avec les informations récupérées précédemment, mais également d'autres, comme par exemple les données qu'il aurait pu conserver dans un `.Rdata`, puis il charge les packages de base, avant par exemple de charger l'historique des commandes (s'il existe). C'est grâce à ce dernier temps que R recharge les données et l'historique après s'être interrompu inopunément.
 
 
-Sans complexifier outre mesure, sachez que les deux premiers temps se décomposent eux-mêmes en deux sous-temps : il est possible de définir des fichiers *environment* ou *profile* plus génériques que d'autres (c'est le `Renviron.site` ou `Rprofile.site`).
+Sans complexifier outre mesure, sachez que les deux premiers temps se décomposent eux-mêmes en deux sous-temps : il est possible de définir des fichiers *environment* ou *profile* plus génériques que d'autres (c'est le `Renviron.site` ou `Rprofile.site`). 
 
 D'autres fichiers existent comme le `.Rhistory`qui contient l'historique des commandes, notamment celles réalisées à la console. Ce fichier peut également contenir des informations sensibles, il est donc rare de le partager, mais il est possible de le conserver. 
+
+Selon les projets, les fichiers *environment* et *profile* peuvent avoir besoin d'être différents. Pour ce faire, `R` priorise le chargement de ces fichiers dans :l'ordre suivant 
+
+1. Les fichiers présents dans un `Rproject` sont prioritaires.
+2. A défault, les fichiers présents dans le _Home_ (sous Windows, ce sera typiquement _Mes documents_).
+3. A défault, les fichiers présents dans le répertoire d'installation de `R`.
+
+Attention, R ne travaille qu'avec un unique fichier *environment* et un unique fichier *profile*. Créer un nouveau fichier *environment* dans un projet désactivera donc l'éventuel fichier présent dans le _Home_. 
 
 ### .Renviron
 
@@ -87,7 +95,7 @@ Il est toutefois possible de modifier les paramètres de son environnement ou en
 ::: {.remarque data-latex=""}
 La navigation sur Internet depuis un poste de l'Insee, comme dans de nombreuses institutions, est contrôlée par un *proxy* (intermédiaire entre le *web* et un ordinateur) qu'il faut paramétrer pour accéder à Internet.
 
-Pour se faire, il est recommandé de récupérer l'adresse du proxy interne en réalisant la commande suivante :
+Pour ce faire, il est recommandé de récupérer l'adresse du proxy interne en réalisant la commande suivante :
 
 ```{r,eval=FALSE}
 curl::ie_get_proxy_for_url()
@@ -155,7 +163,7 @@ Si vous réalisez des opérations spécifiques dans votre `.Rprofile`, il est co
 
 ## Quelques bonnes pratiques
 
-La personnalisation de R est une opération sensible qui ne doit pas interférer avec les obligations de reproductibilité des travaux statistiques. Il convient de réserver cette personnalisation à des modifications sans impact sur les calculs età des informations ayant vocation à ne pas être diffusées : 
+La personnalisation de R est une opération sensible qui ne doit pas interférer avec les obligations de reproductibilité des travaux statistiques. Il convient de réserver cette personnalisation à des modifications sans impact sur les calculs et à des informations ayant vocation à ne pas être diffusées : 
 
 * pour des raisons de sécurité : pour séparer les informations sensibles (comme les identifiants d'API ou les paramètres de proxy) du code librement partagé ;
 * pour des raisons d'infrastructure : pour modifier les chemins vers des executables, en raison des droits limités sur les machines.
