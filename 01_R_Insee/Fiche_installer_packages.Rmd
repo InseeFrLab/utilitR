@@ -1,6 +1,6 @@
 ## Comment installer un package ?
 
-Un package est une extension des fonctionnalités de base de R. Il est constitué d'objets R (la plupart du temps des fonctions, parfois des données) empaquetés en un seul fichier, dans le but d'être partagé facilement entre utilisateurs.
+Un package est une extension des fonctionnalités de base de `R`. Il est constitué d'objets R (la plupart du temps des fonctions, parfois des données) empaquetés en un seul fichier, dans le but d'être partagé facilement entre utilisateurs.
 
 Les packages sont au coeur de la logique collaborative de `R`. Ils permettent de bénéficier des contributions d'autres utilisateurs de R et de partager avec d'autres des fonctionnalités utiles. Il est donc primordial de savoir où chercher les packages et comment les installer.
 
@@ -74,11 +74,57 @@ install.packages("package1")
 
 ### Type de packages
 
-<!-- à compléter -->
+<!-- à compléter (source vs win.binary et Rtools) -->
 
 ### Installer depuis une forge logicielle (GitHub, GitLab...)
 
-<!-- à compléter -->
+Certains packages sont mis à disposition sur une [forge logicielle](https://fr.wikipedia.org/wiki/Forge_%28informatique%29), par exemple GitHub ou GitLab.
+
+<!--
+Raisons pour lesquelles tous les packages pas sur le CRAN
+
+- seulement les versions stables
+- processus de soumission plus complexe, effort de maintenance
+- package trop spécifique (exemple : outil purement Insee)
+- ...
+-->
+
+Le package `remotes` a pour la finalité principale d'installer des packages depuis des forges logicielles.
+
+```r
+library(remotes)
+```
+
+Pour installer un package depuis une forge, utiliser la fonction dédiée : `install_github` pour GitHub, `install_gitlab` pour GitLab, `install_svn` pour SVN, etc...
+
+Exemples :
+
+```r
+install_github("InseeFrLab/doremifasolData")
+# installe depuis `https://github.com/InseeFrLab/doremifasolData`
+```
+
+```r
+install_gitlab("py_b/funprog")
+# installe depuis `https://gitlab.com/py_b/funprog`
+#   TODO: chercher un package plus connu !
+```
+
+Seul le premier argument (`repo`) est obligatoire. Il est formé nom de l'utilisateur sur la forge suivi du nom du dépôt. Le package installé contiendra les modifications les plus récentes. Installer depuis une forge permet ainsi de récupérer la version de développement d'un package (seules les versions stables sont en général soumises au CRAN). Pour installer un package tel qu'il était à un moment donné, il est également possible de faire suivre le nom du dépôt par une référence à un commit, un tag ou une branche. Exemples : `install_gitlab("py_b/funprog@v-0.3.0")`
+
+Les fonctions créeront une archive temporaire (.tar.gz) et installeront le package à partir de celle-ci. Pour les raisons évoquées plus haut, ceci implique que `Rtools` soit disponible (sous Windows).
+
+Par défaut, ces fonctions installent depuis la forge officielle (github.com pour Github, gitlab.com pour GitLab, ...). Il est aussi possible pour une entreprise ou organisation de créer sa propre instance de forge. Ainsi, l'Insee dispose de la forge https://gitlab.insee.fr. Pour modifier l'instance où sera recherché le dépôt, utiliser l'argument `host` :
+
+```r
+install_gitlab(repo = "py_b/fmtsas", host = "gitlab.insee.fr")
+# installe depuis `https://gitlab.insee.fr/py_b/fmtsas`
+#   TODO: chercher un autre package ?
+```
+
+::: {.remarque data-latex=""}
+Sur AUS, l'installation depuis des dépôt hébergés sur internet n'est pas possible. En revanche, on peut accéder à gitlab.insee.fr.
+:::
 
 ### Installer depuis un fichier
 
