@@ -6,22 +6,22 @@ Les fonctions de base `R` utilisent des points dans les noms de fonctions ( `con
 
 ## Noms des fichiers
 
-<span style="color:DarkBlue">**Extensions**</span> Il existe plusieurs types de fichiers en `R`, chacun avec son extension:
+<span style="color:DarkBlue">**Extensions**</span> Il existe plusieurs types de fichiers en `R`, chacun avec son extension :
 
-* l'extension est `.R` pour les scripts;
-* l'extension est `.RData` pour les fichiers de données (attention à la casse dans ce cas);
-* Il est également possible d'enregistrer un objet `R` dans un format `.rds`;
+* l'extension est `.R` pour les scripts ;
+* l'extension est `.RData` pour les fichiers de données (attention à la casse dans ce cas) ;
+* Il est également possible d'enregistrer un objet `R` dans un format `.rds` ;
 * Les fichiers `Rmarkdown` sont enregistrés sous l'extension `.Rmd`.
 
 <span style="color:DarkBlue">**Versions**</span>
 
-* **L'utilisation d'outils de contrôle de version tel que `git` est recommandée et est très bien intégrée dans `Rstudio`.** L'intérêt de `git` est de permettre un suivi des évolutions du fichier bloc par bloc et contributeur par contributeur. Dans ce cas, il n'est pas nécessaire de millésimer les fichiers, l'historique des modifications d'un fichier étant géré par `git` (cf. Section [Contrôle de version](#git)). Pour le *versioning*, on pourra également utiliser le Gitlab interne de la Drees ou de l'Insee. 
+* **L'utilisation d'outils de contrôle de version tel que `git` est recommandée et est très bien intégrée dans ` RStudio`.** L'intérêt de `git` est de permettre un suivi des évolutions du fichier bloc par bloc et contributeur par contributeur. Dans ce cas, il n'est pas nécessaire de millésimer les fichiers, l'historique des modifications d'un fichier étant géré par `git` (cf. Section [Contrôle de version](#git)). Pour le *versioning*, on pourra également utiliser le Gitlab interne de la Drees ou de l'Insee. 
 * **En l'absence de système de contrôle de version (`git` ou `SVN`), il est recommandé de millésimer les fichiers (scripts et données).** Pour les données, on millésimera systématiquement avec la date (pour les agents de la Drees, la fonction `rdrees::exporter_data` propose de le faire automatiquement). 
 
 <span style="color:DarkBlue">**Organisation**</span> 
 
 * **Pour les scripts, il est préférable d'indiquer en préfixe le numéro du script dans la série de scripts à exécuter (si cela s'applique) et en suffixe le millésimage.** On peut ajouter le suffixe *"\_dev"* pour les scripts en développement, et le suffixe *"\_prod"* pour les scripts utilisés en production (à ne pas modifier). Ainsi, si un script est nommé `1_import_donnees_vdev_20190417.R`, `1` indique le numéro du script (c'est le premier à exécuter dans le projet), `vdev` indique qu'il s'agit d'une version de développement et `20190417` indique le millésime.
-* Pour millésimer automatiquement les fichiers de données en sortie d'un script, on peut utiliser le modèle de script suivant:
+* Pour millésimer automatiquement les fichiers de données en sortie d'un script, on peut utiliser le modèle de script suivant :
 
 ```{r exemple millesime, eval = F}
 # parametres ---------------------------------------------
@@ -36,9 +36,9 @@ save(fichier, file = paste0(chemin_donnees, "fichier_", date, ".RData"))
 
 On pourra sauvegarder des objets intermédiaires au cours du script. Pour s'assurer de la reproductibilité des scripts, l'intégralité du code devra être réexécuté *in fine*. 
 
-<span style="color:DarkBlue">**Bonnes pratiques**</span>:
+<span style="color:DarkBlue">**Bonnes pratiques**</span> :
 
-* Ne pas utiliser de symboles spéciaux dans le nom du fichier (`-.,;:\/$`^`, caractères accentués, etc.);
+* Ne pas utiliser de symboles spéciaux dans le nom du fichier (`-.,;:\/$`^`, caractères accentués, etc.) ;
 * Privilégier les *underscore* (par exemple `donnees_menages`) au CamelCase (consiste à donner un nom en mettant une majuscule à chaque début de mot : par exemple `donneesMenages`). Si vous préférez le CamelCase, utilisez-le systématiquement dans tout le script pour uniformiser le code.
 
 ## Noms des variables
@@ -47,8 +47,8 @@ On pourra sauvegarder des objets intermédiaires au cours du script. Pour s'assu
 
 <span style="color:DarkBlue">**Bonnes pratiques**</span> 
 
-* **Ne pas utiliser `T` ou `F` pour nommer des variables** (car en plus d'être rarement des noms explicites ce sont les abréviations des booléens TRUE et FALSE);
-* **Ne pas utiliser de noms qui sont déjà des fonctions de base `R`** (`mean` par exemple). Cela ne génère pas toujours d'erreur mais cela évite des erreurs difficilement détectables! Voici un exemple d'erreur difficile à détecter:
+* **Ne pas utiliser `T` ou `F` pour nommer des variables** (car en plus d'être rarement des noms explicites ce sont les abréviations des booléens TRUE et FALSE) ;
+* **Ne pas utiliser de noms qui sont déjà des fonctions de base `R`** (`mean` par exemple). Cela ne génère pas toujours d'erreur mais cela évite des erreurs difficilement détectables ! Voici un exemple d'erreur difficile à détecter :
 
 ```{r exemple T}
 
@@ -69,9 +69,9 @@ TRUE == T
 
 <span style="color:DarkBlue">**Nom de la fonction**</span> **Il est recommandé d'utiliser des verbes pour nommer une fonction**. Il est préférable de nommer une fonction en fonction de ce qu'elle fait. Privilégier les `underscores` (par exemple `calculer_taxes`) au CamelCase (par exemple calculerTaxes). Si vous préférez le camelCase, utilisez-le systématiquement dans tout le script pour uniformiser le code.
 
-<span style="color:DarkBlue">**Nom des arguments**</span> **Il est préférable de nommer les arguments explicitement dans un appel de fonction**, sauf dans les cas où il ne peut y avoir d'équivoque. Exemple: `calculer_taxes(revenu = 10000, taux = 0.2)` plutôt que `calculer_taxes(10000, 0.2)`. Si on choisit de ne pas nommer les arguments dans un appel de fonction, il faut alors respecter l'*ordre* des arguments.
+<span style="color:DarkBlue">**Nom des arguments**</span> **Il est préférable de nommer les arguments explicitement dans un appel de fonction**, sauf dans les cas où il ne peut y avoir d'équivoque. Exemple : `calculer_taxes(revenu = 10000, taux = 0.2)` plutôt que `calculer_taxes(10000, 0.2)`. Si on choisit de ne pas nommer les arguments dans un appel de fonction, il faut alors respecter l'*ordre* des arguments.
 
-Voici un exemple avec la fonction `base::gsub()`, dont les arguments sont `pattern = ..., replacement = ...,  x = ...` dans cet ordre. Supposons qu'on appelle cette fonction mais qu'on se trompe dans l'ordre des arguments. Alors on ne remplacera pas *toto* par *cool* comme voulu mais aura un comportement difficile à anticiper:
+Voici un exemple avec la fonction `base::gsub()`, dont les arguments sont `pattern = ..., replacement = ...,  x = ...` dans cet ordre. Supposons qu'on appelle cette fonction mais qu'on se trompe dans l'ordre des arguments. Alors on ne remplacera pas *toto* par *cool* comme voulu mais aura un comportement difficile à anticiper :
 
 ```{r exemple confusion arguments}
 my_awesome_func <- 
