@@ -8,6 +8,7 @@
 <!-- badges: end -->
 
 <br>
+
 ## :one: Présentation du projet `utilitR`
  
 Code source pour le projet `utilitR`, documentation collaborative `R` 
