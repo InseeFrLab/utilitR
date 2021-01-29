@@ -7,7 +7,7 @@
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gl/linogaliana%2FdocumentationR/binder?urlpath=rstudio)
 <!-- badges: end -->
 
-<br><br>
+<br>
 ## :one: Présentation du projet `utilitR`
  
 Code source pour le projet `utilitR`, documentation collaborative `R` 
