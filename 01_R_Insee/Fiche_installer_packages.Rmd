@@ -1,22 +1,48 @@
-# Comment installer des _packages_ ?
+# Utiliser des _packages_ `R`
 
 ::: {.recommandation data-latex=""}
 IL FAUT ECRIRE DES RECOMMANDATIONS.
-- Utiliser `install.packages` ;
+- Utiliser `install.packages` pour installer les _packages_ ;
+- Utiliser `library` pour les charger ;
 - Faire attention à utiliser une librairie sur laquelle on a les droits en écriture ;
 - L'installation manuelle est réservée à des usages vraiment spécifiques.
 :::
 
-## Que sont les _packages_ `R` et où peut-on les trouver ?
+## Introduction aux _packages_ `R`
 
-Un _package_ est une extension des fonctionnalités de base de `R`. Il est constitué d'objets `R` (la plupart du temps des fonctions, parfois des données) empaquetés en un seul fichier, dans le but d'être partagé facilement entre utilisateurs.
+### Qu'est-ce qu'un _package_ `R`
 
-Les _packages_ sont au coeur de la logique collaborative de `R`. Ils permettent de bénéficier des contributions d'autres utilisateurs de `R` et de partager avec d'autres des fonctionnalités utiles. A ce jour, il existe plus de 14 000 _packages_ disponibles pour `R`, qui proposent des fonctions pour réaliser une multitude de tâches. Il est donc primordial de savoir où chercher les _packages_ et comment les installer.
+**Un _package_ est un ensemble de fonctions développées par des utilisateurs de `R`, qui améliorent ou étendent les fonctionnalités de base de `R`.** Par exemple, le _package_ `ggplot2` propose des fonctions pour réaliser toutes sortes de graphiques avec `R`. Les _packages_ sont au coeur de la logique collaborative de `R`, car ils permettent de bénéficier des contributions d'autres utilisateurs de `R` et de partager avec d'autres des fonctionnalités utiles. A ce jour, il existe plus de 14 000 _packages_ disponibles pour `R`, qui couvrent une multitude de tâches. Il est donc primordial de savoir où chercher les _packages_ et comment les installer.
 
-DETAILLER ICI LA NOTION DE DEPOT (CRAN ET GITHUB), ET LA NOTION DE DEPENDANCES.
+D'un point de vue technique, un _package_ est constitué d'objets `R` (la plupart du temps des fonctions, parfois des données) et d'une documentation empaquetés en un seul fichier, dans le but d'être partagé facilement.
+
+### Où peut-on trouver des _packages_ `R` ?
+
+Les _packages_ `R` sont disponibles sur des sites spécialisés appelés dépôts (_repositories_ ou _repo_ en anglais). Le principal dépôt est le dépôt officiel du projet `R`, le [CRAN](https://cran.r-project.org) (_Comprehensive R Archive Network_).
+
+Les _packages_ peuvent également mis à disposition par leurs auteurs sur les forges logicielles (telles que Github et Gitlab), mais il s'agit alors la plupart du temps de versions expérimentales dont l'usage est principalement destiné aux utilisateurs avancés de `R`.
+
+::: {.remarque data-latex=""}
+Le CRAN dispose de plusieurs copies, appelées _miroirs_, dont la plupart sont hébergés sur des [serveurs d'universités ou d'établissements de recherche](https://cran.r-project.org/mirrors.html). Télécharger un _package_ sur un miroir ou un autre est strictement équivalent. L'intérêt de choisir un miroir proche de sa localisation permet simplement de gagner en vitesse et de réduire les flux sur le réseau.
+:::
+
+### Comment utiliser un _package_ `R`?
+
+Pour utiliser un _package_ `R`, il est nécessaire de réaliser deux actions distinctes, qui sont détaillées dans la suite de cette fiche :
+
+- l'**installation** consiste à télécharger le _package_ sur internet, puis à l'installer sur l'ordinateur, dans un dossier connu de `R` ;
+- le **chargement** consiste à indiquer à `R` que l'on souhaite utiliser le _package_ dans la session `R` courante.
+
+Il est important de comprendre que ces deux actions sont complètement distinctes. L'installation est une opération qu'on ne réalise qu'une seule fois : une fois qu'un _package_ a été installé sur un ordinateur, il y est présent **de façon permanente**. A noter qu'il existe toutefois des raisons de réinstaller un _package_, par exemple pour le mettre à jour. Inversement, le chargement d'un _package_ est une opération qu'il faut réaliser à chaque fois vous ouvrez une session `R`.
+
+### Version et dépendances.
+
+UN PACKAGE R EST DEPENDANT D'UNE VERSION DE R.
+
+LA NOTION DE DEPENDANCES
 
 
-## Installer depuis un dépôt de _packages_ distant
+## Installer un _package_ depuis un dépôt distant
 
 La façon la plus commune (et commode) d'installer un _package_ est d'utiliser la fonction `install.packages`. Cette fonction s'utilise de la façon suivante :
 
@@ -29,13 +55,12 @@ Cette fonction réalise successivement deux actions :
 1. ELle télécharge la dernière version du _package_ sur un dépôt distant de _packages_ R (typiquement le dépôt officiel) ;
 2. Elle installe le _package_ sur la machine de l'utilisateur.
 
-Trois points sont à noter sur l'utilisation de la fonction `install.packages` :
+Deux points sont à noter sur l'utilisation de la fonction `install.packages` :
 - Les noms des _packages_ sont sensibles à la casse : il est important de bien respecter majuscules et minuscules. Par exemple, la commande `install.packages(Ggplot2)` ne fonctionnera pas, car le _package_ s'appelle en réalité `ggplot2` (en minuscules).
 - Cette fonction accepte en paramètre un vecteur de noms de _packages_, afin d'installer plusieurs _packages_ en une seule instruction :
     ```{r, eval = FALSE}
     install.packages(c("package1", "package2", "package3"))
     ```
-- Un _package_ est installé **de façon permanente** sur la machine. Cela signifie que l'installation n'est à réaliser qu'une seule fois (sauf si on souhaite mettre à jour le _package_ par la suite).
 
 ::: {.remarque data-latex=""}
 Si les _packages_ sont _installés_ une fois pour toutes, il reste néanmoins nécessaire de les _charger_ **à chaque utilisation** avec `library(...)`. Ceci rend ses fonctionnalités disponibles dans la session `R` en cours. Pour éviter des réinstallations superflues, les programmes R ne contiennent en génral pas les instructions d'installation des _packages_, mais seulement les instructions de chargement en début.
