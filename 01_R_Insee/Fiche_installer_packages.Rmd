@@ -16,7 +16,7 @@ IL FAUT ECRIRE DES RECOMMANDATIONS.
 
 D'un point de vue technique, un _package_ est constitué d'objets `R` (la plupart du temps des fonctions, parfois des données) et d'une documentation empaquetés en un seul fichier, dans le but d'être partagé facilement. En outre, les _packages_ `R` ont deux caractéristiques importantes : 
 
-- **Les _packages_ `R` sont spécifiques à une version de `R`.** Ainsi, un _package_ installé avec la version 3.6 de `R` ne peut pas fonctionner avec la version 3.5 ou 4.0. La principale conséquence de cette caractéristique est que vous devrez réinstaller les _packages_ si vous modifiez la version de `R` que vous utilisez. Cette réinstallation ne présente généralement aucune difficulté technique, mais elle peut prendre du temps.
+- **Les _packages_ `R` sont spécifiques à la version de `R` avec laquelle ils ont été installés.** Ainsi, un _package_ installé avec la version 3.6 de `R` ne peut pas fonctionner avec les versions 3.5 ou 4.0. Cette contrainte est notamment due au fait que certains _packages_ ont besoin d'une version minimale de `R` pour fonctionner. La principale conséquence pratique de cette caractéristique est que vous devrez réinstaller les _packages_ si vous modifiez la version de `R` que vous utilisez. Cette réinstallation ne présente généralement aucune difficulté technique, mais elle peut prendre du temps.
 - Les _packages_ `R` font fréquemment appel à d'autres _packages_ appelés **dépendances** : la fonction `fonction1()` du _package_ `package1` fait appel à la fonction `fonction2()` du _package_ `package2`, et ainsi de suite. Un _package_ `R` ne pourra être utilisé que si ses dépendances sont également installées. Fort heureusement, la plupart du temps vous n'avez pas à vous préoccuper des dépendances de _packages_ car `R` installe par défaut toutes les dépendances nécessaires.
 
 
@@ -41,7 +41,7 @@ Il est important de comprendre que ces deux actions sont complètement distincte
 
 ## Installer un _package_ `R`
 
-### Présentation de la fonction `install.packages`
+### La méthode standard : la fonction `install.packages`
 
 La façon la plus commune (et commode) d'installer un _package_ est d'utiliser la fonction `install.packages`. Cette fonction s'utilise de la façon suivante :
 
@@ -54,7 +54,7 @@ Cette fonction réalise successivement deux actions :
 1. Elle télécharge la dernière version du _package_ sur un dépôt distant de _packages_ `R` (typiquement le dépôt officiel) ;
 2. Elle installe le _package_ sur la machine de l'utilisateur.
 
-Deux points sont à noter sur l'utilisation de la fonction `install.packages` :
+Trois points sont à noter sur l'utilisation de la fonction `install.packages` :
 - Cette fonction requiert que vous disposiez d'un accès à internet (pour télécharger les _packages_) ; 
 - Les noms des _packages_ sont sensibles à la casse : il est important de bien respecter majuscules et minuscules. Par exemple, la commande `install.packages(Ggplot2)` ne fonctionnera pas, car le _package_ s'appelle en réalité `ggplot2` (en minuscules) ;
 - Cette fonction accepte en paramètre un vecteur de noms de _packages_, afin d'installer plusieurs _packages_ en une seule instruction :
@@ -66,116 +66,73 @@ Deux points sont à noter sur l'utilisation de la fonction `install.packages` :
 Une fois qu'un _package_ a été installé sur un ordinateur, il y est présent **de façon permanente**. Il est donc conseillé de ne pas inclure les instructions d'installation des _packages_ dans les programmes `R`, pour éviter des réinstallations superflues. En revanche, il est indispensable d'inclure les instructions de chargement de _package_ au début des programmes `R`.
 :::
 
+### Utilisation de la fonction `install.packages`
 
-- `lib` ;
-- `repo` ;
-- `dependencies` ;
-- `type`.
-
-Un _package_ repose la plupart du temps sur d'autres _packages_ pour fonctionner. Ces _packages_ sont appelés **dépendances**. 
-
-
-### Choix du dépôt
+#### Choix du dépôt
 
 Par défaut, la fonction `install.packages` télécharge le _package_ demandé sur le dépôt officiel du projet `R`, le [CRAN](https://cran.r-project.org). Il est possible de modifier le dépôt utilisé grâce à l'argument `repos` de `install.packages`, mais vous n'avez normalement pas besoin de le faire dans le cadre d'un usage standard de `R`.
 
+:::{.remarque data-latex = ""}
+
 **L'installation de _packages_ dans AUS fonctionne de façon légèrement différente.** En effet, une session `R` ne peut pas se connecter au site du CRAN depuis AUS car les serveurs AUS n'ont pas accès à internet pour des raisons de sécurité. Pour contourner cette difficulté, l'Insee dispose d'un dépôt accessible uniquement sur le réseau interne. Ce dépôt est un miroir du CRAN, et est mis à jour quotidiennement. La configuration de `R` dans AUS est définie de sorte que `R` utilise par défaut le dépôt interne. Par conséquent, vous n'avez donc aucun réglage à faire par vous-même.
 
-### Installation des dépendances
+:::
+
+#### Installation des dépendances
 
 Par défaut, la fonction `install.packages` installe également toutes les dépendances nécessaires. Il est possible de modifier ce réglage grâce à l'argument `dependencies`, mais vous n'avez normalement pas besoin de le faire dans le cadre d'un usage standard de `R`.
 
+#### Emplacement des _packages_ installés
+
+Une fois qu'un _package_ a été téléchargé, la fonction `install.packages` l'installe, c'est-à-dire qu'elle le copie dans un dossier local appelé **librairie** (ou parfois bibliothèque). Par défaut, les librairies dans lesquelles les _packages_ sont installés sont situés aux emplacements suivants :
+
+- **sur votre poste local** : dans le sous-dossier `library` de l'emplacement où est installé `R` ;
+- **dans votre session AUS** : sur votre espace personnel, dans le dossier `U:/R/win-library/x.y`, où `x.y` désigne le numéro de version de `R` (3.6 ou 4.0 par exemple).
+
+Il est possible de modifier la librairie dans laquelle un _package_ est installé grâce à l'argument `lib`, mais vous n'avez normalement pas besoin de le faire dans le cadre d'un usage standard de `R`.
 
 
-
-
-### Type de _packages_
+#### Type de _packages_
 
 <!-- à compléter (source vs win.binary et Rtools) -->
 
-### Installer depuis une forge logicielle (GitHub, GitLab...)
+### Installation avancée
 
-Certains _packages_ sont mis à disposition sur une [forge logicielle](https://fr.wikipedia.org/wiki/Forge_%28informatique%29), par exemple GitHub ou GitLab.
+Il existe plusieurs autres méthodes pour installer des _packages_ `R`, qui sont décrites ci-dessous. De façon générale, ces méthodes sont principalement destinées aux utilisateurs avancés de `R`.
 
-<!--
-Raisons pour lesquelles tous les _packages_ pas sur le CRAN
+#### Installer depuis une forge logicielle (GitHub, GitLab...)
 
-- seulement les versions stables
-- processus de soumission plus complexe, effort de maintenance
-- _package_ trop spécifique (exemple : outil purement Insee)
-- ...
--->
+Certains _packages_ sont mis à disposition sur une [forge logicielle](https://fr.wikipedia.org/wiki/Forge_%28informatique%29), par exemple GitHub ou GitLab, et pas sur le CRAN. C'est notamment le cas des _packages_ dont le développement est encore expérimental, ou dont l'usage est très spécifique. 
 
-Le _package_ `remotes` a pour la finalité principale d'installer des _packages_ depuis des forges logicielles.
-
-```r
-library(remotes)
-```
-
-Pour installer un _package_ depuis une forge, utiliser la fonction dédiée : `install_github` pour GitHub, `install_gitlab` pour GitLab, `install_svn` pour SVN, etc...
+Le _package_ `remotes` a pour finalité principale d'installer des _packages_ depuis des forges logicielles. Pour installer un _package_ depuis une forge, il faut utiliser la fonction dédiée : `install_github` pour GitHub, `install_gitlab` pour GitLab, `install_svn` pour SVN, etc... Voici un exemple :
 
 Exemples :
 
-```r
-install_github("InseeFrLab/doremifasolData")
+```{r, eval = FALSE}
 # installe depuis `https://github.com/InseeFrLab/doremifasolData`
+remotes::install_github(repo = "InseeFrLab/doremifasolData")
 ```
 
-```r
-install_gitlab("py_b/funprog")
-# installe depuis `https://gitlab.com/py_b/funprog`
-#   TODO: chercher un _package_ plus connu !
-```
-
-Seul le premier argument (`repo`) est obligatoire. Il est formé nom de l'utilisateur sur la forge suivi du nom du dépôt. Le _package_ installé contiendra les modifications les plus récentes. Installer depuis une forge permet ainsi de récupérer la version de développement d'un _package_ (seules les versions stables sont en général soumises au CRAN). Pour installer un _package_ tel qu'il était à un moment donné, il est également possible de faire suivre le nom du dépôt par une référence à un commit, un tag ou une branche. Exemples : `install_gitlab("py_b/funprog@v-0.3.0")`
+Seul le premier argument (`repo`) est obligatoire. Il est formé du nom du compte sur la forge logicielle, suivi du nom du dépôt. Le _package_ installé contiendra les modifications les plus récentes. Installer depuis une forge permet ainsi de récupérer la version de développement d'un _package_ (seules les versions stables sont en général soumises au CRAN). Pour installer un _package_ tel qu'il était à un moment donné, il est également possible de faire suivre le nom du dépôt par une référence à un commit, un tag ou une branche. Exemples : `install_gitlab("py_b/funprog@v-0.3.0")`.
 
 Les fonctions créeront une archive temporaire (.tar.gz) et installeront le _package_ à partir de celle-ci. Pour les raisons évoquées plus haut, ceci implique que `Rtools` soit disponible (sous Windows).
-
-Par défaut, ces fonctions installent depuis la forge officielle (github.com pour Github, gitlab.com pour GitLab, ...). Il est aussi possible pour une entreprise ou organisation de créer sa propre instance de forge. Ainsi, l'Insee dispose de la forge https://gitlab.insee.fr. Pour modifier l'instance où sera recherché le dépôt, utiliser l'argument `host` :
-
-```r
-install_gitlab(repo = "py_b/fmtsas", host = "gitlab.insee.fr")
-# installe depuis `https://gitlab.insee.fr/py_b/fmtsas`
-#   TODO: chercher un autre _package_ ?
-```
-
-::: {.remarque data-latex=""}
-Sur AUS, l'installation depuis des dépôt hébergés sur internet n'est pas possible. En revanche, on peut accéder à gitlab.insee.fr.
-:::
 
 ### Installer depuis un fichier
 
 Il est aussi possible d'installer un _package_ depuis une archive compressée (fichiers ".zip" pour les binaires Windows ou ".tar.gz" pour les _packages_ _source_).
 
-```r
+```{r, eval = FALSE}
 install.packages("chemin/en/local/package1_x.y.z.zip", repos = NULL)
 ```
 Pour indiquer que la source est un fichier local, il est obligatoire de spécifier `repos = NULL`.
 
-Si le fichier est de type "source" (extension .tar.gz), Rtools peut là encore s'avérer nécessaire, notamment si certaines fonctions sont écrites en C ou C++.
+Si le fichier est de type "source" (extension .tar.gz), Rtools peut là encore s'avérer nécessaire, notamment si certaines fonctions sont écrites en `C` ou en `C++`. Cette solution peut être utilisée dans les cas suivants : 
 
-Cette solution sera utilisée dans les cas suivants : 
+- le _package_ n'est pas sur un dépôt distant (CRAN ou une forge logicielle) ;
+- on souhaite installer une version plus ancienne que celle actuellement sur le dépôt distant ;
+- aucune connexion internet n'est possible (par exemple, transmission du fichier compressé via une clé usb).
 
-- le _package_ n'est pas sur un dépôt distant (CRAN ou une forge logicielle)
-- on souhaite installer une version plus ancienne que celle actuellement sur le dépôt distant
-- aucune connexion internet n'est possible (par exemple, transmission du fichier compressé via une clé usb)
-
-Il est à noter que cette méthode atteint rapidement ces limites dès lors que des dépendances pas encore installées sont requises.
-
-### Emplacement des _packages_ installés
-
-Par défaut, les _packages_ sont installés :
-
-- **sur poste** : dans le sous-dossier "library" de l'emplacement où est installé `R` ;
-- **sur AUS** : sur son espace personnel, dans le dossier `U:/R/win-library/x-y`, où `x-y` désigne le numéro de version de `R`.
-
-Dans les deux cas, les _packages_ sont associés à une version particulière de `R`. Ainsi, installer un _package_ depuis une version différente de R installera les _packages_ dans un dossier distinct. Dans cette configuration, passer à une nouvelle version de R requerra notamment d'avoir à réinstaller les _packages_.
-
-Ce classement limite les risques d'incompatibilité entre versions de R et versions des _packages_. En effet, certains _packages_ ont besoin d'une version minimale de `R` pour fonctionner.
-
-Pour connaître les répertoires où sont recherchés les _packages_ à charger, utiliser l'instruction `.libPaths()`. Il est possible de modifier cet emplacement, voire de définir plusieurs emplacements où les _packages_ seront successivement recherchés lors de l'appel à `library()` (sous réserve d'avoir accès en écriture au dossier).
-
-Changer `libPaths` est cependant une pratique avancée, à déconseiller si on veut s'éviter tout problème de compatibilité entre versions.
+Il est à noter que cette méthode atteint rapidement ses limites dès lors que des dépendances pas encore installées sont requises.
 
 ### Mettre à jour les _packages_
 
