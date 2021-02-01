@@ -39,7 +39,9 @@ Pour utiliser un _package_ `R`, il est nécessaire de réaliser deux actions, qu
 
 Il est important de comprendre que ces deux actions sont complètement distinctes. L'installation est une opération qu'on ne réalise qu'_une seule fois_ : une fois qu'un _package_ a été installé sur un ordinateur, il y est présent **de façon permanente**. A noter qu'il existe toutefois des raisons de réinstaller un _package_, par exemple pour le mettre à jour. Inversement, le chargement d'un _package_ est une opération qu'il faut réaliser _à chaque fois_ vous ouvrez une session `R`.
 
-## Installer un _package_ depuis un dépôt distant
+## Installer un _package_ `R`
+
+### Présentation de la fonction `install.packages`
 
 La façon la plus commune (et commode) d'installer un _package_ est d'utiliser la fonction `install.packages`. Cette fonction s'utilise de la façon suivante :
 
@@ -49,54 +51,43 @@ install.packages("mon_beau_package")
 
 Cette fonction réalise successivement deux actions :
 
-1. ELle télécharge la dernière version du _package_ sur un dépôt distant de _packages_ R (typiquement le dépôt officiel) ;
+1. Elle télécharge la dernière version du _package_ sur un dépôt distant de _packages_ `R` (typiquement le dépôt officiel) ;
 2. Elle installe le _package_ sur la machine de l'utilisateur.
 
 Deux points sont à noter sur l'utilisation de la fonction `install.packages` :
-- Les noms des _packages_ sont sensibles à la casse : il est important de bien respecter majuscules et minuscules. Par exemple, la commande `install.packages(Ggplot2)` ne fonctionnera pas, car le _package_ s'appelle en réalité `ggplot2` (en minuscules).
+- Cette fonction requiert que vous disposiez d'un accès à internet (pour télécharger les _packages_) ; 
+- Les noms des _packages_ sont sensibles à la casse : il est important de bien respecter majuscules et minuscules. Par exemple, la commande `install.packages(Ggplot2)` ne fonctionnera pas, car le _package_ s'appelle en réalité `ggplot2` (en minuscules) ;
 - Cette fonction accepte en paramètre un vecteur de noms de _packages_, afin d'installer plusieurs _packages_ en une seule instruction :
     ```{r, eval = FALSE}
     install.packages(c("package1", "package2", "package3"))
     ```
 
-::: {.remarque data-latex=""}
-Si les _packages_ sont _installés_ une fois pour toutes, il reste néanmoins nécessaire de les _charger_ **à chaque utilisation** avec `library(...)`. Ceci rend ses fonctionnalités disponibles dans la session `R` en cours. Pour éviter des réinstallations superflues, les programmes R ne contiennent en génral pas les instructions d'installation des _packages_, mais seulement les instructions de chargement en début.
+::: {.conseil data-latex=""}
+Une fois qu'un _package_ a été installé sur un ordinateur, il y est présent **de façon permanente**. Il est donc conseillé de ne pas inclure les instructions d'installation des _packages_ dans les programmes `R`, pour éviter des réinstallations superflues. En revanche, il est indispensable d'inclure les instructions de chargement de _package_ au début des programmes `R`.
 :::
 
-Un _package_ repose la plupart du temps sur d'autres _packages_ pour fonctionner. Ces _packages_ sont appelés **dépendances**. Par défaut, `install.packages` installe également toutes les dépendances nécessaires. Ce comportement est modifiable via l'argument `dependencies`.
+
+- `lib` ;
+- `repo` ;
+- `dependencies` ;
+- `type`.
+
+Un _package_ repose la plupart du temps sur d'autres _packages_ pour fonctionner. Ces _packages_ sont appelés **dépendances**. 
 
 
-#### Choix du dépôt
+### Choix du dépôt
 
-Par défaut, la fonction `install.packages` télécharge le _package_ demandé sur le dépôt officiel du projet `R`, le [CRAN](https://cran.r-project.org) (_Comprehensive R Archive Network_). Le CRAN dispose de plusieurs copies exactes de son contenu. Ces copies, appelées _miroirs_, sont la plupart du temps hébergés sur des [serveurs d'universités ou d'établissements de recherche](https://cran.r-project.org/mirrors.html). Télécharger un _package_ sur un miroir ou un autre est strictement équivalent. L'intérêt de choisir un miroir proche de sa localisation est uniquement de limiter les flux de données sur le réseau.
+Par défaut, la fonction `install.packages` télécharge le _package_ demandé sur le dépôt officiel du projet `R`, le [CRAN](https://cran.r-project.org). Il est possible de modifier le dépôt utilisé grâce à l'argument `repos` de `install.packages`, mais vous n'avez normalement pas besoin de le faire dans le cadre d'un usage standard de `R`.
 
-Pour connaître le dépôt qui sera utilisé par défaut lors d'une installation :
-```r
-getOption("repos")
-```
-Il est également possible de spécifier le dépôt grâce à l'argument `repos` de `install.packages`.
+**L'installation de _packages_ dans AUS fonctionne de façon légèrement différente.** En effet, une session `R` ne peut pas se connecter au site du CRAN depuis AUS car les serveurs AUS n'ont pas accès à internet pour des raisons de sécurité. Pour contourner cette difficulté, l'Insee dispose d'un dépôt accessible uniquement sur le réseau interne. Ce dépôt est un miroir du CRAN, et est mis à jour quotidiennement. La configuration de `R` dans AUS est définie de sorte que `R` utilise par défaut le dépôt interne. Par conséquent, vous n'avez donc aucun réglage à faire par vous-même.
 
-::: {.remarque data-latex=""}
+### Installation des dépendances
 
-À l'Insee, les _packages_ installés sur **AUS** sont récupérés sur un dépôt accessible seulement en interne, https://nexus.insee.fr. Ce dépôt permet de contourner le fait qu'internet ne soit pas accessible depuis AUS. Il est actualisé sur le CRAN quotidiennement.
+Par défaut, la fonction `install.packages` installe également toutes les dépendances nécessaires. Il est possible de modifier ce réglage grâce à l'argument `dependencies`, mais vous n'avez normalement pas besoin de le faire dans le cadre d'un usage standard de `R`.
 
-Ce dépôt diffère des miroirs listés sur le CRAN par les aspects suivants :
 
-- il n'est accessible que depuis le réseau Insee ;
-- il peut héberger des _packages_ développés en interne et ajoutés sans passer être soumis au CRAN.
 
-Sur AUS, `R` est configuré de manière à chercher automatiquement les _packages_ sur ce dépôt interne. En local sur un poste Insee, on peut aussi y accèder comme n'importe quel miroir (option ou argument `repos`) :
 
-```r
-# spécifier le dépôt Insee à chaque installation
-install.packages("package1", repos = "https://nexus.insee.fr/repository/r-public")
-
-# pour conserver le réglage
-options(repos = "https://nexus.insee.fr/repository/r-public")
-# ce qui permet d'omettre `repos` pour toute la session R
-install.packages("package1")
-```
-:::
 
 ### Type de _packages_
 
