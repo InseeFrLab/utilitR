@@ -96,19 +96,12 @@ if (vecteurboolean) {
 Lorsqu'une condition porte sur un vecteur de booléens (`TRUE` ou `FALSE`), `R` utilise uniquement le premier élément du vecteur pour vérifier si condition est remplie, et renvoie un simple avertissement à l'utilisateur. Toutefois, il est possible de modifier ce comportement par défaut en indiquant `_R_CHECK_LENGTH_1_CONDITION_ = "TRUE"` dans le fichier `.Renviron` : `R` renverra alors une erreur et stoppera le code si `R` doit vérifier une condition sur un vecteur au lieu d'un simple scalaire. Dans ce cas, le code précédent ne renverra rien du tout et s’arrêtera avec une erreur. En revanche, chez un autre utilisateur dont le fichier `.Renviron` ne contient pas ce réglage, il n'y aura pas d'erreur. Le même code aboutit donc à des résultats différents en raison de différences dans les variables d'environnement.
 :::
 
-Il est toutefois possible de modifier les paramètres de son environnement ou en générer d'autres, une fois R chargé, via la commande `Sys.setenv()`. par exemple `Sys.setenv("MON_API_INSEE"="jamais")`. De même la fonction `Sys.getenv()` permet de lister certaines valeurs présentes dans l'environnement actuel. Toutefois, toutes les procédures d'initialisation de R se seront déjà déroulées alors avec les anciennes valeurs, définies par défault. Cette subtilité peut être importante !
+Il est possible de modifier les paramètres de son environnement ou d'en générer d'autres après l'ouverture de la session `R`, avec la commande `Sys.setenv()`. Vous pouvez par exemple exécuter la commande `Sys.setenv("MON_API_INSEE"="jamais")`. De même la fonction `Sys.getenv()` permet de lister certaines valeurs présentes dans l'environnement actuel. Toutefois, toutes les procédures d'initialisation de R se seront déjà déroulées alors avec les anciennes valeurs, définies par défaut. Cette subtilité peut être importante !
 
 ::: {.remarque data-latex=""}
-La navigation sur Internet depuis un poste de l'Insee, comme dans de nombreuses institutions, est contrôlée par un *proxy* (intermédiaire entre le *web* et un ordinateur) qu'il faut paramétrer pour accéder à Internet.
-
-Pour ce faire, il est recommandé de récupérer l'adresse du proxy interne en réalisant la commande suivante :
-
-```{r,eval=FALSE}
+Comme dans de nombreuses institutions, la navigation sur Internet depuis un poste de l'Insee est contrôlée par un *proxy* (intermédiaire entre le *web* et un ordinateur). Il est indispensable de paramétrer l'adresse du _proxy_ pour que `R` puisse accéder à Internet (par exemple pour télécharger un _package_). Pour ce faire, vous pouvez récupérer l'adresse du _proxy_ interne en exécutant la commande suivante :
+```{r, eval=FALSE}
 curl::ie_get_proxy_for_url()
-```
-
-Puis, vous pourrez mettre à jour votre `.Renviron` via les variables d'environnement `http_proxy`et `https_proxy`.
-:::
 
 
 ### Le fichier `.Rprofile`
