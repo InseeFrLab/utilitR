@@ -30,21 +30,19 @@ Néanmoins, et pour simplifier grandement, la procédure se déroule en trois te
 
 1. R cherche des fichiers de type *environment*. Ces fichiers permettent notamment d'indiquer des chemins spécifiques où se trouvent d'autres fichiers, ou certaines caractéristiques comme le _proxy_.
 
-2. R cherche des fichiers de type *profile*. Ces fichiers contiennent du code R qui se lance automatiquement. Ils permettent par exemple d'indiquer des packages supplémentaires à charger, de personnaliser le message d'accueil de R, ou de sauvegarder automatiquement les informations de la session lorsqu'on la quitte.
-3. R prépare la session, avec les informations récupérées précédemment, mais également d'autres, comme par exemple les données qu'il aurait pu conserver dans un `.Rdata`, puis il charge les packages de base, avant par exemple de charger l'historique des commandes (s'il existe). C'est grâce à ce dernier temps que R recharge les données et l'historique après s'être interrompu inopunément.
+2. `R` cherche des fichiers de type *profile*. Ces fichiers contiennent du code `R` qui se lance automatiquement au démarrage de `R`. Ils permettent par exemple d'indiquer des _packages_ supplémentaires à charger, de personnaliser le message d'accueil de `R`, ou de sauvegarder automatiquement les informations de la session lorsqu'on la quitte.
+3. `R` prépare l'ouverture de la session avec `R`, avec les informations récupérées précédemment dans les fichiers *environment* et *profile*, et d'autres informations, comme par exemple les données qui ont pu être conservées dans un `.Rdata`. `R` charge les _packages_ de base, avant de charger l'historique des commandes (s'il en existe un). C'est lors de ce dernier temps que `R` peut charger les données et l'historique après s'être interrompu inopinément.
 
+Il peut être nécessaire d'utiliser des configurations de `R` différentes, en fonction des projets sur lesquels vous travaillez. **Les fichiers *environment* et *profile* peuvent donc avoir besoin d'être différents selon les projets.** Pour ce faire, `R` priorise le chargement de ces fichiers dans l'ordre suivant :
 
-Sans complexifier outre mesure, sachez que les deux premiers temps se décomposent eux-mêmes en deux sous-temps : il est possible de définir des fichiers *environment* ou *profile* plus génériques que d'autres (c'est le `Renviron.site` ou `Rprofile.site`). 
+1. Les fichiers présents dans le répertoire d'un `Rproject` sont prioritaires ;
+2. A défaut, les fichiers présents dans le répertoire _Home_ (sous Windows, ce sera typiquement _Mes documents_) ;
+3. A défaut, les fichiers présents dans le répertoire d'installation de `R`.
 
-D'autres fichiers existent comme le `.Rhistory`qui contient l'historique des commandes, notamment celles réalisées à la console. Ce fichier peut également contenir des informations sensibles, il est donc rare de le partager, mais il est possible de le conserver. 
+**Un point important est qu'une session `R` ne charge qu'un seul fichier *environment* et un seul fichier *profile*.** Ajouter un fichier *environment* dans un `Rproject` aura donc pour conséquence que l'éventuel fichier *environment* présent dans le répertoire _Home_ ne sera pas chargé par la session `R` lorsque vous travaillerez sur ce projet.
 
-Selon les projets, les fichiers *environment* et *profile* peuvent avoir besoin d'être différents. Pour ce faire, `R` priorise le chargement de ces fichiers dans :l'ordre suivant 
+Enfin, il existe d'autres fichiers comme le `.Rhistory` qui contient l'historique des commandes, notamment celles réalisées à la console. Ce fichier peut également contenir des informations sensibles, il est donc rare de le partager, mais il est possible de le conserver. 
 
-1. Les fichiers présents dans un `Rproject` sont prioritaires.
-2. A défault, les fichiers présents dans le _Home_ (sous Windows, ce sera typiquement _Mes documents_).
-3. A défault, les fichiers présents dans le répertoire d'installation de `R`.
-
-Attention, R ne travaille qu'avec un unique fichier *environment* et un unique fichier *profile*. Créer un nouveau fichier *environment* dans un projet désactivera donc l'éventuel fichier présent dans le _Home_. 
 
 ### .Renviron
 
