@@ -77,7 +77,7 @@ La méthode la plus simple pour modifier le fichier `.Renviron` est la suivante 
 3. Relancez `R`, via `Session > Restart R` ou <kbd>Ctrl</kbd> + <kbd>⇧ Shift</kbd> + <kbd>F10</kbd>.
 
 ::: {.remarque data-latex=""}
-La modification de variables internes à R est à utiliser avec précaution, car elle est susceptible de générer de la non-reproductibilité. Par exemple, R a un comportement assez étrange dans le cas suivant : 
+Il faut être prudent lorsqu'on modifie des variables internes à `R`, car ces modifications peuvent aboutir à ce que les résultats des scripts ne soient pas reproductibles. Par exemple, `R` a un comportement assez étrange dans le cas suivant : 
 ```{r}
 vecteurboolean <- c(TRUE, FALSE, NULL)
 if (vecteurboolean) {
@@ -85,7 +85,6 @@ if (vecteurboolean) {
 } else {
   cat("Je suis faux ! \n")
 }
-```
 
 Lorsqu'il teste un vecteur de booléen, R se contente de tester la première valeur, et met un simple avertissement. Toutefois, avec la modification de `.Renviron` de type `_R_CHECK_LENGTH_1_CONDITION_ = "TRUE"`, il est possible de modifier ce comportement et de générer une erreur (qui stoppera le code), si on fournit à R un vecteur au lieu de fournir un simple scalaire. Le code précédent... n'imprimera donc rien du tout et s’arrêtera avec une erreur chez vous ! Chez un autre utilisateur, il n'y aura pas d'erreur. Vous comprenez mieux les raisons pour lesquels modifier l'environnement peut conduire à des résultats non reproductibles ! 
 
