@@ -60,17 +60,11 @@ Ajouter un fichier *environment* dans le répertoire d'un `Rproject` aura donc p
 
 ### Le fichier `.Renviron`
 
+#### Contenu du fichier `.Renviron`
 
 **Le fichier d'environnement `.Renviron` sert logiquement à définir des variables d'environnement.** Ces variables sont utiles uniquement pour `R`, soit pour les interactions entre `R` et d'autres logiciels. Ces variables d'environnement peuvent également modifier la manière dont `R` réalise certaines opérations. 
 
-::: {.conseil data-latex=""}
-Voici **deux conseils importants** sur l'usage du fichier d'environnement `.Renviron` :
-
-- il est recommandé d'être très prudent dans la personnalisation du fichier d'environnement ;
-- le fichier `.Renviron` peut contenir des informations personnelles et/ou sensibles comme les clés d'API ou l'adresse du _proxy_. Ce fichier est donc strictement personnel, et ne doit pas être partagé (notamment _via_ `git`).
-:::
-
-Par exemple, un `.Renviron` fictif pourrait ressembler à : 
+Par exemple, un `.Renviron` fictif pourrait ressembler à ceci : 
 
 ```
 MON_API_INSEE=MaCleSecreteVraimentTresSecrete
@@ -89,7 +83,14 @@ Comme vous pouvez le constater, un tel fichier n'est pas constitué de code `R`,
 * il modifie des variables internes à `R` (telles que `_R_CHECK_LENGTH_1_CONDITION_`  et `_R_CHECK_LENGTH_1_LOGIC2_`) ;
 * il **contient une ligne vide finale** : cette ligne vide est indispensable, ne l'oubliez jamais !
 
+#### Définir un fichier `.Renviron`
 
+::: {.conseil data-latex=""}
+Voici **deux conseils importants** sur l'usage du fichier d'environnement `.Renviron` :
+
+- il est recommandé d'être très prudent dans la personnalisation du fichier d'environnement ;
+- le fichier `.Renviron` peut contenir des informations personnelles et/ou sensibles comme les clés d'API ou l'adresse du _proxy_. Ce fichier est donc strictement personnel, et ne doit pas être partagé (notamment _via_ `git`).
+:::
 
 La méthode la plus simple pour modifier le fichier `.Renviron` est la suivante :
 
@@ -97,6 +98,19 @@ La méthode la plus simple pour modifier le fichier `.Renviron` est la suivante 
 2. Modifier le fichier, sans oublier la ligne vide en fin de document. 
 3. Sauvegarder le fichier.
 3. Relancez `R`, via `Session > Restart R` ou <kbd>Ctrl</kbd> + <kbd>⇧ Shift</kbd> + <kbd>F10</kbd>.
+
+::: {.remarque data-latex=""}
+Comme dans de nombreuses institutions, la navigation sur Internet depuis un poste de l'Insee est contrôlée par un *proxy* (intermédiaire entre le *web* et un ordinateur). Il est indispensable de paramétrer l'adresse du _proxy_ pour que `R` puisse accéder à Internet (par exemple pour télécharger un _package_). Pour ce faire, vous pouvez récupérer l'adresse du _proxy_ de l'Insee en exécutant la commande suivante :
+```{r, eval=FALSE}
+curl::ie_get_proxy_for_url()
+```
+
+Puis vous pouvez ajouter l'adresse du _proxy_ dans votre fichier `.Renviron`. Il faut ajouter deux lignes dans ce fichier :
+```
+http_proxy=adresse_du_proxy
+https_proxy=adresse_du_proxy
+```
+:::
 
 ::: {.remarque data-latex=""}
 Il faut être prudent lorsqu'on modifie des variables internes à `R`, car ces modifications peuvent aboutir à ce que les résultats des scripts ne soient pas reproductibles. Par exemple, `R` a un comportement assez étrange dans le cas suivant : 
@@ -113,21 +127,6 @@ Lorsqu'une condition porte sur un vecteur de booléens (`TRUE` ou `FALSE`), `R` 
 :::
 
 Il est possible de modifier les paramètres de son environnement ou d'en générer d'autres après l'ouverture de la session `R`, avec la commande `Sys.setenv()`. Vous pouvez par exemple exécuter la commande `Sys.setenv("MON_API_INSEE"="jamais")`. De même la fonction `Sys.getenv()` permet de lister certaines valeurs présentes dans l'environnement actuel. Toutefois, toutes les procédures d'initialisation de R se seront déjà déroulées alors avec les anciennes valeurs, définies par défaut. Cette subtilité peut être importante !
-
-::: {.remarque data-latex=""}
-Comme dans de nombreuses institutions, la navigation sur Internet depuis un poste de l'Insee est contrôlée par un *proxy* (intermédiaire entre le *web* et un ordinateur). Il est indispensable de paramétrer l'adresse du _proxy_ pour que `R` puisse accéder à Internet (par exemple pour télécharger un _package_). Pour ce faire, vous pouvez récupérer l'adresse du _proxy_ interne en exécutant la commande suivante :
-```{r, eval=FALSE}
-curl::ie_get_proxy_for_url()
-```
-
-Puis vous pouvez ajouter l'adresse du _proxy_ dans votre fichier `.Renviron`. Il faut ajouter deux lignes dans ce fichier :
-
-```
-http_proxy=adresse_du_proxy
-https_proxy=adresse_du_proxy
-```
-
-:::
 
 
 ### Le fichier `.Rprofile`
