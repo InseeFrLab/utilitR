@@ -7,14 +7,14 @@ L'agent souhaite personnaliser sa configuration de `R` ou de Rstudio.
 
 
 ::: {.recommandation data-latex=""}
-**La personnalisation de `R`, ou de `RStudio` doit être maniée avec précaution**, car personnaliser votre environnement de travail, c'est prendre le risque de rendre vos travaux difficiles à reproduire. Cette fiche vous explique ce que la personnalisation peut apporter, et ce pour quoi elle ne doit être utilisée.
+**La personnalisation de `R`, ou de `RStudio` doit être maniée avec précaution**, car personnaliser votre environnement de travail, c'est prendre le risque de rendre vos travaux difficiles à reproduire. Cette fiche vous explique ce que la personnalisation peut apporter, et ce pour quoi elle ne doit âs être utilisée.
 
 
 **Il est recommandé de ne pas personnaliser la configuration de `R`**, sauf dans les cas suivants :
 
 * **masquer des informations qui ne doivent pas figurer dans les programmes**, comme les clés d'API ;
 * **modifier des paramètres dont les valeurs par défaut ne sont pas adaptées au travail avec `R` à l'Insee**, comme le _proxy_ ou les chemins vers des exécutables ;
-* **changer des éléments qui n'ont aucun impact sur les résultats**, mais peuvent vous faciliter la vie, comme la taille de l'historique, l'adresse des dépots de package, le prompt, etc.
+* **changer des éléments qui n'ont aucun impact sur les résultats**, mais peuvent vous faciliter la vie, comme la taille de l'historique, l'adresse des dépots de package, le texte de l'invite de commande, etc.
 
 D'autres paramètres, notamment ceux de RStudio, sont aisément modifiables, mais parfois non automatisables (comme le changement d'apparence).
 :::
@@ -22,8 +22,9 @@ D'autres paramètres, notamment ceux de RStudio, sont aisément modifiables, mai
 
 ## Comprendre le lancement de `R`
 
+### Vue d'ensemble de l'initialisation de `R`
 
-`R` a été conçu, dès le début, pour permettre une très grande flexibilité d'utilisation. Cette flexibilité engendre toutefois une complexité dans ses procédures d'initialisation.  La [documentation](https://cran.r-project.org/web/packages/startup/vignettes/startup-intro.html) sur le lancement de `R` montre d'ailleurs toute la complexité de la chose :
+Dès ses origines, `R` a été conçu pour offrir une grande souplesse d'utilisation. Cette souplesse engendre toutefois une complexité dans les procédures d'initialisation de `R`. La [documentation](https://cran.r-project.org/web/packages/startup/vignettes/startup-intro.html) sur le lancement de `R` montre d'ailleurs toute la complexité de la chose :
 
 
 ```{r, eval = FALSE}
@@ -38,16 +39,24 @@ De façon simplifiée, la procédure d'initialisation de `R` se déroule en troi
 2. `R` cherche des fichiers de type *profile*. Ces fichiers contiennent du code `R` qui se lance automatiquement au démarrage de `R`. Ils permettent par exemple d'indiquer des _packages_ supplémentaires à charger, de personnaliser le message d'accueil de `R`, ou de sauvegarder automatiquement les informations de la session lorsqu'on la quitte.
 3. `R` prépare l'ouverture de la session avec `R`, avec les informations récupérées précédemment dans les fichiers *environment* et *profile*, et d'autres informations, comme par exemple les données qui ont pu être conservées dans un `.Rdata`. `R` charge les _packages_ de base, avant de charger l'historique des commandes (s'il en existe un). C'est lors de ce dernier temps que `R` peut charger les données et l'historique après s'être interrompu inopinément.
 
-Il peut être nécessaire d'utiliser des configurations de `R` différentes, en fonction des projets sur lesquels vous travaillez. **Les fichiers *environment* et *profile* peuvent donc avoir besoin d'être différents selon les projets.** Pour ce faire, `R` priorise le chargement de ces fichiers dans l'ordre suivant :
+Enfin, il existe d'autres fichiers comme le `.Rhistory` qui contient l'historique des commandes, notamment celles réalisées à la console. Ce fichier peut également contenir des informations sensibles, il est donc rare de le partager, mais il est possible de le conserver.
+
+### Configuration générale et configuration par projet 
+
+Il est possible de personnaliser votre configuration de `R` en définissant des fichiers *environment* et *profile*. Ces fichiers peuvent être définis à deux niveaux qu'il faut bien distinguer :
+
+- la configuration générale de `R`, qui s'applique à toutes les sessions `R` que vous ouvrez. Dans ce cas, les fichiers de configuration doivent être placés dans le répertoire `Home`. vous pouvez récupérer le chemin de ce dossier en exécutant la commande `Sys.getenv("HOME")`.
+- la configuration spécifique à un `Rproject`, qui s'applique uniquement lorsque vous travaillez sur ce projet. Dans ce cas, les fichiers de configuration doivent être placés dans le répertoire du `Rproject` auquel ils s'appliquent.
+
+Définir des fichiers *environment* et *profile* spécifiques à un `Rproject` s'avère très utile lorsque les projets sur lesquels vous travaillez requièrent des configurations de `R` différentes. 
+
+**Un point essentiel est qu'une session `R` ne charge qu'un seul fichier *environment* et un seul fichier *profile*.** Les fichiers de configurations sont chargés par ordre de spécificité décroissant :
 
 1. Les fichiers présents dans le répertoire d'un `Rproject` sont prioritaires ;
-2. A défaut, les fichiers présents dans le répertoire _Home_ (sous Windows, ce sera typiquement _Mes documents_) ;
+2. A défaut, les fichiers présents dans le répertoire `Home` (sous Windows, ce sera typiquement _Mes documents_) ;
 3. A défaut, les fichiers présents dans le répertoire d'installation de `R`.
 
-**Un point important est qu'une session `R` ne charge qu'un seul fichier *environment* et un seul fichier *profile*.** Ajouter un fichier *environment* dans un `Rproject` aura donc pour conséquence que l'éventuel fichier *environment* présent dans le répertoire _Home_ ne sera pas chargé par la session `R` lorsque vous travaillerez sur ce projet.
-
-Enfin, il existe d'autres fichiers comme le `.Rhistory` qui contient l'historique des commandes, notamment celles réalisées à la console. Ce fichier peut également contenir des informations sensibles, il est donc rare de le partager, mais il est possible de le conserver. 
-
+Ajouter un fichier *environment* dans le répertoire d'un `Rproject` aura donc pour conséquence que l'éventuel fichier *environment* présent dans le répertoire `Home` ne sera pas chargé par la session `R` lorsque vous travaillerez sur ce projet.
 
 ### Le fichier `.Renviron`
 
