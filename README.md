@@ -26,7 +26,8 @@ disponible.
 
 Les exemples sont construits sur des données ouvertes, disponibles sur www.insee.fr. 
 Le package [`doremifasolData`](https://github.com/InseeFrLab/DoReMIFaSolData) facilite
-l'import de ces données dans la documentation. 
+l'import de ces données dans la documentation. Le modèle de document est
+encapsulé dans un *package* `R` dédié: https://github.com/InseeFrLab/utilitr-template 
 
 <br>
 
