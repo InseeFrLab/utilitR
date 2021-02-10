@@ -1,5 +1,8 @@
 if (file.exists('~/.Rprofile')) sys.source('~/.Rprofile', envir = environment())
 
+options(compression_image = FALSE)
+
+
 
 colorize <- function(x, color) {
   if (knitr::is_latex_output()) {
@@ -136,8 +139,9 @@ compresser_image <-
   }
 
 include_image <- function(x, compression = TRUE, ratio_compression = 2, ...) {
+  
   # Fonction qui 1/ compresse  l'image si nécessaire; 2/ l'inclut dans le Rmd
-  if (compression) {
+  if (isTRUE(getOption("compression_image", default = FALSE)) && isTRUE(compression)){
     compresser_image(file_in = x, ...)
   }
   knitr::include_graphics(sub(dossier_images, dossier_images_compressees, x), ...)    
