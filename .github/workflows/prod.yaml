@@ -1,0 +1,101 @@
+name: Production de la documentation
+
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  docker:
+    if: "!contains(github.event.commits[0].message, '[skip ci]')"
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Set up QEMU
+        if: ${{ github.repository == 'inseefrlab/utilitr' }}
+        uses: docker/setup-qemu-action@v1
+      -
+        name: Set up Docker Buildx
+        if: ${{ github.repository == 'inseefrlab/utilitr' }}
+        uses: docker/setup-buildx-action@v1
+      -
+        name: Login to DockerHub
+        if: ${{ github.repository == 'inseefrlab/utilitr' }}
+        uses: docker/login-action@v1 
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Build and push
+        if: ${{ github.repository == 'inseefrlab/utilitr' }}
+        id: docker_build
+        uses: docker/build-push-action@v2
+        env:
+          GITHUB_PAT: ${{ secrets.PAT }}
+        with:
+          push: true
+          tags: inseefrlab/utilitr:latest
+      -
+        name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
+  bookdown-prod:
+    if: "!contains(github.event.commits[0].message, '[skip ci]')"
+    needs: docker
+    runs-on: ubuntu-latest
+    container: inseefrlab/utilitr:latest
+    steps:
+      - name: Checkout Repository
+        env:
+          GITHUB_PAT: ${{ secrets.PAT }}
+        uses: actions/checkout@master
+      - name: Install Dependencies
+        run: |
+          Rscript -e "install.packages(c('remotes'))"
+          Rscript -e "remotes::install_deps(dependencies = TRUE)"
+      - name: Render Book
+        run: Rscript -e 'bookdown::render_book("index.Rmd", output_dir = "_public")'
+      - uses: actions/upload-artifact@v2
+        with:
+          name: _public
+          path: _public/
+          retention-days: 5
+      - name: Install npm
+        if: ${{ github.repository == 'inseefrlab/utilitr' }}
+        uses: actions/setup-node@v1          
+      - name: Deploy to Netlify
+        if: ${{ github.repository == 'inseefrlab/utilitr' }}
+        # NETLIFY_AUTH_TOKEN and NETLIFY_SITE_ID added in the repo's secrets
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          npm install --unsafe-perm=true netlify-cli -g
+          netlify init
+          netlify deploy --prod --dir="_public" --message "Deploy master"
+  pagedown:
+    if: "!contains(github.event.commits[0].message, '[skip ci]')"
+    runs-on: ubuntu-latest
+    needs: docker
+    container: inseefrlab/utilitr:latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@master
+      - name: Install Dependencies
+        env:
+          GITHUB_PAT: ${{ secrets.PAT }}
+        run: |
+          Rscript -e "install.packages(c('remotes'))"
+          Rscript -e "remotes::install_github('rstudio/pagedown')"
+          Rscript -e "remotes::install_deps(dependencies = TRUE)"
+      - name: Render Book
+        run: |
+          mkdir _pagedown_output -p
+          Rscript -e "bookdown::render_book('index.Rmd', output_format = 'pagedown::html_paged', output_file = '_pagedown_output/index.html')"
+          Rscript -e "pagedown::chrome_print('_pagedown_output/index.html', '_pagedown_output/DocumentationR.pdf', extra_args = c('--disable-gpu', '--no-sandbox'), timeout = 600, options = list(transferMode = 'ReturnAsStream'), verbose = 1)"
+      - uses: actions/upload-artifact@v2
+        with:
+          name: DocumentationR_pagedown
+          path: _pagedown_output/DocumentationR.pdf
+          retention-days: 5
