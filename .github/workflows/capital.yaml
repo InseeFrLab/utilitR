@@ -6,15 +6,11 @@ jobs:
   build:
     if: "!contains(github.event.commits[0].message, '[skip ci]')"
     runs-on: ubuntu-latest
-    container: inseefrlab/utilitr:latest
+    container: rocker/verse:latest
     steps:
       - name: Checkout Repository
         env:
           GITHUB_PAT: ${{ secrets.PAT }}
         uses: actions/checkout@master
-      - name: Install Dependencies
-        run: |
-          Rscript -e "install.packages(c('remotes'))"
-          Rscript -e "remotes::install_deps(dependencies = TRUE)"
       - name: Détection des majuscules
         run: Rscript -e 'source("./_tools/nouppercase.R")'
