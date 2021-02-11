@@ -6,14 +6,11 @@ jobs:
   build:
     if: "!contains(github.event.commits[0].message, '[skip ci]')"
     runs-on: ubuntu-latest
-    container: rocker/r-ver:latest
+    container: rocker/verse:latest
     steps:
       - name: Checkout Repository
         env:
           GITHUB_PAT: ${{ secrets.PAT }}
         uses: actions/checkout@master
-      - name: Install Dependencies
-        run: |
-          Rscript -e "install.packages('knitr')"
       - name: Détection des majuscules
         run: Rscript -e 'source("./_tools/nouppercase.R")'
