@@ -1,7 +1,7 @@
 # `utilitR` : une documentation utile pour `R`  <a href='https://www.utilitr.org'><img src='resources/logo-utilitR.svg' align="right" height="139px" /></a>
 
 <!-- badges: start -->
-[![build-doc Actions Status](https://github.com/InseeFrLab/utilitR/workflows/Production%de%la%documentation/badge.svg)](https://github.com/InseeFrLab/utilitR/actions)
+[![build-doc Actions Status](https://github.com/InseeFrLab/utilitR/workflows/Production%20de%20la%20documentation/badge.svg)](https://github.com/InseeFrLab/utilitR/actions)
 
 
 <!--[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gl/linogaliana%2FdocumentationR/binder?urlpath=rstudio)--->
