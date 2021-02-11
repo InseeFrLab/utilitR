@@ -5,6 +5,7 @@
 [![build-doc Actions Status](https://github.com/InseeFrLab/utilitR/workflows/pagedown%20PDF/badge.svg)](https://github.com/InseeFrLab/utilitR/actions)
 [![build-doc Actions Status](https://github.com/InseeFrLab/utilitR/workflows/construction%20image%20docker/badge.svg)](https://github.com/InseeFrLab/utilitR/actions)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gl/linogaliana%2FdocumentationR/binder?urlpath=rstudio)
+[![HitCount](http://hits.dwyl.com/InseeFrLab/utilitR.svg)](http://hits.dwyl.com/InseeFrLab/utilitR)
 <!-- badges: end -->
 
 <br>
