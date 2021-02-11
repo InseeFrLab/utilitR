@@ -9,7 +9,6 @@ on:
       - fix-version
       
 jobs:
-
   docker:
     if: "!contains(github.event.commits[0].message, '[skip ci]')"
     runs-on: ubuntu-latest
@@ -38,7 +37,6 @@ jobs:
       -
         name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
-        
   bookdown-prod:
     if: "!contains(github.event.commits[0].message, '[skip ci]')"
     needs: docker
@@ -73,7 +71,6 @@ jobs:
           npm install netlify-cli -g
           netlify init
           netlify deploy --alias=${CI_COMMIT_REF_NAME} --dir="_public" --message "Deploy from ${GITHUB_REF}"
-
   pagedown:
     if: "!contains(github.event.commits[0].message, '[skip ci]')"
     runs-on: ubuntu-latest
