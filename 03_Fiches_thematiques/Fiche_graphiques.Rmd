@@ -4,100 +4,118 @@
 
 L'utilisateur souhaite réaliser des graphiques (nuages de points, histogrammes, densité...) et les personnaliser (légendes, titres, échelles...).
 
-
 ::: {.recommandation data-latex=""}
-
-* Il est recommandé d'utiliser le *package* `ggplot2` qui permet de réaliser et de personnaliser un grand nombre de représentations graphiques;
+* Il est recommandé d'utiliser le *package* `ggplot2` qui permet de réaliser et de personnaliser un grand nombre de représentations graphiques ;
 * Il est conseillé aux utilisateurs débutants d'utiliser l'*add-in* `esquisse` pour se familiariser avec `ggplot2`.
 :::
 
 ## Découvrir `ggplot2` avec l'_add-in_ `esquisse`
 
-### A quoi sert `esquisse`?
+### A quoi sert `esquisse` ?
 
-Le _package_ `esquisse` fournit une interface graphique qui facilite la construction de graphiques avec `ggplot2`. L'objectif de ce *package* est de vous aider à construire rapidement un code `ggplot2` pour faire le graphique que vous voulez. En revanche, **l'utilisation d'`esquisse` ne remplace pas l'écriture d'un code `ggplot2`, et cet _add-in_ ne doit pas être utilisé pour réaliser et exporter un graphique sans sauvegarder le code qui le produit** (sinon vous ne pourrez ni reproduire ni modifier votre graphique par la suite).
+Le _package_ `esquisse` propose une interface graphique qui facilite la construction de graphiques avec `ggplot2`. L'objectif de ce *package* est de vous aider à construire rapidement un code `ggplot2` pour faire le graphique que vous voulez. En revanche, **l'utilisation d'`esquisse` ne remplace pas l'écriture d'un code `ggplot2`, et cet _add-in_ ne doit pas être utilisé pour réaliser et exporter un graphique sans sauvegarder le code qui le produit** (sinon vous ne pourrez ni reproduire ni modifier votre graphique par la suite).
 
 Vous pouvez en apprendre davantage sur les *add-ins* dans le paragraphe de [présentation des _add-ins_](#presentation_addin).
 
+::: {.conseil data-latex=""}
+L'interface graphique d'`esquisse` est assez gourmande en ressources, il est donc déconseillé de l'utiliser avec des données volumineuses (plus de 100 000 observations). Si vous êtes dans cette situation, **il est fortement conseillé d'utiliser `esquisse` sur une petite partie de vos données** (les 1 000 ou 10 000 premières lignes par exemple). Une fois que vous avez construit le code `ggplot2`, vous pouvez le copier-coller dans un script `R` et réaliser le graphique sur l'ensemble des données.
+:::
+
+::: {.remarque data-latex=""}
+L'_add-in_ `esquisse` ne fonctionne qu'avec une version récente de  RStudio (version égale ou supérieure à 1.2). Si votre installation de  RStudio, vous devrez procéder à une mise à jour avant d'utiliser `esquisse`.
+:::
+
 ### Comment utiliser `esquisse`
 
-Pour utiliser `esquisse`, il faut évidemment préalablement installer le *package*:
+L'_add-in_ `esquisse` est disponible sous la forme d'un _package_, qu'il faut installer le cas échéant :
 
 ```{r eval = FALSE}
 install.packages("esquisse")
 ```
 
-Pour lancer l'interface, ouvrez le menu *Addins* dans la barre d'outils de RStudio, et cliquez sur *'ggplot2' builder*^[Vous pouvez aussi lancer la commande `esquisse::esquisser()` dans la Console.].
+Cette section illustre l'utilisation d'`esquisse` avec la table `data_iris_paris_2017` du _package_ `doremifasolData`, qui contient des données économiques et sociales sur les iris de la ville de Paris en 2017. Il faut donc charger ces données dans `R` :
 
-![](./pics/intro_graphiques/esquisse_addin_menu.png)
+```{r, message = FALSE}
+library(doremifasolData)
+data_iris_paris2017 <- doremifasolData::data_iris_paris_2017
+```
 
-Une fenêtre s'ouvre: la première étape consiste à choisir un *dataframe* de votre environnement, et éventuellement à ne sélectionner que certaines de ses variables.
+Une fois qu'il est installé, vous pouvez accéder à cet _add-in_ en cliquant sur *'ggplot2' builder* dans le menu _Addins_ de  RStudio.
 
-![Choix d'un data frame](./pics/intro_graphiques/esquisse_choose_dataset.png)
-Une fois le choix effectué, cliquez sur *Validate imported data*.
+![](./pics/intro_graphiques/addin_rstudio.png)
 
-::: {.conseil data-latex=""}
-L'interface graphique d'`esquisse` est assez gourmande en ressources, il est donc déconseillé de l'utiliser avec des données volumineuses (plus de 100 000 observations). Si vous êtes dans cette situation, **il est fortement conseillé d'utiliser `esquisse` sur une petite partie de vos données** (les 1000 ou 10000 premières lignes par exemple). Une fois que vous avez construit le code `ggplot2`, vous pouvez le copier-coller dans un script `R` et réaliser le graphique sur l'ensemble des données.
-:::
+![](./pics/intro_graphiques/addin_rstudio2.png)
 
-L'interface principale s'affiche alors. La liste des variables du *dataframe* apparaît en haut, et vous pouvez les faire glisser dans les zones *X*, *Y*, *Fill*, *Color*, *Size* et *Facet* pour créer des mappages. Le graphique se met automatiquement à jour.
+Vous pouvez également accéder à `esquisse` en exécutant le code suivant :
 
+```{r, eval = FALSE}
+library(esquisse)
+esquisser()
+```
 
-![](./pics/intro_graphiques/esquisse_plot.png)
+Dans la première boîte de dialogue, vous devez sélectionner le `data.frame` qui contient les données que vous voulez représenter sur le graphique. Vous pouvez éventuellement sélectionner certaines variables, et modifier le type de certaines variables.
 
-Par défaut, `esquisse` sélectionne le type de graphique le plus approprié selon la nature de vos variables. Mais vous pouvez choisir un autre type de graphique à l'aide de l'icône en haut à gauche.
+![](./pics/intro_graphiques/choix_dataframe.png){width=75%}
 
-Enfin, une série de menus en bas de l'interface vous permettent de personnaliser les titres, les labels, la présentation ou de filtrer des valeurs de vos variables.
+Une nouvelle boîte de dialoque s'affiche, grâce à laquelle vous pouvez contruire un graphique. Les variables présentes dans vos données sont listées en haut.
 
-Quand vous avez généré un graphique que vous souhaitez conserver, ouvrez le menu *Export & code*:
+![](./pics/intro_graphiques/esquisse_vide.png){width=75%}
 
-![](./pics/intro_graphiques/esquisse_export.png)
+Vous pouvez déplacer les variables dans les différentes catégories (dans le cadre vert) : `x` pour les abscisses, `y` pour les ordonnées, `color` et `size` pour la couleur et la taille des éléments graphiques... `esquisse` vous propose automatiquement le type de graphique le plus adapté à vos données, mais vous pouvez changer le type de graphique en cliquant sur la petite icône graphique en haut à gauche (cadre rouge).
 
-Vous y trouverez le code `R` correspondant au graphique actuellement affiché. Vous pouvez dès lors le copier pour le coller dans votre script, ou cliquer sur *Insert code in script* pour l'insérer directement dans votre script à l'endroit où se trouve votre curseur.
+![](./pics/intro_graphiques/esquisse_champs.png){width=75%}
 
-`esquisse` ne propose pas (encore) tous les `geom` ou toutes les possibilités de `ggplot2`, mais ça peut être un outil très utile et pratique pour une exploration rapide de données ou lorsqu'on est un peu perdu dans la syntaxe de `ggplot2`.
+Enfin, il est possible de modifier l'apparence du graphique (titres des axes, légende...) avec les menus en bas.
 
-Pour plus d'informations, vous pouvez vous référer à la [page du projet sur GitHub](https://github.com/dreamRs/esquisse) (en anglais).
+![](./pics/intro_graphiques/esquisse_options.png){width=75%}
+
+Une fois que le graphique est terminé, vous pouvez récupérer le code `ggplot2` qui produit ce graphique en cliquant sur *Export & code* (cadre rouge).Vous pouvez le copier-coller dans un script `R`. **Il n'est pas recommandé d'exporter directement le graphique**, car en ce cas vous ne pourrez ni reproduire ni modifier votre graphique par la suite.
+
+![](./pics/intro_graphiques/esquisse_code.png){width=75%}
 
 ## Les concepts clefs de `ggplot2`
 
 L'objectif du *package* `ggplot2` est de fournir une approche unique pour produire quasiment toute représentation graphique de données. Ce _package_ propose un grand nombre de fonctions permettant de personnaliser finement les représentations graphiques. Cette fiche n'est donc qu'une introduction succincte à `ggplot2`. Pour des formations plus détaillées, se référer à {#ggplot2Ressources}.
 
+Pour commencer, il faut charger le _package_ avec `library`. Cette fiche illustre l'utilisation de `ggplot2` avec la table `data_iris_paris_2017` du _package_ `doremifasolData`, qui contient des données économiques et sociales sur les iris de la ville de Paris en 2017.
+
 ```{r, message = FALSE}
 library(ggplot2)
+library(doremifasolData)
+data_iris_paris_2017 <- doremifasolData::data_iris_paris_2017
+ggplot2::theme_set(theme_minimal())
 ```
 
 ### Introduction
 
-**La fonction essentielle de `ggplot2` est `ggplot()`.** Il faut définir quatre éléments pour construire un graphique avec `ggplot()`: 
+**La fonction essentielle de `ggplot2` est `ggplot()`.** Il faut définir quatre éléments pour construire un graphique avec `ggplot()` : 
 
 - la **table de données** ;
-- le ***mapping*** : on définit dans l'_aesthetic_ (ou `aes`) le lien entre les variables des données et ce que l'on veut représenter sue le graphique (quelle variable sur l'axe `x`, sur l'axe `y`, quelle variable pour définir une graduation de couleurs...) ;
-- la **forme géométrique ou _geometry_ ** : on définit sous quelle représentation graphique on représente les paramètres précédents. Sous `ggplot`, ces fonctions sont de la forme `geom_XX()`;
+- le ***mapping*** : on définit dans l'_aesthetic_ (ou `aes`) le lien entre les variables des données et ce que l'on veut représenter sur le graphique (quelle variable sur l'axe `x`, sur l'axe `y`, quelle variable pour définir une graduation de couleurs...) ;
+- la **forme géométrique ou _geometry_ ** : on définit la représentation graphique qu'on souhaite utiliser. Les géométries ont toutes un nom qui commence par `geom_` ; par exemple, il faut utiliser la géométrie `geom_point()` pour réaliser un nuage de points ;
 - les **paramètres** : on définit les autres paramètres qui dépendent de constantes (par exemple : je veux que toutes mes lignes soient rouges ou de taille 2 pixels).
 
 **La construction d'un graphique repose sur le principe de couches successives.** Les différentes couches graphiques se superposent et s'enchaînent grâce à l'**opérateur `+`**, comme un pipe. Il est possible d'aller à la ligne dans une instruction `ggplot()`, il suffit que l'opérateur `+` figure à la fin de la ligne.
 
-L'écriture type d'un graphique est donc: 
+Voici un exemple de code qui crée un nuage de points (géométrie `geom_point()`) à partir des données `mes_donnees`, avec les variables `variable1` en abscisse et `variable2` en ordonnée :
 
 ```{r, eval=F}
-ggplot(data = <DATA>) + 
-  <FORME_GEO>(mapping = aes(<MAPPINGS>), ...=<PARAMS>)
+ggplot(data = mes_donnees) + 
+  geom_point(mapping = aes(x = variable1, y = variable2), ...)
 ```
 
 ### Le *mapping* et l'utilisation d'`aes()` {#mapping}
 
-Le *mapping* désigne le lien logique entre les variables et les éléments visuels représentés sur le graphique. Un *mapping*, désigne dans `ggplot2` la relation entre un **attribut graphique** de la `geometry` (position, couleur, taille...) et **une variable** du tableau de données. On déclare le *mapping* grâce à la fonction `aes()` (pour _aesthetic_), qui sert donc à identifier les variables que l'on souhaite représenter sur le graphique. 
+Le *mapping* désigne dans `ggplot2` la relation entre un **attribut graphique** de la `geometry` (abscisse, ordonnée, couleur...) et **une variable** présente dans la table de données. On déclare le *mapping* grâce à la fonction `aes()` (pour _aesthetic_), qui sert donc à identifier les variables que l'on souhaite représenter sur le graphique. 
 
-**Les arguments fondamentaux de `aes()` sont les variables représentées sur l'axe des abscisses et l'axe des ordonnées (`x` et `y`).** Par exemple, on écrit `aes(x = Petal.Width, y = Petal.Length)` si l'on souhaite représenter la longueur des pétales (sur l'axe `y`) en fonction de la largeur des pétales (sur l'axe `x`).
+**Les arguments fondamentaux de `aes()` sont les variables représentées sur l'axe des abscisses et l'axe des ordonnées (`x` et `y`).** Par exemple, on écrit `aes(x = niveau_vie_median, y = taux_chomage)` si l'on souhaite représenter pour chaque iris le taux de chômage (sur l'axe `y`) en fonction du niveau de vie médian (sur l'axe `x`).
 
-```{r}
-iris <- iris
-ggplot(iris) + 
-  geom_point(aes(x = Petal.Width, y = Petal.Length))
+```{r, warning = FALSE}
+ggplot(data_iris_paris_2017) + 
+  geom_point(aes(x = niveau_vie_median, y = taux_chomage))
 ```
 
-Par ailleurs, la fonction `aes()` admet d'autres arguments qui permettent de modifier l'apparence  des attributs graphiques selon une troisième variable du jeu de données.
+Par ailleurs, la fonction `aes()` admet d'autres arguments qui permettent de modifier l'apparence des attributs graphiques selon une troisième variable du jeu de données. Voici les arguments supplémentaires les plus courants :
 
 Attribut   |Description
 -----------------|------------------------------------
@@ -109,27 +127,27 @@ Attribut   |Description
 **`linetype`**| Type de ligne (continue, pointillée, ...)
 
 
-Dans l'exemple qui suit, on représente la longueur des pétales (sur l'axe `y`) en fonction de la largeur des pétales (sur l'axe `x`), en colorant les points en fonction de l'espèce de fleurs (`color = Species`).
+Dans l'exemple qui suit, on représente pour chaque iris le taux de chômage (sur l'axe `y`) en fonction du niveau de vie médian (sur l'axe `x`), en colorant les points en fonction de la part des cadres et professions intellectuelles supérieures parmi les actifs de l'iris (`color = part_cadres`).
 
-```{r}
-ggplot(iris) + 
-  geom_point(aes(x = Petal.Width, y = Petal.Length, color = Species))
+```{r, warning = FALSE}
+ggplot(data_iris_paris_2017) + 
+  geom_point(aes(x = niveau_vie_median, y = taux_chomage, color = part_cadres))
 ```
 
 Il est également possible d'utiliser ces mêmes arguments pour modifier un attribut graphique sans le lier à une variable. En ce cas, on définit l'attribut **à l'extérieur de l'_aesthetic_** (donc à l'extérieur de `aes()`). Voici l'exemple précédent, modifié pour que tous les points soient (rouge), et non en fonction d'une variable. L'argument `color` est donc à l'extérieur de `aes()`.
 
-```{r}
-ggplot(iris) + 
-  geom_point(aes(x = Petal.Width, y = Petal.Length), color = "red")
+```{r, warning = FALSE}
+ggplot(data_iris_paris_2017) + 
+  geom_point(aes(x = niveau_vie_median, y = taux_chomage), color = "red")
 ```
 
 ::: {.remarque data-latex=""}
-La notion de *mapping* et la définition des attributs graphiques à l'intérieur et à l'extérieur d'`aes()` sont une des principales difficultés de `ggplot2`. Il est normal de tâtonner lorsqu'on commence à les utiliser. Pour s'y retrouver, il suffit de suivre la règle suivante. **Si on établit un lien entre les valeurs d’une variable et un attribut graphique, il s'agit d'un _mapping_ qui doit être défini à l'intérieur de la fonction `aes()`. Dans le cas contraire, il s'agit d'un simple paramètre du graphique, qui doit être défini en-dehors de la fonction `aes()`.**
+La notion de *mapping* et la définition des attributs graphiques à l'intérieur et à l'extérieur d'`aes()` sont une des principales difficultés de `ggplot2`. Il est normal de tâtonner lorsqu'on commence à les utiliser. Pour s'y retrouver, il suffit de suivre la règle suivante. **Si on établit un lien entre les valeurs d’une variable et un attribut graphique, il s'agit d'un _mapping_ qui doit être défini à _l'intérieur_ de la fonction `aes()`. Dans le cas contraire, il s'agit d'un simple paramètre du graphique, qui doit être défini à _l'extérieur_ de la fonction `aes()`.**
 :::
 
 ### Les formes géométriques
 
-La forme géométrique ou _geometry_ désigne le type de représentation graphique utilisée (nuage de points, histogrammes...). Pour spécifier le type de représentation que l'on souhaite, il faut utiliser les fonctions de la forme **`geom_[XXX]`**. Le tableau ci-dessous présente quelques représentations graphiques classiques.
+La forme géométrique ou _geometry_ désigne le type de représentation graphique utilisée (nuage de points, histogrammes...). On spécifie le type de représentation que l'on souhait en utilisant une fonction dont le nom commence par **`geom_`**. Le tableau ci-dessous présente quelques représentations graphiques classiques. 
 
 _geometry_         | Description              | Arguments 
 -------------------|--------------------------|------------------------------------
@@ -142,28 +160,32 @@ _geometry_         | Description              | Arguments
 
 Voici deux exemples d'utilisation.
 
-A COMPLETER
+
+
+
 
 ::: {.remarque data-latex=""}
-Il existe un grand nombre de formes géométriques dans `ggplot2`. Par ailleurs, de très nombreux *packages* proposent encore d'autres formes géométriques pour réaliser des représentations graphiques particulières (cartes avec `ggmap`, arbres généalogiques avec `ggtree` et `ggenealogy`, résultats d'élections avec `ggparliament`...). Sur la cartographie avec `R`, vous pouvez consulter l'EXCELLENTE FICHE A VENIR PAR LIONEL CACHEUX (REFERENCE A COMPLETER A TERME).
+Il existe un grand nombre de géométries dans `ggplot2`. Vous pouvez en afficher la liste en exécutant la commande `help.search("^geom_", package = "ggplot2")`.
+
+Par ailleurs, de très nombreux *packages* proposent encore d'autres géométries pour réaliser des représentations graphiques particulières (cartes avec `ggmap`, arbres généalogiques avec `ggtree` et `ggenealogy`, résultats d'élections avec `ggparliament`...).
 :::
 
 
 ### Combiner plusieurs formes géométriques
 
-On peut représenter plusieurs formes géométriques simultanément sur un même graphique (un nuage de points et une droite de régression par exemple). il suffit de les ajouter les unes aux autres avec l’opérateur `+`. Voici un exemple:
+On peut représenter plusieurs formes géométriques simultanément sur un même graphique (un nuage de points et une droite de régression par exemple). il suffit de les ajouter les unes aux autres avec l’opérateur `+`. Voici un exemple :
 
-```{r}
-ggplot(iris) + 
-  geom_point(aes(x = Petal.Width, y = Petal.Length), alpha = 0.2) + 
-  geom_smooth(aes(x = Petal.Width, y = Petal.Length), method = "lm")
+```{r, warning = FALSE}
+ggplot(data_iris_paris_2017) + 
+  geom_point(aes(x = niveau_vie_median, y = taux_chomage), alpha = 0.2) + 
+  geom_smooth(aes(x = niveau_vie_median, y = taux_chomage), method = "lm")
 ```
 
-::: {.conseil data-latex=""}
-Il peut arriver qu'on définisse le même _mapping_ dans plusieurs formes géométriques, c'est-à-dire qu'on utilise les mêmes relations entre les variables et les attributs graphiques dans des formes géométriques différents (exemple: les variables `x` et `y` sont les mêmes dans un nuage de points et dans la droite de régression). Dans ce cas, il est possible de déclarer le _mapping_ directmement dans l’appel à `ggplot()` plutôt que de le répéter dans chaque forme géométrique. Le _mapping_ sera alors valable pour toutes les formes géométriques du graphique (sauf si celles-ci redéfinissent explicitement le _mapping_). Le code suivant produit exactement le même graphique que l'exemple précédent:
+::: {.remarque data-latex=""}
+Il peut arriver qu'on définisse le même _mapping_ dans plusieurs formes géométriques, c'est-à-dire qu'on utilise les mêmes relations entre les variables et les attributs graphiques dans des formes géométriques différents (exemple : les variables `x` et `y` sont les mêmes dans un nuage de points et dans la droite de régression). Dans ce cas, il est possible de déclarer le _mapping_ directmement dans l’appel à `ggplot()` plutôt que de le répéter dans chaque forme géométrique. Le _mapping_ sera alors valable pour toutes les formes géométriques du graphique (sauf si celles-ci redéfinissent explicitement le _mapping_). Le code suivant produit exactement le même graphique que l'exemple précédent :
 
-```{r}
-ggplot(iris, aes(x = Petal.Width, y = Petal.Length)) + 
+```{r, eval = FALSE}
+ggplot(data_iris_paris_2017, aes(x = niveau_vie_median, y = taux_chomage)) + 
   geom_point(alpha = 0.2) + 
   geom_smooth(method = "lm")
 ```
@@ -172,42 +194,47 @@ ggplot(iris, aes(x = Petal.Width, y = Petal.Length)) +
 
 ### Créer un graphique par modalité d'une variable
 
-La fonction `facet_wrap()` permet de représenter des données *en facettes*, c'est à dire décomposées par une variable de croisement. Chaque modalité de la variable catégorielle servira à découper les données pour générer un graphique. Par défaut, les échelles des axes $x$ et $y$ sont identiques mais il est possible de les distinguer avec le paramètre `scales` (qui prend la valeur `"free_x"` pour libérer l'axe des abscisses, `"free_y"` pour l'axe des ordonnées ou `"free"` pour les deux axes).
+La fonction `facet_wrap()` permet de représenter des données *en facettes*, c'est-à-dire décomposées par une variable de croisement. Chaque modalité de la variable catégorielle servira à découper les données pour générer un graphique. Par défaut, les échelles des axes $x$ et $y$ sont identiques mais il est possible de les distinguer avec le paramètre `scales` (qui prend la valeur `"free_x"` pour libérer l'axe des abscisses, `"free_y"` pour l'axe des ordonnées ou `"free"` pour les deux axes). Les arguments optionnels `nrow` et `ncol` permettent de contrôler le nombre lignes et de colonnes. Voici un exemple sur les iris parisiens :
 
-```{r, eval=TRUE}
-ggplot(diamonds) +
-	geom_point(mapping = aes(x = carat, y = price)) +
-	facet_wrap(~cut, scales = 'free')
+```{r, warning = FALSE}
+ggplot(data_iris_paris_2017) +
+	geom_point(mapping = aes(x = niveau_vie_median, y = taux_chomage, color = part_cadres)) +
+	facet_wrap(~ categorie_arrondissement, scales = 'free', ncol = 1)
 ```
 
 
 ## Comment personnaliser un graphique
 
-Il est possible de personnaliser un graphique `ggplot2` de deux façons:
+Il est possible de personnaliser un graphique `ggplot2` de deux façons :
 
-- en modifiant les options une à une (titres du graphique et des axes, graduation des axe...);
+- en modifiant les options une à une (titres du graphique et des axes, graduation des axe...) ;
 - en utilisant un `theme` prédéfini ou en le définissant soi-même.
 
 Avec `ggplot`, il est possible d'aboutir au même résultat avec plusieurs instructions, en particulier lorsqu'il est question de customisation du thème. Il ne faut ainsi pas hésiter à chercher une solution sur le site [StackOverflow](https://stackoverflow.com/questions/tagged/ggplot2?sort=faq).
 
 ### Les options des graphiques
 
-#### Titre et libellé des axes
+Les graphiques réalisés avec `ggplot2` peuvent être personnalisés finement. Chaque nouvel élément graphique est à rajouter à l'objet `ggplot` avec l’opérateur `+`.
 
-Chaque nouvel élément graphique est à rajouter sous forme de layer. Ici, nous utilisons la fonction **labs** qui permet de définir les titres de tous les éléments possibles de l'aesthétic, ainsi que le titre général du graphique (*title*), le sous-titre (*subtitle*) et le bas de page (*caption*). À noter qu'il existe plusieurs autres façons de spécifier ces élèments par des couches spécifiques: `ggtitle`, `xlab`, `ylab`,...
+#### Définir les titres du graphique et des axes
 
-```{r}
-ggplot(iris) +
-  geom_point(aes(x = Petal.Width, y = Petal.Length, color = Species)) +
-  labs(title="Longueur des pétales en fonction de la largeur des pétales",
-       x="Largeur des pétales ",
-       y="Longueur des pétales ",
-       caption="Source : iris")
+La fonction `labs()` permet de définir les titres : le titre général du graphique (`title`), le sous-titre (`subtitle`), la note de bas de graphique (`caption`), les axes (`x`, `y`)... Il existe d'autres façons de définir les titres (`ggtitle`, `xlab`, `ylab`).
+
+```{r, warning = FALSE}
+ggplot(data_iris_paris_2017) +
+  geom_point(aes(x = niveau_vie_median, y = taux_chomage, color = part_cadres)) +
+  labs(title="Taux de chômage par iris à Paris en fonction du niveau de vie médian",
+       x="Taux de chômage",
+       y="Niveau de vie médian",
+       color = "Part de cadres parmi les actifs",
+       caption="Sources : Filosofi 2017, RP 2017")
 ```
 
 #### Utilisation des _scales_
 
-Les fonctions _scales_ dans `ggplot2` permettent de modifier la manière dont un attribut graphique va être relié aux valeurs d’une variable, et dont la légende correspondante va être affichée. Par exemple, pour l’attribut `size`, on pourra définir les tailles minimales et maximales. Pour modifier une _scale_ existante, on ajoute un nouvel élément à notre objet ggplot2 avec l’opérateur `+`. Cet élément prend la forme `scale_<attribut>_<paramétrage>`. Les attributs sont listés dans le tableau de la section  \@ref(mapping) (`size`, `color`, `fill`...). Les paramétrages sont listés dans le tableau suivant:
+Les fonctions _scales_ dans `ggplot2` permettent de modifier la manière dont un attribut graphique est relié aux valeurs d’une variable, et dont la légende correspondante va être affichée. L'utilisation des _scales_ permet de définir facilement un grand nombre d'options. Par exemple, pour les attributs `x` et `y`, on peut définir la nature des variables (discrètes ou continues), les graduations, l'unité des étiquettes (pourcentage, euros...), et pour l'attribut `color` on peut contrôler la palette de couleur utilisée. 
+
+Pour modifier une _scale_ existante, on ajoute à l'objet `ggplot`  un élément qui prend la forme `scale_<attribut>_<échelle>`. Les attributs sont listés dans le tableau de la section  \@ref(mapping) (`size`, `color`, `fill`...). Les échelle sont listées dans le tableau suivant :
 
 Paramétrage|Description
 -----------------|--------------------------
@@ -223,37 +250,61 @@ distiller|utiliser une palette de couleur brewer (variable continue)
 gradient|utiliser un gradient de 2 couleurs
 gradient2|utiliser un gradient divergent de 3 couleurs
 
-Par exemple on peut utiliser les fonctions `scale_x_log10()` et `scale_y_log10()` pour définir des échelles logarithmiques.
+::: {.conseil data-latex=""}
+Le _package_ `scales` est très utile pour mettre en forme les étiquettes des échelles (pourcentage, euro, dollar...) et est développé par les auteurs de `ggplot2`. Il est vivement conseillé de l'utiliser lorsqu'on veut produire des graphiques pour une publication.
+:::
 
-```{r}
-ggplot(iris) + 
-  geom_point(aes(x = Petal.Width, y = Petal.Length, color = Species)) +
-  scale_x_log10() +
-  scale_y_log10()
+Dans l'exemple suivant, on utilise deux _scales_ :
+
+* la fonction `scale_x_log10()` pour mettre en forme l'axe des abscisses : les valeurs sont représentées selon une échelle logarithmique, qui va de 10 000 à 70 000 euros, avec une graduation tous les 10 000 euros ;
+* la fonction `scale_y_continuous()` pour mettre en forme l'axe des ordonnées : l'axe va  de 0 à 0.3, les étiquettes sont exprimées en pourcentage et on gradue tous les 5 points.
+
+```{r, warning = FALSE, message = FALSE}
+library(scales)
+ggplot(data_iris_paris_2017) + 
+  geom_point(aes(x = niveau_vie_median, y = taux_chomage, color = part_cadres)) +
+  scale_x_log10(
+    limits = c(10000, 70000), breaks = seq(10000, 60000, 10000),
+    labels = dollar_format(prefix = "", suffix = " €", 
+                           big.mark = " ", accuracy = 1)) + 
+  scale_y_continuous(
+    limits = c(0, 0.3), breaks = seq(0, 0.3, 0.05), 
+    labels = percent_format(accuracy = 1))
 ```
 
 #### Modifier les échelles de couleur
 
-Un cas particulier de la section précédente porte sur les échelles de couleur, utilisés principalement avec les attributs `color` (pour la couleur des points ou des courbes) et `fill` (pour le remplissage des barres dans un histogramme). Il existe un grand nombre d'échelles de couleur, utilisables avec les fonctions `scale_color_<paramétrage>` et `scale_fill_<paramétrage>`:
+Un cas particulier de la section précédente porte sur les échelles de couleur, utilisés principalement avec les attributs `color` (pour la couleur des points ou des courbes) et `fill` (pour le remplissage des barres dans un histogramme). Il existe un grand nombre d'échelles de couleur, utilisables avec les fonctions `scale_color_<paramétrage>` et `scale_fill_<paramétrage>` :
 
-* `scale_color_brewer` et `scale_fill_brewer` permettent d'utiliser les nombreuses échelles de couleur du _package_ `RColorBrewer` (plus d'informations [ici](http://www.sthda.com/french/wiki/couleurs-dans-r#utilisation-des-palettes-de-couleurs-rcolorbrewer));
-* `scale_color_grey` et `scale_fill_grey` permettent d'utiliser des échelles de gris;
-* `scale_color_gradient` et `scale_fill_gradient` permettent d'utiliser des gradients de couleur personnalisés;
-* `scale_color_viridis` et `scale_fill_viridis` permettent d'utiliser les échelles de couleur du _package_ `viridis`. Ces échelles de couleur présentent deux grands avantages: elles conviennent aux daltoniens et restent lisibles lorsque le graphique est imprimé en noir et blanc (plus d'informations sur `viridis` dans [cette vignette](https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html)).
+* `scale_color_brewer` et `scale_fill_brewer` permettent d'utiliser les nombreuses échelles de couleur du _package_ `RColorBrewer` (plus d'informations [ici](http://www.sthda.com/french/wiki/couleurs-dans-r#utilisation-des-palettes-de-couleurs-rcolorbrewer)) ;
+* `scale_color_grey` et `scale_fill_grey` permettent d'utiliser des échelles de gris ;
+* `scale_color_gradient` et `scale_fill_gradient` permettent d'utiliser des gradients de couleur personnalisés ;
+* `scale_color_viridis` et `scale_fill_viridis` permettent d'utiliser les échelles de couleur du _package_ `viridis`. Ces échelles de couleur présentent deux grands avantages : elles conviennent aux daltoniens et restent lisibles lorsque le graphique est imprimé en noir et blanc (plus d'informations sur `viridis` dans [cette vignette](https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html)).
+
+Voici un exemple avec le graphique précédent, dans lequel on indique que la variable représentée sur l'axe des ordonnées est exprimée en pourcentage, de même que la variable indiquant la couleur des points. On choisit par ailleurs une autre échelle de couleur.
+
+```{r, warning = FALSE, message = FALSE}
+library(viridis)
+ggplot(data_iris_paris_2017) + 
+  geom_point(aes(x = niveau_vie_median, y = taux_chomage, color = part_cadres)) +
+  scale_x_log10(limits = c(10000, 70000), breaks = seq(10000, 60000, 10000)) +
+  scale_y_continuous() +
+  scale_color_viridis()
+```
+
 
 #### Modifier la légende
 
-Les fonctions `guide()` et `guides()` permettent de modifier finement la légende. Les guides peuvent être spécifiés dans chaque scale_* ou dans une instruction `guides()`. Voici un exemple:
+Les fonctions `guide()` et `guides()` permettent de modifier finement la légende. Les guides peuvent être spécifiés dans chaque _scale_ ou dans une instruction `guides()`. Voici un exemple :
 
-```{r}
-ggplot(iris) + 
-  geom_point(aes(x = Petal.Width, y = Petal.Length, color = Species)) +
-  guides(color=guide_legend(direction="horizontal",
-                           order=1,
+```{r, warning = FALSE, message = FALSE}
+ggplot(data_iris_paris_2017) + 
+  geom_point(aes(x = niveau_vie_median, y = taux_chomage, color = part_cadres)) +
+  scale_y_continuous(labels = scales::percent) +
+  scale_color_viridis(labels = scales::percent) +
+  guides(color=guide_colorbar(direction="horizontal",
                            title.position="top",
-                           title.hjust=0.5,
-                           nrow=1,
-                           label.position="bottom"))+
+                           label.position="bottom")) +
   theme(legend.position = "bottom")
 ```
 
@@ -262,46 +313,50 @@ ggplot(iris) +
 
 #### Utiliser un thème existant
 
-Lorsqu'on veut donner une apparence homogène à un grand nombre de graphiques, il est préférable de faire appel à un thème plutôt que de personnaliser tous les graphiques. Il existe des [thèmes prédéfinis](http://ggplot2.tidyverse.org/reference/index.html#section-themes) dans `ggplot` que l'on peut déjà utiliser. Par exemple : `theme_classic()`, `theme_bw()`, `theme_dark()`... Des *packages* externes permettent d'enrichir cette collection de thèmes, par exemple `ggthemes` ou `hrbrthemes`.
+Lorsqu'on veut donner une apparence homogène à un grand nombre de graphiques, il est préférable de définir un thème plutôt que de personnaliser tous les graphiques avec des options identiques. Il existe dans `ggplot2` des [thèmes prédéfinis](http://ggplot2.tidyverse.org/reference/index.html#section-themes) que l'on peut utiliser facilement. Par exemple : `theme_minimal()`, `theme_classic()`, `theme_bw()`, `theme_dark()`... Des *packages* externes permettent d'enrichir cette collection de thèmes, par exemple `ggthemes` ou `hrbrthemes`.
+
+Pour utiliser un thème prédéfini, il suffit d'utiliser la fonction `theme_set()`comme ceci :
+
+```{r, eval = FALSE, warning = FALSE, message = FALSE}
+theme_set(theme_minimal())
+```
 
 #### Définir un thème personnalisé
 
-La fonction **`theme()`** permet de créer des templates, c'est-à-dire de définir tout ce qui n'est pas lié directement aux données sur un graphique, notamment la position, la taille, la couleur et la police des éléments textuels (légende, titres du graphique et des axes), ainsi que la couleur des grilles primaires et secondaires du graphique. La définition d'un thème personnalisé dépasse le cadre de la présente fiche. Voici quelques références pour les utilisateurs intéressés:
+La fonction **`theme()`** permet de créer des templates, c'est-à-dire de définir tout ce qui n'est pas lié directement aux données sur un graphique, notamment la position, la taille, la couleur et la police des éléments textuels (légende, titres du graphique et des axes), ainsi que la couleur des grilles primaires et secondaires du graphique. La définition d'un thème personnalisé dépasse largement le cadre de la présente fiche, mais doit vous intéresser si vous devez produire des graphiques avec une apparence homogène. Voici quelques références pour les utilisateurs intéressés :
 
-- une [introduction](https://mtes-mct.github.io/parcours-r/m5/les-th%C3%A8mes.html) à la définition des thèmes;
-- le [chapitre 9 de *R Graphics Cookbook*](https://r-graphics.org/chapter-appearance) aborde la question des thèmes;
+- une [introduction en français](https://mtes-mct.github.io/parcours-r/m5/les-th%C3%A8mes.html) à la définition des thèmes ;
+- le [chapitre 9 de *R Graphics Cookbook*](https://r-graphics.org/chapter-appearance) (en anglais) aborde la question des thèmes ;
 - l'[*addin* RStudio `ggThemeAssist`](https://calligross.github.io/2016-03-28-ggthemeassist-an-add-in-for-rstudio.html) est très utile pour se familiariser avec tous les éléments personnalisables des thèmes.
 
 ## Exporter un graphique
 
-La fonction `ggsave()` de `ggplot2` permet d'exporter des graphiques dans un fichier externe. Le format recommandé est le `pdf` ou `png`. Il est néanmoins possible d'utiliser d'autres formats: eps, ps, tex (pictex) jpeg, tiff bmp, svg et wmf. Les options `width` et `height` contrôlent la taille du graphique. Attention, par défaut, ces paramètres correspondent à la taille de la fenêtre graphique de `R`, en bas à droite. Il est probable que les valeurs par défaut de ces paramètres ne vous conviennent pas, voire modifient le message de votre graphique ; n'hésitez pas à leur donner des valeurs qui conviennent à votre graphique.
+La fonction `ggsave()` de `ggplot2` permet d'exporter des graphiques dans un fichier externe. Les formats recommandés sont le `pdf`  et le `png`. Il est néanmoins possible d'utiliser d'autres formats : `eps`, `ps`, `jpeg`, `tiff`, `bmp`, `svg`... Les options `width` et `height` contrôlent la taille du graphique. Attention, par défaut, ces paramètres correspondent à la taille de la fenêtre graphique de `R`, en bas à droite. Il est probable que les valeurs par défaut de ces paramètres ne vous conviennent pas, voire modifient le message de votre graphique ; n'hésitez pas à leur donner des valeurs adaptées.
 
-Voici un exemple:
+Voici un exemple :
 
 ```{r, eval = FALSE}
-p <- ggplot(iris) +
-  geom_point(aes(x = Petal.Width, y = Petal.Length, color = Species)) +
-  labs(title="Longueur des pétales en fonction de la largeur des pétales",
-       x="Largeur des pétales ",
-       y="Longueur des pétales ",
-       caption="Source : iris")
-ggsave("dossier/export/graphiques/graphique_iris.pdf", p, width=12, height = 5)
+p <- ggplot(data_iris_paris_2017) +
+  geom_point(aes(x = niveau_vie_median, y = taux_chomage, color = part_cadres)) +
+  labs(title="Taux de chômage par iris à Paris en fonction du niveau de vie médian",
+       x="Taux de chômage",
+       y="Niveau de vie médian",
+       color = "Part de cadres parmi les actifs",
+       caption="Sources : Filosofi 2017, RP 2017")
+ggsave("dossier/export/graphiques/graphique_iris_paris.pdf", p, width=12, height = 5)
 ```
 
-## Sources
 
-Cette fiche reprend et adapte des éléments issus des sources suivantes:
 
-- [Partie `ggplot2`](https://juba.github.io/tidyverse/08-ggplot2.html) de l'introduction à `R` et au `tidyverse`;
-- [Partie `ggplot2`](https://mtes-mct.github.io/parcours-r/m5/package-ggplot2.html) de la formation à `R` du Ministère de la Transition écologique et solidaire.
-
-## Références {#ggplot2Ressources}
+## Pour en savoir plus {#ggplot2Ressources}
 
 * [La documentation officielle](http://ggplot2.tidyverse.org/index.html) (en anglais) de `ggplot2` est très complète et accessible en ligne.
 * Une "antisèche" (en français) résumant en deux pages l'ensemble des fonctions et arguments et disponible [ici](https://thinkr.fr/pdf/ggplot2-french-cheatsheet.pdf).
 * Les parties [Data visualisation](http://r4ds.had.co.nz/data-visualisation.html) et [Graphics for communication](http://r4ds.had.co.nz/graphics-for-communication.html) de l'ouvrage en ligne *R for data science*, de Hadley Wickham, sont une très bonne introduction à `ggplot2`.
-* Plusieurs ouvrages, toujours en anglais, abordent en détail l'utilisation de `ggplot2`:
-    - [ggplot2: Elegant Graphics for Data Analysis](http://www.amazon.fr/ggplot2-Elegant-Graphics-Data-Analysis/dp/0387981403/) de Hadley Wickham;
+* [Partie `ggplot2`](https://juba.github.io/tidyverse/08-ggplot2.html) de l'introduction à `R` et au `tidyverse` ;
+* [Partie `ggplot2`](https://mtes-mct.github.io/parcours-r/m5/package-ggplot2.html) de la formation à `R` du Ministère de la Transition écologique et solidaire.
+* Plusieurs ouvrages, toujours en anglais, abordent en détail l'utilisation de `ggplot2` :
+    - [ggplot2 : Elegant Graphics for Data Analysis](http://www.amazon.fr/ggplot2-Elegant-Graphics-Data-Analysis/dp/0387981403/) de Hadley Wickham ;
     - [*R Graphics Cookbook*](http://www.amazon.fr/R-Graphics-Cookbook-Winston-Chang/dp/1449316956) de Winston Chang. Le [site associé](https://r-graphics.org/) à ce dernier ouvrage comporte aussi pas mal d'exemples et d'informations intéressantes.
 
-Enfin, si `ggplot2` présente déjà un très grand nombre de fonctionnalités, il existe aussi un système d'extensions permettant d'ajouter des `geom`, des thèmes, etc. Le site [ggplot2 extensions](http://www.ggplot2-exts.org/) est une très bonne ressource pour les parcourir et les découvrir, notamment grâce à sa [galerie](http://www.ggplot2-exts.org/gallery/).
+Enfin, si `ggplot2` présente déjà un très grand nombre de fonctionnalités, il existe aussi un système d'extensions permettant d'ajouter des `geom`, des thèmes, etc. Le site [ggplot2 extensions](http://exts.ggplot2.tidyverse.org/) est une très bonne ressource pour les parcourir et les découvrir, notamment grâce à sa [galerie](http://exts.ggplot2.tidyverse.org/).

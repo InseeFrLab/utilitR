@@ -1,0 +1,204 @@
+:root {
+  --pagedjs-width: 21cm;
+  --pagedjs-height: 29.7cm;
+  --color-paper: white;
+  --color-mbox: rgba(0, 0, 0, 0.2);
+  --running-title-width: 12cm;
+  --screen-pages-spacing: 5mm;
+  --background-color-chunk: #EAEAEA;
+  --background-color-chunk-output: #F0FFE3;
+  --background-color-chunk-output: #F0FFE3;
+  --background-color-inline: #E2E2E2;
+}
+
+
+html {
+  line-height: 1.3;
+}
+
+ul {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+/* generated content */
+@media print{
+  a[href^="http"]:not([class="uri"])::after {
+    content: " (" attr(href) ")";
+    font-size: 90%;
+    hyphens: none;
+    word-break: break-all;
+    }
+}
+.references a[href^=http]:not([class=uri])::after {
+  content: none;
+}
+.main a[href^="#"]:not([class^="footnote-"]):not([href*=":"])::after {
+  content: " (page " target-counter(attr(href), page) ")";
+}
+.main a.front-matter-ref[href^="#"]:not([class^="footnote-"]):not([href*=":"])::after {
+  content: " (page " target-counter(attr(href), page, lower-roman) ")";
+}
+/* do not include page references in code blocks */
+.sourceCode a[href^="#"]:not([class^="footnote-"]):not([href*=":"])::after,
+.sourceCode a.front-matter-ref[href^="#"]:not([class^="footnote-"]):not([href*=":"])::after {
+  content: unset;
+}
+
+/* TOC, LOT, LOF */
+.toc ul, .lot ul, .lof ul {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 0;
+  overflow-x: hidden;
+}
+.toc li li {
+  padding-left: 1em;
+}
+.toc a, .lot a, .lof a {
+  text-decoration: none;
+  background: white;
+  padding-right: .33em;
+}
+.toc a::after, .lot a::after, .lof a::after {
+  /* content: leader(dotted) target-counter(attr(href), page); */
+  content: target-counter(attr(href), page);
+  float: right;
+  background: white;
+}
+.toc a.front-matter-ref::after, .lot a.front-matter-ref::after, .lof a.front-matter-ref::after {
+  /* content: leader(dotted) target-counter(attr(href), page, lower-roman); */
+  content: target-counter(attr(href), page, lower-roman);
+}
+.toc .leaders::before, .lot .leaders::before, .lof .leaders::before {
+  float: left;
+  width: 0;
+  white-space: nowrap;
+  content: ". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ";
+}
+
+/* Chapter name */
+.chapter > h1 > .header-section-number::before, .chapter-ref > .toc-section-number::before {
+  content: var(--chapter-name-before, "Chapter ");
+}
+.chapter > h1 > .header-section-number::after, .chapter-ref > .toc-section-number::after {
+  content: var(--chapter-name-after, "");
+}
+
+/* misc elements */
+.subtitle span {
+  font-size: .9em;
+}
+img {
+  max-width: 100%;
+  display: block;
+  margin: 0 auto;
+}
+/* Layout of chunks */
+pre {
+  padding: 1em;
+  background-color:   var(--background-color-chunk-output);
+  /* La couleur de la bordure à gauche des outputs de chunks */
+  /*
+  border-left: 2rem solid var(--background-color-chunk-output);
+  var(--background-color-chunk-output);
+  */
+}
+pre[class] {
+  background: var(--background-color-chunk);
+}
+abbr {
+  text-decoration: none;
+}
+
+@media screen {
+  div.sourceCode {
+    overflow: visible !important;
+  }
+  a.sourceLine::before {
+    text-decoration: unset !important;
+  }
+}
+pre.numberSource a.sourceLine {
+  left: 0 !important;
+  text-indent: -5em;
+  
+}
+pre.numberSource {
+  margin-left: 0 !important;
+}
+pre.sourceCode{
+  background-color: var(--background-color-chunk);
+  border-style: none;
+}
+table {
+  margin: auto;
+  text-align: left;
+  border-top: 1px solid #666;
+  border-bottom: 1px solid #666;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  /* Cette option évite la coupure des tableaux sur deux tables 
+  Attention: elle fait planter la compilation si un tableau est très long
+  */
+  break-inside: avoid;
+}
+table thead th {
+  border-bottom: 1px solid #ddd;
+}
+/* Centrer les titres des tableaux */
+thead {
+  text-align: center;
+  text-align-last: center;
+}
+
+table td, table th {
+  padding: 3px 5px 3px 5px;
+}
+thead, tfoot, tr:nth-child(even) {
+  background: #eee;
+}
+table::first-line {
+  font-weight: 900 ;
+}
+.footnotes {
+  font-size: 90%;
+}
+.footnotes hr::before {
+  content: "Footnotes:";
+}
+.footnotes hr {
+  border: none;
+}
+.footnote-break {
+  width: 1in;
+}
+body {
+  hyphens: none;
+  text-align: justify;
+  text-justify: inter-word;
+  text-align-last: left;
+}
+
+/* Layout of code snippets (both inline and in chunks) */
+code {
+  hyphens: none;
+  text-align: left;
+  background-color: var(--background-color-inline);
+}
+pre.sourceCode > code { 
+  background-color: var(--background-color-chunk);
+  /* Cette option évite la coupure des chunks sur deux tables 
+  Attention: elle fait planter la compilation si un chunk est très long
+  */
+  break-inside: avoid;
+}
+pre > code { 
+  background-color:   var(--background-color-chunk-output);
+}
+
+table code { 
+  background-color:   transparent;
+}
+
+

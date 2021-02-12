@@ -47,6 +47,39 @@ pages:
   only:
     - master
 
+pagedown:
+  stage: build
+  image: $BUILD_IMAGE
+  script:
+    - Rscript -e "install.packages('pagedown')"
+  # artifacts:
+  #   paths:
+  #     - _public
+  #   expire_in: 1 week
+  
+netlify-master:
+  stage: deploy
+  image: node:latest
+  script:
+    - npm install
+    - npm install netlify-cli -g
+    - netlify deploy --prod --dir _public --site "$NETLIFY_SITE_ID_MASTER" --auth "$NETLIFY_AUTH_TOKEN_MASTER"
+  only:
+    - master
+
+
+netlify:
+  stage: deploy
+  image: node:latest
+  script:
+    - npm install
+    - npm install netlify-cli -g
+    - netlify deploy --alias ${CI_COMMIT_REF_NAME} --dir _public --site "$NETLIFY_SITE_ID" --auth "$NETLIFY_AUTH_TOKEN"
+  except:
+    - master
+    - binder
+
+    
 # The purpose of this job is to invalidate the Binder cache 
 # by pushing a new commit to the `binder` branch
 binder:
