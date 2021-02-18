@@ -106,6 +106,35 @@ indicateur_001694056 <- get_insee_idbank("001694056")
 ```
 
 
+### [inseeLocalData](https://github.com/InseeFrLab/inseeLocalData)
+
+Ce package permet de télécharger les données localisées à la commune, diffusées sur insee.fr dans la rubrique ‘chiffres détaillés’, sous forme de cubes prédéfinis. Cette API est hébergée sur le catalogue des API de l'Insee. Une authentification par un jeton est donc nécessaire.
+Le package comporte une fonction unique qui permet d’importer les données présentes dans l’API Données Locales dans une liste contenant 4 objets :
+- les données statistiques ;
+- les modalités de chaque variable ;
+- l’information sur la zone demandée ;
+- l’information sur la source et le jeu de données demandé.
+
+Voici une utilisation possibles de ce package :
+
+```{r, eval = FALSE}
+# Exemple d'utilisation du package pour importer le nombre d'entreprise et d'établissement en 2017 (en géographie au 01/01/2017) selon l'activité en 5 catégorie et une indicatrice indiquant s'il s'agit d'une entreprise individuelle ou non pour la commune de Nantes:
+
+croisement <- "NA5_B-ENTR_INDIVIDUELLE"
+jeu_donnees <- "GEO2017REE2017"
+nivgeo <- "COM"
+codgeo <- "44109"
+modalite <- "all.all"
+
+donneesAPI <- get_dataset(jeton, jeu_donnees, croisement, modalite, nivgeo, codgeo)
+
+donnees <- donneesAPI$donnees # pour accéder aux données
+liste_code <- donneesAPI$liste_code # pour accéder aux nomenclatures
+info_zone <- donneesAPI$info_zone # pour accéder aux données géographiques
+source <- donneesAPI$source # pour accéder à la source
+
+```
+
 ### [OECD](https://cran.r-project.org/web/packages/OECD/index.html)
 
 ::: {.remarque data-latex=""}
