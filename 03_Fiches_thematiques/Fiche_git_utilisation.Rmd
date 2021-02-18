@@ -159,7 +159,7 @@ La première étape consiste à initialiser l'utilisation de `Git` dans le proje
 usethis::use_git()
 ```
 
-Cette fonction réalise deux opérations : elle crée automatiquement tous les fichiers de configuration nécessaires au bon fonctionnement de `Git` dans le projet sur lequel vous travaillez, et effectue un premier `commit` (voir Section XX) pour valider la création de ces fichiers. 
+Cette fonction réalise deux opérations : elle crée automatiquement tous les fichiers de configuration nécessaires au bon fonctionnement de `Git` dans le projet sur lequel vous travaillez, et effectue un premier `commit` (voir Section XX) pour valider la création de ces fichiers.
 
 
 **Etape 2 : Mettre en place le _remote_**
@@ -206,82 +206,79 @@ Il est également conseillé d'exclure les fichiers pouvant être produits par d
 Le site [https://www.toptal.com/developers/gitignore](gitignore.io) fournit un certain nombre de modèles de fichiers `.gitignore` selon le type de projet associés à `Git`. 
 :::
 
-
-## Suivre les modifications d'un projet RStudio avec `Git` {#git-local} 
-
 ### Présentation de l'interface RStudio
 
-RStudio permet d'utiliser `Git` _via_ une interface graphique. Cette interface est accessible dans l'onglet `Git` situé en haut à droite de la fenêtre RStudio. C'est grâce à cet onglet que vous pourrez effectuer la plupart des opérations `Git` courantes, qui sont présentées ci-dessous.
+RStudio permet d'utiliser `Git` _via_ une interface graphique, accessible dans l'onglet `Git` situé en haut à droite de la fenêtre RStudio. 
 
 ```{r, echo = FALSE}
 include_image("./pics/git/create_project_3.png")
 ```
 
+C'est grâce à cette interface que vous pourrez effectuer la plupart des opérations `Git` courantes, qui sont présentées ci-dessous. Les principales commandes de cette interface sont les suivantes :
+
+- `Commit` : valider les modifications d'un ou plusieurs fichier(s) ;
+- `Pull` : récupérer sur le dépôt distant les modifications apportées au projet par d'autres contributeurs ;
+- `Push` : partager sur le dépôt distant les modifications que vous avez apportées au projet ;
+- `History` : consulter l'historique des modifications du projet ; 
+- `New Branch` : créer une nouvelle branche dans le dépôt `Git` ;
+- le menu déroulant tout à droite permet de changer de branche.
+
 ::: {.remarque}
-Si l'onglet `Git` n'apparaît pas, c'est que votre projet RStudio n'utilise pas `Git`. Reportez-vous à la section [].
+Si l'onglet `Git` n'apparaît pas dans la fenêtre RStudio, c'est que votre projet RStudio n'utilise pas `Git`. Reportez-vous à la section [Initialiser l'usage de `Git` dans un projet RStudio].
 :::
 
 
+## Suivre les modifications d'un projet RStudio avec `Git` {#git-local} 
+
+### Repérer les modifications apportées au projet avec RStudio
 
 
+METTRE UNE CAPTURE D'ECRAN AVEC LES STATUTS
 
+Le statut du fichier n'est pas le même pour tous les fichiers :
 
+* `M`: les modifications de ce fichier sont suivies par `Git`, et le fichier a été modifié depuis la dernière fois que ses modifications ont été validées ;
+* `??`: les modifications de ce fichier ne sont pas suivies par `Git` ;
+* `D`: le fichier a été supprimé (ou renommé).
 
-### Valider les modifications d'un fichier
+### Suivre les modifications d'un fichier
+
+#### Principe
 
 Lorsqu'on souhaite enregistrer les modifications faites à un ou plusieurs fichiers, il est nécessaire d'effectuer deux opérations :
 
-* `git add`: sélectionner les modifications qui vont être ajoutées à l'historique des modifications de `Git` (dont le nom technique est *index*) ;
-* `git commit`: valider les modifications choisies à l'étape précédente et ajouter une entrée à l'*index* de `Git`.
+* `git add` : sélectionner les modifications qui vont être ajoutées à l'historique des modifications de `Git` (dont le nom technique est *index*) ;
+* `git commit` : valider les modifications choisies à l'étape précédente et ajouter une entrée à l'*index* de `Git`.
   
 Les modifications ne seront enregistrées qu'à l'issue de ces deux opérations, que vous pouvez réaliser soit avec la ligne de commande, soit avec l'interface RStudio. La suite de cette section détaille la marche à suivre avec l'interface RStudio.
 
-Supposons qu'un fichier source a été modifié et qu'on désire valider ces modifications. Ci-dessous, le dépôt comporte plusieurs fichiers modifiés.
+#### Marche à suivre avec l'interface RStudio
+
+Supposons qu'un fichier source a été modifié et qu'on souhaite valider ces modifications. Ci-dessous, le dépôt comporte plusieurs fichiers modifiés. On souhaite valider les modifications apportées au fichier `03_Fiches_thematiques/Fiche_git_utilisation.Rmd` et ajouter le fichier `pics/git/ibglet_git1.png`. 
 
 ```{r, echo = FALSE}
 include_image("./pics/git/onglet_git1.png")
 ```
 
-Le statut du fichier n'est pas le même pour tous les fichiers :
+**Etape 1 : Cocher la case vide pour l'opération `add`**
 
-* `M`: le fichier a déjà été au moins une fois ajouté à l'*index* (`git add`) ;
-* `??`: le fichier n'a jamais été ajouté à l'*index* =
-* `D`: le fichier a été supprimé (ou renommé)
-
-On ne désire valider les modifications que sur le fichier
-`03_Fiches_thematiques/Fiche_git_utilisation.Rmd` et ajouter le fichier
-`pics/git/ibglet_git1.png`. 
-
-**Etape 1: Cocher la case vide pour l'étape `add`**
-
-La première étape (`add`) consiste à ajouter cliquer sur la case vide pour
-ajouter les fichiers à l'index.
-
-Cela change le statut des fichiers:
+La première étape (`git add`) consiste à sélectionner les fichiers dont on veut suivre les modifications, en cliquant sur la case vide à gauche du nom du fichier. Cela change le statut des fichiers :
 
 ```{r, echo = FALSE}
 include_image("./pics/git/onglet_git3.png")
 ```
 
-Les modifications en question sont dans
-la salle d'attente. Il convient maintenant de les officialiser.
+Les modifications à valider ont été sélectionnées, et sont maintenant dans la salle d'attente.
 
-**Etape 2: Finaliser l'opération avec `commit`**
+**Etape 2 : Cliquer sur `Commit` pour l'opération `commit`**
 
-
-Cela se fait en cliquant sur le bouton `Commit`, juste au dessus de la liste 
-des fichiers modifiés. En cliquant sur ce bouton, une fenêtre s'ouvre
+La seconde étape (`git commit`) consiste à valider les modifications choisies à l'étape précédente. Pour ce faire, il faut cliquer sur le bouton `Commit`, situé au-dessus de la liste des fichiers modifiés. En cliquant sur ce bouton, une nouvelle fenêtre s'ouvre :
 
 ```{r, echo = FALSE}
 include_image("./pics/git/onglet_git4.png")
 ```
 
-Les modifications sont résumées, ligne à ligne,
-dans la partie inférieure (suppressions en
-rouge, ajouts en vert). Pour valider ces modifications (`commit`), il
-faut donner un titre au `commit` et cliquer sur le bouton `Commit`.
-
-La modification est validée:
+Les modifications apportées à chaque fichier sont résumées ligne à ligne dans la partie inférieure (suppressions en rouge, ajouts en vert). Pour valider ces modifications (`commit`), il faut décrire la nature des modifications validées (dans le cadre vert) et cliquer sur le bouton `Commit` (cadre rouge). La modification est validée :
 
 ```{r, echo = FALSE}
 include_image("./pics/git/onglet_git5.png")
@@ -289,15 +286,13 @@ include_image("./pics/git/onglet_git5.png")
 
 ### Consulter l'historique d'un dépôt ou d'un fichier
 
-Il est possible, depuis `RStudio`, de consulter la liste des modifications
-faites à un dépôt en cliquant sur le bouton `History`
+Il est possible, depuis `RStudio`, de consulter la liste des modifications apportées à un dépôt en cliquant sur le bouton `History`.
 
 ```{r, echo = FALSE}
 include_image("./pics/git/onglet_git6.png")
 ```
 
-Cette action ouvre une fenêtre où chaque `commit` fait sur la branche
-(voir plus tard) est listé, avec les modifications concernées.
+Cette action ouvre une fenêtre où chaque `commit` fait sur la branche (voir plus tard) est listé, avec les modifications concernées.
 
 ```{r, echo = FALSE}
 include_image("./pics/git/onglet_git7.png")
