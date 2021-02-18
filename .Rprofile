@@ -1,18 +1,6 @@
 if (file.exists('~/.Rprofile')) sys.source('~/.Rprofile', envir = environment())
 
 
-# knitr::opts_chunk$set(out.width='75%', fig.align='center') 
-options(bookdown.render.file_scope = FALSE)
-
-print_html_only <- function(x){
-  if (knitr::is_html_output()) return(x)
-  return("")
-}
-
-print_latex_only <- function(x){
-  if (knitr::is_latex_output()) return(x)
-  return("")
-}
 
 render_rmd <- function(x) return(cat(htmltools::includeText(x)))
 
@@ -67,9 +55,6 @@ add_space <- function(){
   )
   
 }
-
-# needed for bookdown 0.20
-options(bookdown.render.file_scope = FALSE)
 
 
 
