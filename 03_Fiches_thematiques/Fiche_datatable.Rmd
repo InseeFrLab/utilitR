@@ -49,10 +49,10 @@ dt <- dt[order(z)]
 <div> <!----Encapsuler dans div permet d'éviter que ce soit dans latex ---->
 
 <table class='table'>
-<tr> <th>`r print_html_only("**Base R**")`</th> <th>`r print_html_only("**dplyr**")`</th> <th>`r print_html_only("**data.table**")`</th> <tr>
+<tr> <th>**Base R**</th> <th>**dplyr**`</th> <th>**data.table**</th> <tr>
 <tr>
 <td>
-```{r, echo=(knitr::is_html_output()), eval=FALSE}
+```{r, eval=FALSE}
 aggregate(
   dt[dt[["x"]] > 3]$y,
   by = list(dt[dt[["x"]] > 3]$z),
@@ -60,7 +60,7 @@ aggregate(
 ```
 </td>
 <td>
-```{r, echo=(knitr::is_html_output()), eval=FALSE}
+```{r, eval=FALSE}
 dt %>%
   dplyr::filter(x > 3) %>%
   dplyr::group_by(z) %>%
@@ -68,7 +68,7 @@ dt %>%
 ```
 </td>
 <td>
-```{r, echo=(knitr::is_html_output()), eval=FALSE}
+```{r, eval=FALSE}
 dt[x > 3, sum(y), by = z]
 ```
 </td>
@@ -77,25 +77,6 @@ dt[x > 3, sum(y), by = z]
 
 </div>
 
-`r print_latex_only("**Base R**")`
-```{r, echo=(knitr::is_latex_output()), eval=FALSE}
-aggregate(dt[dt[["x"]] > 3]$y,           
-          by = list(dt[dt[["x"]] > 3]$z),
-          FUN = sum)
-```
-
-`r print_latex_only("**dplyr**")`
-```{r, echo=(knitr::is_latex_output()), eval=FALSE}
-dt %>%
-  dplyr::filter(x > 3) %>%
-  dplyr::group_by(z) %>%
-  dplyr::summarise(sum(y))
-```
-
-`r print_latex_only("**data.table**")`
-```{r, echo=(knitr::is_latex_output()), eval=FALSE}
-dt[x > 3, sum(y), by = z]
-```
 
 ### Quelles fonctions peut-on utiliser avec un `data.table` ?
 
