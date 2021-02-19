@@ -1,0 +1,16 @@
+on: [push]
+
+name: Pas d'extension en majuscule
+
+jobs:
+  build:
+    if: "!contains(github.event.commits[0].message, '[skip ci]')"
+    runs-on: ubuntu-latest
+    container: rocker/verse:latest
+    steps:
+      - name: Checkout Repository
+        env:
+          GITHUB_PAT: ${{ secrets.PAT }}
+        uses: actions/checkout@master
+      - name: Détection des majuscules
+        run: Rscript -e 'source("./_tools/nouppercase.R")'
