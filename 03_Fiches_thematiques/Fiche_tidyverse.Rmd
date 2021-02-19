@@ -661,10 +661,13 @@ je_selectionne(donnees=head(bpe_ens_2018),
 ```
 Alors que `R` parvient parfaitement à comprendre que le terme `REG` fait référence à un nom de colonne de la base dans le premier cas, il ne le comprend pas dans le second cas ! Ceci est dû aux fonctions du `tidyverse` qui permettent cette flexibilité,  tandis que la fonction `je_selectionne` cherche un objet qui s'intitulerait `REG`, sans comprendre qu'il s'agit du nom de la colonne du jeu de donnée.
 
-::: {.remarque data-latex=""}
-L'évaluation non-standard est un concept complexe et très riche dans `R`. La *tiy-evaluation* en est une utilisation spécifique.
+::: {.remarque}
 
-De nombreuses fonctionnalités élémentaires de R utilisent de telles évaluations. Par exemple, les commandes `library(dplyr)` ou `library("dplyr")` fonctionnent toutes les deux indiféremment. Pour autant l'objet `dplyr` de la première expression n'existe pas. `R` comprend que nous voulions dire et charge la librairie nommée `"dplyr"`.
+L'évaluation non-standard est un concept complexe et très riche dans `R`. La *tidy-evaluation* en est une utilisation spécifique.
+
+
+De nombreuses fonctionnalités élémentaires de `R` utilisent de telles évaluations. Par exemple, les commandes `library(dplyr)` ou `library("dplyr")` fonctionnent toutes les deux indiféremment. Pour autant l'objet `dplyr` de la première expression n'existe pas. `R` comprend que nous voulions dire et charge la librairie nommée `"dplyr"`.
+
 
 L'évaluation, standard ou non-standard, repose donc sur l'idée que `R` doit savoir quand nous faisons référence au nom d'un objet ou à l'objet lui-même. Par exemple, quand on écrit `head(bpe_ens_2018)`, `R` comprend que l'appel à `bpe_ens_2018` fait référence à la base de données de la bpe, pas au nom en question. La *tidy-evaluation* permet de faire des appels un peu plus complexes. Ainsi, lorsque nous écrivons `select(REG)`, `R` comprend que quelques opérations préalables sont nécessaires :
 
@@ -676,7 +679,8 @@ L'évaluation, standard ou non-standard, repose donc sur l'idée que `R` doit sa
 
 ### Présentation de la solution
 
-Pour réussir à créer des fonctions facilement compatibles avec le `tidyverse`, il faut faire appel à un opérateur spécifique, appelé *curly-curly* ou *doublestache* : `{{`. Son utilisation est particulièrement simple, car il suffit d'entourer la variable par ces accolades.
+Pour réussir à créer des fonctions facilement compatibles avec le `tidyverse`, il faut faire appel à un opérateur spécifique, appelé *curly-curly* ou *doublestache* : `{{`. Il s'agit du pendant de la fonction `get` présentée dans le chapitre [Manipuler ses données avec data.table](#datatable). Son utilisation est particulièrement simple, car il suffit d'entourer la variable par ces accolades.
+
 
 ```{r,eval=TRUE}
 je_selectionne <- function(donnees,colonne) {
@@ -692,7 +696,8 @@ je_selectionne(donnees=head(bpe_ens_2018),
 
 Le *doublestache* est une nouvelle notation du package `rlang`(version 0.4.0), équivalent à l'opération `!!enquo()`. L'idée générale étant que `enquo()` permet de transformer un input en *symbole* à interpréter, tandis que l'opérateur *bang-bang*  `!!` détermine quand il faut l'interpréter. Parfois, certaines opérations un peu complexes, qui dépassent le cadre de cette fiche nécessitent le recours à ces opérateurs particuliers. 
 
-::: {.remarque data-latex=""}
+::: {.remarque}
+
 Certains conseils sur internet présentent `eval(parse())`. Il est fortement recommandé de ne _jamais_ l'utiliser pour les raisons suivantes :
 
 * il est susceptible d'induire des problèmes de sécurité. Tout le contenu à l'intérieur du `parse` est interprété par `R` comme du code à lancer. Il est donc particulièrement sensible aux problèmes d'[injection de code](https://fr.wikipedia.org/wiki/Injection_de_code_dans_les_applications_web) ;
@@ -702,6 +707,13 @@ Certains conseils sur internet présentent `eval(parse())`. Il est fortement rec
 :::
 
 Lorsqu'on souhaite définir une nouvelle colonne dans le tidyverse, une légère modification est nécessaire, avec l'utilisation de l'opérateur `:=`, comme dans l'exemple suivant.
+
+::: {.remarque}
+L'opérateur `:=` du `tidyverse` ne remplit pas les mêmes fonctions que l'opérateur `:=` présenté dans la fiche [Manipuler ses données avec data.table](datatable): 
+
+* Dans `data.table`, l'opérateur sert à créer une nouvelle variable en limitant le coût en mémoire de cette opération ;
+* Dans le `tidyverse`, l'opérateur sert à faire comprendre à `dplyr` que la partie à gauche est un nom de colonne à ré-interpréter sans les guillemets
+:::
 
 ```{r,eval=TRUE}
 je_selectionne_et_renomme <- function(donnees,colonne, nouveau_nom = "nouveau_nom") {
@@ -729,7 +741,8 @@ Pour fonctionnariser un code utilisant le `tidyverse`, il est recommandé :
 
 ::
 
-Si les exemples précédents se basent tous sur `dplyr`, il est à remarquer que les solutions présentées s'appliquent à toute la philosophie du *tidyverse*, y-compris `ggplot2` (_c.f._ [Faire des graphiques avec `ggplot2`).
+Si les exemples précédents se basent tous sur `dplyr`, il est à remarquer que les solutions présentées s'appliquent à toute la philosophie du *tidyverse*, y-compris `ggplot2` (_c.f._ [Faire des graphiques avec `ggplot2`](#ggplot2)).
+
 
 ## Sources
 
