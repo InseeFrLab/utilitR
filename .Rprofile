@@ -63,6 +63,9 @@ add_space <- function(){
 # Copier les images si elles ne sont pas déja dans le dossier
 dossier_images <- './pics' # This folder must exist in the repo
 dossier_images_compressees <- './pics_resized'
+if (!dir.exists(dossier_images_compressees)) { 
+  dir.create(dossier_images_compressees)
+}
 
 invisible(
   file.copy(list.files(dossier_images, full.names = TRUE), dossier_images_compressees, recursive=TRUE, overwrite = TRUE)
