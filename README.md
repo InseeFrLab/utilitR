@@ -71,9 +71,20 @@ et le calendrier. Les objectifs et l'approche collaborative du projet `UtilitR` 
 
 ## :four: Reproductibilité de la documentation
 
-Le projet `utilitR` a pour objectif de favoriser la reproductibilité et la pérennité des traitements statistiques avec `R`.
-Ces principes s'appliquent également à la documentation produite: l'ensemble des exemples sont construits à partir de données
-disponibles sur le site www.insee.fr et les morceaux de code présents sont faits pour être reproductibles. 
+Le projet `utilitR` a pour objectif de favoriser la reproductibilité et
+la pérennité des traitements statistiques avec `R`.
+Ces principes s'appliquent également à la documentation produite: l'ensemble
+des exemples sont construits à partir de données
+disponibles sur le site www.insee.fr et les morceaux de code présents
+sont faits pour être reproductibles. Pour rendre la documentation plus
+reproductible, un certain nombre d'éléments de formattage ont été intégrés
+dans un package `R` proposant des modèles de documents standardisés. Il
+peut être installé de la manière suivante:
+
+```r
+# install.packages("remotes")
+remotes::install_github("https://github.com/InseeFrLab/utilitr-template")
+```
 
 Les éléments présents dans la documentation visent à être cohérents avec
 les recommandations émises par le comité de certification des packages `R` (COPS),
