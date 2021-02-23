@@ -4,7 +4,7 @@
 
 Vous souhaitez apparier deux tables de données selon une ou plusieurs variables de jointure.
 
-::: {.recommandation data-latex=""}
+::: {.recommandation}
 * Pour des tables de données de taille petite et moyenne (inférieure à 1 Go ou moins d'un million d'observations), il est recommandé d'utiliser le _package_ `dplyr` ou `R base`. Le _package_ `dplyr` est présenté en détail dans la fiche [Manipuler des données avec le `tidyverse`] ;
 * Pour des tables de données de grande taille (plus de 1 Go ou plus d'un million d'observations), il est recommandé d'utiliser le _package_ `data.table` qui fait l'objet d'une autre fiche. Ce _package_ est présenté en détail dans la fiche [Manipuler des données avec `data.table`].
 * Il est vivement recommandé de lire la section [Quelques bonnes pratiques sur les jointures] avant de réaliser des jointures.
@@ -32,7 +32,7 @@ Le graphique ci-dessous illustre les différentes méthodes de jointures :
 
 
 
-::: {.remarque data-latex=""}
+::: {.remarque}
 Pour vous aider à comprendre le principe des jointures, voici une rapide description des opérations que `R` réalise quand on fait une jointure interne entre deux tables :
 
 * `R` isole la première observation de la table de gauche et en extrait l'identifiant (la (ou les) variable(s) de jointures) ;
@@ -53,7 +53,7 @@ Le cas d'une jointure à droite est tout à fait symétrique, et on déduit faci
 Cette section présente les principales fonctions permettant de réaliser des jointures selon trois approches de manipulation de données : `R base`, `dplyr` et `data.table`. Les deux dernières approches font l'objet de présentations détaillées dans les fiches [Manipuler des données avec le `tidyverse`] et [Manipuler des données avec `data.table`].
 
 
-::: {.conseil data-latex=""}
+::: {.conseil}
 Il est possible de réaliser les jointures avec chacune des trois approches présentées ici. Il est néanmoins conseillé d'être cohérent avec les outils de manipulation de données que vous utilisez. Si vous manipulez vos données avec `data.table`, il sera préférable d'utiliser la fonction `merge` de ce _package_ qui est optimisée pour les objets `data.table`. Si vous manipulez vos données avec le `tidyverse`, il est recommandé d'utiliser les fonctions du *package* `dplyr`.
 :::
 
@@ -83,7 +83,7 @@ head(filosofi_com_2016)
 head(cog_com_2019)
 ```
 
-::: {.remarque data-latex=""}
+::: {.remarque}
 Contrairement à d'autres logiciels statistiques, **il n'est pas nécessaire ni même utile de trier les tables avant de les joindre avec `R`**. Le faire n'apporte pas de gain de performance (une exception à cette règle est évoquée dans la fiche [Manipuler des données avec `data.table`]). Il n'est pas non plus nécessaire que les variables de jointure portent les mêmes noms dans les deux tables.
 :::
 
@@ -167,7 +167,7 @@ filosofi_com_2016_dt <- as.data.table(filosofi_com_2016)
 cog_com_2019_dt <- as.data.table(cog_com_2019)
 ```
 
-::: {.conseil data-latex=""}
+::: {.conseil}
 L'un des intérêts d'utiliser le *package* `data.table` est qu'il est très efficace pour effectuer des jointures car il est possible d'indexer les tables. L'indexation permet à `R` de retrouver rapidement les lignes qui correspondent à une valeur de la clé de jointure, accélérant les combinaisons de données.
 
 Il et possible de définir une (ou plusieurs) clé(s) grâce à la commande `setkeyv`. Pour plus de détails, se reporter à la fiche [Manipuler des données avec `data.table`].
@@ -205,7 +205,7 @@ Il est difficile de réaliser une anti-jointure avec la commande `merge`. Pour c
 
 #### _Inner join_ avec la syntaxe `[]`
 
-::: {.conseil data-latex=""}
+::: {.conseil}
 **Si vous utilisez `data.table`, il est préférable de joindre des tables avec `merge`** car cette approche permet d'écrire des codes lisibles et couvre la majorité des besoins. La syntaxe utilisant les crochets `[]` peut être utilisée dans les cas (peu fréquents) où l'utilisation de `merge` s'avère complexe, par exemple dans le cas de l'anti-jointure. Avant de lire ce paragraphe, il est recommandé de vous familiariser avec l'opérateur `[]` dans `data.table`. Pour cela, vous pouvez vous reporter à la fiche [Manipuler des données avec `data.table`].
 :::
 
@@ -304,7 +304,7 @@ Avant de procéder à une jointure, il est essentiel de **vérifier la qualité 
   doublons
   ```
   
-::: {.conseil data-latex=""}
+::: {.conseil}
 Le fait que les variables de jointure contiennent des valeurs manquantes ou des doublons n'est pas nécessairement un problème. C'est à vous de déterminer si cela pose un problème. Voici deux questions que vous pouvez vous poser pour analyser la situation :
 
 - La (ou les) variable(s) de jointure doi(ven)t-elle(s) impérativement être renseignée(s) pour chaque observation ? Si oui, il ne doit pas y avoir de valeurs manquantes.
@@ -369,7 +369,7 @@ Après une jointure, il est essentiel de **vérifier que la jointure a bien prod
   table_jointe_tbl %>% filter(is.na(dep))
   ```
 
-::: {.conseil data-latex=""}
+::: {.conseil}
 Si vous faites des jointures avec `dplyr`, vous pouvez utiliser le _package_ [`tidylog`](https://github.com/elbersb/tidylog) pour obtenir des informations détaillées sur les jointures réalisées. Cela aide dans la mise en œuvre des bonnes pratiques présentées plus haut. Il faut toutefois être prudent avec ce _package_ si les tables sont volumineuses (plus d'un million d'observations). En effet, ce _package_ réalise de manière sous-jacente plusieurs opérations de jointures, ce qui risque de saturer la mémoire de `R`.
 :::
 
