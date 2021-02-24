@@ -337,6 +337,30 @@ de son `fork` est à jour. Si elle ne l'est pas, la mettre à jour
     - il est impératif de respecter les règles de fond et de forme détaillées ci-dessous;
 
 
+:exclamation: La documentation `utilitR` est générée à partir d'un package `R` qu'il est recommandé
+d'installer pour prévisualiser le livre dans une session `R` sur son ordinateur.
+Le message suivant, qui s'affiche dans la console `R` résume la démarche à suivre pour pouvoir
+prévisualiser en local le livre:
+
+> Projet source de la documentation utilitR
+> -----------------------------------------
+> 
+> Pour prévisualiser la version web de l'ouvrage: 
+> 
+>    * Option 1: utiliser l'onglet 'Build' dans Rstudio;
+>    * Option 2: taper dans la commande R:
+> ```r
+> bookdown::render_book("index.Rmd", output_dir = "_public", output_format = "utilitr::html_document")
+> ```
+> 
+> Ne pas oublier d'installer le package 'utilitr' avant pour disposer des modèles de documents: 
+> ```r
+> remotes::install_github("https://github.com/InseeFrLab/utilitr-template")
+> ```
+
+:exclamation: Si vous désirez intégrer une fiche nommée `toto.Rmd`, ne pas oublier de
+l'ajouter dans la liste des chapitres du livre en éditant le fichier `_bookdown.yml`
+
 ### :four: Proposer sa fiche à la relecture
 
 Quand une première version de la fiche est prête, vous allez pouvoir
