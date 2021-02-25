@@ -1,6 +1,23 @@
 if (file.exists('~/.Rprofile')) sys.source('~/.Rprofile', envir = environment())
 
 
+with_def <- (function() {
+  
+  glossary <- yaml::read_yaml("glossary.yml")
+  glossary <- as.data.frame(do.call(rbind, glossary), stringsAsFactors = FALSE)
+  
+  function(term, def) {
+    if (missing(def)) {
+      def <- unlist(glossary[glossary$name == term, "desc"])
+    }
+    sprintf('<abbr title="%s"><b>%s</b></abbr>', def, term)
+  }
+  
+})()
+
+
+
+
 
 render_rmd <- function(x) return(cat(htmltools::includeText(x)))
 
