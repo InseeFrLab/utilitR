@@ -3,7 +3,7 @@ if (file.exists('~/.Rprofile')) sys.source('~/.Rprofile', envir = environment())
 
 with_def <- (function() {
   
-  glossary <- yaml::read_yaml("glossary.yml")
+  glossary <- yaml::read_yaml("resources/glossary.yml")
   glossary <- as.data.frame(do.call(rbind, glossary), stringsAsFactors = FALSE)
   
   function(term, def) {
