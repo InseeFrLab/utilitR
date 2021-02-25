@@ -157,3 +157,45 @@ browse_metadata("DUR_D")
 # Importer une table de données (ici la table DUR_D) :
 data <- get_dataset("DUR_D")
 ```
+
+## Exemple d'utilisation d'une API sans package
+
+Pour pouvoir lire les données d'une API ne possédant pas de package, il va falloir utiliser 2 packages R :
+La structure de ce type de package est simple :
+•	package httr pour lancer la requête
+•	puis package jsonlite pour transformer le json en dataframe
+
+
+### package httr
+
+
+### package jsonlite
+
+
+### Exemple d'utilisation sur l'API interne RMèS[http://api.interne.rmes.insee.fr/swagger-ui/index.html#/]
+
+```{r, eval = FALSE}
+library(dplyr)
+library(stringr)
+
+# L'API est stockée en interne. Il n'y a pas de proxy pour cette API
+httr::set_config(httr::use_proxy(""))
+
+# url de la requête : ici on souhaite afficher la naf rev 2
+url <- "http://pdrmeswncdlht01.ad.insee.intra/nomenclature/nafr2/postes"
+
+# connexion à l'API pour récupérer les données en JSON
+res <- httr::content(httr::GET(url),
+                     as="text", httr::content_type_json(), encoding='UTF-8')
+
+# transformation des données pour les transfomers en dataframe
+res_ok <- as.data.frame(jsonlite::fromJSON(res))
+
+# travail de la table pour obtenir le niveau division de la NAF-rev2
+division <- res_ok %>% 
+  filter(str_detect(uri,'division')) %>% 
+  select(c('code', 'intituleFr'))
+```
+
+### Exemple d'utilisation sur l'API Sirene[https://api.insee.fr/catalogue/site/themes/wso2/subthemes/insee/pages/item-info.jag?name=Sirene&version=V3&provider=insee]
+
