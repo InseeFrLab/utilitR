@@ -309,46 +309,40 @@ utilitr::include_image("./pics/git/onglet_git7.png", compression = FALSE)
 
 Il peut arriver que d'autres contributeurs aient partagé sur le dépôt distant des modifications du projet en même temps que vous avez apporté des modifications à votre copie locale du projet. Lorsque vous allez récupérer les modifications présentes sur le dépôt distant avec `Pull`, `Git` va essayer de fusionner automatiquement vos modifications avec celles des autres contributeurs. Il peut néanmoins arriver que ces modifications soient incompatibles, par exemple si deux modifications portent sur la même ligne du même fichier : c'est un **conflit de version**. En cas de conflit, `Git` indiquera que la fusion automatique a échoué et vous demandera de vérifier manuellement les morceaux de fichiers concernés et de choisir la bonne version : vous devez alors **résoudre un conflit de version**. Plus de détails sont disponibles dans la [formation Travail collaboratif avec `R`](https://linogaliana.gitlab.io/collaboratif/).
 
-## Créer des branches
+## RStudio et les branches
 
-C’est une des fonctionnalités les plus pratiques de la gestion de version. La création de **branches** dans un projet permet de développer des codes sans modifier la version de référence des codes. Cela signifie que `Git` permet de faire cohabiter plusieurs versions des mêmes codes sans risque de confusion, et de fusionner facilement des versions différentes.
+### La notion de branche
 
-Dans un projet collaboratif, une branche appelée le plus souvent `main` ou `master` joue le rôle de version de référence. C’est autour d’elle que vont pousser ou se greffer les branches comme le montre l’exemple ci-dessous:
+Les branches sont l'une des fonctionnalités les plus puissantes de la gestion de version. La création de **branches** dans un projet permet de développer des codes sans modifier la version de référence des codes. Cela signifie que `Git` permet de faire cohabiter dans un projet plusieurs versions des mêmes codes sans risque de confusion, et de fusionner facilement des versions différentes. Deux points sont particulièrement importants :
+
+- Dans un projet collaboratif, il existe une branche particulière, appelée le plus souvent `main` ou `master`, qui joue le rôle de version de référence. C’est autour d’elle que se développent les branches comme le montre l’exemple ci-dessous :
 
 <!---- image à insérer ------>
 
-La partie droite de l'onglet `Git` est consacré aux branches:
+- Lorsqu'on se situe sur une branche, on peut faire toutes les modifications que l'on souhaite Cela n'altère pas la version de référence, celle sur `master`, tant qu'il n'y a pas de fusion entre branche (`merge`).
 
+### Créer des branches avec RStudio
 
+La partie droite de l'interface `git` de RStudio permet de travailler avec des branches. 
+Tu prég
 ```{r, echo = FALSE}
 utilitr::include_image("./pics/git/onglet_git8.png", compression = FALSE)
 ```
 
-Cette partie permet de:
+Cette interface offre principalement deux fonctions :
 
-1. Créer une nouvelle branche. La branche source, à partir de laquelle la
-nouvelle branche diverge, sera celle active au moment de la création. Il est
-recommandé de se placer sur `master` avant chaque création de nouvelle branche.
-De cette manière, les fusions ultérieures seront facilitées ;
-2. Naviguer parmi les branches disponibles
-en local - partie `(local branches)` - ou récupérer celles disponibles
-sur le dépôt distant - `(remote: origin)`. 
+- Créer une nouvelle branche (cadre orange) : si vous cliquez sur ce bouton, une boîte de dialogue s'ouvre, dans laquelle vous devrez définir le nom de la nouvelle branche. La branche source, à partir de laquelle la nouvelle branche diverge, sera celle sur laquelle vous vous situez au moment de la création. Il est recommandé de se placer sur `master` avant chaque création de nouvelle branche.
+- Naviguer parmi les branches (cadre bleu) : le menu déroulant affiche d'abord la liste des branches disponibles dans votre dépôt local (`LOCAL BRANCHES`) puis  la liste des branches existantes sur le dépôt distant (`REMOTE: ORIGIN`). Pour afficher le contenu d'une branche, il suffit de cliquer sur le nom de cette branche.
 
-En [ligne de commande](#terminal-git), on
-utiliserait la commande `git checkout -b ma-branche` pour créer une nouvelle
-branche nommée `ma-branche`. La commande `git checkout ma-branche`
-permettrait, quant à elle, de se placer sur cette branche si 
-celle-ci existe. 
-
-Lorsqu'on se situe sur une branche, on peut faire les modifications qu'on
-désire. Cela n'altère pas la version de référence, celle sur `master`, tant
-qu'il n'y a pas de fusion (`merge`). 
-
-
-
+::: {.remarque}
+L'interface graphique de RStudio ne permet pas de réaliser toutes les opérations possibles sur les branches. En particulier, il n'est pas possible de fusionner des branches avec cette interface. Les interfaces des forges (telles que `Gitlab`, `Github`...) sont beaucoup plus adaptées pour mener ce type d'opération. Vous pouvez en apprendre davantage en consultant la [formation Travail collaboratif avec `R`](https://linogaliana.gitlab.io/collaboratif/).
+:::
 
 ## Utiliser le terminal {#terminal-git}
 
+Utiliser `Git` avec la ligne de commande permet de faire davantage de choses qu'avec l'interface `RStudio`. Grâce à elle, on peut par exemple corriger une maladresse, ou fusionner des branches sans utiliser l'interface d'une forge. L'utilisation de la ligne de commande est toutefois moins facile pour les débutants. 
+
+L'utilisation de la ligne de commande n'est pas plus risquée que l'interface RStudio, à condition de respecter une règle simple : il ne faut __jamais exécuter une commande qui comprend les termes `force` ou `rebase`__. En effet, ces options peuvent créer des conflits insolubles, voire rendre le projet inutilisable par vos collaborateurs.
 
 Pour ouvrir un terminal `Git`, cliquer sur l'écrou dans l'onglet `Git`: 
 
@@ -361,18 +355,10 @@ Cette action ouvre un terminal `Git bash` permettant de taper :
 * des commandes `Linux`, par exemple `ls` (lister les fichiers) ;
 * des commandes `Git`, par exemple `git status` (lister l'état des fichiers dans `Git`).
 
-```{r, echo = FALSE}
-utilitr::include_image("./pics/git/git-bash.png", compression = FALSE)
-```
+Vous pouvez en apprendre davantage sur l'utilisation de la ligne de commande dans la 
+[formation Travail collaboratif avec `R`](https://linogaliana.gitlab.io/collaboratif/git.html)
+).
 
-
-L'utilisation de la ligne de commande permet d'aller plus loin qu'avec l'interface `RStudio`. Grâce à elle, on peut par exemple corriger une maladresse. Si on s'interdit les commandes qui impliquent
-le terme `force` (par exemple `git push force`) ou `rebase`, qui peuvent
-créer des conflits de version insolubles avec les collaborateurs,
-l'utilisation de la ligne de commande n'est pas plus risquée que l'utilisation
-de l'interface `RStudio` (plus de détails 
-[Formation *Travail collaboratif avec R*](https://linogaliana.gitlab.io/collaboratif/git.html)
-)
 
 ## Glossaire
 
@@ -390,11 +376,9 @@ glossary <- data.frame(do.call(rbind, glossary), stringsAsFactors = FALSE)
 knitr::kable(glossary)
 ```
 
-Glossaire: essai de citation dans le texte `r with_def("branche")`
-et `r with_def("commit")`
-
+Glossaire: essai de citation dans le texte `r with_def("branche")` et `r with_def("commit")`
 
 ## Pour aller plus loin
 
-* [Formation *Travail collaboratif avec R*](https://linogaliana.gitlab.io/collaboratif/git.html)
-* [*Happy Git with R*](https://happygitwithr.com/)
+* [formation Travail collaboratif avec `R`](https://linogaliana.gitlab.io/collaboratif/git.html) ;
+* [*Happy Git with R*](https://happygitwithr.com/).
