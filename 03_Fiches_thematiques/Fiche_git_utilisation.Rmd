@@ -2,31 +2,31 @@
 
 ## Tâches concernées et recommandations
 
-L'utilisateur souhaite se servir de `Git` pour suivre les modifications d'un projet RStudio. La lecture de cette fiche a deux prérequis :
+L'utilisateur souhaite se servir de `Git` avec RStudio pour suivre les modifications d'un projet RStudio. 
 
-- Cette fiche est une introduction à l'usage de `Git` avec `R` et RStudio, pas une introduction générale à `Git`. Il est donc préférable que l'utilisateur ait une connaissance basique de `Git` avant de lire cette fiche ; si ce n'est pas le cas, il est conseillé de consulter la formation [Travail collaboratif avec R](https://linogaliana.gitlab.io/collaboratif/git.html) ;
-- Il est préférable d'avoir lu au préalable la fiche XXXX et d'avoir vérifié que les éléments de configuration de `Git` présentés dans cette fiche sont fonctionnels.
+Cette fiche est une introduction à l'usage de `Git` avec RStudio, pas une introduction générale à `Git`. Il est donc préférable que l'utilisateur ait une connaissance basique de `Git` avant de lire cette fiche ; si ce n'est pas le cas, il est conseillé de consulter la formation [Travail collaboratif avec R](https://linogaliana.gitlab.io/collaboratif/git.html) ;
+Il est également souhaitable de lire préalable la fiche XXXX et de vérifier que les éléments de configuration de `Git` présentés dans cette fiche sont fonctionnels.
 
 ::: {.recommandation }
 
-**Recommandations générales sur l'usge de `Git`** 
+**Recommandations générales sur l'usage de `Git`** 
 
 * Utiliser systématiquement `Git` pour suivre les modifications des codes d'un projet RStudio ;
 * Ne jamais utiliser `Git` pour sauvegarder les données ;
 * Utiliser l'interface graphique de `RStudio` pour les usages courants de `Git`, plutôt que la ligne de commande ;
-* Vous pouvez utiliser `Git` _via_ la ligne de commande si vous le souhaitez. En revanche, il est _très fortement déconseillé_ d'exécuter une commande qui comprendrait les termes `force` ou `rebase`.
+
+Vous pouvez utiliser `Git` _via_ la ligne de commande si vous le souhaitez. En revanche, il est _très fortement déconseillé_ d'exécuter une commande qui comprendrait les termes `force` ou `rebase`.
 
 **Recommandations sur l'initialisation de `Git`**
 
-* Il est recommandé d'utiliser `Git` dès le lancement de votre projet.
-* Il est recommandé de commencer par créer un dépôt vide sur une forge (`Gitlab`, `Github`...), puis de cloner ce dépôt pour travailler sur votre poste local.
-* Il est également possible de commencer à suivre un projet déjà existant avec `Git`.
-* Il est recommandé de renseigner immédiatement le fichier `.gitignore` afin d'exclure certains fichiers du suivi des modifications.
+* Il est recommandé d'utiliser `Git` dès le lancement de votre projet, même s'il est possible de commencer à suivre un projet déjà existant avec `Git`.
+* Il est recommandé de commencer par créer un dépôt distant sur une forge (`Gitlab`, `Github`...), puis de cloner ce dépôt pour travailler sur votre poste local.
+* Il est recommandé de renseigner immédiatement le fichier `.gitignore` afin d'exclure certains fichiers du suivi des modifications (notamment les fichiers de données).
 
 **Recommandations sur l'usage des branches**
 
-* Il est recommandé d'utiliser RStudio pour créer une branche ou naviguer entre les branches ;
-* Il est recommandé d'utiliser les interfaces `Github` ou `Gitlab` pour fusionner deux branches. Sur ce point, vous pouvez consulter la formation [Travail collaboratif avec R](https://linogaliana.gitlab.io/collaboratif/git.html).
+* Utiliser RStudio pour créer une branche ou naviguer entre les branches ;
+* Utiliser les interfaces `Github` ou `Gitlab` pour fusionner deux branches. Sur ce point, vous pouvez consulter la formation [Travail collaboratif avec R](https://linogaliana.gitlab.io/collaboratif/git.html).
 
 :::
 
@@ -34,11 +34,15 @@ L'utilisateur souhaite se servir de `Git` pour suivre les modifications d'un pro
 
 ```{r, include = FALSE}
 glossary <- yaml::read_yaml("./resources/glossary.yml")
-glossary <- data.frame(do.call(rbind, glossary), stringsAsFactors = FALSE)
+glossary <- 
+  data.table::as.data.table(do.call(rbind, glossary), stringsAsFactors = FALSE)
+glossary$name <- paste0("`", glossary$name, "`")
 ```
 
 ```{r, echo = FALSE}
-knitr::kable(glossary)
+knitr::kable(glossary[name != "`intégration continue`"],
+             col.names = c("Terme technique", "Signification"))
+  
 ```
 
 Glossaire: essai de citation dans le texte `r with_def("branche")` et `r with_def("commit")`
@@ -69,14 +73,12 @@ une liste plus longue des raisons d'utiliser Git est
 [disponible ici](https://linogaliana.gitlab.io/collaboratif/git.html#pourquoi-utiliser-la-gestion-de-version).
 
 ::: {.remarque}
-Cette fiche décrit l'utilisation de `Git` au travers de l'interface graphique RStudio, car celle-ci facilite l'apprentissage de `Git` pour les débutants. Toutefois, utiliser cette interface n'est nullement obligatoire, et il est possible de réaliser l'ensemble des gestes présentés dans cette fiche avec des lignes de commande.
-
-Pour les utilisateurs intéressés par une telle approche, le nom de la commande `git` concerné sera systématiquement mentionné.
+Cette fiche décrit l'utilisation de `Git` au travers de l'interface graphique RStudio, car celle-ci facilite l'apprentissage de `Git` pour les débutants. Toutefois, utiliser cette interface n'est nullement obligatoire, et il est possible de réaliser l'ensemble des gestes présentés dans cette fiche avec des lignes de commande. Pour les utilisateurs intéressés par la ligne de commande, le nom de la commande `git` concerné sera systématiquement mentionné.
 :::
 
 ## Initialiser l'usage de `Git` dans un projet RStudio {#clone}
 
-Il est possible de commencer à suivre les modifications d'un projet `RStudio` à tout moment avec `Git`. **Il est néanmoins nettement préférable de le faire dès la création du projet**, mais il est possible de le faire plus tard, à n'importe quelle étape du projet.
+Il est nettement préférable de commencer à suivre les modifications d'un projet `RStudio` avec `Git` **dès la création du projet**. Il est toutefois possible de commencer à suivre les modifications du projet à n'importe quel moment.
 
 ### Initialiser l'usage de `Git` à la création d'un projet {#clone-canonical}
 
