@@ -83,7 +83,7 @@ Les exemples de cette partie utilisent l'url du dépôt de la documentation `uti
 Néanmoins, il sera impossible d'effectuer une opération `push` car cela nécessite des droits d'écriture sur le dépôt qui est réservée aux mainteneurs de la documentation. Pour pratiquer ces opérations, il est recommandé de se créer un dépôt personnel sur `Github` ou `Gitlab`.
 :::
 
-#### Etape 1 : Créer le dépôt distant sur la forge
+#### Etape 1 : Créer le dépôt distant sur la forge {#creation-repo}
 
 **La première étape consiste à créer un dépôt vide sur la forge.** C'est grâce à ce dépôt que vous allez pouvoir partager des codes avec vos collègues.
 
@@ -146,7 +146,7 @@ le partager avec des collègues ou mieux suivre les modifications du projet.
 
 #### Etape 1 : Initialiser le suivi des modifications du projet RStudio
 
-La première étape consiste à initialiser l'utilisation de `Git` dans le projet RStudio en exécutant la fonction `usethis::use_git()` du _package_ `usethis`.
+La première étape consiste à initialiser l'utilisation de `Git` dans le projet RStudio en exécutant la fonction `usethis::use_git()` du _package_ `usethis`. Cette fonction met en place l'environnement informatique permettant d'utiliser `Git` sur votre poste local. En revanche, elle ne crée de lien entre votre projet local et un dépôt distant.
 
 ```{r, eval = FALSE}
 usethis::use_git()
@@ -154,15 +154,21 @@ usethis::use_git()
 
 Cette fonction réalise deux opérations : 
 - elle crée automatiquement tous les fichiers de configuration nécessaires au bon fonctionnement de `Git` dans le projet sur lequel vous travaillez ;
-- elle et effectue, si vousl'avez accepté, un premier `commit` (voir Section XX) pour valider la création de ces fichiers. Attention, si vous avez des fichiers qui ne doivent pas être sous contrôle de version (des données, des codes compilés, etc.) : 
+- elle effectue un premier `commit` (voir Section XX) pour valider la création de ces fichiers de configuration.
 
-* refusez de *committer* ces fichiers (taper le chiffre qui correspond à "Non" parmi la liste de choix) ;
+La fonction `usethis::use_git()` va finalement vous proposer de sauvegarder les fichiers qui figurent déjà dans votre projet (par exemple, les codes `R` et les fichiers `csv` présents dans votre projet). Si vous avez des fichiers qui ne doivent pas être sous contrôle de version (notamment des données), il est préférable de refuser cette possibilité (en choisissant le chiffre qui correspond à "Non" parmi la liste de choix), puis de procéder comme ceci :
+
 * ajoutez les lignes nécessaires au `.gitignore` (voir partie
 [sur le fichier .gitignore](#gitignore) pour plus de détails) ;
 * valider l'ensemble des fichiers maintenant que ces fichiers ont été exclus (voir la partie sur la [sauvegarde des modifications de fichiers](#commit)).
 
+#### Etape 2 : Créer le dépôt distant sur la forge
 
-#### Etape 2 : Mettre en place le _remote_ (`git add remote`)
+Cette étape est identique à celle qui est décrite dans la section [Créer le dépôt distant sur la forge](#creation-repo).
+
+#### Etape 3 : Mettre en place le _remote_ (`git add remote`)
+
+La troisième étape consiste à établir un lien entre votre projet local et un dépôt distant. 
 
 Lors de la première étape, la fonction `usethis::use_git` a mis en place l'environnement informatique permettant d'utiliser `Git` sur votre poste local. En revanche, elle n'a pas créé de lien entre votre projet local et un dépôt distant.
 
@@ -181,19 +187,12 @@ Après avoir cliqué sur ce bouton, dans la fenêtre s'ouvrant, cliquer sur
 utilitr::include_image("./pics/git/git_remote.png", compression = FALSE)
 ```
 
-Sur cette nouvelle fenêtre deux champs sont à renseigner : 
+Dans cette nouvelle fenêtre, deux champs sont à renseigner : 
 
-* `Remote name` : le nom du dépôt distant. Par convention, l'alias est généralement nommé `origin` ;
+* `Remote name` : le nom du dépôt distant. Par convention, l'alias est généralement nommé `origin` (mais vous pouvez lui donner un autre nom) ;
 * `Remote URL` : l'url du dépôt distant (cette adresse se termine par `.git`, voir plus haut).
 
-
-A ce stade, `Git` est maintenant capable de contrôler les versions des fichiers
-locaux et d'interagir avec le dépôt. L'environnement nécessaire pour
-pouvoir réaliser les opérations usuelles, présentées dans la partie
-[Suivre les modifications avec RStudio](#git-local) est ainsi opérationnel. 
-
-
-
+A ce stade, `Git` est maintenant capable de contrôler les versions des fichiers locaux et d'interagir avec le dépôt. L'environnement nécessaire pour pouvoir réaliser les opérations usuelles, présentées dans la partie [Suivre les modifications avec RStudio](#git-local) est ainsi opérationnel.
 
 ### Exclure certains fichiers du suivi de modifications {#gitignore}
 
