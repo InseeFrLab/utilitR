@@ -138,7 +138,11 @@ utilitr::include_image("./pics/git/create_project_3.png", compression = FALSE)
 
 ### Initialiser l'usage de `Git` dans un projet RStudio déjà existant {#clone-alternative}
 
-Bien qu'il soit recommandé d'utiliser `Git` dès la création d'un projet RStudio, il est également possible d'ajouter `Git` à un projet RStudio déjà existant. Vous pouvez utiliser cette méthode lorsque vous avez commencé à travailler seul sur un projet `RStudio`, et que vous souhaitez le partager avec des collègues ou mieux suivre les modifications du projet.
+Bien qu'il soit recommandé d'utiliser `Git` dès la création d'un projet
+RStudio, il est également possible d'ajouter `Git` à un projet RStudio
+déjà existant. Vous pouvez utiliser cette méthode lorsque vous avez
+commencé à travailler seul sur un projet `RStudio`, et que vous souhaitez
+le partager avec des collègues ou mieux suivre les modifications du projet.
 
 #### Etape 1 : Initialiser le suivi des modifications du projet RStudio
 
@@ -148,12 +152,57 @@ La première étape consiste à initialiser l'utilisation de `Git` dans le proje
 usethis::use_git()
 ```
 
-Cette fonction réalise deux opérations : elle crée automatiquement tous les fichiers de configuration nécessaires au bon fonctionnement de `Git` dans le projet sur lequel vous travaillez, et effectue un premier `commit` (voir Section XX) pour valider la création de ces fichiers.
+Cette fonction réalise deux opérations : elle crée automatiquement tous le
+fichiers de configuration nécessaires au bon fonctionnement
+de `Git` dans le projet sur lequel vous travaillez, et effectue, si vous
+l'avez accepté,
+un premier `commit` (voir Section XX) pour valider la création de ces fichiers.
+Attention, si vous avez des fichiers qui ne doivent pas être sous contrôle de
+version (des données, des codes compilés, etc.): 
+
+* refusez de *committer* 
+ces fichiers ;
+* ajoutez les lignes nécessaires au `.gitignore` (voir partie
+[sur le fichier .gitignore](#gitignore) pour plus de détails) ;
+* valider l'ensemble des fichiers maintenant que ces fichiers ont été exclus
 
 
 #### Etape 2 : Mettre en place le _remote_
 
-A REDIGER (LINO: je suis à l'ouest là-dessus)
+La fonction `usethis::use_git` ne crée pas le lien entre le dépôt distant
+et le projet local. Elle n'a vocation qu'à créer l'environnement propice
+à l'utilisation, en local, de `Git`. 
+
+Pour créer ce lien entre dépôt distant et dépôt local, il est nécessaire
+d'utiliser l'interface de `RStudio` ou la ligne de commande. Avec
+l'interface `Rstudio`, il faut se rendre dans la partie destinée à la gestion
+des branches sur laquelle la partie [RStudio et les branches](#git-branches)
+revient plus amplement.
+
+
+```{r, echo = FALSE}
+utilitr::include_image("./pics/git/onglet_git8.png", compression = FALSE)
+```
+
+Après avoir cliqué sur ce bouton, dans la fenêtre s'ouvrant, cliquer sur 
+`Add remote`:
+
+```{r, echo = FALSE}
+utilitr::include_image("./pics/git/git_remote.png", compression = FALSE)
+```
+
+Sur cette nouvelle fenêtre deux champs sont à renseigner: 
+
+* `Remote name`: l'alias du dépôt distant. Par convention, l'alias est généralement
+nommé `origin`
+* `Remote URL`: l'url du dépôt distant (voir plus haut)
+
+En ligne de commande, la manière équivalente de faire cela serait de 
+faire:
+
+```shell
+git add remote origin https://MON_URL.git
+```
 
 #### Etape 3 : giter tous les codes existants et faire le premier _push_
 
@@ -308,7 +357,7 @@ utilitr::include_image("./pics/git/onglet_git7.png", compression = FALSE)
 
 Il peut arriver que d'autres contributeurs aient partagé sur le dépôt distant des modifications du projet en même temps que vous avez apporté des modifications à votre copie locale du projet. Lorsque vous allez récupérer les modifications présentes sur le dépôt distant avec `Pull`, `Git` va essayer de fusionner automatiquement vos modifications avec celles des autres contributeurs. Il peut néanmoins arriver que ces modifications soient incompatibles, par exemple si deux modifications portent sur la même ligne du même fichier : c'est un **conflit de version**. En cas de conflit, `Git` indiquera que la fusion automatique a échoué et vous demandera de vérifier manuellement les morceaux de fichiers concernés et de choisir la bonne version : vous devez alors **résoudre un conflit de version**. Plus de détails sont disponibles dans la [formation Travail collaboratif avec `R`](https://linogaliana.gitlab.io/collaboratif/).
 
-## RStudio et les branches
+## RStudio et les branches {#git-branches}
 
 ### La notion de branche
 
