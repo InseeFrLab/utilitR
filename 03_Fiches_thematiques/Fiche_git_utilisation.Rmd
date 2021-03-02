@@ -2,31 +2,31 @@
 
 ## Tâches concernées et recommandations
 
-L'utilisateur souhaite se servir de `Git` pour suivre les modifications d'un projet RStudio. La lecture de cette fiche a deux prérequis :
+L'utilisateur souhaite se servir de `Git` avec RStudio pour suivre les modifications d'un projet RStudio. 
 
-- Cette fiche est une introduction à l'usage de `Git` avec `R` et RStudio, pas une introduction générale à `Git`. Il est donc préférable que l'utilisateur ait une connaissance basique de `Git` avant de lire cette fiche ; si ce n'est pas le cas, il est conseillé de consulter la formation [Travail collaboratif avec R](https://linogaliana.gitlab.io/collaboratif/git.html) ;
-- Il est préférable d'avoir lu au préalable la fiche XXXX et d'avoir vérifié que les éléments de configuration de `Git` présentés dans cette fiche sont fonctionnels.
+Cette fiche est une introduction à l'usage de `Git` avec RStudio, pas une introduction générale à `Git`. Il est donc préférable que l'utilisateur ait une connaissance basique de `Git` avant de lire cette fiche. Si ce n'est pas le cas, il est conseillé de consulter la formation [Travail collaboratif avec R](https://linogaliana.gitlab.io/collaboratif/git.html).
+Il est également souhaitable de lire au préalable la fiche XXXX et de vérifier que les éléments de configuration de `Git` présentés dans cette fiche sont fonctionnels.
 
 ::: {.recommandation }
 
-**Recommandations générales sur l'usge de `Git`** 
+**Recommandations générales sur l'usage de `Git`** 
 
 * Utiliser systématiquement `Git` pour suivre les modifications des codes d'un projet RStudio ;
 * Ne jamais utiliser `Git` pour sauvegarder les données ;
 * Utiliser l'interface graphique de `RStudio` pour les usages courants de `Git`, plutôt que la ligne de commande ;
-* Vous pouvez utiliser `Git` _via_ la ligne de commande si vous le souhaitez. En revanche, il est _très fortement déconseillé_ d'exécuter une commande qui comprendrait les termes `force` ou `rebase`.
+
+Vous pouvez utiliser `Git` _via_ la ligne de commande si vous le souhaitez. En revanche, il est _très fortement déconseillé_ d'exécuter une commande qui comprendrait les termes `force` ou `rebase`.
 
 **Recommandations sur l'initialisation de `Git`**
 
-* Il est recommandé d'utiliser `Git` dès le lancement de votre projet.
-* Il est recommandé de commencer par créer un dépôt vide sur une forge (`Gitlab`, `Github`...), puis de cloner ce dépôt pour travailler sur votre poste local.
-* Il est également possible de commencer à suivre un projet déjà existant avec `Git`.
-* Il est recommandé de renseigner immédiatement le fichier `.gitignore` afin d'exclure certains fichiers du suivi des modifications.
+* Il est recommandé d'utiliser `Git` dès le lancement de votre projet, même s'il est possible de commencer à suivre un projet déjà existant avec `Git`.
+* Il est recommandé de commencer par créer un dépôt distant sur une forge (`Gitlab`, `Github`...), puis de cloner ce dépôt pour travailler sur votre poste local.
+* Il est recommandé de renseigner immédiatement le fichier `.gitignore` afin d'exclure certains fichiers du suivi des modifications (notamment les fichiers de données).
 
 **Recommandations sur l'usage des branches**
 
-* Il est recommandé d'utiliser RStudio pour créer une branche ou naviguer entre les branches ;
-* Il est recommandé d'utiliser les interfaces `Github` ou `Gitlab` pour fusionner deux branches. Sur ce point, vous pouvez consulter la formation [Travail collaboratif avec R](https://linogaliana.gitlab.io/collaboratif/git.html).
+* Utiliser RStudio pour créer une branche ou naviguer entre les branches ;
+* Utiliser les interfaces `Github` ou `Gitlab` pour fusionner deux branches. Sur ce point, vous pouvez consulter la formation [Travail collaboratif avec R](https://linogaliana.gitlab.io/collaboratif/git.html).
 
 :::
 
@@ -34,11 +34,15 @@ L'utilisateur souhaite se servir de `Git` pour suivre les modifications d'un pro
 
 ```{r, include = FALSE}
 glossary <- yaml::read_yaml("./resources/glossary.yml")
-glossary <- data.frame(do.call(rbind, glossary), stringsAsFactors = FALSE)
+glossary <- 
+  data.table::as.data.table(do.call(rbind, glossary), stringsAsFactors = FALSE)
+glossary$name <- paste0("`", glossary$name, "`")
 ```
 
 ```{r, echo = FALSE}
-knitr::kable(glossary)
+knitr::kable(glossary[name != "`intégration continue`"],
+             col.names = c("Terme technique", "Signification"))
+  
 ```
 
 
@@ -68,63 +72,42 @@ une liste plus longue des raisons d'utiliser Git est
 [disponible ici](https://linogaliana.gitlab.io/collaboratif/git.html#pourquoi-utiliser-la-gestion-de-version).
 
 ::: {.remarque}
-Cette fiche décrit l'utilisation de `Git` au travers de l'interface graphique RStudio, car celle-ci facilite l'apprentissage de `Git` pour les débutants. Toutefois, utiliser cette interface n'est nullement obligatoire, et il est possible de réaliser l'ensemble des gestes présentés dans cette fiche avec des lignes de commande.
-
-Pour les utilisateurs intéressés par une telle approche, le nom de la commande `git` concerné sera systématiquement mentionné.
+Cette fiche décrit l'utilisation de `Git` au travers de l'interface graphique RStudio, car celle-ci facilite l'apprentissage de `Git` pour les débutants. Toutefois, utiliser cette interface n'est nullement obligatoire, et il est possible de réaliser l'ensemble des gestes présentés dans cette fiche avec des lignes de commande. Pour les utilisateurs intéressés par la ligne de commande, le nom de la commande `git` concerné sera systématiquement mentionné.
 :::
 
 ## Initialiser l'usage de `Git` dans un projet RStudio {#clone}
 
-Il est possible de commencer à suivre les modifications d'un projet `RStudio` à tout moment avec `Git`. **Il est néanmoins nettement préférable de le faire dès la création du projet**, mais il est possible de le faire plus tard, à n'importe quelle étape du projet.
+Il est nettement préférable de commencer à suivre les modifications d'un projet `RStudio` avec `Git` **dès la création du projet**. Il est toutefois possible de commencer à suivre les modifications du projet à n'importe quel moment.
 
 ### Initialiser l'usage de `Git` à la création d'un projet {#clone-canonical}
 
-[On mettra le lien vers la vidéo de travail collab quand elle existera]
+<!-- [On mettra le lien vers la vidéo de travail collab quand elle existera] -->
 
-::: {.remarque}
-
-Les exemples de cette partie utilisent l'url du dépôt de la documentation `utilitR`. Il est tout à fait possible de s'exercer sur ce dépôt pour effectuer les manipulations de la Section XX et XX qui s'effectuent sur une copie locale (`clone`) du dépôt.
-
-Néanmoins, il sera impossible d'effectuer une opération `push` car cela nécessite des droits d'écriture sur le dépôt qui est réservée aux mainteneurs de la documentation. Pour pratiquer ces opérations, il est recommandé de se créer un dépôt personnel sur `Github` ou `Gitlab`.
-:::
 
 #### Etape 1 : Créer le dépôt distant sur la forge {#creation-repo}
 
 **La première étape consiste à créer un dépôt vide sur la forge.**
 C'est grâce à ce dépôt que vous allez pouvoir partager des codes
-avec vos collègues ou stocker vos codes personnels.
+avec vos collègues ou stocker vos codes personnels. La marche à suivre est
+très similaire dans `Gitlab` et dans `Github`. Les seules différences entre les deux plateformes portent sur la dénomination (un dépôt s'appelle `repository` sur `Github` et `project` sur `Gitlab`) et sur l'endroit où il faut cliquer pour créer un dépôt :
 
-Que ce soit avec `Gitlab` ou `Github`, les fonctionalités pour créer un
-nouveau dépôt sont très similaires. Dans les deux cas, après avoir choisi
-le nom du dépôt, il est possible de choisir la visibilité de celui-ci (privé
-ou public), le créer vide ou avec un fichier README minimal ou suivre un
-modèle de dépôt (*template*) particulier
-(cette fonctionalité est plutôt là pour aider à la création de gros
-projets informatiques traditionnels
-que pour des projets statistiques). La seule différence entre les deux 
-plateformes est dans la dénomination (`repository` sur `Github`, `project` sur
-`Gitlab`) et à l'endroit où il est nécessaire de cliquer pour créer un dépôt:
+* Sur `Gitlab`, il suffit de cliquer sur `New project` dans la partie supérieure de la fenêtre :
 
-* Sur `Gitlab`, il suffit de cliquer sur `New project` dans la partie supérieure
-de la fenêtre:
-
-```{r, echo = FALSE}
+```{r, echo = FALSE, out.width = '100%'}
 utilitr::include_image("./pics/git/repo-create2.png", compression = FALSE)
 ```
 
+* Sur `Github`, il suffit de cliquer sur l'icône `+` en haut à droite (cadre rouge), puis sur `New repository` (flèche noire) : 
 
-* Sur `Github`, il suffit de cliquer, en haut à droite, sur
-`New repository`: 
-
-```{r, echo = FALSE}
+```{r, echo = FALSE, out.width = '75%'}
 utilitr::include_image("./pics/git/repo-create.png", compression = FALSE)
 ```
 
-Si le dépôt est créé sans `README`, `Gitlab` comme `Github` proposent quelques
-lignes de commande pour connecter ce dépôt à son poste personnel. 
-Les méthodes proposées par la suite permettent de se passer de la ligne de
-commande tout en donnant un résultat équivalent.
+Dans les deux cas, vous devez préciser quelques caractéristiques du dépôt :
 
+- le nom du dépôt ;
+- la visibilité du dépôt (privé ou public) ;
+- le contenu de départ du dépôt : le dépôt peut être créé vide, avec un fichier `README` minimal, ou selon un modèle de dépôt (*template*). Il est conseillé de créer le dépôt avec un fichier `README`.
 
 Deux points sont importants sur la création du dépôt distant :
 
@@ -136,17 +119,15 @@ Deux points sont importants sur la création du dépôt distant :
 
 **La deuxième étape consiste à récupérer l'adresse du dépôt distant.** Cette adresse se termine toujours par `.git`. Par exemple, l'adresse du dépôt de la documentation `utilitR` est `https://github.com/InseeFrLab/utilitR.git`.
 
-Pour récupérer cette adresse, vous devez d'abord vous rendre sur la page du projet sur la forge (comme `Gitlab` ou `Github`). Pour afficher l'adresse du dépôt, il faut ensuite cliquer sur un bouton déroulant à droite. 
+Pour récupérer cette adresse, vous devez d'abord vous rendre sur la page du projet sur la forge (comme `Gitlab` ou `Github`). Pour afficher l'adresse du dépôt, il faut ensuite cliquer sur un bouton déroulant à droite. Sur `Gitlab`, il s'agit du bouton `Clone` (bouton bleu) :
 
-Sur `Gitlab`, il s'agit du bouton `Clone` :
-
-```{r, echo = FALSE}
+```{r, echo = FALSE, out.width = '100%'}
 utilitr::include_image("./pics/git/create_project_0b.png", compression = FALSE)
 ```
 
-Sur `Github`, il s'agit du bouton `Code` :
+Sur `Github`, il s'agit du bouton `Code` (bouton vert) :
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, out.width = '100%'}
 utilitr::include_image("./pics/git/create_project_0.png", compression = FALSE)
 ```
 
@@ -155,33 +136,32 @@ Choisir la méthode d'authentification désirée, `SSH` ou `HTTPS`
 
 #### Etape 3 : Créer un projet RStudio en clonant le dépôt distant
 
-**La troisième étape consiste à créer un projet RStudio à partir du dépôt distant** (voir fiche XXXX pour plus de détails sur les projets RStudio). Cliquer sur `File > New Project...`, puis choisissez la troisième option (_Version Control_) :
+**La troisième étape consiste à cloner le dépôt distant** (`git clone`) c'est-à-dire à créer un projet RStudio sur votre poste local qui est une copie du dépôt distant (voir fiche XXXX pour plus de détails sur les projets RStudio). Cliquer sur `File > New Project...`, puis choisissez la troisième option (_Version Control_) :
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, out.width = '65%'}
 utilitr::include_image("./pics/git/create_project_1.png", compression = FALSE)
 ```
 
 Il faut alors renseigner trois champs dans la fenêtre suivante :
 
-- `Repository URL` : coller l'adressse du dépôt distant récupérée à l'étape précédente ;
+- `Repository URL` : coller l'adresse du dépôt distant récupérée à l'étape précédente ;
 - `Project directory name` : choisir le nom du dossier local qui contiendra le projet RStudio ;
 - `Create project as subdirectory of :` : définir l'emplacement de votre dépôt local dans l'aborescence de votre poste. Il est possible de modifier cet emplacement en cliquant sur le bouton `Browse`.
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, out.width = '65%'}
 utilitr::include_image("./pics/git/create_project_2.png", compression = FALSE)
 ```
 
 Après avoir validé, `RStudio` ouvre un projet `RStudio`. Si RStudio ne mentionne aucune erreur, un nouvel onglet portant le nom de `Git` doit normalement apparaître en haut à droite :
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, out.width = '90%'}
 utilitr::include_image("./pics/git/create_project_3.png", compression = FALSE)
 ```
 
 ### Initialiser l'usage de `Git` dans un projet RStudio déjà existant {#clone-alternative}
 
 Bien qu'il soit recommandé d'utiliser `Git` dès la création d'un projet
-RStudio, il est également possible d'ajouter `Git` à un projet RStudio
-déjà existant. Vous pouvez utiliser cette méthode lorsque vous avez
+RStudio, il est également possible de commencer à utiliser `Git` pour suivre les modifications d'un projet RStudio déjà existant. Vous pouvez utiliser cette méthode lorsque vous avez
 commencé à travailler seul sur un projet `RStudio`, et que vous souhaitez
 le partager avec des collègues ou mieux suivre les modifications du projet.
 
@@ -193,7 +173,8 @@ La première étape consiste à initialiser l'utilisation de `Git` dans le proje
 usethis::use_git()
 ```
 
-Cette fonction réalise deux opérations : 
+Cette fonction réalise deux opérations :
+
 - elle crée automatiquement tous les fichiers de configuration nécessaires au bon fonctionnement de `Git` dans le projet sur lequel vous travaillez ;
 - elle effectue un premier `r with_def("commit")` (voir Section XX) pour valider la création de ces fichiers de configuration.
 
@@ -207,30 +188,24 @@ La fonction `usethis::use_git()` va finalement vous proposer de sauvegarder les 
 
 Cette étape est identique à celle qui est décrite dans la section [Créer le dépôt distant sur la forge](#creation-repo).
 
-#### Etape 3 : Mettre en place le _remote_ (`git add remote`)
+#### Etape 3 : Mettre en place le dépôt distant
 
-La troisième étape consiste à établir un lien entre votre projet local et un dépôt distant. 
+La troisième étape consiste à établir un lien entre votre projet local et un dépôt distant (`git add remote`). Pour créer ce lien avec l'interface de `RStudio`, il faut se rendre dans la partie destinée à la gestion des branches sur laquelle la partie [RStudio et les branches](#git-branches) revient plus en détails.
 
-Lors de la première étape, la fonction `usethis::use_git` a mis en place l'environnement informatique permettant d'utiliser `Git` sur votre poste local. En revanche, elle n'a pas créé de lien entre votre projet local et un dépôt distant.
-
-Pour créer ce lien entre dépôt distant et dépôt local, il est nécessaire
-d'utiliser l'interface de `RStudio` ou la ligne de commande. Avec
-l'interface `Rstudio`, il faut se rendre dans la partie destinée à la gestion des branches sur laquelle la partie [RStudio et les branches](#git-branches) revient plus en détails.
-
-```{r, echo = FALSE}
-utilitr::include_image("./pics/git/onglet_git8.png", compression = FALSE)
+```{r, echo = FALSE, out.width = '80%'}
+utilitr::include_image("./pics/git/add_remote2.png", compression = FALSE)
 ```
 
 Après avoir cliqué sur ce bouton, dans la fenêtre s'ouvrant, cliquer sur 
 `Add remote` :
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, out.width = '40%'}
 utilitr::include_image("./pics/git/git_remote.png", compression = FALSE)
 ```
 
 Dans cette nouvelle fenêtre, deux champs sont à renseigner : 
 
-* `Remote name` : le nom du dépôt distant. Par convention, l'alias est généralement nommé `origin` (mais vous pouvez lui donner un autre nom) ;
+* `Remote name` : le nom du dépôt distant. Par convention, on utilise le nom `origin` (mais vous pouvez lui donner un autre nom) ;
 * `Remote URL` : l'url du dépôt distant (cette adresse se termine par `.git`, voir plus haut).
 
 A ce stade, `Git` est maintenant capable de contrôler les versions des fichiers locaux et d'interagir avec le dépôt. L'environnement nécessaire pour pouvoir réaliser les opérations usuelles, présentées dans la partie [Suivre les modifications avec RStudio](#git-local) est ainsi opérationnel.
@@ -244,7 +219,7 @@ A ce stade, `Git` est maintenant capable de contrôler les versions des fichiers
 - le fichier `.Renviron` (voir la fiche [Personnaliser la configuration de `R`]) ;
 - les codes contenant des informations confidentielles (comme les mots de passe, les _tokens_ ou les clés d'API).
 
-Les fichiers exclus du suivi des modifications sont répertoriés dans un fichier nommé `.gitignore`. Si le projet a été créé selon l'une des deux méthodes décrites précédemment, `RStudio` crée automatiquement dans le dossier du projet un fichier `.gitignore` qui contient les lignes suivantes :
+**Les fichiers exclus du suivi des modifications sont répertoriés dans un fichier nommé `.gitignore`.** Si le projet a été créé selon l'une des deux méthodes décrites précédemment, `RStudio` a créé automatiquement un fichier `.gitignore` dans le dossier du projet, et ce fichier contient par défaut les lignes suivantes :
 
 ~~~r
 .Rhistory
@@ -252,7 +227,7 @@ Les fichiers exclus du suivi des modifications sont répertoriés dans un fichie
 .Rproj.user
 ~~~
 
-Ce fichier est modifiable et il est souvent nécessaire de lui ajouter des lignes pour exclure un certain nombre de fichiers. Par exemple, vous pouvez ajouter les lignes suivantes pour exclure tous les fichiers csv, SAS et Excel du suivi des modifications :
+**Il est souvent nécessaire d'ajouter des lignes au fichier `.gitignore` pour exclure certains fichiers du suivi des modifications.** Pour éditer le fichier, il suffit d'exécuter la commande `usethis::edit_git_ignore(scope = "project")`. Par exemple, vous pouvez ajouter les lignes suivantes pour exclure tous les fichiers de format csv, SAS et Excel du suivi des modifications :
 
 ~~~r
 *.csv
@@ -261,7 +236,7 @@ Ce fichier est modifiable et il est souvent nécessaire de lui ajouter des ligne
 *.xlsx
 ~~~
 
-Il est également conseillé d'exclure les fichiers pouvant être produits par des documents `R Markdown` (notamment les fichiers pdf et html). Par exemple, pour exclure les fichiers `PDF` et `HTML`, les lignes suivantes suffisent :
+Il est également conseillé d'exclure les fichiers pouvant être produits par des documents `R Markdown` (notamment les fichiers pdf et html). Par exemple, pour exclure tous les fichiers de formats `PDF` et `HTML`, les lignes suivantes suffisent :
 
 ~~~r
 *.html
@@ -272,11 +247,13 @@ Il est également conseillé d'exclure les fichiers pouvant être produits par d
 Le site [https://www.toptal.com/developers/gitignore](gitignore.io) fournit un certain nombre de modèles de fichiers `.gitignore` selon le type de projet associés à `Git`. 
 :::
 
-## Présentation de l'interface RStudio
+## Suivre les modifications d'un projet RStudio avec `Git` {#git-local} 
+
+### Présentation de l'interface RStudio
 
 RStudio permet d'utiliser `Git` _via_ une interface graphique, accessible dans l'onglet `Git` situé en haut à droite de la fenêtre RStudio. 
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, out.width = '90%'}
 utilitr::include_image("./pics/git/create_project_3.png", compression = FALSE)
 ```
 
@@ -293,19 +270,31 @@ C'est grâce à cette interface que vous pourrez effectuer la plupart des opéra
 Si l'onglet `Git` n'apparaît pas dans la fenêtre RStudio, c'est que votre projet RStudio n'est pas encore configuré pour utiliser `Git`. Reportez-vous à la section [Initialiser l'usage de `Git` dans un projet RStudio].
 :::
 
-## Suivre les modifications d'un projet RStudio avec `Git` {#git-local} 
-
 ### Repérer les modifications apportées au projet avec RStudio
 
-L'onglet `Git` vous indique le statut des différents fichiers avec une petite icône colorée à gauche du nom du fichier :
+L'onglet `Git` vous indique le statut des différents fichiers avec une petite icône colorée à gauche du nom du fichier (dans le cadre rouge) :
 
-METTRE UNE CAPTURE D'ECRAN AVEC LES STATUTS
+```{r, echo = FALSE, out.width= '80%'}
+utilitr::include_image("./pics/git/onglet_git1.png", compression = FALSE)
+```
 
-Le statut du fichier n'est pas le même pour tous les fichiers :
+Voici les statuts les plus courants :
 
-* `M`: les modifications de ce fichier sont suivies par `Git`, et le fichier a été modifié depuis la dernière fois que ses modifications ont été validées ;
-* `??`: les modifications de ce fichier ne sont pas suivies par `Git` (autrement dit, ce fichier n'est pas sauvegardé) ;
-* `D`: le fichier a été supprimé (ou éventuellement renommé).
+* 
+```{r, out.extra='style="display: inline-block; padding: 0;"', echo = FALSE}
+utilitr::include_image("./pics/git/statut_modified.png", compression = FALSE)
+```
+(_modified_) : les modifications de ce fichier sont suivies par `Git`, et le fichier a été modifié depuis la dernière fois que ses modifications ont été sauvegardées dans l'historique de `Git` ;
+* 
+```{r, out.extra='style="display: inline-block; padding: 0;"', echo = FALSE}
+utilitr::include_image("./pics/git/statut_deleted.png", compression = FALSE)
+```
+(_deleted_) : les modifications de ce fichier sont suivies par `Git`, et le fichier a été supprimé (ou éventuellement renommé) depuis la dernière fois que ses modifications ont été sauvegardées dans l'historique de `Git` ;
+* 
+```{r, out.extra='style="display: inline-block; padding: 0;"', echo = FALSE}
+utilitr::include_image("./pics/git/statut_unknown.png", compression = FALSE)
+```
+(_unknown_) : les modifications de ce fichier ne sont pas suivies par `Git` (autrement dit, ce fichier n'est pas sauvegardé).
 
 ### Sauvegarder les modifications de vos fichiers {#commit}
 
@@ -318,23 +307,28 @@ Lorsqu'on souhaite sauvegarder les modifications faites à un ou plusieurs fichi
 
 Les modifications ne seront enregistrées qu'à l'issue de ces deux opérations, que vous pouvez réaliser soit avec la ligne de commande, soit avec l'interface RStudio. La suite de cette section détaille la marche à suivre avec l'interface RStudio.
 
-#### Marche à suivre avec l'interface RStudio
-
-Supposons qu'un fichier source a été modifié et qu'on souhaite valider ces modifications. Ci-dessous, le dépôt comporte plusieurs fichiers modifiés. On souhaite valider les modifications apportées au fichier `03_Fiches_thematiques/Fiche_git_utilisation.Rmd` et ajouter le fichier `pics/git/ibglet_git1.png`. 
-
-```{r, echo = FALSE, out.width= '60%'}
-utilitr::include_image("./pics/git/onglet_git1.png", compression = FALSE)
-```
+Supposons qu'un fichier source a été modifié et qu'on souhaite valider ces modifications. Ci-dessus, le dépôt comporte plusieurs fichiers modifiés. On souhaite valider les modifications apportées au fichier `03_Fiches_thematiques/Fiche_git_utilisation.Rmd` et ajouter le fichier `pics/git/onglet_git1.png`. 
 
 #### Etape 1 : Sélectionner les modifications à sauvegarder
 
 La première étape (`git add`) consiste à sélectionner les fichiers dont on veut sauvegarder les modifications. Pour ce faire, il faut cliquer sur la case vide à gauche du nom du fichier. Cela change le statut des fichiers :
 
-```{r, echo = FALSE, out.width= '60%'}
+```{r, echo = FALSE, out.width= '80%'}
 utilitr::include_image("./pics/git/onglet_git3.png", compression = FALSE)
 ```
 
-Il est évidemment possible de sélectionner plusieurs fichiers. Les modifications à sauvegarder ont été sélectionnées, et sont maintenant dans la salle d'attente.
+Il est évidemment possible de sélectionner plusieurs fichiers. Les modifications à sauvegarder ont été sélectionnées, et sont maintenant dans la salle d'attente. Deux statuts supplémentaires peuvent apparaître lorsqu'on sélectionne des modifications à sauvegarder :
+
+* 
+```{r, out.extra='style="display: inline-block; padding: 0;"', echo = FALSE}
+utilitr::include_image("./pics/git/statut_added.png", compression = FALSE)
+```
+(_added_) : un nouveau fichier est ajouté à l'historique de `Git` ;
+* 
+```{r, out.extra='style="display: inline-block; padding: 0;"', echo = FALSE}
+utilitr::include_image("./pics/git/statut_renamed.png", compression = FALSE)
+```
+(_renamed_) : un fichier a été renommé, et l'opération de changement de nom est sélectionnée.
 
 #### Etape 2 : Valider la sauvegarde des modifications
 
@@ -343,14 +337,14 @@ La seconde étape (`git commit`) consiste à valider les modifications choisies
 bouton `r with_def("commit")`, situé au-dessus de la liste des
 fichiers modifiés. En cliquant sur ce bouton, une nouvelle fenêtre s'ouvre :
 
-```{r, echo = FALSE, out.width= '75%'}
+```{r, echo = FALSE, out.width= '100%'}
 utilitr::include_image("./pics/git/onglet_git4.png", compression = FALSE)
 ```
 
 Les modifications apportées à chaque fichier sont résumées ligne à ligne dans la partie inférieure (suppressions en rouge, ajouts en vert). Pour valider ces modifications (`commit`), il faut écrire un message qui décrit la nature des modifications sauvegardées (dans le cadre vert) puis cliquer sur le
 bouton `r with_def("commit")` (ovale rouge). Une fenêtre s'ouvre alors et confirme que la modification a été sauvegardée :
 
-```{r, echo = FALSE, out.width= '50%'}
+```{r, echo = FALSE, out.width= '80%'}
 utilitr::include_image("./pics/git/onglet_git5.png", compression = FALSE)
 ```
 
@@ -358,24 +352,28 @@ utilitr::include_image("./pics/git/onglet_git5.png", compression = FALSE)
 
 Il est possible, depuis `RStudio`, de consulter la liste des modifications apportées à un dépôt en cliquant sur le bouton `History` (cadre rouge). En ligne de commande, il faudrait taper `git log` pour obtenir une information équivalente.
 
-```{r, echo = FALSE, out.width= '50%'}
+```{r, echo = FALSE, out.width= '80%'}
 utilitr::include_image("./pics/git/onglet_git6.png", compression = FALSE)
 ```
 
 Cette action ouvre une fenêtre avec la liste des _commits_ réalisée sur la branche (voir plus bas pour la notion de branche), avec les modifications apportées par chaque _commit_. Cette interface permet de balayer rapidement les modifications apportées aux fichiers, par exemple pour retrouver à quel moment une ligne de code a été modifiée.
 
-```{r, echo = FALSE}
-utilitr::include_image("./pics/git/onglet_git7.png")
-```
-
 ## Interagir avec le dépôt distant
 
-Après avoir effectué des opérations sur son dépôt local, on peut effectuer deux opérations pour interagir avec le dépôt distant Les boutons dans `RStudio` illustrent bien l'opération en question :
+Après avoir effectué des opérations sur son dépôt local, on peut effectuer deux opérations pour interagir avec le dépôt distant. Les boutons dans `RStudio` illustrent bien les opérations en question :
 
-* `pull` ![](./pics/git/pull.png): récupérer les modifications présentes sur le dépôt distant ;
-* `push` ![](./pics/git/push.png): envoyer les modifications faites en local sur le dépôt distant.
+* `pull` 
+```{r, out.width="3%", out.extra='style="display: inline-block; padding: 0;"', echo = FALSE}
+utilitr::include_image("./pics/git/pull.png", compression = FALSE)
+```
+: récupérer les modifications présentes sur le dépôt distant ;
+* `push` 
+```{r, out.width="3%", out.extra='style="display: inline-block; padding: 0;"', echo = FALSE}
+utilitr::include_image("./pics/git/push.png", compression = FALSE)
+```
+: envoyer les modifications faites en local sur le dépôt distant.
 
-Lorsque vous partagez les modifications que vous avez apportées au projet, vos modifications viennent s'ajouter à la dernière version commune disponible (celle qui figure dans le dépôt commun). C'est pourquoi il est nécessaire que votre dépôt local soit à jour de toutes les modifications partagées par les autres contributeurs avant de partager vos modifications. Il faut donc toujours récupérer la dernière version du projet sur le dépôt distant (en cliquant sur `pull`) avant d'envoyer de modifications (en cliquant sur `push`).
+Lorsque vous partagez les modifications que vous avez apportées au projet, vos modifications viennent s'ajouter à la dernière version commune disponible (celle qui figure dans le dépôt commun). C'est pourquoi il est nécessaire que votre dépôt local soit à jour de toutes les modifications partagées par les autres contributeurs avant de partager vos modifications. **Il faut donc toujours récupérer la dernière version du projet sur le dépôt distant (en cliquant sur `pull`) avant d'envoyer de modifications (en cliquant sur `push`).**
 
 ::: {.remarque}
 Les icônes de l'onglet `Git` sont placées dans l'ordre des actions à réaliser afin de publier un code sur un dépôt distant : (add), commit, pull, push.
@@ -385,34 +383,31 @@ utilitr::include_image("./pics/git/onglet_git7.png", compression = FALSE)
 ```
 :::
 
-Il peut arriver que d'autres contributeurs aient partagé sur le dépôt distant des modifications du projet en même temps que vous avez apporté des modifications à votre copie locale du projet. Lorsque vous allez récupérer les modifications présentes sur le dépôt distant avec `Pull`, `Git` va essayer de fusionner automatiquement vos modifications avec celles des autres contributeurs. Il peut néanmoins arriver que ces modifications soient incompatibles, par exemple si deux modifications portent sur la même ligne du même fichier : c'est un **conflit de version**. En cas de conflit, `Git` indiquera que la fusion automatique a échoué et vous demandera de vérifier manuellement les morceaux de fichiers concernés et de choisir la bonne version : vous devez alors **résoudre un conflit de version**. Plus de détails sont disponibles dans la [formation Travail collaboratif avec `R`](https://linogaliana.gitlab.io/collaboratif/).
+Il peut arriver que d'autres contributeurs aient partagé sur le dépôt distant des modifications du projet en même temps que vous avez apporté des modifications à votre copie locale du projet. Lorsque vous récupérez les modifications présentes sur le dépôt distant avec `pull`, `Git` essaie de fusionner automatiquement vos modifications avec celles des autres contributeurs. Il peut néanmoins arriver que ces modifications soient incompatibles, par exemple si deux modifications portent sur la même ligne du même fichier : c'est un **conflit de version**. En cas de conflit, `Git` indiquera que la fusion automatique a échoué et vous demandera de choisir par vous-mêmes la bonne version des codes : vous devez alors **résoudre un conflit de version**. Plus de détails sont disponibles dans la [formation Travail collaboratif avec `R`](https://linogaliana.gitlab.io/collaboratif/).
 
 ## RStudio et les branches {#git-branches}
 
 ### La notion de branche
 
-Les branches sont l'une des fonctionnalités les plus puissantes de la gestion de version. La création de **branches** dans un projet permet de développer des codes sans modifier la version de référence des codes. Cela signifie que `Git` permet de faire cohabiter dans un projet plusieurs versions des mêmes codes sans risque de confusion, et de fusionner facilement des versions différentes. Deux points sont particulièrement importants :
+Les **branches** sont l'une des fonctionnalités les plus puissantes de la gestion de version. La création de branches dans un projet permet de développer des codes sans modifier la version de référence des codes, et donc de faire cohabiter dans un projet plusieurs versions des mêmes codes sans risque de confusion. `Git` propose également des fonctions pour fusionner facilement des versions différentes des mêmes codes. Deux points sont particulièrement importants :
 
-- Dans un projet collaboratif, il existe une branche particulière, appelée le plus souvent `main` ou `master`, qui joue le rôle de version de référence. C’est autour d’elle que se développent les branches comme le montre l’exemple ci-dessous :
+- Dans un projet collaboratif, il existe une branche particulière, appelée le plus souvent `main` ou `master`, qui joue le rôle de version de référence. C’est autour d’elle que se développent les branches.
+- Les modifications faites sur les codes dans une branche n'altèrent pas la version de référence (celle de la branche `master`) tant qu'il n'y a pas de fusion entre branche (`merge`).
 
-<!---- image à insérer ------>
-
-- Lorsqu'on se situe sur une branche, on peut faire toutes les modifications que l'on souhaite Cela n'altère pas la version de référence, celle sur `master`, tant qu'il n'y a pas de fusion entre branche (`merge`).
-
-### Créer des branches avec RStudio
+### Créer et utiliser des branches avec RStudio
 
 La partie droite de l'interface `git` de RStudio permet de travailler avec des branches. 
-Tu prég
-```{r, echo = FALSE}
+
+```{r, echo = FALSE, out.width = "100%"}
 utilitr::include_image("./pics/git/onglet_git8.png", compression = FALSE)
 ```
 
 Cette interface offre principalement deux fonctions :
 
-- Créer une nouvelle branche (cadre orange) : si vous cliquez sur ce bouton, une boîte de dialogue s'ouvre, dans laquelle vous devrez définir le nom de la nouvelle branche. L'instruction correspondante en ligne de commande est `git checkout -b ma-branche`, où `ma-branche` est le nom de la nouvelle branche.
+- **Créer une nouvelle branche** (cadre orange) : si vous cliquez sur ce bouton, une boîte de dialogue s'ouvre, dans laquelle vous devrez définir le nom de la nouvelle branche. L'instruction correspondante en ligne de commande est `git checkout -b ma-branche`, où `ma-branche` est le nom de la nouvelle branche. Deux points sont à noter:
     - La branche source, à partir de laquelle la nouvelle branche diverge, sera celle sur laquelle vous vous situez au moment de la création. 
     - Il est recommandé de se placer sur `master` avant chaque création de nouvelle branche.
-- Naviguer parmi les branches (cadre bleu) : le menu déroulant affiche d'abord la liste des branches disponibles dans votre dépôt local (`LOCAL BRANCHES`) puis la liste des branches existantes sur le dépôt distant (`REMOTE: ORIGIN`). Pour afficher le contenu d'une branche, il suffit de cliquer sur le nom de cette branche. L'instruction correspondante en ligne de commande est `git checkout ma-branche`, où `ma-branche` est le nom de la branche dont vous souhaitez afficher le contenu.
+- **Naviguer parmi les branches** (cadre bleu) : le menu déroulant affiche d'abord la liste des branches disponibles dans votre dépôt local (`LOCAL BRANCHES`) puis la liste des branches existantes sur le dépôt distant (`REMOTE: ORIGIN`). Pour afficher le contenu d'une branche, il suffit de cliquer sur le nom de cette branche. L'instruction correspondante en ligne de commande est `git checkout ma-branche`, où `ma-branche` est le nom de la branche dont vous souhaitez afficher le contenu.
 
 ::: {.remarque}
 L'interface graphique de RStudio ne permet pas de réaliser toutes les opérations possibles sur les branches. En particulier, il n'est pas possible de fusionner des branches avec cette interface. Les interfaces des forges (telles que `Gitlab`, `Github`...) sont beaucoup plus adaptées pour mener ce type d'opération. Vous pouvez en apprendre davantage en consultant la [formation Travail collaboratif avec `R`](https://linogaliana.gitlab.io/collaboratif/).
@@ -426,7 +421,7 @@ L'utilisation de la ligne de commande n'est pas plus risquée que l'interface RS
 
 Pour ouvrir un terminal `Git`, cliquer sur l'écrou dans l'onglet `Git`: 
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, out.width='70%'}
 utilitr::include_image("./pics/git/onglet_git9.png", compression = FALSE)
 ```
 
