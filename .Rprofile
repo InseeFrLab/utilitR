@@ -1,6 +1,6 @@
 if (file.exists('~/.Rprofile')) sys.source('~/.Rprofile', envir = environment())
 
-
+import::from("magrittr", "%>%")
 
 render_rmd <- function(x) return(cat(htmltools::includeText(x)))
 
