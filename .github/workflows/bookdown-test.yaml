@@ -25,7 +25,7 @@ jobs:
           Rscript -e "install.packages(c('remotes'))"
           Rscript -e "remotes::install_deps(dependencies = TRUE)"
       - name: Render Book
-        run: Rscript -e 'bookdown::render_book("index.Rmd", output_dir = "_public")'
+        run: Rscript -e 'bookdown::render_book("index.Rmd", output_format = "utilitr::html_document", output_dir = "_public")'
       - uses: actions/upload-artifact@v2
         with:
           name: _public
@@ -41,7 +41,7 @@ jobs:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
         run: |
-          npm install netlify-cli -g
+          npm install --unsafe-perm=true netlify-cli -g
           netlify init
           netlify deploy --alias=${CI_COMMIT_REF_NAME} --dir="_public" --message "Deploy from ${GITHUB_REF}"
 
