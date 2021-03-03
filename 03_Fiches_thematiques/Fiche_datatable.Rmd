@@ -191,25 +191,6 @@ Partir de `dt`, créer une nouvelle variable `newvar` qui vaut 1 pour les observ
 </table>
 </div>
 
-<!-- Output LaTeX -->
-
-```{asis, eval=(knitr::is_latex_output()), echo=TRUE}
-**Exemple 1** : Partir de `dt`, conserver uniquement les observations pour lesquelles `x > 3`, et créer une nouvelle variable `newvar` qui vaut 1 partout
-```
-
-```{r, echo=(knitr::is_latex_output()), eval=FALSE}
-dt[x > 3][ , newvar := 1]
-```
-
-```{asis, eval=(knitr::is_latex_output()), echo=TRUE}
-**Exemple 2** : Partir de `dt`, créer une nouvelle variable `newvar` qui vaut 1 pour les observations pour lesquelles `x > 3` et `NA` ailleurs
-```
-
-```{r, echo=(knitr::is_latex_output()), eval=FALSE}
-dt[x > 3, newvar := 1]
-```
-<!-- Fin de l'output LaTeX -->
-
 ## Manipuler des tables de données avec `data.table`
 
 Nous allons illustrer les fonctions de manipulation de données de `data.table` avec les jeux de données du _package_ `doremifasolData`.
@@ -498,49 +479,45 @@ Pour créer une colonne, on écrit donc directement `dt[ , nouvelle_colonne := u
 
 <!-- Output html -->
 <div> 
-<table class='table'>
-<tr> <th>
-```{asis, eval=(knitr::is_html_output()), echo=TRUE}
-`dplyr` : Il faut une assignation (`<-`) pour modifier `bpe_ens_2018`
-```
-</th> 
-<th>
-```{asis, eval=(knitr::is_html_output()), echo=TRUE}
-`data.table` : Il ne faut pas d'assignation pour modifier `bpe_ens_2018_dt`
-```
-</th> <tr>
-<tr>
+<table class='table' style="width: 100%;">
+<colgroup>
+   <col span="1" style="width: 10%;">
+   <col span="1" style="width: 50%;">
+   <col span="1" style="width: 40%;">
+</colgroup>
+<tr> <th> _Package_ </th> <th> Code </th> <th> Commentaire </th> </tr> <tr>
 <td>
-```{r, echo=(knitr::is_html_output()), eval=FALSE}
-bpe_ens_2018 <- bpe_ens_2018 %>%
+```{asis echo=TRUE}
+`dplyr`
+```
+</td> 
+<td>
+```{r eval=FALSE}
+bpe_ens_2018 <- 
+  bpe_ens_2018 %>%
   dplyr::mutate(nouvelle_colonne =  NB_EQUIP * 10)
 ```
 </td>
 <td>
-```{r, echo=(knitr::is_html_output()), eval=FALSE}
+Il faut utiliser une assignation (`<-`) pour modifier la table.
+</td>
+</tr>
+<tr>
+<td>
+```{asis echo=TRUE}
+`data.table`
+```
+</td> 
+<td>
+```{r eval=FALSE}
 bpe_ens_2018_dt[ , nouvelle_colonne :=  NB_EQUIP * 10]
 ```
+</td>
+<td>
+Il ne faut pas d'assignation pour modifier la table, qui est modifiée par référence.
 </td>
 </tr>
 </table>
-</div> 
-
-<!-- output LaTeX -->
-
-```{asis, eval=(knitr::is_latex_output()), echo=TRUE}
-**`dplyr` : Il faut une assignation (`<-`) pour modifier `bpe_ens_2018`**
-```
-```{r, echo=(knitr::is_latex_output()), eval=FALSE}
-bpe_ens_2018 <- bpe_ens_2018 %>%
-  dplyr::mutate(nouvelle_colonne =  NB_EQUIP * 10)
-```
-
-```{asis, eval=(knitr::is_latex_output()), echo=TRUE}
-**`data.table` : Il ne faut pas d'assignation pour modifier `bpe_ens_2018_dt`**
-```
-```{r, echo=(knitr::is_latex_output()), eval=FALSE}
-bpe_ens_2018_dt[ , nouvelle_colonne :=  NB_EQUIP * 10]
-```
 
 ### Les usages de `:=`
 
