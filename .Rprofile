@@ -8,7 +8,11 @@ with_def <- (function() {
   
   function(term, def) {
     if (missing(def)) {
-      def <- unlist(glossary[glossary$name == term, "desc"])
+      def <- unlist(glossary[glossary$name == tolower(term), "desc"])
+      # quick and dirty pour aussi matcher les pluriels
+      if (length(def) == 0) def <- unlist(glossary[paste0(glossary$name, "s") == tolower(term), "desc"])
+      # quick and dirty pour aussi matcher les infinitif
+      if (length(def) == 0) def <- unlist(glossary[paste0(glossary$name, "r") == tolower(term), "desc"])
     }
     sprintf('<abbr title="%s"><b>%s</b></abbr>', def, term)
   }
