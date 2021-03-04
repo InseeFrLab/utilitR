@@ -1,14 +1,9 @@
-on:
-  push:
-    branches-ignore:
-      - master
-      - main
-  pull_request:
-    branches:
-      - main
-      - master 
+name: Test evolution template
 
-name: preview bookdown
+on:
+  workflow_dispatch:
+    types: [update-template]
+
 
 jobs:
   build:
@@ -33,20 +28,14 @@ jobs:
           retention-days: 5
       - name: Install npm
         if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
-        uses: actions/setup-node@v2          
-        with:
-          node-version: '12'        
+        uses: actions/setup-node@v1          
       - name: Deploy to Netlify
         if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
         # NETLIFY_AUTH_TOKEN and NETLIFY_SITE_ID added in the repo's secrets
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-          BRANCHE_REF: ${{ github.event.pull_request.head.ref }}
         run: |
-          npm init -y
           npm install --unsafe-perm=true netlify-cli -g
           netlify init
-          netlify deploy --alias=${BRANCHE_REF} --dir="_public" --message "Preview deploy from ${BRANCHE_REF}"
-
-#--site="$NETLIFY_SITE_ID" --auth="$NETLIFY_AUTH_TOKEN"
+          netlify deploy --alias=test-template --dir="_public" --message "Deploy from ${GITHUB_REF}"
