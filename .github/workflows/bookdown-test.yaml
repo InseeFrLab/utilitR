@@ -40,8 +40,9 @@ jobs:
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          BRANCHE_REF: ${{ github.event.pull_request.head.ref }}
         run: |
-          echo echo ${github.event.pull_request.head.ref}
+          echo ${BRANCHE_REF} 
           npm install --unsafe-perm=true netlify-cli -g
           netlify init
           netlify deploy --alias=${GITHUB_REF##*/} --dir="_public" --message "Deploy from ${GITHUB_REF}"
