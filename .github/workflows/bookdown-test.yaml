@@ -34,8 +34,6 @@ jobs:
       - name: Install npm
         if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
         uses: actions/setup-node@v1          
-      - name: reference name
-        run: echo ${GITHUB_REF}
       - name: Deploy to Netlify
         if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
         # NETLIFY_AUTH_TOKEN and NETLIFY_SITE_ID added in the repo's secrets
@@ -43,8 +41,9 @@ jobs:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
         run: |
+          echo echo ${github.event.pull_request.head.ref}
           npm install --unsafe-perm=true netlify-cli -g
           netlify init
-          netlify deploy --alias=$'PR${GITHUB_REF//[!0-9]/}' --dir="_public" --message "Deploy from PR #PR${GITHUB_REF//[!0-9]/}"
+          netlify deploy --alias=${GITHUB_REF##*/} --dir="_public" --message "Deploy from ${GITHUB_REF}"
 
 #--site="$NETLIFY_SITE_ID" --auth="$NETLIFY_AUTH_TOKEN"
