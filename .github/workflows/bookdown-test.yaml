@@ -40,9 +40,10 @@ jobs:
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          BRANCHE_REF: ${{ github.event.pull_request.head.ref }}
         run: |
           npm install --unsafe-perm=true netlify-cli -g
           netlify init
-          netlify deploy --alias=${CI_COMMIT_REF_NAME} --dir="_public" --message "Deploy from ${GITHUB_REF}"
+          netlify deploy --alias=${BRANCHE_REF} --dir="_public" --message "Preview deploy from ${BRANCHE_REF}"
 
 #--site="$NETLIFY_SITE_ID" --auth="$NETLIFY_AUTH_TOKEN"
