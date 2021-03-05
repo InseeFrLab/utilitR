@@ -160,23 +160,70 @@ data <- get_dataset("DUR_D")
 
 ## Exemple d'utilisation d'une API sans package
 
-Pour pouvoir lire les données d'une API ne possédant pas de package, il va falloir utiliser 2 packages R :
-La structure de ce type de package est simple :
-•	package httr pour lancer la requête
-•	puis package jsonlite pour transformer le json en dataframe
+Pour lire les données d'une API ne possédant pas de package, il faut utiliser les 2 packages R suivant :  
+-	package httr pour lancer la requête ;  
+-	puis package jsonlite pour transformer le json en dataframe.
 
+### Package httr
 
-### package httr
+Le package httr permet de se connecter aux sites web et de se connecter aux API.  
 
+Il est possible de configuer la connexion internet localement sans modifier les variables système :  
+- set_config() permet de configurer l'accés internet utilisée par les fonctions du package.   
+- use_proxy() permet de déterminer le proxy à utiliser. Le proxy sera modifié uniquement pour l'utilisation des fonctions d'httr, mais pas sur l'environnement de travail.
 
-### package jsonlite
+Pour travailler à l'insee sur des données diffusées il faut renseigner :
 
+```{r, eval = FALSE}
+httr::set_config(httr::use_proxy("proxy-rie.http.insee.fr:8080"))
+```
 
-### Exemple d'utilisation sur l'API interne RMèS[http://api.interne.rmes.insee.fr/swagger-ui/index.html#/]
+Ce package permet également de lire le contenu d'une API et de restituer le résultat en texte :
+
+Code pour une API libre d'accès :
+
+```{r, eval = FALSE}
+httr::content(httr::GET(url),             # url correspond à l'url à interroger
+              as="text",                  # type de la sortie renvoyée
+              httr::content_type_json(),  # type de la réponse de l'url
+              encoding='UTF-8')           # encodage de la réponse de l'url
+```
+
+Pour les API protégées par des jetons, il faut rajouter une paramètre d'identification :
+```{r, eval = FALSE}
+jeton <- "XXXXX" # création d'une variable contenant le jeton
+
+auth_header <- httr::add_headers('Authorization'= paste('Bearer',jeton)) # création d'une variable d'authentification
+
+res <- httr::content(httr::GET(url),
+                     auth_header, # ajout de la variable d'authentification
+                     as="text", 
+                     httr::content_type_json(), 
+                     encoding='UTF-8')
+```
+
+### Package jsonlite
+
+Le package jsonlite permet de lire un élément en format json.
+
+La fonction principale à utiliser est fromJSON(res). Cette ligne permet de convertir une résultat en format json en un objet R.
+
+### Temporisation
+
+Pour l'utilisation d'API avec un jeton, comme celle proposées sur le catalogue des API de l'Insee, le nombre de requête par minute est limité (30 pour un compte standard sur le catalogue des API).
+Pour ne pas être bloqué par cette limite, il est important de temporiser les appels successifs via la fonction  Sys.sleep(seconde). Le paramètre de cette fonction est le nombre de seconde pendant lequel R patiente.
+
+### Exemple d'utilisation sur l'API interne [RMèS](http://api.interne.rmes.insee.fr/swagger-ui/index.html#/)
+
+RMès met a disposition une API interne à l'insee accessible depuis l'adresse http://api.interne.rmes.insee.fr/swagger-ui/index.html#/. Cette API permet d'obtenir les métadonnées (sources, concepts, liste de code) et la géographie. Comme cette API est stockée en internet, il n'y a pas de proxy.
+
+Voici un exmple de requête pour accéder aux données au niveau division de la Naf-rev2 :
 
 ```{r, eval = FALSE}
 library(dplyr)
 library(stringr)
+library(httr)
+library(jsonlite)
 
 # L'API est stockée en interne. Il n'y a pas de proxy pour cette API
 httr::set_config(httr::use_proxy(""))
@@ -197,5 +244,38 @@ division <- res_ok %>%
   select(c('code', 'intituleFr'))
 ```
 
-### Exemple d'utilisation sur l'API Sirene[https://api.insee.fr/catalogue/site/themes/wso2/subthemes/insee/pages/item-info.jag?name=Sirene&version=V3&provider=insee]
+### Exemple d'utilisation sur l'API [Sirene](https://api.insee.fr/catalogue/site/themes/wso2/subthemes/insee/pages/item-info.jag?name=Sirene&version=V3&provider=insee)
 
+Cet exemple va aller chercher les liens de succession pour une établissement :
+
+```{r, eval = FALSE}
+library(apinsee)
+library(httr)
+library(jsonlite)
+
+url <- "https://api.insee.fr/entreprises/sirene/V3/siret/liensSuccession?q=siretEtablissementPredecesseur%3A39478192600016"
+token <- apinsee::insee_auth()
+set_config(config(token = token))
+res <- content(httr::GET(url, httr::config(token = token)), 
+                as="text", 
+                content_type_json(), 
+                encodin='UTF-8')
+
+res<-fromJSON(res)
+sortie <- as.data.frame(res$liensSuccession)
+```
+
+L'API Sirene permet d'effectuer des recherches multicritères. Dans ce cas, il faut séparer les codes par %20OR%20 :
+
+```{r, eval = FALSE}
+url <- "https://api.insee.fr/entreprises/sirene/V3/siret/liensSuccession?q=siretEtablissementPredecesseur%3A39478192600016%20OR%20siretEtablissementPredecesseur%3A39488939800027"
+token <- apinsee::insee_auth()
+set_config(config(token = token))
+res <- content(httr::GET(url, httr::config(token = token)), 
+               as="text", 
+               content_type_json(), 
+               encodin='UTF-8')
+
+res<-fromJSON(res)
+sortie <- as.data.frame(res$liensSuccession)
+```
