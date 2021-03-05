@@ -1,29 +1,5 @@
 if (file.exists('~/.Rprofile')) sys.source('~/.Rprofile', envir = environment())
 
-
-colorize <- function(x, color) {
-  if (knitr::is_latex_output()) {
-    sprintf("\\textcolor{%s}{%s}", color, x)
-  } else if (knitr::is_html_output()) {
-    sprintf("<span style='color: %s;'>%s</span>", color, 
-            x)
-  } else x
-}
-
-
-knitr::opts_chunk$set(out.width='75%', fig.align='center') 
-options(bookdown.render.file_scope = FALSE)
-
-print_html_only <- function(x){
-  if (knitr::is_html_output()) return(x)
-  return("")
-}
-
-print_latex_only <- function(x){
-  if (knitr::is_latex_output()) return(x)
-  return("")
-}
-
 render_rmd <- function(x) return(cat(htmltools::includeText(x)))
 
 
@@ -78,9 +54,47 @@ add_space <- function(){
   
 }
 
-# needed for bookdown 0.20
-options(bookdown.render.file_scope = FALSE)
 
 
 
-import::from("magrittr","%>%")
+# Créer un dossier pour les images compressées (s'il n'existe pas déjà)
+# Copier les images si elles ne sont pas déja dans le dossier
+dossier_images <- './pics' # This folder must exist in the repo
+dossier_images_compressees <- './pics_resized'
+if (!dir.exists(dossier_images_compressees)) { 
+  dir.create(dossier_images_compressees)
+}
+
+invisible(
+  file.copy(list.files(dossier_images, full.names = TRUE), dossier_images_compressees, recursive=TRUE, overwrite = TRUE)
+)
+
+
+reminder_image <- function(path = "moncheminperso"){
+  cat(
+    sprintf(
+      paste(
+        "```{r, echo = FALSE}",
+        "include_image(\"%s\")",
+        "```",
+        sep = "\n"
+      ), path)
+  )
+}
+
+
+message(
+  cat(
+    c("Projet source de la documentation utilitR",
+      "-----------------------------------------",
+      "",
+      "Pour pr\u00E9visualiser la version web de l'ouvrage: ",
+      "   * Option 1: utiliser l'onglet 'Build' dans Rstudio;",
+      "   * Option 2: taper dans la commande R:
+         bookdown::render_book(\"index.Rmd\", output_dir = \"_public\", output_format = \"utilitr::html_document\")",
+      "",
+      "Ne pas oublier d'installer le package 'utilitr' avant pour disposer des mod\u00E8les de documents: 
+         remotes::install_github(\"https://github.com/InseeFrLab/utilitr-template\")"),
+    sep = "\n"
+  )
+)

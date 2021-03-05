@@ -1,0 +1,18 @@
+on: [push]
+
+name: Pas d'extension en majuscule
+
+jobs:
+  build:
+    if: "!contains(github.event.commits[0].message, '[skip ci]')"
+    runs-on: ubuntu-latest
+    container: rocker/verse:latest
+    steps:
+      - name: Checkout Repository
+        env:
+          GITHUB_PAT: ${{ secrets.PAT }}
+        uses: actions/checkout@master
+      - name: Install utilitr library
+        run: Rscript -e "remotes::install_github('https://github.com/InseeFrLab/utilitr-template')"
+      - name: Détection des majuscules
+        run: Rscript -e 'utilitr:::upper_extension("PNG")'
