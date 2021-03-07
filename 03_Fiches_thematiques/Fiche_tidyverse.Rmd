@@ -1,11 +1,11 @@
-# Manipuler des données avec le `tidyverse`
+# Manipuler des données avec le `tidyverse` {#tidyverse}
 
 
 ## Tâches concernées et recommandations
 
 L'utilisateur souhaite manipuler des données stucturées sous forme de `data.frame` (sélectionner des variables, sélectionner des observations, créer des variables, joindre des tables, résumer l'information).
 
-::: {.recommandation data-latex=""}
+::: {.recommandation}
 
 * Pour des tables de données de taille petite et moyenne (inférieure à 1 Go ou moins d'un million d'observations), il est recommandé d'utiliser les *packages* `tibble`, `dplyr` et `tidyr` qui font l'objet de la présente fiche ;
 * Pour des tables de données de grande taille (plus de 1 Go ou plus d'un million d'observations), il est recommandé d'utiliser le _package_ `data.table` qui fait l'objet de la fiche [Manipuler des données avec `data.table`].
@@ -16,17 +16,17 @@ L'utilisateur souhaite manipuler des données stucturées sous forme de `data.fr
 
 ### Introduction
 
-**Les _packages_ `dplyr`, `tidyr` et `tibble` font partie du `tidyverse`**, une suite de _packages_ dont l'objectif est de faciliter la manipulation de tables de données. De façon schématique, on peut dire que:
+**Les _packages_ `dplyr`, `tidyr` et `tibble` font partie du `tidyverse`**, une suite de _packages_ dont l'objectif est de faciliter la manipulation de tables de données. De façon schématique, on peut dire que :
 
-- le _package_ `tibble` propose une nouvelle structure de données qui est une formalisation plus poussée du `data.frame` (le `tibble`), et des fonctions pour manipuler les `tibbles`;
-- le _package_ `dplyr` propose des fonctions pour manipuler des données qui sont **déjà** organisées sous forme de table (sélectionner des lignes et des colonnes, calculer des statistiques descriptives);
+- le _package_ `tibble` propose une nouvelle structure de données qui est une formalisation plus poussée du `data.frame` (le `tibble`), et des fonctions pour manipuler les `tibbles` ;
+- le _package_ `dplyr` propose des fonctions pour manipuler des données qui sont **déjà** organisées sous forme de table (sélectionner des lignes et des colonnes, calculer des statistiques descriptives) ;
 - le _package_ `tidyr` propose des fonctions pour mettre en ordre des données et pour les organiser sous forme de tables (créer des tables à partir de données brutes ou de listes, décomposer une colonne ou une ligne en plusieurs, restructurer les données en format *long* ou *wide*).
 
-Ces _packages_ présentent plusieurs avantages:
+Ces _packages_ présentent plusieurs avantages :
  
 * La syntaxe est structurée autour d'opérations élémentaires (les verbes), ce qui la rend très lisible ;
-* Les opérations par groupe sont facilitées par l'instruction `group_by()`;
-* Les noms des colonnes peuvent être appelés directement (pas besoin d'adopter la syntaxe `nomtable$nomvariable` comme dans la grammaire de base). Là aussi, la lecture du code en est facilitée;
+* Les opérations par groupe sont facilitées par l'instruction `group_by()` ;
+* Les noms des colonnes peuvent être appelés directement (pas besoin d'adopter la syntaxe `nomtable$nomvariable` comme dans la grammaire de base). Là aussi, la lecture du code en est facilitée ;
 * Plusieurs verbes peuvent facilement être combinés en utilisant l'opérateur `%>%` (pipe) qui permet d'enchaîner les instructions (voir le paragraphe [Enchaîner les manipulations avec l'opérateur `pipe`]).
 * Leur créateur, Hadley Wickham, explique que la suite de _packages_ `tidyverse` couvre environ 90% des opérations qu'un statisticien a à réaliser en général.
 Pour se servir de ces _packages_, il ne faut pas oublier de les charger avec la fonction `library`.
@@ -54,30 +54,34 @@ bpe_ens_2018 <- bpe_ens_2018
 ```
 Les objets récupérés en sortie de `doremifasolData` sont tous des `data.frame`, bien que le _package_ s'appuie sur des fonctions issues de `tidyverse`. Il est donc nécessaire de les convertir en `tibble` avec la fonction `as_tibble` du *package* `tibble`.
 
-### Le `tibble`: un `data.frame` amélioré
+### Le `tibble` : un `data.frame` amélioré
 
-**Le `tidyverse` propose une version améliorée du `data.frame` de base: le `tibble`.**  Il s'agit d'un `data.frame` standard, avec quelques propriétés supplémentaires qui rendent son utilisation plus facile. Le _package_ `tibble` contient par ailleurs des fonctions utiles pour manipuler les `tibbles`. Sauf exception, toutes les fonctions de `R` qui manipulent un `data.frame` fonctionneront sans problème avec un `tibble`.
+**Le `tidyverse` propose une version améliorée du `data.frame` de base : le `tibble`.**  Il s'agit d'un `data.frame` standard, avec quelques propriétés supplémentaires qui rendent son utilisation plus facile. Le _package_ `tibble` contient par ailleurs des fonctions utiles pour manipuler les `tibbles`. Sauf exception, toutes les fonctions de `R` qui manipulent un `data.frame` fonctionneront sans problème avec un `tibble`.
 
 **Pour convertir un `data.frame` en `tibble` on utilise la fonction `tibble::as_tibble()`.** Dans l'exemple suivant, on charge la table de la base permanente des équipements puis on la convertit en `tibble`.
 
-    ```{r}
-    # Charger la base permanente des équipements
-    bpe_ens_2018 <- bpe_ens_2018
-    # Convertir ce data.frame en tibble
-    bpe_ens_2018_tbl <- as_tibble(bpe_ens_2018)
-    ```
+```{r}
+# Charger la base permanente des équipements
+bpe_ens_2018 <- doremifasolData::bpe_ens_2018
+# Convertir ce data.frame en tibble
+bpe_ens_2018_tbl <- as_tibble(bpe_ens_2018)
+```
 
-Il y a deux différences principales entre un `tibble` et un `data.frame`:
+Il y a deux différences principales entre un `tibble` et un `data.frame` :
 
-* **La sélection (*subsetting*) fonctionne différemment:** sélectionner une colonne dans un `data.frame` renvoie un vecteur, alors que sélectionner une colonne dans un `tibble` renvoie un `tibble` à une seule colonne. Si on veut vraiment récupérer un vecteur à partir d'un `tibble` à une colonne, on utilise la fonction `pull`.
+* **La sélection (*subsetting*) fonctionne différemment :** sélectionner une colonne dans un `data.frame` renvoie un vecteur, alors que sélectionner une colonne dans un `tibble` renvoie un `tibble` à une seule colonne. Si on veut vraiment récupérer un vecteur à partir d'un `tibble` à une colonne, on utilise la fonction `pull`.
   ```{r, echo = FALSE}
   options(max.print = 10)
   ```
   ```{r}
+  # Si on sélectionne une colonne dans un data.frame,
+  # on obtient un vecteur.
   bpe_ens_2018[ , 1]
   ```
   
   ```{r}
+  # Si on sélectionne une colonne dans un tibble,
+  # on obtient un tibble avec une seule colonne.
   bpe_ens_2018_tbl[ , 1]
   ```
   
@@ -99,14 +103,14 @@ Il y a deux différences principales entre un `tibble` et un `data.frame`:
 
 ### Comment utiliser les fonctions du `tidyverse`
 
-Les fonctions (ou verbes) du `tidyverse` partagent quatre caractéristiques:
+Les fonctions (ou verbes) du `tidyverse` partagent quatre caractéristiques :
 
-* Elles prennent toujours un `tibble` ou un `data.frame` en entrée et renvoient toujours un `tibble` ou un `data.frame` en sortie;
-* Elles ont toujours la table de données pour premier argument: `verbe(tibble ou data.frame, ...)`;
-* Elles renvoient toujours une **copie** de la table de données fournie en entrée et ne modifient jamais les données d'entrée, sauf si on le demande explicitement avec l'opérateur d'assignation `<-` (voir remarque);
+* Elles prennent toujours un `tibble` ou un `data.frame` en entrée et renvoient toujours un `tibble` ou un `data.frame` en sortie ;
+* Elles ont toujours la table de données pour premier argument : `verbe(tibble ou data.frame, ...)` ;
+* Elles renvoient toujours une **copie** de la table de données fournie en entrée et ne modifient jamais les données d'entrée, sauf si on le demande explicitement avec l'opérateur d'assignation `<-` (voir remarque) ;
 * Les noms de variables peuvent être cités sans guillemets (sauf dans le cas des jointures).
 
-::: {.remarque data-latex=""}
+::: {.remarque}
 
 Par défaut, **les fonctions du `tidyverse` renvoient une copie des données manipulées.** Cela signifie que vous devez utiliser l'opérateur d'assignation `<-` si vous voulez modifier une table. Voici deux exemples simples pour bien comprendre la différence.
 
@@ -116,7 +120,7 @@ Le premier code sélectionne la variable `TYPEEQ` dans la table `bpe_ens_2018_tb
 select(bpe_ens_2018_tbl, TYPEQU)
 ```
 
-Le second code modifie la table `bpe_ens_2018_tbl` en utilisant l'opérateur `<-`:
+Le second code modifie la table `bpe_ens_2018_tbl` en utilisant l'opérateur `<-` :
 
 ```{r, eval = FALSE}
 bpe_ens_2018_tbl <- select(bpe_ens_2018_tbl, TYPEQU)
@@ -130,14 +134,14 @@ Ce fonctionnement des fonctions du `tidyverse` a pour avantage qu'il est diffici
 
 #### Présentation de l'opérateur `pipe`
 
-Lorsqu'on enchaîne les manipulations sur une table de données, un problème est que le code devient peu lisible car il y a beaucoup d'opérations imbriquées les unes dans les autres, avec un grand nombre de parenthèses ou de crochets. **L'opérateur `pipe` (noté `%>%`) du package `magrittr` permet de résoudre ce problème en réécrivant les opérations de façon plus lisible.** Le principe de l'opérateur `pipe` est très simple:
+Lorsqu'on enchaîne les manipulations sur une table de données, un problème est que le code devient peu lisible car il y a beaucoup d'opérations imbriquées les unes dans les autres, avec un grand nombre de parenthèses ou de crochets. **L'opérateur `pipe` (noté `%>%`) du package `magrittr` permet de résoudre ce problème en réécrivant les opérations de façon plus lisible.** Le principe de l'opérateur `pipe` est très simple :
 
-* le terme qui précède l'opérateur est utilisé comme **premier** argument de la fonction qui suit l'opérateur;
-* les opérations peuvent être enchaînées en enchaînant les opérateurs `pipe`;
-* l'opérateur `pipe` fonctionne quelle que soit la nature de l'argument;
+* le terme qui précède l'opérateur est utilisé comme **premier** argument de la fonction qui suit l'opérateur ;
+* les opérations peuvent être enchaînées en enchaînant les opérateurs `pipe` ;
+* l'opérateur `pipe` fonctionne quelle que soit la nature de l'argument ;
 * l'opérateur `pipe` fonctionne également à l'intérieur de parenthèses.
 
-Voici un petit tableau qui vous donne des exemples: 
+Voici un petit tableau qui vous donne des exemples : 
 
 | **Ce code est équivalent à...**      | **... ce code**                                     |
 |--------------------------------------|-----------------------------------------------------|
@@ -149,7 +153,7 @@ Voici un petit tableau qui vous donne des exemples:
 
 **Un traitement statistique avec les _packages_ du `tidyverse` prend généralement la forme d'une succession de verbes séparés par l'opérateur `pipe` (`%>%`).** Il est possible d'aller à la ligne en mettant le `pipe` en bout de ligne (mais pas en début de ligne).
 
-Voici un exemple détaillé pour comprendre l'utilisation du `pipe`. Toutes les fonctions utilisées sont présentées ailleurs dans cette fiche. Ce code se lit comme ceci: on part de la base permanente des équipements 2018, puis on la transforme en `tibble`, puis on conserve uniquement les stations services (`TYPEQU == "B316"`), puis on groupe les observations par département (`group_by(DEP)`), puis on calcule la somme du nombre de stations-services par département (`summarise(nb_equip_total = sum(NB_EQUIP, na.rm = TRUE))`).
+Voici un exemple détaillé pour comprendre l'utilisation du `pipe`. Toutes les fonctions utilisées sont présentées ailleurs dans cette fiche. Ce code se lit comme ceci : on part de la base permanente des équipements 2018, puis on la transforme en `tibble`, puis on conserve uniquement les stations services (`TYPEQU == "B316"`), puis on groupe les observations par département (`group_by(DEP)`), puis on calcule la somme du nombre de stations-services par département (`summarise(nb_equip_total = sum(NB_EQUIP, na.rm = TRUE))`).
 
 ```{r, results=TRUE,message=FALSE,warning=FALSE}
 nombre <- bpe_ens_2018 %>%
@@ -166,21 +170,21 @@ Le _package_ `dplyr` permet de manipuler facilement des données organisées sou
 
 ### Manipuler une seule table avec `dplyr`
  
-Dans `dplyr`, les manipulations simples de données sont résumées en quelques verbes:
+Dans `dplyr`, les manipulations simples de données sont résumées en quelques verbes :
  
-* `select()`: sélectionner des variables par leur nom;
-* `rename()`: renommer des variables;
-* `filter()`: sélectionner des observations selon une ou plusieurs conditions;
-* `arrange()`: trier la table selon une ou plusieurs variables;
-* `mutate()`: ajouter des variables qui sont fonction d'autres variables;
-* `summarise()`: calculer une statistique à partir de données;
-* `group_by()`: faire des opérations par groupe.
+* `select()` : sélectionner des variables par leur nom ;
+* `rename()` : renommer des variables ;
+* `filter()` : sélectionner des observations selon une ou plusieurs conditions ;
+* `arrange()` : trier la table selon une ou plusieurs variables ;
+* `mutate()` : ajouter des variables qui sont fonction d'autres variables ;
+* `summarise()` : calculer une statistique à partir de données ;
+* `group_by()` : faire des opérations par groupe.
 
-#### Sélectionner des variables: `select()`
+#### Sélectionner des variables : `select()`
  
-**La fonction `select()` permet de sélectionner des variables par leur nom, ou par une condition sur leur nom.** Cette fonction est principalement utilisée de deux façons:
+**La fonction `select()` permet de sélectionner des variables par leur nom, ou par une condition sur leur nom.** Cette fonction est principalement utilisée de deux façons :
 
-- Avec une liste de noms de variables. Le code suivant sélectionne le code commune, le type d'équipement et le nombre d'équipement dans la base permanente des équipements:
+- Avec une liste de noms de variables. Le code suivant sélectionne le code commune, le type d'équipement et le nombre d'équipement dans la base permanente des équipements :
  
   ```{r}
   bpe_ens_2018_tbl %>% 
@@ -193,7 +197,7 @@ Dans `dplyr`, les manipulations simples de données sont résumées en quelques 
   bpe_ens_2018_tbl %>% 
     select(starts_with("DEP"))
   ```
-    Le tableau suivant donne la liste des conditions utilisables avec `select()`:
+    Le tableau suivant donne la liste des conditions utilisables avec `select()` :
 
 | Fonction                    | Signification |
 |-----------------------------|----------------------------------------------------------------------|
@@ -205,9 +209,9 @@ Dans `dplyr`, les manipulations simples de données sont résumées en quelques 
 | `select(any_of(...))`       | identique à `all_of()`, mais sans erreur si la colonne n'existe pas |
 | `select(everything())`      | toutes les colonnes (utile pour mettre une autre colonne devant les autres)      |
 
-#### Renommer des variables: `rename()`
+#### Renommer des variables : `rename()`
  
-La fonction `rename()` permet de renommer des variables. La syntaxe est la suivante:  `rename(data, nouveau_nom = ancien nom)`. Voici un exemple:
+La fonction `rename()` permet de renommer des variables. La syntaxe est la suivante :  `rename(data, nouveau_nom = ancien nom)`. Voici un exemple :
 
 ```{r}
 bpe_ens_2018_tbl %>% 
@@ -215,7 +219,7 @@ bpe_ens_2018_tbl %>%
 ```
 
 
-#### Sélectionner des observations: `filter()`
+#### Sélectionner des observations : `filter()`
  
 **Le verbe `filter()` permet de sélectionner des observations selon une ou plusieurs conditions.** Voici un exemple de code qui sélectionne les magasins de chaussures (`TYPEQU == "B304"`) dans le premier arrondissement de Paris (`DEPCOM == "75101"`) dans la BPE.
 
@@ -224,7 +228,7 @@ bpe_ens_2018_tbl %>%
   filter(DEPCOM == "75101" & TYPEQU == "B304")
 ```
  
-Voici quelques utilisations fréquentes de `filter()`:
+Voici quelques utilisations fréquentes de `filter()` :
  
 | Action                                                                | Code                                    |
 |-----------------------------------------------------------------------|-----------------------------------------|
@@ -234,9 +238,9 @@ Voici quelques utilisations fréquentes de `filter()`:
 | Filtrer sur deux conditions (et)                                      | `filter(DEP == "75" & NB_EQUIP == 1)`   |
 | Filtrer sur une alternative (ou)                                      | `filter(DEP == "75" | NB_EQUIP == 1)`   |
 | Conserver les observations pour lesquelles la variable est manquante  | `filter(is.na(pop_2016))`               |
-| Conserver les observations pour lesquelles la variable est renseignée | `filter(!is.na(pop_2016))`              |
+| Conserver les observations pour lesquelles la variable est renseignée | `filter( !is.na(pop_2016))`              |
  
-#### Trier la table: `arrange()`
+#### Trier la table : `arrange()`
  
 **Le verbe `arrange()` permet de trier les observations de la table selon une ou plusieurs colonnes.** Par défaut, `arrange` trie par ordre croissant. Il faut utiliser `desc(nom_de_variable)` pour trier par ordre décroissant. Le code suivant trie la BPE selon le code commune et le type d'équipement.
 
@@ -245,7 +249,7 @@ bpe_ens_2018_tbl %>%
   arrange(DEPCOM, TYPEQU)
 ```
 
-Voici quelques utilisations fréquentes de `arrange()`:
+Voici quelques utilisations fréquentes de `arrange()` :
 
 | Action                                           | Code                                 |
 |--------------------------------------------------|--------------------------------------|
@@ -262,7 +266,7 @@ bpe_ens_2018_tbl %>%
   mutate(NB_EQUIP_3PLUS = (NB_EQUIP >= 3))
 ```
 
-Voici quelques utilisations fréquentes de `mutate()`:
+Voici quelques utilisations fréquentes de `mutate()` :
  
 | Action                                      | Code                                                                    |
 |---------------------------------------------|-------------------------------------------------------------------------|
@@ -271,7 +275,7 @@ Voici quelques utilisations fréquentes de `mutate()`:
 | Sommer deux variables                       | `mutate(NB_EQUIP_DOUBLE = NB_EQUIP + NB_EQUIP)`                    |
 | Extraire une sous-chaine de caractères (voir la [fiche données textuelles](Manipuler des données textuelles))  | `mutate(CATEGORIE_EQ = str_sub(TYPEQU, 1L, 1L))`                    |
  
-#### Calculer des statistiques: `summarise()`
+#### Calculer des statistiques : `summarise()`
  
 **La fonction `summarise()` permet de calculer une ou plusieurs statistique à partir de la table de données.** Cette fonction est souvent utilisée après la fonction `group_by()` pour calculer des statistiques par groupe, et elle conduit à une agrégation de la table en fonction des groupes définis par la fonction `group_by` (par défaut une agrégation sur l'ensemble de la table). Le code suivant calcule le nombre total d'équipements dans la BPE (`sum(NB_EQUIP, na.rm = TRUE)`), et le nombre total de boulangeries (`sum(NB_EQUIP * (TYPEQU == "B203"), na.rm = TRUE)`).
  
@@ -281,7 +285,7 @@ bpe_ens_2018_tbl %>%
             NB_BOULANGERIES_TOT = sum(NB_EQUIP * (TYPEQU == "B203"), na.rm = TRUE))
 ```
 
-Il est possible d'utiliser un grand nombre de fonctions différentes avec `summarise()`. Ces fonctions peuvent être combinées entre elles, et il est possible d'en définir de nouvelles. Voici quelques fonctions courantes:
+Il est possible d'utiliser un grand nombre de fonctions différentes avec `summarise()`. Ces fonctions peuvent être combinées entre elles, et il est possible d'en définir de nouvelles. Voici quelques fonctions courantes :
  
 | Fonction                          | Code           |
 |-----------------------------------|----------------|
@@ -297,11 +301,11 @@ Il est possible d'utiliser un grand nombre de fonctions différentes avec `summa
 | Somme                             | `sum()`        |
 | Somme cumulée                     | `cumsum()`        |
 
-::: {.remarque data-latex=""}
+::: {.remarque}
 
-Les fonctions `mutate()` et `summarise()` calculent toutes les deux de nouvelles variables. Il arrive donc fréquemment qu'on les confonde, ou qu'on ne sache pas laquelle il faut utiliser. Comme indiqué précédemment, l'une (`mutate()`) conduit à l'ajout d'une variable supplémentaire, l'autre (`summarise()`) définit une procédure d'agrégation de la donnée. Voici une règle simple pour savoir quelle fonction utiliser:
+Les fonctions `mutate()` et `summarise()` calculent toutes les deux de nouvelles variables. Il arrive donc fréquemment qu'on les confonde, ou qu'on ne sache pas laquelle il faut utiliser. Comme indiqué précédemment, l'une (`mutate()`) conduit à l'ajout d'une variable supplémentaire, l'autre (`summarise()`) définit une procédure d'agrégation de la donnée. Voici une règle simple pour savoir quelle fonction utiliser :
 
-- Si vous voulez résumer une information contenue dans une table, il faut utiliser `summarise()`. Exemple: calculer le nombre total d'équipements pour chaque commune.
+- Si vous voulez résumer une information contenue dans une table, il faut utiliser `summarise()`. Exemple : calculer le nombre total d'équipements pour chaque commune.
 
 ```{r, eval = FALSE, warning= FALSE}
 bpe_ens_2018_tbl %>%  
@@ -309,7 +313,7 @@ bpe_ens_2018_tbl %>%
   summarise(NB_EQUIP_TOT = sum(NB_EQUIP, na.rm = TRUE))
 ```
 
-- Si vous voulez ajouter une information dans une table (en conservant toutes les autres variables), il faut utiliser `mutate()`. Exemple: ajouter dans la BPE une colonne donnant le nombre total d'équipements pour chaque commune.
+- Si vous voulez ajouter une information dans une table (en conservant toutes les autres variables), il faut utiliser `mutate()`. Exemple : ajouter dans la BPE une colonne donnant le nombre total d'équipements pour chaque commune.
 
 ```{r, eval = FALSE, warning= FALSE}
 bpe_ens_2018_tbl %>%  
@@ -347,12 +351,12 @@ bpe_ens_2018_tbl %>%
 ```
 
 
-::: {.remarque data-latex=""}
+::: {.remarque}
 
-Trois remarques sur l'utilisation de `group_by()`:
+Trois remarques sur l'utilisation de `group_by()` :
 
-- si vous ne savez pas si une table comporte des groupes, vous pouvez afficher la liste des variables de groupe avec la fonction `group_vars()`;
-- si vous appliquez une instruction `group_by()` à une table qui comporte déjà des groupes, alors les groupes sont redéfinis;
+- si vous ne savez pas si une table comporte des groupes, vous pouvez afficher la liste des variables de groupe avec la fonction `group_vars()` ;
+- si vous appliquez une instruction `group_by()` à une table qui comporte déjà des groupes, alors les groupes sont redéfinis ;
 - il est prudent d'appliquer la fonction `ungroup()` à vos données une fois que les opérations par groupe ont été réalisées, afin que les opérations suivantes ne soient pas effectuées par groupe par mégarde.
 :::
 
@@ -360,25 +364,25 @@ Trois remarques sur l'utilisation de `group_by()`:
  
 #### Concaténer deux tables
  
-Le package `dplyr` propose la fonction `bind_rows()` pour superposer deux ou plusieurs tables (en empilant des observations). Deux remarques sur l'utilisation de cette fonction:
+Le package `dplyr` propose la fonction `bind_rows()` pour superposer deux ou plusieurs tables (en empilant des observations). Deux remarques sur l'utilisation de cette fonction :
 
-- `bind_rows()` combine les tables en fonction du nom des colonnes, l'ordre des colonnes n'a pas donc d'importance;
+- `bind_rows()` combine les tables en fonction du nom des colonnes, l'ordre des colonnes n'a pas donc d'importance ;
 - si une colonne est manquante dans une des tables, alors des valeurs manquantes sont générées dans la table de sortie.
 
 
-::: {.remarque data-latex=""}
+::: {.remarque}
 
 Le _package_ `dplyr` contient également la fonction `bind_cols()` qui permet de juxtaposer des tables (qui doivent avoir le même nombre d'observations). **Il est conseillé de ne pas se servir de cette fonction.** En effet, cette fonction juxtapose les colonnes par position (la première ligne d'une table est juxtaposée à la première de l'autre table), sans aucun contrôle. Si les différentes tables ne sont pas triées de la même façon, la table de sortie sera incohérente. Pour rapprocher deux tables, il est fortement conseillé d'utiliser les fonctions de jointures : `inner_join`, `left_join`, `full_join`... Ces fonctions sont présentées dans le paragraphe [Joindre des tables].
 :::
 
 #### Joindre des tables
 
-**Avec `dplyr`, les jointures se réalisent grâce aux fonctions `left_join`, `right_join`, `inner_join`, `full_join` et `anti_join`.** Ces fonctions prennent les arguments suivants:
+**Avec `dplyr`, les jointures se réalisent grâce aux fonctions `left_join`, `right_join`, `inner_join`, `full_join` et `anti_join`.** Ces fonctions prennent les arguments suivants :
   
-  - le nom des deux `data.frame` à joindre;
+  - le nom des deux `data.frame` à joindre ;
 - les variables de jointure, défini par l'argument `by`. Lorsque la variable de jointure ne porte pas le même nom dans les deux tables, on utilise le paramètre `by = c("var_x" = "var_y")`. S'il y a plusieurs variables de jointures, on écrit `by = c("var_x1" = "var_y1", "var_x2" = "var_y2")`.
 
-Il est préférable d'utiliser ces fonctions sur des objets `tibble` plutôt que `data.frame`. On va donc convertir les deux tables avant de présenter un exemple:
+Il est préférable d'utiliser ces fonctions sur des objets `tibble` plutôt que `data.frame`. On va donc convertir les deux tables avant de présenter un exemple :
 
 ```{r, message = FALSE, warning = FALSE}
 library(dplyr)
@@ -395,11 +399,11 @@ by = c("CODGEO" = "com"))
 head(table_jointe_tbl)
 ```
 
-La syntaxe pour réaliser les autres types de jointure est très similaire:
+La syntaxe pour réaliser les autres types de jointure est très similaire :
 
-| Type de jointure  | Syntaxe `dplyr`                                                                        |
+| Type\ de\ jointure  | Syntaxe `dplyr`                                                                        |
 |-------------------|----------------------------------------------------------------------------------------|
-| Jointure à gauche | `left_join(x = filosofi_com_2016_tbl, y = cog_com_2019_tbl, by = c("CODGEO" = "com"))` |
+| Jointure\ à\ gauche | `left_join(x = filosofi_com_2016_tbl, y = cog_com_2019_tbl, by = c("CODGEO" = "com"))` |
 | Jointure à droite | `right_join(x = filosofi_com_2016_tbl, y = cog_com_2019_tbl, by = c("CODGEO" = "com"))`|
 | Jointure externe  | `full_join(x = filosofi_com_2016_tbl, y = cog_com_2019_tbl, by = c("CODGEO" = "com"))` |
 | Anti-jointure     | `anti_join(x = filosofi_com_2016_tbl, y = cog_com_2019_tbl, by = c("CODGEO" = "com"))` |
@@ -409,7 +413,7 @@ Il est recommandé de consulter la fiche [Joindre des tables de données] qui pr
 
 ## Mettre en ordre des données avec `tidyr`
 
-Le _package_ `tidyr` fournit de multiples fonctions pour retraiter et restructurer des données afin de les organiser sous forme de table (on parle de *tidy data*). Ces fonctions permettent de résoudre un grand nombre de problèmes: retraiter des colonnes et des lignes, restructurer des tables, convertir des listes imbriquées en tables de données... Elles prennent la forme de verbes qui complètent ceux de `dplyr` et s'intègrent parfaitement dans les séries de *pipes* (`%>%`), les *pipelines*, permettant d'enchaîner les opérations. 
+Le _package_ `tidyr` fournit de multiples fonctions pour retraiter et restructurer des données afin de les organiser sous forme de table (on parle de *tidy data*). Ces fonctions permettent de résoudre un grand nombre de problèmes : retraiter des colonnes et des lignes, restructurer des tables, convertir des listes imbriquées en tables de données... Elles prennent la forme de verbes qui complètent ceux de `dplyr` et s'intègrent parfaitement dans les séries de *pipes* (`%>%`), les *pipelines*, permettant d'enchaîner les opérations. 
 
 ```{r echo=FALSE, paged.print=FALSE, warning=FALSE}
 bpe_ens_2018_tbl <- as_tibble(bpe_ens_2018)
@@ -421,19 +425,19 @@ wide <- bpe_ens_2018_tbl %>%
 
 <!-- ### Les principes des données bien ordonnées (*tidy data*) -->
 
-<!-- Le concept de *tidy data* repose sur trois règles interdépendantes. Des données sont bien ordonnées (*tidy*) si: -->
+<!-- Le concept de *tidy data* repose sur trois règles interdépendantes. Des données sont bien ordonnées (*tidy*) si : -->
 
-<!-- 1. chaque ligne correspond à une observation; -->
-<!-- 2. chaque colonne correspond à une variable; -->
+<!-- 1. chaque ligne correspond à une observation ; -->
+<!-- 2. chaque colonne correspond à une variable ; -->
 <!-- 3. chaque valeur est présente dans une unique case de la table ou, de manière équivalente, des unités d'observations différentes sont présentes dans des tables différentes. -->
 
-<!-- Ces règles ne sont pas nécessairement très intuitives. Par exemple, la table suivante (construite à partir de la base permanente des équipements 2018) donne le nombre de boulangeries (B203), de boucheries-charcuteries (B204) et de fleuristes (B312) par iris en 2018: -->
+<!-- Ces règles ne sont pas nécessairement très intuitives. Par exemple, la table suivante (construite à partir de la base permanente des équipements 2018) donne le nombre de boulangeries (B203), de boucheries-charcuteries (B204) et de fleuristes (B312) par iris en 2018 : -->
 
 <!-- ```{r warning=FALSE, paged.print=FALSE, echo=FALSE} -->
 <!-- head(wide) -->
 <!-- ``` -->
 
-<!-- Cette table n'est pas bien rangée (*tidy*). En effet, si on essaie d'identifier les variables mesurées dans la table, on constate qu'il y en a trois: l'iris, le type d'équipements et le nombre d'équipements. Or elles ne correspondent pas aux colonnes de la table,car le type d'équipement est indiqué dans le nom des colonnes et non dans une colonne. En revanche, c'est le cas pour la table transformée: -->
+<!-- Cette table n'est pas bien rangée (*tidy*). En effet, si on essaie d'identifier les variables mesurées dans la table, on constate qu'il y en a trois : l'iris, le type d'équipements et le nombre d'équipements. Or elles ne correspondent pas aux colonnes de la table,car le type d'équipement est indiqué dans le nom des colonnes et non dans une colonne. En revanche, c'est le cas pour la table transformée : -->
 
 <!-- ```{r echo=FALSE, warning=FALSE} -->
 <!-- head(bpe_ens_2018_tbl %>%  -->
@@ -443,15 +447,15 @@ wide <- bpe_ens_2018_tbl %>%
 
 ### Retraiter des colonnes avec `tidyr`
 
-#### `separate`: scinder une colonne en plusieurs {#separate}
+#### `separate` : scinder une colonne en plusieurs {#separate}
 
-Il arrive que plusieurs informations réunies en une seule colonne et qu'on souhaite les séparer. La fonction `separate` permet d'effectuer cette opération. Elle prend trois arguments principaux:
+Il arrive que plusieurs informations réunies en une seule colonne et qu'on souhaite les séparer. La fonction `separate` permet d'effectuer cette opération. Elle prend trois arguments principaux :
 
-- le nom de la colonne à scinder;
-- un vecteur indiquant les noms des nouvelles variables à créer;
+- le nom de la colonne à scinder ;
+- un vecteur indiquant les noms des nouvelles variables à créer ;
 - le séparateur `sep` qui indique à quel endroit la variable doit être scindée. Par défaut `separate` scinde au niveau des caractères non-alphanumérique (espace, symbole, etc.). Si l'on indique un nombre entier `n`, alors la colonne est scindée après le n-ième caractère.
 
-Voici un exemple qui utilise la table des communes du Code Officiel Géographique. Dans cette table, la colonne `com` (code commune Insee) contient deux informations: le numéro du département et le numéro de la commune.
+Voici un exemple qui utilise la table des communes du Code Officiel Géographique. Dans cette table, la colonne `com` (code commune Insee) contient deux informations : le numéro du département et le numéro de la commune.
 
 ```{r}
 cog_com_2019_tbl <- as_tibble(cog_com_2019)
@@ -465,12 +469,12 @@ cog_com_2019_tbl %>%
   separate(com, c("code_dep", "code_com"), sep = 2)
 ```
 
-#### `unite`: regrouper plusieurs colonnes en une seule {#unite}
+#### `unite` : regrouper plusieurs colonnes en une seule {#unite}
 
-La fonction `unite` permet est de réaliser l'opération inverse de `separate`: regrouper plusieurs colonnes en une seule. Elle prend trois arguments principaux:
+La fonction `unite` permet est de réaliser l'opération inverse de `separate` : regrouper plusieurs colonnes en une seule. Elle prend trois arguments principaux :
 
-- le nom de la colonne à créer;
-- un vecteur indiquant les noms des variables à regrouper;
+- le nom de la colonne à créer ;
+- un vecteur indiquant les noms des variables à regrouper ;
 - le séparateur `sep` qui indique quel séparateur doit être introduit entre les variables regroupées (par défaut, ``unite` utilise le caractère `_`).
 
 Voici un exemple où l'on regroupe le code commune Insee et le nom officiel de la commune, avec " - " comme séparateur. Vous pouvez noter que les colonnes `com` et `ncc` ont disparu, car par défaut `unite` supprime les colonnes regroupées. Si on veut les conserver, il faut ajouter l'option `remove = FALSE`.
@@ -480,23 +484,23 @@ cog_com_2019_tbl %>%
   unite(code_et_nom, c("com", "ncc"), sep = " - ") 
 ```
 
-#### `replace_na`: remplacer des valeurs manquantes
+#### `replace_na` : remplacer des valeurs manquantes
 
-La fonction `replace_na` permet de remplacer des valeurs manquantes (`NA`). Cette fonction peut être utilisée de deux façons, que l'on va illustrer avec les données suivantes:
+La fonction `replace_na` permet de remplacer des valeurs manquantes (`NA`). Cette fonction peut être utilisée de deux façons, que l'on va illustrer avec les données suivantes :
 
 ```{r}
 df <- tibble(x = c(1, 2, 3, NA), y = c("a", NA, "b", NA))
 df
 ```
 
-Premier usage: on remplace les valeurs manquantes **dans une colonne** d'un `data.frame`. Dans ce cas, la fonction prend deux arguments: le nom de la variable et la valeur utilisée pour remplacer les valeurs manquantes. Voici un exemple:
+Premier usage : on remplace les valeurs manquantes **dans une colonne** d'un `data.frame`. Dans ce cas, la fonction prend deux arguments : le nom de la variable et la valeur utilisée pour remplacer les valeurs manquantes. Voici un exemple :
 
 ```{r}
 df %>% 
   mutate(x = replace_na(x, 888))
 ```
 
-Second usage: on remplace les valeurs manquantes **dans toutes les colonnes** d'un `data.frame`. Dans ce cas, la fonction prend deux arguments: le nom du `data.frame`, et une liste donnant pour chaque variable la valeur à utiliser pour remplacer les valeurs manquantes. Voici un exemple:
+Second usage : on remplace les valeurs manquantes **dans toutes les colonnes** d'un `data.frame`. Dans ce cas, la fonction prend deux arguments : le nom du `data.frame`, et une liste donnant pour chaque variable la valeur à utiliser pour remplacer les valeurs manquantes. Voici un exemple :
 
 
 ```{r}
@@ -504,7 +508,7 @@ df %>%
   replace_na(list(x = 888, y = "zzz"))
 ```
 
-#### `complete`: compléter des combinaisons de variables manquantes
+#### `complete` : compléter des combinaisons de variables manquantes
 
 La fonction `complete` est permet de compléter des combinaisons manquantes de valeurs de plusieurs colonnes (autrement dit, de compléter un produit cartésien incomplet). Dans le tableau de résultats suivants, les élèves Barnabé et Chantal n'ont pas de notes dans toutes les matières. Supposons que c'est parce qu'ils étaient absents et que leur note est en fait un 0. Si on veut calculer les moyennes des élèves, on doit compléter ces notes manquantes.
 
@@ -515,13 +519,13 @@ df <- tibble(eleve = c("Alain", "Alain", "Barnabé", "Chantal"),
 df
 ```
 
-On peut l'utiliser de cette manière:
+On peut l'utiliser de cette manière :
 
 ```{r}
 df %>% complete(eleve, matiere)
 ```
 
-On voit que les combinaisons manquante "Barnabé - Français" et "Chantal - Maths" ont bien été ajoutées par `complete`. Par défaut les lignes insérées comprennent des valeurs manquantes `NA` pour les colonnes restantes. On peut néanmoins choisir une autre valeur avec l'argument `fill`, qui prend la forme d'une liste nommée:
+On voit que les combinaisons manquante "Barnabé - Français" et "Chantal - Maths" ont bien été ajoutées par `complete`. Par défaut les lignes insérées comprennent des valeurs manquantes `NA` pour les colonnes restantes. On peut néanmoins choisir une autre valeur avec l'argument `fill`, qui prend la forme d'une liste nommée :
 
 ```{r}
 df %>% complete(eleve, matiere, fill = list(note = 0))
@@ -533,13 +537,13 @@ Si l'on ne souhaite pas inclure toutes les colonnes dans le calcul des combinais
 
 #### Principe de la restructuration des données
 
-Une table de données stocke des informations sous forme de lignes et de colonnes. Au cours d'un traitement statistique, il est souvent nécessaire de restructurer les données, en transformant en colonnes certaines informations qui figuraient en ligne (ou inversement). Les deux principales opérations de restructuration des données peuvent être illustrées par les deux transformations suivantes:
+Une table de données stocke des informations sous forme de lignes et de colonnes. Au cours d'un traitement statistique, il est souvent nécessaire de restructurer les données, en transformant en colonnes certaines informations qui figuraient en ligne (ou inversement). Les deux principales opérations de restructuration des données peuvent être illustrées par les deux transformations suivantes :
 
-* **Transformation *wide to long* **: 
+* **Transformation *wide to long* ** : 
 
 ![Transformation *wide to long*](./pics/datatable/widetolong.png)
 
-* **Transformation *wide to long* **: 
+* **Transformation *wide to long* ** : 
 
 ![Transformation *long to wide*](./pics/datatable/longtowide.png)
 
@@ -552,14 +556,14 @@ filosofi_epci_2016_tbl <- as_tibble(filosofi_epci_2016) %>%
          TP60AGE316, TP60AGE416, TP60AGE516, TP60AGE616)
 ```
 
-#### `pivot_longer`: transformer des colonnes en lignes
+#### `pivot_longer` : transformer des colonnes en lignes
 
-La fonction `pivot_longer` permet de restructurer des données en transformant des colonnes en lignes. Elle sert fréquemment au début d'un traitement, pour transformer des données mal structurées en une table facile à traiter. Cette fonction prend quatre arguments principaux:
+La fonction `pivot_longer` permet de restructurer des données en transformant des colonnes en lignes. Elle sert fréquemment au début d'un traitement, pour transformer des données mal structurées en une table facile à traiter. Cette fonction prend quatre arguments principaux :
 
-- le `data.frame` (ou le `tibble`) auquel elle est appliquée;
-- `cols`: un vecteur contenant le nom des colonnes dont les valeurs vont être transposées;
-- `names_to`: le nom de la nouvelle colonne qui va contenir les noms des colonnes transposées;
-- `values_to`: le nom de la nouvelle colonne qui va contenir les valeurs des colonnes transposées.
+- le `data.frame` (ou le `tibble`) auquel elle est appliquée ;
+- `cols` : un vecteur contenant le nom des colonnes dont les valeurs vont être transposées ;
+- `names_to` : le nom de la nouvelle colonne qui va contenir les noms des colonnes transposées ;
+- `values_to` : le nom de la nouvelle colonne qui va contenir les valeurs des colonnes transposées.
 
 
 Pour illustrer l'usage de cette fonction, nous allons utiliser les données du répertoire Filosofi 2016 agrégées au niveau des EPCI (table `filosofi_epci_2016`), et disponibles dans le _package_ `doremifasol`. On convertit cette table en `tibble` et on conserve uniquement certaines variables grâce à la fonction `select`.
@@ -571,7 +575,7 @@ filosofi_epci_2016_tbl <- as_tibble(filosofi_epci_2016) %>%
 filosofi_epci_2016_tbl
 ```
 
-Nous allons restructurer cette table pour obtenir une nouvelle table, avec une observation par EPCI et par tranche d'âge. Voici le code qui permet d'obtenir cette table: on transpose les valeurs des colonnes dont le nom commence par "TP" (`cols = starts_with("TP")`), le nom des colonnes transposées sera indiquée dans la nouvelle colonne "tranche_age" (`names_to = "tranche_age"`) et les valeurs des colonnes transposées seront indiquées dans la colonne "taux_pauvrete" (`values_to = "taux_pauvrete"`).
+Nous allons restructurer cette table pour obtenir une nouvelle table, avec une observation par EPCI et par tranche d'âge. Voici le code qui permet d'obtenir cette table : on transpose les valeurs des colonnes dont le nom commence par "TP" (`cols = starts_with("TP")`), le nom des colonnes transposées sera indiquée dans la nouvelle colonne "tranche_age" (`names_to = "tranche_age"`) et les valeurs des colonnes transposées seront indiquées dans la colonne "taux_pauvrete" (`values_to = "taux_pauvrete"`).
 
 ```{r, echo = FALSE}
 # On augmente le nombre de lignes imprimées pour faire apparaître deux catégories
@@ -598,20 +602,20 @@ options(dplyr.print_max  = 6)
 ```
 
 
-::: {.conseil data-latex=""}
+::: {.conseil}
 
-**Il est recommandé de travailler avec des données en format `long` plutôt qu'en format `wide`, notamment lorsque vous voulez faire des graphiques.** En effet, le _package_ de visualisation graphique `ggplot2` est optimisé pour manipuler des données en format `long` (voir la fiche [Faire des graphiques avec `ggplot2`]). Ce conseil est particulièrement important si vous voulez représenter un graphique avec des groupes: il est préférable que les groupes soient empilés (format `long`) plutôt que juxtaposés (format `wide`), car le code est plus rapide et facile à écrire.
+**Il est recommandé de travailler avec des données en format `long` plutôt qu'en format `wide`, notamment lorsque vous voulez faire des graphiques.** En effet, le _package_ de visualisation graphique `ggplot2` est optimisé pour manipuler des données en format `long` (voir la fiche [Faire des graphiques avec `ggplot2`]). Ce conseil est particulièrement important si vous voulez représenter un graphique avec des groupes : il est préférable que les groupes soient empilés (format `long`) plutôt que juxtaposés (format `wide`), car le code est plus rapide et facile à écrire.
 :::
 
 
-#### `pivot_wider`: transformer des lignes en colonnes
+#### `pivot_wider` : transformer des lignes en colonnes
 
-La fonction `pivot_wider` permet de restructurer des données en transformant des lignes en colonnes. Cette fonction prend quatre arguments principaux:
+La fonction `pivot_wider` permet de restructurer des données en transformant des lignes en colonnes. Cette fonction prend quatre arguments principaux :
 
-- le `data.frame` (ou le `tibble`) auquel elle est appliquée;
-- `id_cols`: un vecteur contenant le nom des colonnes qui définissent les observations de la table transposée;
-- `names_from`: un vecteur contenant le nom de la (ou des) colonne(s) qui donne(nt) les noms des nouvelles colonnes;
-- `values_from`: un vecteur contenant le nom de la (ou des) colonne(s) dont les valeurs vont être transposées.
+- le `data.frame` (ou le `tibble`) auquel elle est appliquée ;
+- `id_cols` : un vecteur contenant le nom des colonnes qui définissent les observations de la table transposée ;
+- `names_from` : un vecteur contenant le nom de la (ou des) colonne(s) qui donne(nt) les noms des nouvelles colonnes ;
+- `values_from` : un vecteur contenant le nom de la (ou des) colonne(s) dont les valeurs vont être transposées.
 
 Par ailleurs, l'option `names_prefix` permet de définir le préfixe du nom des nouvelles colonnes, ce qui est utile pour avoir des noms explicites.
 
@@ -626,27 +630,27 @@ bpe_ens_2018_tbl %>%
 ```
 
 
-::: {.conseil data-latex=""}
+::: {.conseil}
 
-**Il est conseillé de bien réfléchir avant de restructurer en format *wide*, et de ne le faire que lorsque cela paraît indispensable**. En effet, s'il est tentant de restructurer les données sous format *wide* car ce format peut paraître plus intuitif, il est généralement plus simple et plus rigoureux de traiter les données en format *long*. Ceci dit, il existe des situations dans lesquelles il est indiqué de restructurer les données en format *wide*. Voici deux exemples:
+**Il est conseillé de bien réfléchir avant de restructurer en format *wide*, et de ne le faire que lorsque cela paraît indispensable**. En effet, s'il est tentant de restructurer les données sous format *wide* car ce format peut paraître plus intuitif, il est généralement plus simple et plus rigoureux de traiter les données en format *long*. Ceci dit, il existe des situations dans lesquelles il est indiqué de restructurer les données en format *wide*. Voici deux exemples :
 
-* produire un tableau synthétique de résultats, prêt à être diffusé, avec quelques colonnes donnant des indicateurs par catégorie (exemple: la table `filosofi_epci_2016` du _package_ `doremifasolData`);
+* produire un tableau synthétique de résultats, prêt à être diffusé, avec quelques colonnes donnant des indicateurs par catégorie (exemple : la table `filosofi_epci_2016` du _package_ `doremifasolData`, qui contient plusieurs colonnes contenant le taux de pauvreté pour différentes tranches d'âge) ;
 * produire une table avec une colonne par année, de façon à calculer facilement un taux d'évolution entre deux dates.
 :::
 
 ## Sources
 
-Cette fiche reprend et adapte des éléments issus des sources suivantes:
+Cette fiche reprend et adapte des éléments issus des sources suivantes :
 
 - Parties [`dplyr`](https://juba.github.io/tidyverse/10-dplyr.html) et [`tidyr`](https://juba.github.io/tidyverse/12-tidyr.html) de l'introduction à `R` et au `tidyverse`.
 
 ## Pour en savoir plus
 
-- la [documentation du *package* `dplyr`](https://CRAN.R-project.org/package=dplyr) (en anglais);
-- la [documentation du *package* `tidyr`](https://CRAN.R-project.org/package=tidyr) (en anglais); 
-- Le chapitre [Data transformation](https://r4ds.had.co.nz/transform.html) du livre *R for data science* (en anglais), librement accessible en ligne;
-- [Vignette introductive sur `dplyr`](https://cran.r-project.org/web/packages/dplyr/vignettes/dplyr.html) (en anglais);
-- [Vignette sur les jointures avec `dplyr`](https://cran.r-project.org/web/packages/dplyr/vignettes/two-table.html) (en anglais);
-- [Vignette sur la réorganisation de données avec `tidyr`](https://cran.r-project.org/web/packages/tidyr/vignettes/pivot.html) (en anglais);
+- la [documentation du *package* `dplyr`](https://CRAN.R-project.org/package=dplyr) (en anglais) ;
+- la [documentation du *package* `tidyr`](https://CRAN.R-project.org/package=tidyr) (en anglais) ; 
+- Le chapitre [Data transformation](https://r4ds.had.co.nz/transform.html) du livre *R for data science* (en anglais), librement accessible en ligne ;
+- [Vignette introductive sur `dplyr`](https://cran.r-project.org/web/packages/dplyr/vignettes/dplyr.html) (en anglais) ;
+- [Vignette sur les jointures avec `dplyr`](https://cran.r-project.org/web/packages/dplyr/vignettes/two-table.html) (en anglais) ;
+- [Vignette sur la réorganisation de données avec `tidyr`](https://cran.r-project.org/web/packages/tidyr/vignettes/pivot.html) (en anglais) ;
 - [Papier d'Hadley Whickam sur la définition du concept de *tidy data*](https://www.jstatsoft.org/index.php/jss/article/view/v059i10/v59i10.pdf)
 - Un [aide-mémoire](https://www.rstudio.com/wp-content/uploads/2016/01/data-wrangling-french.pdf) (*cheatsheet*) sur le `tidyverse` en français.

@@ -4,7 +4,7 @@
 
 Il est important de mettre en évidence dans le code la liste des *packages* utilisés, la définition des fonctions (si elles sont utilisées plusieurs fois dans le script) et la définition des paramètres. Cela permet de bien visualiser les *packages* chargés pour un script ainsi que l'ensemble des paramètres à éventuellement modifier/mettre à jour. 
 
-Le code ci-dessous permet d'installer automatiquement une série de *packages* si ceux-ci ne sont pas déjà installés:
+Le code ci-dessous permet d'installer automatiquement une série de *packages* si ceux-ci ne sont pas déjà installés :
 
 ```{r, eval = FALSE}
 list_packages <- c("ggplot2", "Rcpp")
@@ -16,17 +16,17 @@ Ce code ne charge pas les packages, il faut ajouter `library(nom_du_package)` au
 
 ## Organiser plusieurs traitements
 
-Lorsqu'on travaille sur un traitement long, **il est en premier lieu vivement recommandé de modulariser le code avec des fonctions** (paradigme `do not repeat yourself`). Ensuite, il existe deux types d'organisations des scripts:
+Lorsqu'on travaille sur un traitement long, **il est en premier lieu vivement recommandé de modulariser le code avec des fonctions** (paradigme `do not repeat yourself`). Ensuite, il existe deux types d'organisations des scripts :
 
 1. un unique fichier `maître` qui appel des fonctions qui ont été intégrées dans un package. Cette approche est la plus adéquate pour assurer la reproductibilité des traitements car les *packages* gèrent de manière explicite les relations entre les fonctions et environnements ainsi que la documentation. 
 2. un fichier maître qui appelle une série de scripts qui effectuent des étapes intermédiaires, avec des tâches bien ciblées.
 
-La première approche est plus adéquate pour un projet collaboratif ou un projet de chaîne de traitement statistique (où la reproductibilité est un impératif!). La deuxième approche peut convenir pour un projet personnel ou une étude ponctuelle. Elle nécessite néanmoins une rigueur proche de la première.
+La première approche est plus adéquate pour un projet collaboratif ou un projet de chaîne de traitement statistique (où la reproductibilité est un impératif !). La deuxième approche peut convenir pour un projet personnel ou une étude ponctuelle. Elle nécessite néanmoins une rigueur proche de la première.
 
-La deuxième approche prend la forme suivante:
+La deuxième approche prend la forme suivante :
 
-* un script *maître*, qui définit les variables d'environnement et exécute les scripts successifs avec la commande `source`. Par exemple, il peut s'agit d'expliciter les chemins pour accéder aux données si celles-ci sont stockées dans des coffres externes au projet. Les chargements de package, via `library(.)`, peuvent prendre place dans ce script. Il convient néanmoins de rester rigoureux dans la gestion de ceux-ci car l'environnement dans lequel a été développé un script peut différer de celui dans lequel il a été exécuté. Le nom de ce script prend souvent le préfixe `0`;
-* les scripts principaux qui effectuent les traitements *stricto sensu*; ces scripts sont souvent nommés avec un préfixe qui varie entre `1` et `n`, dans l'ordre d'appel (voir [Comment nommer les objets dans `R`?]) pour plus de détails sur le choix des noms);
+* un script *maître*, qui définit les variables d'environnement et exécute les scripts successifs avec la commande `source`. Par exemple, il peut s'agit d'expliciter les chemins pour accéder aux données si celles-ci sont stockées dans des coffres externes au projet. Les chargements de package, via `library(.)`, peuvent prendre place dans ce script. Il convient néanmoins de rester rigoureux dans la gestion de ceux-ci car l'environnement dans lequel a été développé un script peut différer de celui dans lequel il a été exécuté. Le nom de ce script prend souvent le préfixe `0` ;
+* les scripts principaux qui effectuent les traitements *stricto sensu* ; ces scripts sont souvent nommés avec un préfixe qui varie entre `1` et `n`, dans l'ordre d'appel (voir [Comment nommer les objets dans `R` ?]) pour plus de détails sur le choix des noms) ;
 * les scripts auxiliaires qui définissent des fonctions génériques utiles pour les traitements.
 
 Voici un exemple de script `master`, qui définit le répertoire de travail, charge les *packages* utilisés par le projet et appelle les scripts de traitement.
@@ -51,7 +51,7 @@ La première approche, celle fondée sur des fonctions encapsulées dans un ou d
 
 ## Titres
 
-**Il est recommandé de mettre des titres aux sous-parties du script** pour plus de lisibilité, de la forme suivante:
+**Il est recommandé de mettre des titres aux sous-parties du script** pour plus de lisibilité, de la forme suivante :
 ```{r eval = F}
 # Titre 1 -------------------------------------
 # Titre 2 =====================================
@@ -72,7 +72,7 @@ Il est alors possible de se rendre directement à une section à partir de la fe
 
 **La documentation des fonctions utilisées est fondamentale pour assurer la reproductibilité du code et la possibilité d'évolutions futures.** Que l'on travaille seul ou en équipe, documenter les fonctions de cette manière réduit les risques d'oubli ou de confusion. Documenter une fonction consiste, en premier lieu, à expliquer l'objet de celle-ci, de manière succincte ou détaillée, les paramètres autorisés et le résultat. `Roxygen2` propose de nombreux tags pour documenter de manière plus détaillée une fonction, une documentation plus abondante est disponible [ici](http://r-pkgs.had.co.nz/man.html).
 
-**Une bonne pratique est de documenter les fonctions selon le standard `Roxygen2`** qui est un *package* proposant des tags standardisés `@` pour documenter une fonction. Les documentations `Roxygen2` peuvent être reconnues grâce à la balise `#'`. Dans le cadre du développement d'un *package*, cela permet de générer les documentations accessibles en tapant `?*`.
+**Une bonne pratique est de documenter les fonctions selon le standard `Roxygen2`** qui est un *package* proposant des tags standardisés `@` pour documenter une fonction. Les documentations `Roxygen2` peuvent être reconnues grâce à la balise `#'`. Dans le cadre du développement d'un *package*, cela permet de générer les documentations accessibles en tapant ` ?*`.
 
 ```{r, eval = FALSE}
 #' Add together two numbers.
@@ -92,7 +92,7 @@ La documentation d'un *package* est une étape essentielle, mais elle ne se suff
 
 ## Définition des paramètres
 
-Il est recommandé de mettre les données brutes utilisées dans un calcul dans des paramètres en début de script, afin de faciliter la reprise du code par autrui. Par exemple, si l'on utilise un paramètre fiscal comme le taux d'une taxe:
+Il est recommandé de mettre les données brutes utilisées dans un calcul dans des paramètres en début de script, afin de faciliter la reprise du code par autrui. Par exemple, si l'on utilise un paramètre fiscal comme le taux d'une taxe :
 
 ```{r eval = F}
 # Avec la liste des paramètres en début de code
@@ -108,7 +108,7 @@ Les paramètres doivent être définis en début de script, y compris s'ils sont
 
 ## Chemins
 
-* Si le code appartient à un `RProject`, il est préférable de définir les chemins de manière relative sur tous les éléments qui appartiennent au projet. Par exemple, si les données sont dans le dossier `C:/MesDocuments/monprojet/data`, un projet dans `C:/MesDocuments/monprojet` permettra de faire seulement référence à `./data`;
+* Si le code appartient à un `RProject`, il est préférable de définir les chemins de manière relative sur tous les éléments qui appartiennent au projet. Par exemple, si les données sont dans le dossier `C:/MesDocuments/monprojet/data`, un projet dans `C:/MesDocuments/monprojet` permettra de faire seulement référence à `./data` ;
 * Sinon, il est recommandé de définir le chemin principal en début de code avec `chemin_principal <- "C:/MesDocuments/monprojet"` et `setwd(chemin_principal)`, de façon à définir ensuite des chemins relatifs à ce chemin principal.
 
 ```{r eval = F}
@@ -123,4 +123,4 @@ load(paste0(chemin_donnees, "nom_script.R"))
 
 ```
 
-L'utilisation des projets *Rstudio* est une pratique à privilégier car elle assure une meilleure reproducibilité du code.
+L'utilisation des projets * RStudio* est une pratique à privilégier car elle assure une meilleure reproducibilité du code.
