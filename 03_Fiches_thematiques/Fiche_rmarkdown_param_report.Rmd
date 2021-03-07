@@ -41,7 +41,9 @@ Cette approche, si elle se justifie lorsque le nombre de paramètres est réduit
 
 L'utilisateur a eu vent de la fonctionnalité de rapports paramétrés. Il doit alors réaliser un *template* (modèle) de document qui s'appliquera de la même façon pour chaque département.
 
-Voici un exemple (appelons le `template.Rmd`):
+## Un exemple de fichier *template*
+
+Voici un exemple (appelons le `template.Rmd`) permettant de répondre au besoin de notre utilisateur :
 
 ~~~
 
@@ -53,7 +55,7 @@ params:
   codeDpt: "01"
 ---
 
-```{r librarie, eval=FALSE, echo=TRUE}
+```{r doremisfasl, eval=FALSE, echo=TRUE}
 library("doremifasolData")
 ```
 
@@ -77,23 +79,26 @@ La compilation de ce fichier, au travers de la commande `rmarkdown::render(input
 393
 ~~~
 
-Bon, jusque là, rien d'exceptionnel me direz-vous ...
+La fonction `render` permet de transformer un format de fichier (ici `template.Rmd`) en un autre, défini dans l'en-tête `YAML` (voir fiche R Markdown). On remarque que la fonction produit une table d'effectif des communes de l'Ain (département 01) car cette valeur a été définie par défaut dans l'en-tête. Si l'utilisateur souhaite produire le même type de document pour un autre département, il devra **passer explicitement le paramètre `params = list(codeDpt = "XX")`** à la fonction `render`.
 
-Mais l'utilisateur peut également lancer la commande suivante :
+```{r tableDpt02, eval=FALSE, echo=TRUE}
+rmarkdown::render(input = template.Rmd, params = list(codeDpt = "02"))
+```
 
-`rmarkdown::render(input = template.Rmd, params = list(codeDpt = "02"))`, qui cette fois génèrera le document suivant :
+Dans cet exemple, l'*output* ressemblera à ceci :
 
 ~~~
  02
 800
 ~~~
 
-Il y a 800 communes dans l'Aisne. C'est mieux ! Mais allons encore un peu plus loin...
+Il y a donc 800 communes dans l'Aisne.
 
-Cette fois, l'utilisateur souhaite créer une fonction pour automatiser la génération de rapport. Il peut procéder de la sorte :
+## Créer une fonction pour générer un rapport simplement
+Il est possible de créer une fonction pour simplifier la génération de rapports.
 
 ~~~
-render_report <- function(codeDpt) {
+monRapport <- function(codeDpt) {
 	rmarkdown::render(input = "template.Rmd",
 										params = list(codeDpt = codeDpt),
 										envir = new.env(),
@@ -102,17 +107,17 @@ render_report <- function(codeDpt) {
 }
 ~~~
 
-Après cela, il pourra générer ses rapports en lançant la commande :
+Après cela, la production des rapports se réalisera *via* la commande :
 
 ~~~
-render_report("02")
+monRapport("02")
 ~~~
 
-Il pourra également inclure cette fonction dans une boucle, au sein d'un autre document `rmarkdown` :
+Enfin, cette fonction peut également s'utiliser dans une boucle, au sein d'un autre document `rmarkdown` :
 
 ~~~
 for(i in maListeDeDpt) {
-	render_report(i)
+	monRapport(i)
 }
 ~~~
 
