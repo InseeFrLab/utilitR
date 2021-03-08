@@ -42,36 +42,37 @@ Selon le niveau de visibilité fixé par le propriétaire du dépôt distant, il
 
 ## Clôner et interagir avec un dépôt distant en `SSH`
 
+Pour interagir avec un dépôt distant en utilisant le protocole `SSH`, il faut créer une clé SSH, plus exactement une paire de chaînes de caractères, qui va permettre une authentification automatique auprès du dépôt distant. La version publique de la paire de clés est connue du dépôt distant ; la version privée reste quant à elle la propriété seule et unique de l'utilisateur. C'est l'association par un logiciel de cryptographie de ces deux versions qui permet l'authentification de l'utilisateur.
+
 ### Générer une clé SSH
 
-Faire dialoguer Git et Gitlab suppose que l'outil Git effectue le même processus d'authentification que celui décrit précédemment. Ce processus est intégré dans l'outil grâce à l'utilisation d'un fichier propre à chaque utilisateur, qui constitue une sorte de signature numérique, la clé SSH. Un utilisateur peut générer autant de clés SSH que bon lui semble, selon qu'il utilise plusieurs systèmes par exemple.
+Un utilisateur peut générer autant de clés SSH que bon lui semble, selon qu'il utilise plusieurs systèmes par exemple.
 
-Pour générer une clé SSH, il faut aller dans le menu Démarrer de Windows > Tous les programmes > INSEE atelier de développement V2 > installation utilisateur > Paramétrage SSH :
-![ssh_keygen](uploads/2a0d24c7624aa77ecb535289df105419/ssh_keygen.png)
+Pour générer une clé SSH, le plus simple est d'utiliser Git Bash de la façon suivante :
 
-On sélectionne ensuite "Générer une nouvelle clé" si l'on veut créer une nouvelle clé ; cette clé sera créée et sauvegardée en général dans le chemin suivant : D:/idep/Données d'application/.ssh, et sera constituée de deux fichiers texte :
+```{r, echo = FALSE, out.width = '100%'}
+utilitr::include_image("./pics/config_git/ssh_keygen.png", compression = FALSE)
+```
+
+La clé est générée sur le chemin spécifié et sera constituée de deux fichiers texte :
 - un fichier en .pub, qui fournit la partie publique de la clé, et qui a vocation à être diffusée (donc c'est ce fichier qu'on chargera sur Gitlab pour permettre l'authentification) ;
 - un fichier .ppk (comme Private Key) qui est la partie privée de la clé, et qui ne doit en aucun cas être diffusée.
 
-L'outil propose ensuite de télécharger la partie publique de la clé sur un dépôt distant à spécifier ; cela ne fonctionne malheureusement pas avec Gitlab et il faudra le faire manuellement (on verra comment après).
-
-Enfin, l'outil propose de configurer l'utilitaire putty (que Git utilise pour générer une connexion sécurisée entre le dépôt distant et le dépôt local) ; il faudra renseigner les éléments suivants :
-- Identifiant : idep de l'utilisateur
-- Hôte : gitlab.stable.innovation.insee.eu
-- Port : 22222
-
-Il faut ensuite charger la clé dans le cache de putty ; pour cela, il faut ouvrir putty (dans Menu Démarrer > Tous les programmes > INSEE atelier de développement V2 > utilitaire > putty), sélectionner "gitlab.stable.innvation.insee.eu", "Load", "Open". Le système renvoie une erreur, mais la clé est normalement chargée dans le cache, il reste à configurer Gitlab pour que ce dernier reconnaisse la clé SSH comme étant celle de l'utilisateur.
-
-Ces éléments sont également décrits [ici](https://git.stable.innovation.insee.eu/animation-ateliers-r-dsds/formation-git#2-d%C3%A9p%C3%B4ts-distants). En particulier, pour tout problème lié à la clé SSH, il est possible de consulter [cette page](https://git.stable.innovation.insee.eu/outils-transverses/migration-svn-git#-ajouter-une-clef-ssh-dans-gitlab).
+La version privée de la clé doit être localisé dans un dossier caché que Git va automatiquement utiliser (en général un dossier `.ssh` localisé sur un dossier personnel).
 
 ### Ajout de la clé SSH sous Gitlab
 
-Pour copier la partie publique de la clé sous Gitlab, il faut aller dans la partie Réglages de l'espace personnel :
-![setting_ssh](uploads/9207abfbdf80d5e3092c5d4f989b8ff6/setting_ssh.png)
+Pour copier la partie publique de la clé sous Gitlab, il faut aller dans la partie Settings de l'espace personnel sous Gitlab, puis sélectionner "SSH Keys" sur le bandeau latéral gauche. On se trouve face à une fenêtre de texte comme ceci :
 
-puis sélectionner "SSH Keys" sur le bandeau latéral gauche. On se trouve face à une fenêtre de texte comme ceci :
-![ssh_copy_key](uploads/9c3b7c9d85d81893faf6629bbfdb2ca8/ssh_copy_key.png)
+```{r, echo = FALSE, out.width = '100%'}
+utilitr::include_image("./pics/config_git/ssh_key_record.png", compression = FALSE)
+```
 
-dans laquelle on doit copier-coller le texte que l'on trouve dans le fichier .pub de la clé SSH (en prenant soin d'éliminer l'éventuel texte en fin du type "imported-openssh-key".
+dans laquelle on doit copier-coller le texte que l'on trouve dans le fichier .pub de la clé SSH (en prenant soin d'éliminer l'éventuel texte en fin du type "imported-openssh-key").
 
 Gitlab est désormais configuré, et il est alors possible de faire dialoguer Git et Gitlab. L'utilisateur pourra également consulter la [documentation de la plateforme Innovation](http://innovation.pages.innovation.insee.eu/documentation-plateforme-innovation/gitlab/clef-ssh/), qui détaille la procédure pour l'ajout de la clé SSH.
+
+::: {.conseil data-latex=""}
+L'option SSH ne fonctionne pas dans le Gitlab du SSP Cloud. Seul l'authentification en `HTTPS` est possible.
+:::
+
