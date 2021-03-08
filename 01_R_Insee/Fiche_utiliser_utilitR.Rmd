@@ -1,4 +1,4 @@
-# Comment utiliser la documentation `utilitR`
+# Comment utiliser la documentation `utilitR` {#presentation-utilitr}
 
 ## Contenu de la documentation
 
@@ -31,40 +31,43 @@ Par ailleurs, les fiches comportent trois types de paragraphes mis en évidence 
 
 
 ```{r echo = FALSE, message = FALSE, warning = FALSE}
-library(kableExtra)
 library(fontawesome)
+library(magrittr)
 
 texte_recommandation <- "Ce paragraphe présente succinctement les outils et les approches les plus adaptés à la tâche concernée. Chaque fiche ne comprend qu'un seul paragraphe de ce type, au début de la fiche."
 texte_conseil        <- "Ce paragraphe détaille les bonnes pratiques à adopter."
 texte_remarque       <- "Ce paragraphe donne des informations supplémentaires ou formule une mise en garde."
+texte_specificite    <- "Ce paragraphe porte sur une spécificité de l'Insee qui a un impact sur l'usage de `R`."
 
-
-symb  <- 
+symb <-
   c(fa("hand-point-right", fill = "rgba(220, 53, 69, 1)", height = 40),
     fa("lightbulb", fill = "rgba(255, 193, 7, 1)", height = 40),
-    fa("info-circle", fill = "rgba(0, 123, 255, 1)", height = 40))
+    fa("info-circle", fill = "rgba(0, 123, 255, 1)", height = 40),
+    fa("home", fill = "rgba(81, 81, 81, 1)", height = 40))
 
 dt <- 
   as.data.frame(list(
     Nom = c("Recommandation", 
             "Conseil", 
-            "Remarque"), 
+            "Remarque",
+            "Spécificité Insee"), 
     Symbole = symb,
     Signification = c(texte_recommandation, 
                       texte_conseil, 
-                      texte_remarque)
+                      texte_remarque,
+                      texte_specificite)
   )
   )
 
 
 output <- 
   dt %>% 
-  kable(escape = F, position = "center", full_width = F, align="ccl") %>%
-  kable_classic_2(full_width = F, html_font = '"Arial", arial, helvetica, sans-serif')
-column_spec(output, 1, width = "3cm", bold = TRUE) %>%
-  column_spec(2, width = "2cm") %>% 
-  column_spec(3, width = "10cm") %>% 
-  row_spec(0,bold=TRUE, align = "c")
+  knitr::kable(escape = F, position = "center", full_width = F, align="ccl") %>%
+  kableExtra::column_spec(1, width = "3cm", bold = TRUE) %>%
+  kableExtra::column_spec(2, width = "2cm") %>% 
+  kableExtra::column_spec(3, width = "10cm") %>% 
+  kableExtra::row_spec(0,bold=TRUE, align = "c")
+output
 ```
 
 ## Des exemples reproductibles
@@ -86,7 +89,7 @@ resultat
 ```
 
 
-<!-- ::: {.conseil data-latex=""} -->
+<!-- ::: {.conseil} -->
 
 <!-- Outre le fait de pouvoir vérifier que le code fonctionne bien sur son poste, un exemple reproductible offre la possibilité de pouvoir expérimenter par soi-même : modifications des paramètres d'une fonction, des données, etc. Il est par ailleurs reconnu que le fait d'avoir une attitude active (reproduire voire expérimenter) peut permettre de mieux assimiler qu'avec une seule lecture. -->
 <!-- ::: -->
@@ -107,14 +110,13 @@ output <-
   as.data.frame(list("Table" = tables[, "Item"], "Description" = tables[, "Title"])),
   format = "html",
   escape = F, position = "center", full_width = F, align="cl") %>%
-  kable_classic_2(full_width = F, html_font = '"Arial", arial, helvetica, sans-serif')
-column_spec(output, 1, width = "4cm") %>%
-    column_spec(2, width = "13cm") %>% 
-    row_spec(0, bold=TRUE, align = "c")
-
+  kableExtra::column_spec(1, width = "4cm") %>%
+  kableExtra::column_spec(2, width = "13cm") %>% 
+  kableExtra::row_spec(0, bold=TRUE, align = "c")
+output
 ```
 
-::: {.remarque data-latex=""}
+::: {.remarque}
 
 Le package tire son nom de son "grand frère", le _package_ [`doremifasol`](https://inseefrlab.github.io/DoReMIFaSol). Ce _package_ a pour finalité de charger dans `R` des données disponibles sur le site de l'Insee, sans que l'utilisateur n'ait ni à naviguer sur ce site, ni à effectuer l'import des données. Tous les jeux de données présents dans `doremifasolData` ont été téléchargés avec `doremifasol`.
 :::
@@ -123,14 +125,18 @@ Le package tire son nom de son "grand frère", le _package_ [`doremifasol`](http
 
 Le _package_ `doremifasolData` n'est pas disponible sur le répertoire central des _packages_ `R` (le CRAN). Voici comment installer le _package_ :
 
-- Si vous utilisez `R` sur un poste Insee (y compris en télétravail) ou dans l'environnement de travail AUS, il faut exécuter la commande suivante :
+Si vous utilisez `R` sur un autre ordinateur ou sur le SSP Cloud, il faut exécuter la commande suivante :
 
-    ```{r, eval = FALSE}
-    install.packages("doremifasolData", repos = "https://nexus.insee.fr/repository/r-public")
-    ```
+```{r, eval = FALSE}
+remotes::install_github("InseeFrLab/doremifasolData", ref = "main")
+```
 
-- Si vous utilisez `R` sur un autre ordinateur ou sur le SSP Cloud, il faut exécuter la commande suivante :
+::: {.specificite}
 
-    ```{r, eval = FALSE}
-    remotes::install_github("InseeFrLab/doremifasolData", ref = "main")
-    ```
+Si vous utilisez `R` sur un poste Insee (y compris en télétravail) ou dans l'environnement de travail AUS, il faut exécuter la commande suivante :
+
+```{r, eval = FALSE}
+install.packages("doremifasolData", repos = "https://nexus.insee.fr/repository/r-public")
+```
+
+:::

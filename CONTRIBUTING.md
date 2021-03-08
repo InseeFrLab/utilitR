@@ -1,16 +1,16 @@
-# Guide pour contribuer à la documentation `UtilitR`
+# Guide pour contribuer à la documentation `utilitR`
 
 ## :one: Introduction
 
-Il est possible de contribuer au projet `UtilitR` de différentes manières, détaillées dans ce document. Les contributions peuvent prendre différentes formes, d'un avis argumenté suite à une relecture à des propositions de modification en passant par des propositions d'intégrations de nouveaux éléments dans le livre ou le site. 
+Il est possible de contribuer au projet `utilitR` de différentes manières, détaillées dans ce document. Les contributions peuvent prendre différentes formes, d'un avis argumenté suite à une relecture à des propositions de modification en passant par des propositions d'intégrations de nouveaux éléments dans le livre ou le site. 
 
-**Il n'est pas nécessaire d'être un expert en `R` pour contribuer au projet `UtilitR`.** En revanche, il est nécessaire de s'inscrire dans le fonctionnement
+**Il n'est pas nécessaire d'être un expert en `R` pour contribuer au projet `utilitR`.** En revanche, il est nécessaire de s'inscrire dans le fonctionnement
 des contributeurs actuels, fonctionnement qui est orchestré autour de `Github` et de ses différents outils.
 Il est possible d'en acquérir très rapidement les bases à partir de ce document présentant le [Travail collaboratif avec `R`](https://linogaliana.gitlab.io/collaboratif/git.html#des-bases-de-git), ou à partir d'échanges avec les contributeurs actuels.
 
 Pour les relecteurs quelques notions de l'environnement `Github` suffisent (ou peuvent s'acquérir facilement) pour apporter sa pierre à l'édifice.
 
-Les mainteneurs et développeurs du projet `UtilitR` sont en effet disponibles
+Les mainteneurs et développeurs du projet `utilitR` sont en effet disponibles
 pour aider tous les personnes qui souhaitent contribuer, ce qui signifie
 qu'il est possible d'interagir avec eux pour être guidé en cas de difficultés.
 Toutefois, **le respect des règles de contribution détaillées ci-dessous est essentiel pour l'efficacité du travail collectif et pour assurer la qualité de cette documentation.**
@@ -80,7 +80,7 @@ le nom de la branche doit commencer par `typo-`**. Si les propositions sont plus
 substantielles que des coquilles, le nom de la branche est libre. 
 
 Cliquer sur `Propose changes`. Automatiquement, une page pour soumettre cette
-modification au dépôt `UtilitR` s'ouvre:
+modification au dépôt `utilitR` s'ouvre:
 
 ![](./pics/contributing/edit4.png)
 
@@ -90,7 +90,7 @@ comme sur l'image ci-dessus.
 Après avoir
 éventuellement révisé le titre de la `Pull Request` et la description associée,
 cliquer sur `Create pull request`. Cela permettra aux mainteneurs du projet
-`UtilitR` d'éventuellement intégrer les modifications ou de démarrer une
+`utilitR` d'éventuellement intégrer les modifications ou de démarrer une
 discussion sur les propositions de modifications. Celles-ci sont visibles
 en cliquant sur l'onglet `Files changed`:
 
@@ -102,7 +102,7 @@ en cliquant sur l'onglet `Files changed`:
 
 [:arrow_up: Retour à l'introduction](#one-introduction)
 
-L'équipe du projet `UtilitR` dispose d'un espace de discussion collective
+L'équipe du projet `utilitR` dispose d'un espace de discussion collective
 sur les problèmes techniques et les développements futurs du projet.
 Cet espace de discussion est stocké sur le dépôt `Github` du projet et est
 structuré sous forme d'_issues_.
@@ -337,6 +337,30 @@ de son `fork` est à jour. Si elle ne l'est pas, la mettre à jour
     - il est impératif de respecter les règles de fond et de forme détaillées ci-dessous;
 
 
+:exclamation: La documentation `utilitR` est générée à partir d'un package `R` qu'il est recommandé
+d'installer pour prévisualiser le livre dans une session `R` sur son ordinateur.
+Le message suivant, qui s'affiche dans la console `R` résume la démarche à suivre pour pouvoir
+prévisualiser en local le livre:
+
+> Projet source de la documentation utilitR
+> -----------------------------------------
+> 
+> Pour prévisualiser la version web de l'ouvrage: 
+> 
+>    * Option 1: utiliser l'onglet 'Build' dans Rstudio;
+>    * Option 2: taper dans la commande R:
+> ```r
+> bookdown::render_book("index.Rmd", output_dir = "_public", output_format = "utilitr::html_document")
+> ```
+> 
+> Ne pas oublier d'installer le package 'utilitr' avant pour disposer des modèles de documents: 
+> ```r
+> remotes::install_github("https://github.com/InseeFrLab/utilitr-template")
+> ```
+
+:exclamation: Si vous désirez intégrer une fiche nommée `toto.Rmd`, ne pas oublier de
+l'ajouter dans la liste des chapitres du livre en éditant le fichier `_bookdown.yml`
+
 ### :four: Proposer sa fiche à la relecture
 
 Quand une première version de la fiche est prête, vous allez pouvoir
@@ -458,7 +482,7 @@ liste des `Imports`.
 ### Gérer les jeux de données utilisés dans les exemples
 
 * Il est recommandé d'utiliser autant que possible les jeux de données figurant dans le _package_ [`doremifasolData`](https://github.com/InseeFrLab/DoReMIFaSolData), qui contient exclusivement des données téléchargées sur le site de l'Insee.
-* Il est évidemment possible d'ajouter un nouveau *dataset* à `doremifasolData` si vous pensez qu'aucun des _datasets_ du _package_ ne convient pour vos exemples; pour ce faire il suffit d'ouvrir une _issue_ dans le dépôt Gitlab d'`UtilitR` ou dans le dépôt Github de `doremifasolData`, puis de discuter avec les contributeurs;
+* Il est évidemment possible d'ajouter un nouveau *dataset* à `doremifasolData` si vous pensez qu'aucun des _datasets_ du _package_ ne convient pour vos exemples; pour ce faire il suffit d'ouvrir une _issue_ dans le dépôt Gitlab d'`utilitR` ou dans le dépôt Github de `doremifasolData`, puis de discuter avec les contributeurs;
 * Si vous souhaitez utiliser un jeu de données provenant d'un autre _package_, voici la marche à suivre:
     - demander systématiquement l'approbation des autres contributeurs du projet avant de le faire;
     - préciser systématiquement le *package* d'origine. Par exemple on écrit `data("World", package = "sf")` pour utiliser la table `World` du *package* `sf`. 
