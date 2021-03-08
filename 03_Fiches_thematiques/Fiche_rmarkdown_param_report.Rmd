@@ -1,5 +1,5 @@
 ---
-title: "`Rmarkdown` et les rapports paramétrés"
+title: "`Rmarkdown` et les rapports automatiques"
 subtitle: ""
 date: '`r format(Sys.time(), "%d %B %Y")`'
 output:
@@ -21,7 +21,79 @@ library("doremifasolData")
 
 # Tâches concernées et recommandations
 
-L'utilisateur souhaite réaliser un modèle de rapport "générique", qu'il pourra décliner selon :
+L'utilisateur souhaite réaliser des rapports automatisés, reproductibles et faciles à actualiser en cas de changement des données. Il souhaite également produire de nombreux rapports en modifiant, en fonction de ses besoins, certains paramètres.
+L'outil `rmarkdown` répond en grande partie à ces besoins.
+
+## Les rapports automatisés simples (statiques)
+
+Le principe est de créer un fichier `rmarkdown` (.Rmd) mélangeant à la fois des instructions de traitements des données, mais aussi du texte voire des images.
+
+Le fichier `rmarkdown` devra alors respecter un certain formalisme : présence d'une en-tête YAML, instructions pour l'importation des données, traitements, *etc*. (voir fiche md).
+
+::: {.recommandation}
+L'en-tête `YAML` devrait toujours contenir à *minima* :
+
+1. un titre
+2. une date
+3. un type de sortie
+
+~~~
+---
+title: "Titre du rapport"
+date: '`r format(Sys.time(), "%d %B %Y")`'
+output: pdf_document
+---
+~~~
+:::
+
+Dans l'exemple ci-dessus, la date affichée sera la date du jour de la compilation (production) du document.
+
+Dans un deuxième temps, il est souhaitable de configurer le comportement par défaut de `rmarkdown`. Pour ce faire, `rmarkdown` s'appuie en partie sur le *package* `knitr`. Ce dernier est utilisé pour transformer le fichier `rmarkdown` en fichier `markdown`. Une fois l'opération réalisée, le *package* `rmarkdown` s'occupera de compiler le fichier `markdown` dans le format de sortie fixé dans l'en-tête, *via* le programme `pandoc`.
+
+Voici quelques exemples de configuration :
+
+* position des figures ;
+* affichage ou non des instructions `R` dans le fichier de sortie ;
+* gestion des messages d'évènement...
+
+Pour ce faire, il est recommandé de commencer son fichier `rmarkdown` par un *chunk* de configuration, qui peut ressembler à ceci :
+
+~~~
+```{r configuration, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      fig.pos='H',
+                      fig.align = "center",
+                      warning=FALSE,
+                      message=FALSE)
+```
+~~~
+
+Ici, il est demandé à `rmarkdown` de ne pas inclure dans le fichier produit les instructions `R` (`echo = FALSE`). Les figures sont centrées, et dans la mesure du possible positionnées au plus proche de leur ordre d'apparition dans le programme (éviter d'avoir une figure positionnée 2 pages plus loin que leur position souhaitée). Il s'agit des paramètre `fig.pos` et `fig.align`. Les *warnings* et les messages d'informations n'apparaitront pas non plus dans le fichier de sortie.
+
+La fonction `opts_chunk$set` du *package* `knitr` comporte de nombreux paramètres, dont la liste exhaustive est disponible à cette adresse : https://yihui.org/knitr/options/
+
+::: {.recommandation}
+Une attention particulière doit être portée sur le paramètre `cache`. Ce dernier permet de signaler à `rmarkdown` de ne pas ré-exécuter du code n'ayant pas été modifié depuis le précédent lancement de la compilation. Ceci peut faire gagner beaucoup de temps, notamment pour les *chunks* d'importation de données volumineuses, mais peut parfois conduire à des comportements non souhaités (exemple des données qui sont actualisées, mais dont l'instruction d'importation reste inchangée).
+:::
+
+Enfin, il est recommandé de positionner un *chunk* de chargement des librairies utilisées en début de fichier, après la configuration des options de `knitr`.
+
+A titre d'exemple, le *chunk* pourrait ressembler à ceci :
+
+~~~
+```{r librairies}
+library("doremifasolData")
+library("data.table")
+```
+~~~
+
+Encore une fois, il est conseillé de nommer ces *chunks* de façon non ambigue, afin de repérer rapidement d'éventuelles erreurs lors de la compilation du document (voir fiche md).
+
+## La production de rapports "de masse" : les rapports paramétrés
+
+Les rapports paramétrés sont une forme particulière de rapports automatisés. Ils présentent donc les mêmes bénéfices que les rapports automatisés (quasi reproductibles, simple à actualiser), mais permettent d'aller un peu plus loin en terme de fonctionnalités. Il est ainsi possible de générer différents rapports utilisant la même base d'instruction, mais en distinguant les traitements selon un ou plusieurs paramètres à fixer dans l'en-tête `YAML`.
+
+Un court exemple est parfois mieux qu'un long discours, nous allons voir ci-dessous un modèle de rapport "générique" (un *template*), qui peut se décliner selon :
 
 + différents territoires ;
 + différentes périodicités ;
@@ -29,15 +101,11 @@ L'utilisateur souhaite réaliser un modèle de rapport "générique", qu'il pour
 
 Bref, selon différents **paramètres**.
 
-# Approche classique (naïve ?)
-
 Prenons l'exemple très simple d'un utilisateur qui doit générer une table d'effectif de chaque département français.
 
 Pour cela, il peut être tenté de multiplier les fichiers `rmarkdown` (`fichierAin.Rmd`, `fichierAisne.Rmd`...).
 
 Cette approche, si elle se justifie lorsque le nombre de paramètres est réduit, voit ses limites lorsqu'il s'agit de réaliser plusieurs dizaines de rapports. C'est à ce moment que le système de rapports paramétrés prend tout son sens.
-
-# Approche rapports paramétrés
 
 L'utilisateur a eu vent de la fonctionnalité de rapports paramétrés. Il doit alors réaliser un *template* (modèle) de document qui s'appliquera de la même façon pour chaque département.
 
@@ -79,7 +147,7 @@ La compilation de ce fichier, au travers de la commande `rmarkdown::render(input
 393
 ~~~
 
-La fonction `render` permet de transformer un format de fichier (ici `template.Rmd`) en un autre, défini dans l'en-tête `YAML` (voir fiche R Markdown). On remarque que la fonction produit une table d'effectif des communes de l'Ain (département 01) car cette valeur a été définie par défaut dans l'en-tête. Si l'utilisateur souhaite produire le même type de document pour un autre département, il devra **passer explicitement le paramètre `params = list(codeDpt = "XX")`** à la fonction `render`.
+La fonction `render` permet de transformer un format de fichier (ici `template.Rmd`) en un autre, défini dans l'en-tête `YAML`. On remarque que la fonction produit une table d'effectif des communes de l'Ain (département 01) car cette valeur a été définie par défaut dans l'en-tête. Si l'utilisateur souhaite produire le même type de document pour un autre département, il devra **passer explicitement le paramètre `params = list(codeDpt = "XX")`** à la fonction `render`.
 
 ```{r tableDpt02, eval=FALSE, echo=TRUE}
 rmarkdown::render(input = template.Rmd, params = list(codeDpt = "02"))
@@ -94,8 +162,11 @@ Dans cet exemple, l'*output* ressemblera à ceci :
 
 Il y a donc 800 communes dans l'Aisne.
 
-## Créer une fonction pour générer un rapport simplement
-Il est possible de créer une fonction pour simplifier la génération de rapports.
+::: {.conseil}
+Il est possible de créer une fonction pour simplifier la génération de rapports paramétrés.
+:::
+
+Afin d'illuster ce conseil, voici un exemple de fonction créée *ad hoc* par l'utilisateur désireux de simplifier la production d'un rapport paramétré :
 
 ~~~
 monRapport <- function(codeDpt) {
@@ -107,10 +178,10 @@ monRapport <- function(codeDpt) {
 }
 ~~~
 
-Après cela, la production des rapports se réalisera *via* la commande :
+Une fois la fonction établie, les rapports se réaliseront *via* la commande :
 
 ~~~
-monRapport("02")
+monRapport(codeDpt = "02")
 ~~~
 
 Enfin, cette fonction peut également s'utiliser dans une boucle, au sein d'un autre document `rmarkdown` :
@@ -120,6 +191,8 @@ for(i in maListeDeDpt) {
 	monRapport(i)
 }
 ~~~
+
+Le modèle de *template.Rmd* présenté dans cette fiche est disponible en téléchargement en cliquant sur le lien suivant (insérer lien vers fichier).
 
 # PESP
 
