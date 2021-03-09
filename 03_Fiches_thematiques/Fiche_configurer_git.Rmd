@@ -100,6 +100,13 @@ confort supplémentaire (ne pas avoir à taper login et mot de passe à chaque i
 
 ## Clôner et interagir avec un dépôt distant en `HTTPS` {#git-connexion-https}
 
+::: specificite
+
+Le `Gitlab` interne de l'Insee ne permet pas ce mode d'authentification. 
+Il convient d'utiliser l'[authentification SSH](#git-connexion-ssh)
+
+:::
+
 ### Démarche générale
 
 Pour interagir avec un dépôt distant en utilisant le protocole `HTTPS`, il suffit de configurer le mot de passe dans `Gitlab`, en allant dans `Preferences > Password`, comme indiqué dans la capture d'écran ci-dessous :
@@ -127,11 +134,45 @@ Selon le niveau de visibilité fixé par le propriétaire du dépôt distant, il
 
 ### Définir un jeton d'accès
 
+#### Sur Gitlab
 
-Gitlab : 'read_repository' or 'write_repository
+Dans `Gitlab`, en haut à droite de la page, cliquer sur `Edit profile`
 
 ```{r, echo = FALSE, out.width = '100%'}
-utilitr::include_image("./pics/config_git/clone_https.png", compression = FALSE)
+utilitr::include_image("./pics/config_git/config_pat_gitlab1.png", compression = FALSE)
+```
+
+Dans le bandeau à gauche, cliquer sur `Access Tokens`:
+
+```{r, echo = FALSE, out.width = '100%'}
+utilitr::include_image("./pics/config_git/config_pat_gitlab2.png", compression = FALSE)
+```
+
+Choisir un nom (par exemple `PAT_GITLAB`, mais ce n'est pas un nom obligatoire) et
+des droits associés. Les droits `read_repository` et `write_repository`
+permettent d'effectuer les routines décrites dans la fiche 
+[Utilisation Git avec RStudio](#git).
+
+
+```{r, echo = FALSE, out.width = '100%'}
+utilitr::include_image("./pics/config_git/config_pat_gitlab3.png", compression = FALSE)
+```
+
+Après avoir validé, le jeton s'affiche afin de la récupérer et le stocker dans
+un endroit sécurisé (par exemple un gestionnaire de mot de passes). Attention,
+ce sera la seule fois qu'il sera visible.
+
+
+```{r, echo = FALSE, out.width = '100%'}
+utilitr::include_image("./pics/config_git/config_pat_gitlab4.png", compression = FALSE)
+```
+
+Plus bas sur la page, il est possible de voir l'ensemble des jetons utilisés, 
+la date de dernière utilisation. C'est aussi ici que peut être supprimé le 
+jeton en cas de doute sur sa confidentialité. 
+
+```{r, echo = FALSE, out.width = '100%'}
+utilitr::include_image("./pics/config_git/config_pat_gitlab5.png", compression = FALSE)
 ```
 
 ### Garder en mémoire (*cache*) ses identifiants
@@ -139,7 +180,7 @@ utilitr::include_image("./pics/config_git/clone_https.png", compression = FALSE)
 TO DO
 
 
-## Clôner et interagir avec un dépôt distant en `SSH`
+## Clôner et interagir avec un dépôt distant en `SSH` {#git-connexion-ssh}
 
 Pour interagir avec un dépôt distant en utilisant le protocole `SSH`,
 il faut créer une clé SSH, plus exactement une paire de chaînes de caractères,
