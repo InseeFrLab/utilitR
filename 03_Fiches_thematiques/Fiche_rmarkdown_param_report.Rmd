@@ -1,12 +1,3 @@
----
-title: "`Rmarkdown` et les rapports automatiques"
-subtitle: ""
-date: '`r format(Sys.time(), "%d %B %Y")`'
-output:
-  pdf_document:
-    toc: no
----
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE,
                       fig.pos='H',
@@ -24,13 +15,23 @@ library("doremifasolData")
 L'utilisateur souhaite réaliser des rapports automatisés, reproductibles et faciles à actualiser en cas de changement des données. Il souhaite également produire de nombreux rapports en modifiant, en fonction de ses besoins, certains paramètres.
 L'outil `rmarkdown` répond en grande partie à ces besoins.
 
-## Les rapports automatisés simples (statiques)
-
-Le principe est de créer un fichier `rmarkdown` (.Rmd) mélangeant à la fois des instructions de traitements des données, mais aussi du texte voire des images.
-
-Le fichier `rmarkdown` devra alors respecter un certain formalisme : présence d'une en-tête YAML, instructions pour l'importation des données, traitements, *etc*. (voir fiche md).
-
 ::: {.recommandation}
+Avant d'aborder le sujet des rapports automatisés, le lecteur est vivement encouragé à lire au préalable la fiche `R Markdown` (lien vers fiche md)
+:::
+
+## Les rapports automatisés
+
+Un rapport automatisé réalisé en `rmarkdown` est un fichier texte portant l'extension `.Rmd` permettant de composer aisément un document. Ce document "de sortie" (ou *output*) est produit après une étape de compilation, en cliquant sur le bouton `knit` de `RStudio` ®. Le document produit peut prendre plusieurs formes : 
+
++ une page internet (un fichier html) ;
++ un fichier de type traitement de texte (`word` ® ou `writer` ®) ;
++ un document texte (LaTeX, .txt, .pdf, ...).
+
+Le fichier `rmarkdown` combine généralement des instructions de traitements des données, mais aussi du texte voire des images. Les instructions sont généralement rédigées en `R`, mais il est tout à fait possible d'utiliser `rmarkdown` avec d'autres langages (`python, bash`, ...).
+
+Pour fonctionner, un fichier `rmarkdown` doit respecter un certain formalisme : présence d'une en-tête YAML, instructions pour l'importation des données, traitements, représentations graphiques, *etc*.
+
+::: {.remarque}
 L'en-tête `YAML` devrait toujours contenir à *minima* :
 
 1. un titre
@@ -46,7 +47,7 @@ output: pdf_document
 ~~~
 :::
 
-Dans l'exemple ci-dessus, la date affichée sera la date du jour de la compilation (production) du document.
+Dans l'exemple ci-dessus, la date affichée sera la date du jour de la compilation du document.
 
 Dans un deuxième temps, il est souhaitable de configurer le comportement par défaut de `rmarkdown`. Pour ce faire, `rmarkdown` s'appuie en partie sur le *package* `knitr`. Ce dernier est utilisé pour transformer le fichier `rmarkdown` en fichier `markdown`. Une fois l'opération réalisée, le *package* `rmarkdown` s'occupera de compiler le fichier `markdown` dans le format de sortie fixé dans l'en-tête, *via* le programme `pandoc`.
 
@@ -72,7 +73,24 @@ Ici, il est demandé à `rmarkdown` de ne pas inclure dans le fichier produit le
 
 La fonction `opts_chunk$set` du *package* `knitr` comporte de nombreux paramètres, dont la liste exhaustive est disponible à cette adresse : https://yihui.org/knitr/options/
 
-::: {.recommandation}
+Les principaux paramètres sont listés ci-dessous :
+
+
+|   **Paramètre** | **Signification**                                            	|     **Valeur par défaut       	|
+|-----------------|---------------------------------------------------------------|---------------------------------|
+| echo						| les instructions doivent-elle apparaitre dans l'*output*			| TRUE														|
+| eval						| le *chunk* doit-il être évalué (exécuté)											| TRUE														|
+| include					| le résultat du *chunk* doit-il être inclus dans l'*output*. Il sera tout de même évalué	| TRUE														|
+| results					| contrôle l'affichage du résultat (`markup`, `asis`, ...)			| `markup`												|
+| comment					| le caractère qui préfixe le résultat d'une instruction				| ##															|
+| cache						| le résultat de l'exécution du code doit-il être mis en cache	| FALSE														|
+| fig.width				| taille de la largeur des *plots* (graphiques, cartes)					| 7 (en pouce)										|
+| fig.height			| taille de la hauteurs des *plots* (graphiques, cartes)				| 7 (en pouce)										|
+| child						| le chemin vers le document "enfant" à intégrer dans le document "parent" | NULL									|
+| language				| le moteur d'exécution pour l'instruction											| R																|
+
+
+::: {.conseil}
 Une attention particulière doit être portée sur le paramètre `cache`. Ce dernier permet de signaler à `rmarkdown` de ne pas ré-exécuter du code n'ayant pas été modifié depuis le précédent lancement de la compilation. Ceci peut faire gagner beaucoup de temps, notamment pour les *chunks* d'importation de données volumineuses, mais peut parfois conduire à des comportements non souhaités (exemple des données qui sont actualisées, mais dont l'instruction d'importation reste inchangée).
 :::
 
@@ -87,11 +105,11 @@ library("data.table")
 ```
 ~~~
 
-Encore une fois, il est conseillé de nommer ces *chunks* de façon non ambigue, afin de repérer rapidement d'éventuelles erreurs lors de la compilation du document (voir fiche md).
+Encore une fois, il est conseillé de nommer ces *chunks* de façon non ambigüe, afin de repérer rapidement d'éventuelles erreurs lors de la compilation.
 
 ## La production de rapports "de masse" : les rapports paramétrés
 
-Les rapports paramétrés sont une forme particulière de rapports automatisés. Ils présentent donc les mêmes bénéfices que les rapports automatisés (quasi reproductibles, simple à actualiser), mais permettent d'aller un peu plus loin en terme de fonctionnalités. Il est ainsi possible de générer différents rapports utilisant la même base d'instruction, mais en distinguant les traitements selon un ou plusieurs paramètres à fixer dans l'en-tête `YAML`.
+Les rapports paramétrés sont une forme particulière de rapports automatisés. Ils présentent donc les mêmes avantages que les rapports automatisés (quasi reproductibles, simple à actualiser), mais permettent d'aller un peu plus loin en terme de fonctionnalités. Il est ainsi possible de générer différents rapports utilisant la même base d'instruction, mais en distinguant les traitements selon un ou plusieurs paramètres à fixer dans l'en-tête `YAML`.
 
 Un court exemple est parfois mieux qu'un long discours, nous allons voir ci-dessous un modèle de rapport "générique" (un *template*), qui peut se décliner selon :
 
@@ -105,13 +123,13 @@ Prenons l'exemple très simple d'un utilisateur qui doit générer une table d'e
 
 Pour cela, il peut être tenté de multiplier les fichiers `rmarkdown` (`fichierAin.Rmd`, `fichierAisne.Rmd`...).
 
-Cette approche, si elle se justifie lorsque le nombre de paramètres est réduit, voit ses limites lorsqu'il s'agit de réaliser plusieurs dizaines de rapports. C'est à ce moment que le système de rapports paramétrés prend tout son sens.
+Cette approche, si elle se justifie lorsque le nombre de document à produire est réduit, voit ses limites lorsqu'il s'agit de réaliser plusieurs dizaines de rapports. C'est à ce moment que le système de rapports paramétrés prend tout son sens.
 
-L'utilisateur a eu vent de la fonctionnalité de rapports paramétrés. Il doit alors réaliser un *template* (modèle) de document qui s'appliquera de la même façon pour chaque département.
+L'utilisateur a eu vent de la fonctionnalité de rapports paramétrés. Il doit alors réaliser un *template* de document qui s'appliquera de la même façon pour chaque département.
 
-## Un exemple de fichier *template*
+## Un exemple de *template*
 
-Voici un exemple (appelons le `template.Rmd`) permettant de répondre au besoin de notre utilisateur :
+Voici un exemple (appelons le `rapportParametre.Rmd`) permettant de répondre au besoin de notre utilisateur :
 
 ~~~
 
@@ -123,7 +141,7 @@ params:
   codeDpt: "01"
 ---
 
-```{r doremisfasl, eval=FALSE, echo=TRUE}
+```{r doremisfasol, eval=FALSE, echo=TRUE}
 library("doremifasolData")
 ```
 
