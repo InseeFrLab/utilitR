@@ -37,32 +37,92 @@ Une instance `Gitlab` est disponible sur le SSP-cloud [https://git.lab.sspcloud.
 :::
 
 
+On prendra ici comme cas
+d'usage l'utilisation d'un dépôt distant sur une solution de type
+`Gitlab`. Néanmoins, la procédure pour configurer l'interaction avec un
+dépôt sur `Github` est très similaire, ce qui est illustré
+dans la fiche [Utiliser Git avec RStudio](#git).
 
-Gitlab étant la solution la plus déclinée, on prendra comme cas d'usage l'utilisation d'un dépôt distant sur une solution de type Gitlab. Néanmoins, la procédure pour configurer l'interaction avec un dépôt sur Github est très similaire.
+## Installer Git sur son poste de travail {#git-install}
 
-## Installer Git sur son poste de travail
+Pour intéragir avec un dépôt distant sur `Gitlab` ou `Github`, il est nécessaire
+d'utiliser un outil de contrôle de version. Le plus utilisé est le logiciel `Git`.
 
-Pour installer Git, il suffit désormais d'installer le logiciel récupéré sur le [site web officiel](http://git-scm.com/download/win). Une fois le logiciel installé, il est possible de le retrouver dans le menu Démarrer, rubrique Git. L'utilisateur y trouvera plusieurs outils, dont un outil de ligne de commande (`Git Bash`) et une interface (`Git GUI`).
+Avant d'essayer d'installer `Git`, le premier réflexe est de vérifier
+qu'il n'est pas déjà disponible... 
+Sur un serveur partagé comme AUS, ou sur une architecture comme le SSP-cloud,
+il n'est pas nécessaire d'installer `Git` puisque celui-ci est déjà disponible
+et configuré.
 
-## Clôner et interagir avec un dépôt distant en `HTTPS`
+Si `Git` n'est pas disponible, pour l'installer, il suffit
+d'installer le logiciel récupéré sur le
+[site web officiel](http://git-scm.com/download/win). Une fois le logiciel
+installé, il est possible de le retrouver dans le menu Démarrer, rubrique Git.
+L'utilisateur y trouvera plusieurs outils, dont un outil de ligne
+de commande (`Git Bash`) et une interface (`Git GUI`). 
 
-Pour interagir avec un dépôt distant en utilisant le protocole `HTTPS`, il suffit de configurer le mot de passe dans Gitlab, en allant dans Preferences > Password, comme indiqué dans la capture d'écran ci-dessous :
+## Interaction avec un dépôt distant: principe
+
+`Git` est un système décentralisé de contrôle de version: les fichiers sont
+modifiés sur les postes de travail et sont mis, à un moment voulu, en 
+conformité avec la version collective disponible sur le dépôt distant. 
+
+Il est ainsi nécessaire d'avoir une identité pour reconnaître l'auteur d'une 
+modification à un moment donné. Pour que `Gitlab` reconnaisse un utilisateur
+suggérant des modifications, il est nécessaire de s'authentifier 
+(un dépôt, même public, ne peut pas être modifié par n'importe qui). 
+L'authentification consiste ainsi à fournir un élément que seul vous et 
+la forge sont censés connaître: un mot de passe, une clé compliquée, un jeton d'accès...
+
+Plus précisément, il existe deux modalités pour faire connaître son identité à `Gitlab`:
+
+* une authentification HTTPS ([décrite ici](git-connexion-https)): l'authentification se fait grâce au login et au mot de passe à chaque
+interaction avec le dépôt. Les jetons d'accès sont à privilégier: ils permettent de s'authentifier, sont révocables et ne bénéficient pas des super-pouvoirs qu'octroie un mot de passe comme changer le nom d'un dépôt voire le supprimer. Plus d'éléments sont disponibles [ici](https://happygitwithr.com/credential-caching.html#get-a-pat)
+* une authentification SSH: l'authentification se fait par une clé cryptée disponible sur le poste de travail et que `Github` ou `Gitlab` connaît. Une fois configurée, cette méthode ne nécessite plus de faire connaître son identité: l'empreinte digitale que constitue la clé suffit à reconnaître un utilisateur. 
+
+::: remarque
+Ne jamais stocker un token, et encore moins son mot de passe, dans un projet. Un token peut être stocké dans un système de gestion de mot de passe comme [keepass](https://keepass.fr/)
+:::
+
+La méthode SSH peut être laborieuse à mettre en place même si elle donne un 
+confort supplémentaire (ne pas avoir à taper login et mot de passe à chaque interaction). Cependant, la méthode HTTPS est préférable car
+
+* elle n'implique pas de configuration ;
+* elle n'est pas bloquée par des pare-feux, contrairement à la méthode SSH. Par exemple, il est impossible sur un poste Insee d'interagir avec un dépôt sur <gitlab.com> ou <github.com> en SSH ;
+* il est possible de conserver en mémoire ses identifiants un certain temps (grâce au `git credentials helper`) pour ne pas taper à chaque fois ses identifiants.
+
+## Clôner et interagir avec un dépôt distant en `HTTPS` {#git-connexion-https}
+
+### Démarche générale
+
+Pour interagir avec un dépôt distant en utilisant le protocole `HTTPS`, il suffit de configurer le mot de passe dans `Gitlab`, en allant dans `Preferences > Password`, comme indiqué dans la capture d'écran ci-dessous :
 
 ```{r, echo = FALSE, out.width = '100%'}
 utilitr::include_image("./pics/config_git/password_conf.png", compression = FALSE)
 ```
 
-Une fois le mot de passe configuré, il ne reste plus qu'à clôner le dépôt distant sur lequel on veut travailler, par exemple depuis RStudio, suivant le protocole décrit dans la fiche "Utiliser Git avec RStudio", en ayant pris soin de sélectionner l'url correspondant au protocole `HTTPS`, comme ci-dessous :
+Une fois le mot de passe configuré, il ne reste plus
+qu'à `r with_def("cloner")` le dépôt distant sur lequel on veut travailler,
+par exemple depuis `RStudio`, suivant le protocole décrit dans la fiche [Utiliser Git avec RStudio](#git), en ayant pris soin de sélectionner l'URL correspondant
+au protocole `HTTPS`, comme ci-dessous :
 
 ```{r, echo = FALSE, out.width = '100%'}
 utilitr::include_image("./pics/config_git/clone_https.png", compression = FALSE)
 ```
 
-Au moment du clônage, l'utilisateur est invité à entrer son identifiant (celui de son profil Gitlab avec lequel il accède au dépôt distant), ainsi que son mot de passe (celui qu'il aura donc spécifié dans son compte Gitlab).
+Au moment du clônage, l'utilisateur est invité à entrer son identifiant
+(celui de son profil Gitlab avec lequel il accède au dépôt distant), ainsi que
+son mot de passe (celui qu'il aura donc spécifié dans son compte Gitlab).
 
-::: {.conseil data-latex=""}
+::: conseil
 Selon le niveau de visibilité fixé par le propriétaire du dépôt distant, il est possible qu'il ne soit pas nécessaire de s'identifier au moment du clônage (c'est le cas pour les dépôts publics). En revanche, si le niveau de visibilité du dépôt est plus élevé (niveau privé), il se peut qu'il soit impossible à l'utilisateur de clôner le dépôt ; dans ce cas, il ne lui sera pas non plus possible de visualiser ce dernier dans Gitlab. Il faut alors contacter le propriétaire du dépôt pour lui en demander l'accès.
 :::
+
+### Définir un jeton d'accès
+
+### Garder en mémoire (*cache*) ses identifiants
+
+
 
 ## Clôner et interagir avec un dépôt distant en `SSH`
 
