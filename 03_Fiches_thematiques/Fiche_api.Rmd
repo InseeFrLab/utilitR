@@ -187,39 +187,64 @@ d'identification, ni de jeton. Il est uniquement nécessaire de déterminer
 les données souhaitées soit via une liste `idbank`,
 soit via une liste de `dataset`. 
 
-
-```{r, eval = FALSE}
-library(insee)
-# Obtenir la liste des tables présentes dans la BDM , les dataset, ou la liste des séries proposées, les idbank :
-liste_table <- get_dataset_list()
-liste_indicateur <- get_idbank_list()
-
-# Importer les données à partir de leur idbank ou importer un dataset à partir de leur identifiant:
-table_bp <- get_insee_dataset("BALANCE-PAIEMENTS")
-indicateur_001694056 <- get_insee_idbank("001694056")
-# Il est possible de rajouter des filtres à ces fonctions afin de limiter le nombre de données importées (filtre sur la période, sur la date de mise à jour, sur les filtres).
+```{r echo = FALSE, message = FALSE, warning = FALSE}
+library(magrittr)
+df <- data.frame("Information" = c("Liste des jeux de données",
+                                           "Liste des séries"),
+                 "Fonction" = c("insee::get_dataset_list()",
+                                "insee::get_idbank_list()")
+)
+df %>% 
+  knitr::kable(escape = F, position = "center", full_width = F, align="ccl") %>%
+  kableExtra::column_spec(1, width = "3cm", bold = TRUE) %>%
+  kableExtra::column_spec(2, width = "2cm")
 
 ```
 
 
+
+
+```{r, eval = FALSE}
+library(insee)
+
+# Importer les données à partir de leur idbank ou importer un dataset à partir de leur identifiant:
+table_bp <- get_insee_dataset("BALANCE-PAIEMENTS")
+indicateur_001694056 <- get_insee_idbank("001694056")
+```
+
+Il est possible de rajouter des filtres à ces fonctions afin de limiter
+le nombre de données importées (filtre sur la période, sur la date de mise à jour, sur les filtres).
+
+
+**TO BE COMPLETED**
+
 ### [inseeLocalData](https://github.com/InseeFrLab/inseeLocalData)
 
-Ce package permet de télécharger les données localisées à la commune, diffusées sur insee.fr dans la rubrique ‘chiffres détaillés’, sous forme de cubes prédéfinis. Cette API est hébergée sur le catalogue des API de l'Insee. Une authentification par un jeton est donc nécessaire.
-Le package comporte une fonction unique qui permet d’importer les données présentes dans l’API Données Locales dans une liste contenant 4 objets :
+Ce package permet de télécharger les données localisées à la commune,
+diffusées sur <https://www.insee.fr> dans la rubrique *Chiffres détaillés*,
+sous forme de cubes prédéfinis. Cette API est hébergée sur le catalogue des
+API de l'Insee. Une authentification par un jeton est donc nécessaire.
+
+Le package comporte une fonction unique qui permet d’importer les données
+présentes dans l’API *Données Locales* dans une liste contenant 4 objets :
 - les données statistiques ;
 - les modalités de chaque variable ;
 - l’information sur la zone demandée ;
 - l’information sur la source et le jeu de données demandé.
 
-Voici une utilisation possibles de ce package :
+
+Exemple d'utilisation du package pour importer le nombre
+d'entreprises et d'établissements en 2017 (en géographie au 01/01/2017)
+selon l'activité en 5 catégorie et une indicatrice indiquant s'il s'agit
+d'une entreprise individuelle ou non pour la commune de Nantes:
 
 ```{r, eval = FALSE}
-# Exemple d'utilisation du package pour importer le nombre d'entreprise et d'établissement en 2017 (en géographie au 01/01/2017) selon l'activité en 5 catégorie et une indicatrice indiquant s'il s'agit d'une entreprise individuelle ou non pour la commune de Nantes:
+library(inseeLocalData)
 
 croisement <- "NA5_B-ENTR_INDIVIDUELLE"
 jeu_donnees <- "GEO2017REE2017"
 nivgeo <- "COM"
-codgeo <- "44109"
+codgeo <- "44109" #CODE GEO DE NANTES
 modalite <- "all.all"
 
 donneesAPI <- get_dataset(jeton, jeu_donnees, croisement, modalite, nivgeo, codgeo)
@@ -231,23 +256,33 @@ source <- donneesAPI$source # pour accéder à la source
 
 ```
 
+*TO BE COMPLETED: il faudrait plus de détails*
+
 ### doremifasol
 
 TO DO
 
 ### [OECD](https://cran.r-project.org/web/packages/OECD/index.html)
 
-::: {.remarque data-latex=""}
+::: specificite
 
-Ce package utilise la library(rsmdx), qui n'est pas compatible avec direct access. Il ne fonctionne pas en télétravail.
+Ce package utilise la librarie `rsmdx` qui n'est pas compatible avec
+la technologie *Direct Access*. Il ne fonctionne pas en télétravail pour les
+postes nomades équipés qui accèdent à internet par ce biais.
 
 :::
 
-Ce package permet de télécharger les données mises à disposition sur le site de l'[OCDE](https://stats.oecd.org/index.aspx?lang=fr). Cette API étant ouverte,son accès ne demande pas d'identification, ni de jeton. Il est uniquement nécessaire de déterminer les données souhaitées. 
+Ce package permet de télécharger les données mises à disposition sur le 
+ite de l'[OCDE](https://stats.oecd.org/index.aspx?lang=fr).
+Cette API étant ouverte, son accès ne demande pas d'identification, ni de jeton.
+
+Il est uniquement nécessaire de déterminer les données souhaitées. 
 
 Voici quelques utilisations possibles de ce package :
 
 ```{r, eval = FALSE}
+library(OECD)
+
 # Obtenir la liste des tables présentes sur le site :
 dsets <- get_datasets()
 
@@ -260,27 +295,45 @@ data <- get_dataset("DUR_D")
 
 ## Exemple d'utilisation d'une API sans package
 
-Pour lire les données d'une API ne possédant pas de package, il faut utiliser les 2 packages R suivant :  
--	package httr pour lancer la requête ;  
--	puis package jsonlite pour transformer le json en dataframe.
+Les exemples précédents proposaient l'accès à une API par le biais d'un package.
+Pour lire les données d'une API ne possédant pas de package, il faut utiliser les 2 packages `R` suivants :  
+
+-	package `httr` pour lancer la requête ;  
+-	puis package `jsonlite` pour transformer la sortie, structurée en
+`JSON` en dataframe.
 
 ### Package httr
 
 Le package httr permet de se connecter aux sites web et de se connecter aux API.  
 
-Il est possible de configuer la connexion internet localement sans modifier les variables système :  
-- set_config() permet de configurer l'accés internet utilisée par les fonctions du package.   
-- use_proxy() permet de déterminer le proxy à utiliser. Le proxy sera modifié uniquement pour l'utilisation des fonctions d'httr, mais pas sur l'environnement de travail.
+Il est possible de configuer la connexion internet localement sans
+modifier les variables système :  
 
-Pour travailler à l'insee sur des données diffusées il faut renseigner :
+- `set_config()` permet de configurer l'accés internet utilisée par les fonctions du package.   
+- `use_proxy()` permet de déterminer le proxy à utiliser.
+De nombreuses institutions utilisent passent par un intermédiaire, le proxy,
+pour accéder à internet. L'adresse du proxy est à ajouter au requête car sinon
+`R` ne sait pas communiquer avec internet. Il s'agit d'un paramètre à ajouter dans
+les options `httr`, voir ci-dessous.
+
+::: remarque
+
+Le proxy peut être paramétré de la manière suivante: 
 
 ```{r, eval = FALSE}
-httr::set_config(httr::use_proxy("proxy-rie.http.insee.fr:8080"))
+proxy <- curl::ie_get_proxy_for_url()
+httr::set_config(httr::use_proxy(proxy))
 ```
 
-Ce package permet également de lire le contenu d'une API et de restituer le résultat en texte :
+:::
 
-Code pour une API libre d'accès :
+Le package `httr` permet, lorsqu'on effectue une requête `GET`, de récupérer
+le résultat sous la forme d'un texte à retravailler. 
+
+**TO BE COMPLETED: là il faudrait un exemple de requête sur une API simple**
+
+En général, un appel à une API via `httr` s'effectue ainsi de la manière
+suivante: 
 
 ```{r, eval = FALSE}
 httr::content(httr::GET(url),             # url correspond à l'url à interroger
@@ -289,7 +342,9 @@ httr::content(httr::GET(url),             # url correspond à l'url à interroge
               encoding='UTF-8')           # encodage de la réponse de l'url
 ```
 
-Pour les API protégées par des jetons, il faut rajouter une paramètre d'identification :
+Pour les API protégées par des jetons, il faut rajouter
+un paramètre d'identification :
+
 ```{r, eval = FALSE}
 jeton <- "XXXXX" # création d'une variable contenant le jeton
 
