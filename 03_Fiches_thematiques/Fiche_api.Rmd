@@ -357,22 +357,34 @@ res <- httr::content(httr::GET(url),
                      encoding='UTF-8')
 ```
 
-### Package jsonlite
+### Package `jsonlite`
 
-Le package jsonlite permet de lire un élément en format json.
-
-La fonction principale à utiliser est fromJSON(res). Cette ligne permet de convertir une résultat en format json en un objet R.
+La fonction principale à utiliser est `fromJSON`.
+Cette ligne permet de convertir une résultat en format `json` en un objet `R`.
 
 ### Temporisation
 
-Pour l'utilisation d'API avec un jeton, comme celle proposées sur le catalogue des API de l'Insee, le nombre de requête par minute est limité (30 pour un compte standard sur le catalogue des API).
-Pour ne pas être bloqué par cette limite, il est important de temporiser les appels successifs via la fonction  Sys.sleep(seconde). Le paramètre de cette fonction est le nombre de seconde pendant lequel R patiente.
+Pour l'utilisation d'API avec un jeton, comme celle proposées sur le
+catalogue des API de l'Insee, le nombre de requête par minute est limité
+(30 pour un compte standard sur le catalogue des API).
+Pour ne pas être bloqué par cette limite, il est important de temporiser
+les appels successifs en introduisant une latence.
+La fonction permettant cela est `Sys.sleep`. Par exemple, pour 
+laisser 30 secondes d'attente, taper `Sys.sleep(30)`.
 
-### Exemple d'utilisation sur l'API interne [RMèS](http://api.interne.rmes.insee.fr/swagger-ui/index.html#/)
 
-RMès met a disposition une API interne à l'insee accessible depuis l'adresse http://api.interne.rmes.insee.fr/swagger-ui/index.html#/. Cette API permet d'obtenir les métadonnées (sources, concepts, liste de code) et la géographie. Comme cette API est stockée en internet, il n'y a pas de proxy.
+::: specificite
 
-Voici un exmple de requête pour accéder aux données au niveau division de la Naf-rev2 :
+**Exemple d'utilisation sur l'API interne RMèS**
+
+Une API interne sur les métadonnées de l'Insee est disponible (programme RMès).
+Elle permet d'obtenir de manière simplifiée des métadonnées
+(sources, concepts, liste de codes géograpjiques).
+Comme cette API est stockée en interne, il n'y a pas, comme pour accéder
+à celles sur internet, de proxy.
+
+Voici un exemple de requête pour accéder aux données au niveau
+division de la Naf-rev2 :
 
 ```{r, eval = FALSE}
 library(dplyr)
@@ -384,7 +396,7 @@ library(jsonlite)
 httr::set_config(httr::use_proxy(""))
 
 # url de la requête : ici on souhaite afficher la naf rev 2
-url <- "http://pdrmeswncdlht01.ad.insee.intra/nomenclature/nafr2/postes"
+url <- "url_de_la_requete"
 
 # connexion à l'API pour récupérer les données en JSON
 res <- httr::content(httr::GET(url),
@@ -399,9 +411,11 @@ division <- res_ok %>%
   select(c('code', 'intituleFr'))
 ```
 
-### Exemple d'utilisation sur l'API [Sirene](https://api.insee.fr/catalogue/site/themes/wso2/subthemes/insee/pages/item-info.jag?name=Sirene&version=V3&provider=insee)
+:::
 
-Cet exemple va aller chercher les liens de succession pour une établissement :
+### Exemple d'utilisation de l'[API Sirene](https://api.insee.fr/catalogue/site/themes/wso2/subthemes/insee/pages/item-info.jag?name=Sirene&version=V3&provider=insee)
+
+Cet exemple va aller chercher les liens de succession pour un établissement :
 
 ```{r, eval = FALSE}
 library(apinsee)
@@ -411,16 +425,17 @@ library(jsonlite)
 url <- "https://api.insee.fr/entreprises/sirene/V3/siret/liensSuccession?q=siretEtablissementPredecesseur%3A39478192600016"
 token <- apinsee::insee_auth()
 set_config(config(token = token))
-res <- content(httr::GET(url, httr::config(token = token)), 
+res <- content(GET(url, config(token = token)), 
                 as="text", 
                 content_type_json(), 
                 encodin='UTF-8')
 
-res<-fromJSON(res)
+res <- fromJSON(res)
 sortie <- as.data.frame(res$liensSuccession)
 ```
 
-L'API Sirene permet d'effectuer des recherches multicritères. Dans ce cas, il faut séparer les codes par %20OR%20 :
+L'API Sirene permet d'effectuer des recherches multicritères. Dans ce cas, il
+faut séparer les codes par `%20OR%20` (code HTML signifiant ` OR `) :
 
 ```{r, eval = FALSE}
 url <- "https://api.insee.fr/entreprises/sirene/V3/siret/liensSuccession?q=siretEtablissementPredecesseur%3A39478192600016%20OR%20siretEtablissementPredecesseur%3A39488939800027"
@@ -434,3 +449,8 @@ res <- content(httr::GET(url, httr::config(token = token)),
 res<-fromJSON(res)
 sortie <- as.data.frame(res$liensSuccession)
 ```
+
+## Références
+
+Liste des API utiles:
+TO BE COMPLETED
