@@ -1,7 +1,13 @@
-# Superviser sa session `R` dans AUS {#superviser-ressources}
+# Superviser sa session `R` {#superviser-ressources}
 
 ::: {.recommandation}
-L'environnement de travail AUS est une infrastructure dans laquelle l'usage des ressources informatiques (mémoire vive et processeurs) est partagé entre les utilisateurs. Il est donc essentiel de veiller à faire un bon usage de ces ressources, de façon à ne pas gêner le travail des autres agents.
+
+Dans un environnement où `R` est en concurrence avec d'autres usages informatiques
+(dans une session personnelle ou environnement de travail partagé comme AUS à l'Insee),
+les ressources informatiques (mémoire vive et processeurs) sont
+partagées entre les applications et les utilisateurs. Il est donc essentiel de
+veiller à faire un bon usage de ces ressources, de façon à ne pas gêner
+le travail des autres applications ou utilisateurs.
 
 Il est possible de prévenir la plupart des difficultés en adoptant quatre bonnes pratiques :
 
@@ -16,14 +22,26 @@ Ces recommandations ne s'appliquent pas au SSP Cloud dont le fonctionnement est 
 
 ## Pourquoi faut-il suivre son usage des ressources informatiques ?
 
-Un usage inadapté des logiciels statistiques peut aboutir à deux problèmes : la saturation de la mémoire vive, et la saturation des processeurs. Le premier problème est plus fréquent avec `R` que le second.
+Un usage inadapté des logiciels statistiques peut aboutir à deux problèmes :
+la saturation de la mémoire vive, et la saturation des processeurs. Le premier problème est plus fréquent avec `R` que le second.
 
 
 ### `R` et la mémoire vive
 
-Contrairement à d'autres logiciels tels que SAS, `R` est un langage conçu pour traiter des données chargées dans la mémoire vive (RAM) de l'ordinateur. Cette caractéristique permet à `R` d'être relativement rapide, mais induit des difficultés lorsque les données sont volumineuses. **Le principal risque d'une mauvaise gestion de la mémoire est d'aboutir à une saturation de la mémoire vive** : la session `R` occupe l'intégralité de la mémoire vive, ce qui ralentit les traitements, voire paralyse l'ordinateur. Les problèmes de saturation de la RAM se traduisent généralement par un message du type `cannot allocate a vector of size ** Mb` (quand la session ne plante pas...).
+Contrairement à d'autres logiciels tels que `SAS`, `R` est un langage conçu
+pour traiter des données chargées dans la mémoire vive (RAM) de l'ordinateur.
+Cette caractéristique permet à `R` d'être relativement rapide, mais induit des
+difficultés lorsque les données sont volumineuses.
+**Le principal risque d'une mauvaise gestion de la mémoire est d'aboutir à une saturation de la mémoire vive** :
+la session `R` occupe l'intégralité de la mémoire vive, ce qui ralentit
+les traitements, voire paralyse l'ordinateur. Les problèmes de
+saturation de la RAM se traduisent généralement par un message du type
+`cannot allocate a vector of size ** Mb` (quand la session ne plante pas...).
 
-**Le risque de saturation de la mémoire vive est particulièrement fréquent lorsqu'on travaille sur une infrastructure informatique où la mémoire vive est partagée avec d'autres utilisateurs, comme c'est le cas dans l'environnement AUS.** Si plusieurs utilisateurs occupent chacun une grande quantité de mémoire vive sur la même machine virtuelle d'AUS, il est facile d'arriver à une situation de saturation qui paralyse tous les agents connectés (voire fait planter leur session `R`).
+**Le risque de saturation de la mémoire vive est particulièrement fréquent lorsqu'on travaille sur une infrastructure informatique où la mémoire vive est partagée avec d'autres utilisateurs (comme c'est le cas dans les environnements partagés, comme l'est l'architecture AUS)**
+Si plusieurs utilisateurs occupent chacun une grande quantité de mémoire vive
+sur la même machine virtuelle d'AUS, il est facile d'arriver à une situation de
+saturation qui paralyse tous les agents connectés (voire fait planter leur session `R`).
 
 **Le risque de saturation de la mémoire vive est aggravé par la façon dont `R` gère la mémoire.** En effet, une session `R` augmente automatiquement la quantité de mémoire vive qu'elle occupe lorsque les traitements réclament davantage de mémoire, mais elle ne la libère pas toujours lorsque les besoins en mémoire diminuent. Il est donc possible qu'une session `R` occupe beaucoup plus de mémoire que ce dont elle a besoin. Par exemple, si vous lancez une session `R`, que vous importez une table de données de 10 Go, puis que vous la supprimez immédiatement de votre session avec la fonction `rm()`, il est possible que votre session `R` continue à occuper inutilement 10 Go de mémoire vive, et ce quand bien même votre environnement ` RStudio` vous indique qu'il n'y a aucun objet en mémoire.
 
@@ -31,7 +49,13 @@ La conclusion est simple : suivre attentivement l'usage que votre session `R` fa
 
 ### `R` et les processeurs
 
-**Le second risque est celui d'une saturation des processeurs : une session `R` consomme l'intégralité de la puissance de calcul du serveur, ce qui paralyse les sessions des autres utilisateurs.** Ce risque est relativement peu fréquent avec `R`, pour deux raisons. D'une part, le langage `R` est conçu pour réaliser des traitements en utilisant un seul processeur. D'autre part, toutes les machines virtuelles d'AUS disposent d'au moins une dizaine de processeurs.
+**Le second risque est celui d'une saturation des processeurs : une session `R` consomme l'intégralité de la puissance de calcul du serveur, ce qui paralyse les sessions des autres utilisateurs.** Ce risque est relativement peu fréquent avec `R`, pour deux raisons. D'une part, le langage `R` est conçu pour réaliser des traitements en utilisant un seul processeur et non tous les coeurs disponibles. D'autre part, les serveurs partagés ont la possibilité de reporter des traitements d'utilisateurs différents sur des coeurs différents
+
+::: specificite
+
+Toutes les machines virtuelles d'AUS disposent d'au moins une dizaine de processeurs ce qui permet, quand un coeur est saturé par un calcul intensif, d'avoir un nouveau traitement statistique exécuté dans un autre coeur.
+
+:::
 
 Toutefois, **il peut arriver qu'un traitement réalisé avec `R` sature l'ensemble des processeurs.** En effet, certains _packages_ `R` sont conçus pour utiliser un grand nombre de processeurs en parallèle, de façon à accélérer les calculs. Il est donc important de suivre l'usage que votre session `R` fait des processeurs.
 
@@ -41,7 +65,19 @@ Vous pouvez facilement superviser votre session `R` avec le **gestionnaire des t
 
 ### Ouvrir le gestionnaire des tâches
 
-Pour ouvrir le gestionnaire des tâches, il suffit d'utiliser le raccourci présent sur le bureau de votre session AUS, ou d'utiliser le raccourci clavier suivant : <kbd>Ctrl</kbd> + <kbd>⇧ Shift</kbd> + <kbd>Echap</kbd>. Lorsque la fenêtre suivante s'affiche, il faut cliquer sur `Plus de détails`.
+Le gestionnaire des tâches est une application installée sur toutes les machines
+Windows. Son équivalent Linux est `htop`. Le gestionnaire des tâches est
+généralement accessible avec le raccourci bien-connu
+<kbd>Ctrl</kbd> + <kbd>⇧ Shift</kbd> + <kbd>Suppr</kbd>.
+
+::: specificite
+
+Pour ouvrir le gestionnaire des tâches, il suffit d'utiliser le raccourci
+présent sur le bureau de votre session AUS, ou d'utiliser le raccourci
+clavier suivant : <kbd>Ctrl</kbd> + <kbd>⇧ Shift</kbd> + <kbd>Echap</kbd>.
+
+::: 
+Lorsque la fenêtre suivante s'affiche, il faut cliquer sur `Plus de détails`.
 
 ```{r, echo = FALSE, fig.cap = "Le gestionnaire des tâches Windows", out.width = "50%"}
 utilitr::include_image("./pics/utiliser_ressources/TskMngr1small.png", compression = FALSE)
@@ -104,7 +140,8 @@ La saturation de la mémoire vive est souvent provoquée par un utilisateur qui 
 
 ### Faire preuve de prudence en faisant des jointures
 
-Un autre cas standard de saturation de la mémoire vive provient d'une erreur dans la réalisation d'une jointure entre deux tables. En effet, une jointure mal réalisée peut aboutir à une table d'une taille largement supérieure à celle de la mémoire vive d'AUS. De façon générale, **une jointure entre des tables comprenant un grand nombre d'observations (par exemple plus de 500\ 000\ observations) doit être menée avec prudence.** Vous trouverez davantage de conseils dans la fiche\ [Joindre des tables de données], en particulier dans la dernière section.
+Un autre cas standard de saturation de la mémoire vive provient d'une erreur dans la réalisation d'une jointure entre deux tables. En effet, une jointure mal réalisée peut aboutir à une table d'une taille largement supérieure à celle
+de la mémoire vive disponible sur l'ordinateur ou le serveur. De façon générale, **une jointure entre des tables comprenant un grand nombre d'observations (par exemple plus de 500\ 000\ observations) doit être menée avec prudence.** Vous trouverez davantage de conseils dans la fiche\ [Joindre des tables de données], en particulier dans la dernière section.
 
 ### Nettoyer régulièrement la mémoire vive
 
