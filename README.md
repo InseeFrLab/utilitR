@@ -13,12 +13,11 @@
  
 Code source pour le projet `utilitR`, documentation collaborative `R` 
 faite par des agents de l'**Insee** et du **Système Statistique Public**.
-Elle a vocation à être validée annuellement 
-afin de produire un guide des bonnes pratiques et des fiches techniques.
+Elle a vocation à être validée annuellement afin de produire un guide des bonnes pratiques et des fiches techniques.
 
-Elle prend la forme suivante:
+Elle prend la forme suivante :
 
-* la documentation principale qui est déployée à l'adresse <https://www.book.utilitr.org/>;
+* la documentation principale qui est déployée à l'adresse <https://www.book.utilitr.org/> ;
 * un guide des bonnes pratiques en `R` déployé à l'adresse <https://www.pratiques.utilitr.org/>
 
 Lorsqu'une version `PDF` sera mise à disposition, un lien direct de téléchargement sera 
