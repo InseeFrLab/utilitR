@@ -302,6 +302,17 @@ Pour lire les données d'une API ne possédant pas de package, il faut utiliser 
 -	puis package `jsonlite` pour transformer la sortie, structurée en
 `JSON` en dataframe.
 
+::: remarque
+
+Selon la structure du JSON récupéré, la manipulation du résultat peut être
+assez fastidieuse avec `R`. `Python` propose des outils plus performants pour
+retravailler des JSON (package `json` notamment).
+Grâce au package `reticulate`, il est aisé de faire tourner un code `Python`
+dans une session `R` et récupérer le résultat dans un format de données (par
+exemple dataframe) de `R`
+
+:::
+
 ### Package httr
 
 Le package httr permet de se connecter aux sites web et de se connecter aux API.  
@@ -347,7 +358,7 @@ Imaginons qu'on désire récupérer l'information sur un produit. Cela s'obtient
 de la manière suivante:
 
 ```{r}
-url <- "https://world.openfoodfacts.org/api/v0/product/737628064502.json"
+url <- "https://world.openfoodfacts.org/api/v0/product/3017620425400.json"
 
 r <- httr::content(httr::GET(url),             # url correspond à l'url à interroger
                    as="text",                  # type de la sortie renvoyée
@@ -355,7 +366,8 @@ r <- httr::content(httr::GET(url),             # url correspond à l'url à inte
                    encoding='UTF-8')           # encodage de la réponse de l'url
 ```
 
-Le résultat est formatté sous forme de JSON:
+Le résultat est formatté sous forme de JSON, ce qui est pratique mais peu
+intelligible:
 
 ```{r}
 r
