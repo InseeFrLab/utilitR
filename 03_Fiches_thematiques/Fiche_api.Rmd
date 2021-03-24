@@ -106,7 +106,7 @@ Dans certains cas, pour faciliter les utilisations des API,
 des packages ont été créés pour simplifier l'écriture d'une requête ou la 
 récupération du résultat.
 
-## Packaged permettant une utilisation simple des API
+## Quelques packages permettant une utilisation simple des API des données Insee
 
 Nous allons voir ici quelques packages permettant de traiter l'information d'une API facilement :
 
@@ -190,7 +190,7 @@ soit via une liste de `dataset`.
 ```{r echo = FALSE, message = FALSE, warning = FALSE}
 library(magrittr)
 df <- data.frame("Information" = c("Liste des jeux de données",
-                                           "Liste des séries"),
+                                   "Liste des séries"),
                  "Fonction" = c("insee::get_dataset_list()",
                                 "insee::get_idbank_list()")
 )
@@ -268,7 +268,7 @@ TO DO
 
 Ce package utilise la librarie `rsmdx` qui n'est pas compatible avec
 la technologie *Direct Access*. Il ne fonctionne pas en télétravail pour les
-postes nomades équipés qui accèdent à internet par ce biais.
+postes nomades qui accèdent à internet par ce biais.
 
 :::
 
@@ -330,7 +330,7 @@ httr::set_config(httr::use_proxy(proxy))
 Le package `httr` permet, lorsqu'on effectue une requête `GET`, de récupérer
 le résultat sous la forme d'un texte à retravailler. 
 
-**TO BE COMPLETED: là il faudrait un exemple de requête sur une API simple**
+### Accès à une API sans jeton
 
 En général, un appel à une API via `httr` s'effectue ainsi de la manière
 suivante: 
@@ -341,6 +341,43 @@ httr::content(httr::GET(url),             # url correspond à l'url à interroge
               httr::content_type_json(),  # type de la réponse de l'url
               encoding='UTF-8')           # encodage de la réponse de l'url
 ```
+
+Prenons par exemple l'API d'openfood facts, une base de données alimentaire. 
+Imaginons qu'on désire récupérer l'information sur un produit. Cela s'obtient
+de la manière suivante:
+
+```{r}
+url <- "https://world.openfoodfacts.org/api/v0/product/737628064502.json"
+
+r <- httr::content(httr::GET(url),             # url correspond à l'url à interroger
+                   as="text",                  # type de la sortie renvoyée
+                   httr::content_type_json(),  # type de la réponse de l'url
+                   encoding='UTF-8')           # encodage de la réponse de l'url
+```
+
+Le résultat est formatté sous forme de JSON:
+
+```{r}
+r
+```
+
+Pour en faire une information exploitable, il est nécessaire de faire quelques
+efforts. Par exemple, pour n'extraire que le libellé et le nutriscore d'un produit,
+ainsi que son indice de transformation nova:
+
+```{r}
+df <- data.frame(
+  lapply(c("product_name","nova_groups","nutriscore_grade"), function(x){
+    jsonlite::fromJSON(prod, flatten = TRUE)$product[[x]]
+  })
+)
+colnames(df) <- c("product_name","nova_groups","nutriscore_grade")
+df
+```
+
+
+
+### Accès à une API avec jeton
 
 Pour les API protégées par des jetons, il faut rajouter
 un paramètre d'identification :
@@ -426,9 +463,9 @@ url <- "https://api.insee.fr/entreprises/sirene/V3/siret/liensSuccession?q=siret
 token <- apinsee::insee_auth()
 set_config(config(token = token))
 res <- content(GET(url, config(token = token)), 
-                as="text", 
-                content_type_json(), 
-                encodin='UTF-8')
+               as="text", 
+               content_type_json(), 
+               encodin='UTF-8')
 
 res <- fromJSON(res)
 sortie <- as.data.frame(res$liensSuccession)
