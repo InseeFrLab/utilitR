@@ -10,7 +10,7 @@ FROM $BASE_IMAGE AS install_packages
 
 # R packages 
 COPY ./DESCRIPTION /tmp/build_image/
-RUN Rscript -e "install.packages('knitr')"
+RUN Rscript -e "install.packages(c('xfun','knitr'))"
 RUN Rscript -e "remotes::install_deps('/tmp/build_image', dependencies = TRUE, upgrade = FALSE)"
 
 # Second stage: use the installed packages directories
