@@ -21,7 +21,8 @@ Elle prend la forme suivante :
 * un guide des bonnes pratiques en `R` déployé à l'adresse <https://www.pratiques.utilitr.org/>
 
 Lorsqu'une version `PDF` sera mise à disposition, un lien direct de téléchargement sera 
-disponible. 
+disponible. Chaque fiche, disponible sur le site web, peut être imprimée
+avec une mise en page agréable grâce à un bouton dédié sur le site web.
 
 Les exemples sont construits sur des données ouvertes, disponibles sur www.insee.fr. 
 Le package [`doremifasolData`](https://github.com/InseeFrLab/DoReMIFaSolData) facilite
