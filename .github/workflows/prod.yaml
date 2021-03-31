@@ -55,7 +55,7 @@ jobs:
           Rscript -e "install.packages(c('remotes'))"
           Rscript -e "remotes::install_deps(dependencies = TRUE)"
       - name: Render Book
-        run: Rscript -e 'bookdown::render_book("index.Rmd", output_dir = "_public", output_format = "utilitr::html_document")'
+        run: Rscript -e 'bookdown::render_book("index.Rmd", output_dir = "_public", output_format = "utilitr::bs4_utilitr")'
       - uses: actions/upload-artifact@v2
         with:
           name: _public
@@ -63,7 +63,7 @@ jobs:
           retention-days: 5
       - name: Install npm
         if: ${{ github.repository == 'inseefrlab/utilitr' }}
-        uses: actions/setup-node@v1          
+        uses: actions/setup-node@v1
       - name: Deploy to Netlify
         if: ${{ github.repository == 'inseefrlab/utilitr' }}
         # NETLIFY_AUTH_TOKEN and NETLIFY_SITE_ID added in the repo's secrets
@@ -92,7 +92,7 @@ jobs:
       - name: Render Book
         run: |
           mkdir _pagedown_output -p
-          Rscript -e "utilitr::pdf_document()"          
+          Rscript -e "utilitr::pdf_document()"
       - uses: actions/upload-artifact@v2
         with:
           name: DocumentationR_pagedown
