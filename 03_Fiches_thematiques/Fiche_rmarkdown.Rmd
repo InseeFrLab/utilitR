@@ -530,7 +530,7 @@ montreuil <-
 
 Dans ce cas, on peut représenter les résultats avec la fonction `kable` du package `knitr` :
 
-```{r}
+```{r knitr, eval = FALSE}
 library(knitr)
 kable(montreuil)
 ```
@@ -572,22 +572,22 @@ Il existe deux manières canoniques d'introduire des graphiques dans un document
 1. `![Titre de la Figure](monfichier.png)` est une syntaxe héritée de `Markdown`. Elle offre des possibilités de customisation limitée mais elle a l'avantage de ne pas dépendre de `R` et ainsi, de fonctionner quelque soit le constructeur de document utilisé. Les options supplémentaires s'intègrent dans des accolades `![Titre de la Figure](monfichier.png){width=50%}` ;
 2. `knitr::include_graphics` permet, en conjonction d'options de blocs, d'aller plus loin.
 
-```{r echo = FALSE, comment = ""}
+```{r echo = FALSE, comment = "", eval = FALSE}
 utilitr::render_rmd("resources/rmarkdown/chunk08.Rmd")
 ```
 
 ### Sans passer par un fichier image
 
-L'avantage de `R Markdown` est que la création du document peut être faite sans générer de sorties intermédiaires. Si un bloc de code propose un graphique en output, celui-ci sera automatiquement intégré au document. Par exemple, le bloc suivant permet de représenter l'histogramme des populations communales (avec une échelle logarithmique) à partir des données Filosofi agrégées, disponibles dans le _package_ doremifasolData.
+`R Markdown` présente l'avantage de pouvoir créer un document sans générer de sorties intermédiaires (tableaux, graphiques...). Si un bloc de code propose d'inséer un graphique dans le document final, le graphique sera automatiquement et directement intégré au document. Par exemple, le bloc suivant permet de représenter l'histogramme des populations communales (avec une échelle logarithmique) à partir des données Filosofi agrégées, disponibles dans le _package_ `doremifasolData`.
 
-```{r echo = FALSE, comment = ""}
+```{r chunk09, echo = FALSE, comment = "", eval = FALSE}
 utilitr::render_rmd("resources/rmarkdown/chunk09.Rmd")
 ```
 
-```{r, echo = FALSE, warning = FALSE, comment = FALSE, message = FALSE}
+```{r ggplot2, echo = FALSE, warning = FALSE, comment = FALSE, message = FALSE, eval = FALSE}
 library(doremifasolData)
 library(ggplot2)
-data(filosofi_com_2016, package = "doremifasolData")
+filosofi_com_2016 <- doremifasolData::filosofi_com_2016
 ggplot(data = filosofi_com_2016) +
   geom_histogram(aes(x = NBPERSMENFISC16, y = ..density..)) +
   xlab("Nombre de personnes") + ylab("Densité") +

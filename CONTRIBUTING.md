@@ -350,7 +350,7 @@ prévisualiser en local le livre:
 >    * Option 1: utiliser l'onglet 'Build' dans Rstudio;
 >    * Option 2: taper dans la commande R:
 > ```r
-> bookdown::render_book("index.Rmd", output_dir = "_public", output_format = "utilitr::html_document")
+> bookdown::render_book("index.Rmd", output_dir = "_public", output_format = "utilitr::bs4_utilitr")
 > ```
 > 
 > Ne pas oublier d'installer le package 'utilitr' avant pour disposer des modèles de documents: 

@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=rocker/geospatial:4.0.2
+ARG BASE_IMAGE=rocker/geospatial:4.0.4
 
 # Use a multi-stage build to install packages
 # First stage: install packages
@@ -10,7 +10,7 @@ FROM $BASE_IMAGE AS install_packages
 
 # R packages 
 COPY ./DESCRIPTION /tmp/build_image/
-RUN Rscript -e "install.packages('knitr')"
+RUN Rscript -e "install.packages(c('xfun','knitr'))"
 RUN Rscript -e "remotes::install_deps('/tmp/build_image', dependencies = TRUE, upgrade = FALSE)"
 
 # Second stage: use the installed packages directories
