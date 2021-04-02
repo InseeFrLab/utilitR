@@ -33,7 +33,7 @@ Dans le cas de `R Markdown`, le code source est un fichier texte portant l'exten
 
 ### Quelques bonnes pratiques
 
-Cette section détaille les bonnes pratiques à adopter pour réaliser des rapports automatisés.
+Cette section détaille les bonnes pratiques à adopter pour réaliser des rapports automatisés. Le principal conseil tient en une phrase : tous les réglages du rapport paramétré doivent être regroupés au début du code source.
 
 ### Remplir l'en-tête
 
@@ -49,7 +49,7 @@ description: "Une description vraiment utile"
 ---
 ~~~
 
-L'en-tête permet de personnaliser finement le document de sortie, par exemple en ajoutant une table des matières ou une bibliographie. Il existe un nombre considérable d'options, dont certaines sont spécifiques à un format de sortie (pdf, html, ...). La liste des options est détaillée sur le site de la documentation officielle de `R Markdown` et sur l’antisèche et le guide de référence, accessibles depuis RStudio via le menu `Help` puis `Cheatsheets.`
+L'en-tête permet de paramétrer finement le document de sortie, par exemple en choisissant le format du document, ou en ajoutant une table des matières et une bibliographie. Il existe un nombre considérable d'options, dont certaines sont spécifiques à un format de sortie (pdf, html, ...). La liste des options est détaillée sur le site de la documentation officielle de `R Markdown` et sur l’antisèche et le guide de référence de `R Markdown`, accessibles depuis RStudio via le menu `Help` puis `Cheatsheets.`
 
 ::: {.conseil}
 Si vous souhaitez construire un rapport automatisé que vous utiliserez régulièrement, il est vivement conseillé de prendre le temps de définir un en-tête qui corresponde précisément à ce que vous voulez produire.
@@ -82,22 +82,50 @@ Dans cet exemple, il est demandé à `R Markdown` de ne pas inclure les instruct
 Une attention particulière doit être portée à l'utilisation de l'option `cache`. L'option `cache = TRUE` permet de signaler à `R Markdown` de ne pas ré-exécuter du code n'ayant pas été modifié depuis la dernière compilation. Ceci peut faire gagner beaucoup de temps, notamment pour les *chunks* d'importation de données volumineuses, mais peut conduire à des comportements non souhaités, notamment lorsque les données que vous utilisez dans votre rapport ont été actualisées. Si vous utilisez l'option `cache = TRUE`, et si aucun élément du code source n'a été modifié, alors les données ne seront pas réimportées lorsque vous recompilerez le rapport.
 :::
 
-### Charger les _packages_
+### Charger les _packages_ et les données au début du code source
 
-Enfin, il est recommandé d'intégrer au début de votre code source (par exemple juste après la configuration des options de `knitr`) un *chunk* de chargement des _packages_ utilisés dans le rapport. A titre d'exemple, le *chunk* pourrait ressembler à ceci :
+Il est recommandé d'intégrer au début de votre code source (par exemple juste après la configuration des options de `knitr`) un *chunk* qui charge les _packages_ utilisés dans le rapport, puis un *chunk* qui importe l'ensemble des données manipulées dans le rapport. L'intérêt de cette approche est qu'elle permet de voir facilement quels _packages_ et quelles données sont utilisées par votre rapport.
+
+Dans la mesure du possible, il est préférable d'utiliser des chemins relatifs pour les fichiers (exemple : `./donnees/mesdonnees.csv`), plutôt que des chemins absolus (exemple : `D:/chemin/vers/les/donnees/mesdonnees.csv`).
+
+A titre d'exemple, les deux *chunks* qui charge les _packages_ et les données pourraient ressembler à ceci :
 
 ~~~
-```{r packages}
+```{r packages, include = FALSE}
 library(doremifasolData)
 library(data.table)
 library(ggplot2)
 ```
+
+```{r donnees, include = FALSE}
+donnees <- fread("./donnees/mesdonnees.csv")
+```
 ~~~
 
-### Charger les données
+::: {.remarque}
+Il peut arriver qu'il soit difficile d'accéder à des fichiers en utilisant uniquement des chemins relatifs. Une solution de repli consiste à définir le chemin absolu du dossier à _un seul endroit_ dans le code source du rapport, puis à l'utiliser de façon relative dans les fonctions d'importation. Voici un exemple :
 
-Encore une fois, il est conseillé de nommer ces *chunks* de façon non ambigüe, afin de repérer rapidement d'éventuelles erreurs lors de la compilation.
+~~~
+```{r donnees, include = FALSE}
+# Définir UNE SEULE FOIS le répertoire des données
+dossier_donnees <- ":/chemin/vers/les/donnees/"
 
+# Charger les données avec un chemin relatif
+donnees1 <- fread(paste0(dossier_donnees, "mesdonnees1.csv"))
+donnees2 <- fread(paste0(dossier_donnees, "mesdonnees1.csv"))
+```
+~~~
+:::
+
+### Nommer les _chunks_
+
+Il est important de donner un nom à tous les _chunks_, car cela facilite grandement la résolution des problèmes, en particulier si votre rapport est long. En effet, si la compilation du code source génère une erreur, `R Markdown` vous indiquera le nom du _chunk_ où se trouve l'erreur. Voici comment nommer un chunk :
+
+~~~
+```{r nom_du_chunk, include = FALSE}
+addition <- 1 + 1
+```
+~~~
 
 ## La production de rapports "de masse" : les rapports paramétrés
 
