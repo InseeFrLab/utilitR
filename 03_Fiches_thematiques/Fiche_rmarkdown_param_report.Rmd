@@ -49,36 +49,34 @@ description: "Une description vraiment utile"
 ---
 ~~~
 
-L'en-tête permet de personnaliser finement le document de sortie, par exemple en définissant les options du format de sortie, le positionnement des figures, la présence d'une table des matières... Il existe un nombre considérable d'options, dont certaines sont spécifiques à un format de sortie (pdf, html, ...). La liste des options est détailllée sur le site de la documentation officielle de `R Markdown` et sur l’antisèche et le guide de référence, accessibles depuis RStudio via le menu `Help` puis `Cheatsheets.`
+L'en-tête permet de personnaliser finement le document de sortie, par exemple en ajoutant une table des matières ou une bibliographie. Il existe un nombre considérable d'options, dont certaines sont spécifiques à un format de sortie (pdf, html, ...). La liste des options est détaillée sur le site de la documentation officielle de `R Markdown` et sur l’antisèche et le guide de référence, accessibles depuis RStudio via le menu `Help` puis `Cheatsheets.`
 
 ::: {.conseil}
-Si vous souhaitez construire un rapport automatisé dont vous allez vous servir souvent, il est vivement conseillé de prendre le temps de définir un en-tête qui correspond précisément à ce que vous voulez produire.
+Si vous souhaitez construire un rapport automatisé que vous utiliserez régulièrement, il est vivement conseillé de prendre le temps de définir un en-tête qui corresponde précisément à ce que vous voulez produire.
 :::
 
 
-### Configurer les _chunks_
+### Configurer le fonctionnement de `knitr`
 
-Dans un deuxième temps, il est souhaitable de configurer le comportement par défaut de `R Markdown`. Pour ce faire, `R Markdown` s'appuie en partie sur le *package* `knitr`. Ce dernier est utilisé pour transformer le fichier `R Markdown` en fichier `markdown`. Une fois l'opération réalisée, le *package* `R Markdown` s'occupera de compiler le fichier `markdown` dans le format de sortie fixé dans l'en-tête, *via* le programme `pandoc`.
+Dans un deuxième temps, il est souhaitable de configurer le comportement par défaut de `knitr`. La [fiche `R Markdown`](#R Markdown) détaille les principales options. Dans le cas des rapports automatisés, la configuration de `knitr` doit porter au minimum sur les deux points suivants :
 
-Voici quelques exemples de configuration :
+* la position et taille des figures ;
+* l'affichage ou non des instructions `R` dans le fichier de sortie.
 
-* position des figures ;
-* affichage ou non des instructions `R` dans le fichier de sortie ;
-* gestion des messages d'évènement...
-
-Pour ce faire, il est recommandé de commencer son fichier `R Markdown` par un *chunk* de configuration, qui peut ressembler à ceci :
+La méthode la plus simple pour configurer `knitr` consiste à inclure un *chunk* de configuration au début du fichier `R Markdown` (juste après l'en-tête). Le *chunk* de configuration définit les options par défaut, applicables à tous les _chunks_ du code source. Voici un exemple.
 
 ~~~
 ```{r configuration, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE,
-                      fig.pos='H',
-                      fig.align = "center",
                       warning=FALSE,
-                      message=FALSE)
+                      message=FALSE,
+                      error = TRUE,
+                      fig.align = "center",
+                      fig.width = '75%')
 ```
 ~~~
 
-Ici, il est demandé à `R Markdown` de ne pas inclure dans le fichier produit les instructions `R` (`echo = FALSE`). Les figures sont centrées, et dans la mesure du possible positionnées au plus proche de leur ordre d'apparition dans le programme (éviter d'avoir une figure positionnée 2 pages plus loin que leur position souhaitée). Il s'agit des paramètre `fig.pos` et `fig.align`. Les *warnings* et les messages d'informations n'apparaitront pas non plus dans le fichier de sortie.
+Dans cet exemple, la fonction `knitr::opts_chunk$set()` sert à définir les options par défaut de `knitr`. Il est ainsi demandé à `R Markdown` de ne pas inclure les instructions `R` dans le document de sortie (`echo = FALSE`). Les *warnings* et les messages d'informations n'apparaîtront pas non plus dans le fichier de sortie. En revanche, les erreurs apparaîtront (`error = TRUE`). Les figures sont centrées (`fig.align = "center"`) et ont une largeur de 75% de la largeur du texte (`fig.width = '75%'`).
 
 La fonction `opts_chunk$set` du *package* `knitr` comporte de nombreux paramètres, dont la liste exhaustive est disponible à cette adresse : https://yihui.org/knitr/options/
 
