@@ -67,7 +67,7 @@ La documentation officielle de Github sur cette manière de procéder est
 disponible
 [ici](https://docs.github.com/en/free-pro-team@latest/github/managing-files-in-a-repository/editing-files-in-another-users-repository).
 
-Dans ce menu, vous avez accès au code de la fiche en `R markdown`.
+Dans ce menu, vous avez accès au code de la fiche en `R Markdown`.
 C'est directement dans cette fenêtre que les modifications sont à écrire.
 Il est recommandé de prévisualiser la modification en cliquant sur l'onglet `Preview`.
 En cliquant sur `Preview` vous ne verrez pas la fiche mise en forme mais
@@ -195,7 +195,7 @@ L'_issue_ doit avoir un titre qui renvoie explicitement à la fiche concernée (
 [:arrow_up: Retour à l'introduction](#one-introduction)
 
 
-Ajouter une nouvelle fiche thématique à la documentation représente un
+:exclamation: Ajouter une nouvelle fiche thématique à la documentation représente un
 travail conséquent qui requiert l'approbation de la
 majorité des contributeurs du projet.
 
