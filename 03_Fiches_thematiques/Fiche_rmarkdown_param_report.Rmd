@@ -63,7 +63,7 @@ Dans un deuxième temps, il est souhaitable de configurer le comportement par d�
 * la position et taille des figures ;
 * l'affichage ou non des instructions `R` dans le fichier de sortie.
 
-La méthode la plus simple pour configurer `knitr` consiste à inclure un *chunk* de configuration au début du fichier `R Markdown` (juste après l'en-tête). Le *chunk* de configuration définit les options par défaut, applicables à tous les _chunks_ du code source. Voici un exemple.
+La méthode la plus simple pour configurer `knitr` consiste à inclure un *chunk* de configuration au début du fichier `R Markdown` (juste après l'en-tête). Ce *chunk* de configuration utilise la fonction `knitr::opts_chunk$set()` pour définir les options par défaut applicables à tous les _chunks_ du code source. La fonction `opts_chunk$set` permet de définir de nombreux paramètres, dont la liste complète est disponible sur https://yihui.org/knitr/options. Voici un exemple de _chunk_ de configuration.
 
 ~~~
 ```{r configuration, include=FALSE}
@@ -76,43 +76,28 @@ knitr::opts_chunk$set(echo = FALSE,
 ```
 ~~~
 
-Dans cet exemple, la fonction `knitr::opts_chunk$set()` sert à définir les options par défaut de `knitr`. Il est ainsi demandé à `R Markdown` de ne pas inclure les instructions `R` dans le document de sortie (`echo = FALSE`). Les *warnings* et les messages d'informations n'apparaîtront pas non plus dans le fichier de sortie. En revanche, les erreurs apparaîtront (`error = TRUE`). Les figures sont centrées (`fig.align = "center"`) et ont une largeur de 75% de la largeur du texte (`fig.width = '75%'`).
-
-La fonction `opts_chunk$set` du *package* `knitr` comporte de nombreux paramètres, dont la liste exhaustive est disponible à cette adresse : https://yihui.org/knitr/options/
-
-Les principaux paramètres sont listés ci-dessous :
-
-
-|   **Paramètre** | **Signification**                                            	|     **Valeur par défaut       	|
-|-----------------|---------------------------------------------------------------|---------------------------------|
-| echo						| les instructions doivent-elle apparaitre dans l'*output*			| TRUE														|
-| eval						| le *chunk* doit-il être évalué (exécuté)											| TRUE														|
-| include					| le résultat du *chunk* doit-il être inclus dans l'*output*. Il sera tout de même évalué	| TRUE														|
-| results					| contrôle l'affichage du résultat (`markup`, `asis`, ...)			| `markup`												|
-| comment					| le caractère qui préfixe le résultat d'une instruction				| ##															|
-| cache						| le résultat de l'exécution du code doit-il être mis en cache	| FALSE														|
-| fig.width				| taille de la largeur des *plots* (graphiques, cartes)					| 7 (en pouce)										|
-| fig.height			| taille de la hauteurs des *plots* (graphiques, cartes)				| 7 (en pouce)										|
-| child						| le chemin vers le document "enfant" à intégrer dans le document "parent" | NULL									|
-| language				| le moteur d'exécution pour l'instruction											| R																|
-
+Dans cet exemple, il est demandé à `R Markdown` de ne pas inclure les instructions `R` dans le document de sortie (`echo = FALSE`). Les *warnings* et les messages d'informations n'apparaîtront pas non plus dans le fichier de sortie. En revanche, les erreurs apparaîtront (`error = TRUE`). Les figures sont centrées (`fig.align = "center"`) et ont une largeur de 75% de la largeur du texte (`fig.width = '75%'`).
 
 ::: {.conseil}
-Une attention particulière doit être portée sur le paramètre `cache`. Ce dernier permet de signaler à `R Markdown` de ne pas ré-exécuter du code n'ayant pas été modifié depuis le précédent lancement de la compilation. Ceci peut faire gagner beaucoup de temps, notamment pour les *chunks* d'importation de données volumineuses, mais peut parfois conduire à des comportements non souhaités (exemple des données qui sont actualisées, mais dont l'instruction d'importation reste inchangée).
+Une attention particulière doit être portée à l'utilisation de l'option `cache`. L'option `cache = TRUE` permet de signaler à `R Markdown` de ne pas ré-exécuter du code n'ayant pas été modifié depuis la dernière compilation. Ceci peut faire gagner beaucoup de temps, notamment pour les *chunks* d'importation de données volumineuses, mais peut conduire à des comportements non souhaités, notamment lorsque les données que vous utilisez dans votre rapport ont été actualisées. Si vous utilisez l'option `cache = TRUE`, et si aucun élément du code source n'a été modifié, alors les données ne seront pas réimportées lorsque vous recompilerez le rapport.
 :::
 
-Enfin, il est recommandé de positionner un *chunk* de chargement des librairies utilisées en début de fichier, après la configuration des options de `knitr`.
+### Charger les _packages_
 
-A titre d'exemple, le *chunk* pourrait ressembler à ceci :
+Enfin, il est recommandé d'intégrer au début de votre code source (par exemple juste après la configuration des options de `knitr`) un *chunk* de chargement des _packages_ utilisés dans le rapport. A titre d'exemple, le *chunk* pourrait ressembler à ceci :
 
 ~~~
-```{r librairies}
-library("doremifasolData")
-library("data.table")
+```{r packages}
+library(doremifasolData)
+library(data.table)
+library(ggplot2)
 ```
 ~~~
 
+### Charger les données
+
 Encore une fois, il est conseillé de nommer ces *chunks* de façon non ambigüe, afin de repérer rapidement d'éventuelles erreurs lors de la compilation.
+
 
 ## La production de rapports "de masse" : les rapports paramétrés
 
