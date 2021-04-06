@@ -120,15 +120,21 @@ d'une API facilement :
 
 Ce package est très utile pour l'utilisation des API mises à diposition sur
 le catalogue des API. En effet, pour ces API, pour pouvoir effectuer une requête,
-il est nécessaire de: 
+il est nécessaire de s'authentifier à différents niveaux : 
 
-1. S'authentifier grâce à une clé. 
-Les jetons ont une durée de vie
+1. S'authentifier grâce à une clé personnelle, associée à un compte créé
+depuis <https://api.insee.fr>. 
+2. Avoir un jeton d'accès temporaire. Ces jetons ont une durée de vie
 limitée et doivent régulièrement être renouvelés.
-Ce package propose de facilement générer un jeton à partir de `R`.
-Ainsi il n'y a plus besoin de naviguer entre le programme et le catalogue des API.
 
-Pour stocker un jeton temporaire, il faut utiliser le fichier `.Renviron`
+Ce package propose de facilement générer un jeton à partir de `R`.
+Ainsi il n'y a plus besoin de naviguer entre le programme `R`
+et le catalogue des API pour renouveler un jeton. La condition est d'avoir 
+renseigné, comme expliqué par la suite, les paramètres `INSEE_APP_KEY` et
+`INSEE_APP_SECRET` dans un fichier de configuration. 
+
+Pour stocker ces variables d'environnement,
+il faut utiliser le fichier `.Renviron`
 d'un projet. Pour cela, le package `usethis` peut être utilisé:
 
 ```{r, eval = FALSE}
@@ -184,46 +190,6 @@ set_config(config(token = token))
 Dès lors, vous pouvez accéder aux API de
 l’Insee auxquelles votre application a souscrit.
 
-### [insee](https://github.com/InseeFr/R-Insee-Data/)
-
-Ce package permet de télécharger les données et leurs métadonnées
-diffusées sur le service `SDMX` de la Base de données Macroéconomique
-de l'Insee (BDM). Cette API étant ouverte, son accès ne demande pas
-d'identification, ni de jeton. Il est uniquement nécessaire de déterminer
-les données souhaitées soit via une liste de catégories (`idbank`),
-soit via une liste de données (`dataset`). 
-
-```{r echo = FALSE, message = FALSE, warning = FALSE}
-library(magrittr)
-df <- data.frame("Information" = c("Liste des jeux de données",
-                                   "Liste des séries"),
-                 "Fonction" = c("insee::get_dataset_list()",
-                                "insee::get_idbank_list()")
-)
-df %>% 
-  knitr::kable(escape = F, position = "center", full_width = F, align="ccl") %>%
-  kableExtra::column_spec(1, width = "3cm", bold = TRUE) %>%
-  kableExtra::column_spec(2, width = "2cm")
-
-```
-
-
-
-
-```{r, eval = FALSE}
-library(insee)
-
-# Importer les données à partir de leur idbank ou importer un dataset à partir de leur identifiant:
-table_bp <- get_insee_dataset("BALANCE-PAIEMENTS")
-indicateur_001694056 <- get_insee_idbank("001694056")
-```
-
-Il est possible de rajouter des filtres à ces fonctions afin de limiter
-le nombre de données importées (filtre sur la période, sur la date de mise à jour, sur les filtres).
-
-
-**TO BE COMPLETED**
-
 ### [inseeLocalData](https://github.com/InseeFrLab/inseeLocalData)
 
 Ce package permet de télécharger les données localisées à la commune,
@@ -264,6 +230,48 @@ source <- donneesAPI$source # pour accéder à la source
 ```
 
 *TO BE COMPLETED: il faudrait plus de détails*
+
+
+### [insee](https://github.com/InseeFr/R-Insee-Data/)
+
+Ce package permet de télécharger les données et leurs métadonnées
+diffusées sur le service `SDMX` de la Base de données Macroéconomique
+de l'Insee (BDM). Cette API étant ouverte, son accès ne demande pas
+d'identification, ni de jeton. Il est uniquement nécessaire de déterminer
+les données souhaitées soit via une liste de catégories (`idbank`),
+soit via une liste de données (`dataset`). 
+
+```{r echo = FALSE, message = FALSE, warning = FALSE}
+library(magrittr)
+df <- data.frame("Information" = c("Liste des jeux de données",
+                                   "Liste des séries"),
+                 "Fonction" = c("insee::get_dataset_list()",
+                                "insee::get_idbank_list()")
+)
+df %>% 
+  knitr::kable(escape = F, position = "center", full_width = F, align="ccl") %>%
+  kableExtra::column_spec(1, width = "3cm", bold = TRUE) %>%
+  kableExtra::column_spec(2, width = "2cm")
+
+```
+
+
+
+
+```{r, eval = FALSE}
+library(insee)
+
+# Importer les données à partir de leur idbank ou importer un dataset à partir de leur identifiant:
+table_bp <- get_insee_dataset("BALANCE-PAIEMENTS")
+indicateur_001694056 <- get_insee_idbank("001694056")
+```
+
+Il est possible de rajouter des filtres à ces fonctions afin de limiter
+le nombre de données importées (filtre sur la période, sur la date de mise à jour, sur les filtres).
+
+
+**TO BE COMPLETED**
+
 
 ### doremifasol
 
@@ -316,13 +324,15 @@ assez fastidieuse avec `R`. `Python` propose des outils plus performants pour
 retravailler des JSON (package `json` notamment).
 Grâce au package `reticulate`, il est aisé de faire tourner un code `Python`
 dans une session `R` et récupérer le résultat dans un format de données (par
-exemple dataframe) de `R`
+exemple dataframe) de `R`. L'approche par les `API` étant plus fréquente
+en `Python` qu'en `R`, on trouve également plus de packages facilitant
+l'accès à des données par ce biais en `Python`
 
 :::
 
-### Package httr
+### Package `httr`
 
-Le package httr permet de se connecter aux sites web et de se connecter aux API.  
+Le package `httr` permet de se connecter aux sites web et de se connecter aux API.  
 
 Il est possible de configuer la connexion internet localement sans
 modifier les variables système :  
@@ -332,7 +342,7 @@ modifier les variables système :
 De nombreuses institutions utilisent passent par un intermédiaire, le proxy,
 pour accéder à internet. L'adresse du proxy est à ajouter au requête car sinon
 `R` ne sait pas communiquer avec internet. Il s'agit d'un paramètre à ajouter dans
-les options `httr`, voir ci-dessous.
+les options `httr`.
 
 ::: remarque
 
@@ -345,7 +355,8 @@ httr::set_config(httr::use_proxy(proxy))
 
 :::
 
-Le package `httr` permet, lorsqu'on effectue une requête `GET`, de récupérer
+Le package `httr` permet, lorsqu'on effectue une requête `GET` (une
+requête d'accès au résultat d'une recherche), de récupérer
 le résultat sous la forme d'un texte à retravailler. 
 
 ### Accès à une API sans jeton
@@ -360,7 +371,7 @@ httr::content(httr::GET(url),             # url correspond à l'url à interroge
               encoding='UTF-8')           # encodage de la réponse de l'url
 ```
 
-Prenons par exemple l'API d'openfood facts, une base de données alimentaire. 
+Prenons par exemple l'API d'*OpenFood Facts*, une base de données alimentaire. 
 Imaginons qu'on désire récupérer l'information sur un produit. Cela s'obtient
 de la manière suivante:
 
@@ -373,7 +384,7 @@ r <- httr::content(httr::GET(url),             # url correspond à l'url à inte
                    encoding='UTF-8')           # encodage de la réponse de l'url
 ```
 
-Le résultat est formatté sous forme de JSON, ce qui est pratique mais peu
+Le résultat est formaté sous forme de JSON, ce qui est pratique mais peu
 intelligible:
 
 ```{r}
@@ -382,7 +393,8 @@ r
 
 Pour en faire une information exploitable, il est nécessaire de faire quelques
 efforts. Par exemple, pour n'extraire que le libellé et le nutriscore d'un produit,
-ainsi que son indice de transformation nova:
+ainsi que son indice de transformation NOVA, il faut utiliser une boucle sur
+les différentes caractéristiques à extraire :
 
 ```{r}
 df <- data.frame(
@@ -393,6 +405,11 @@ df <- data.frame(
 colnames(df) <- c("product_name","nova_groups","nutriscore_grade")
 df
 ```
+
+::: remarque
+
+Le code python équivalent est un petit peu moins lourd et permet d'obtenir
+un dataframe de manière plus directe. 
 
 ~~~python
 import requests
@@ -405,6 +422,7 @@ df = pd.json_normalize(product)
 df[["product_name","nova_groups","nutriscore_grade"]]
 ~~~
 
+:::
 
 ### Accès à une API avec jeton
 
@@ -443,14 +461,14 @@ laisser 30 secondes d'attente, taper `Sys.sleep(30)`.
 
 **Exemple d'utilisation sur l'API interne RMèS**
 
-Une API interne sur les métadonnées de l'Insee est disponible (programme RMès).
+Une API interne sur les métadonnées de l'Insee est disponible (programme `RMès`).
 Elle permet d'obtenir de manière simplifiée des métadonnées
 (sources, concepts, liste de codes géograpjiques).
 Comme cette API est stockée en interne, il n'y a pas, comme pour accéder
 à celles sur internet, de proxy.
 
 Voici un exemple de requête pour accéder aux données au niveau
-division de la Naf-rev2 :
+division de la `Naf-rev2` :
 
 ```{r, eval = FALSE}
 library(dplyr)
