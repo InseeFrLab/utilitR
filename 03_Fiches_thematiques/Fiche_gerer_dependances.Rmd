@@ -8,7 +8,6 @@ dépendances avec R, tâche à effectuer avec soin lorsqu'on partage ses
 programmes.
 
 ::: {.recommandation}
-
 Il est recommandé :
 
 -   de ne pas écrire `install.packages()` au début de ses programmes ;
@@ -18,28 +17,97 @@ Pour gérer les dépendances, il faut :
 
 -   soit les déclarer dans un fichier `DESCRIPTION` situé à la racine de son
     projet ;
--   soit utiliser le *package* [renv](https://rstudio.github.io/renv/).
+-   soit utiliser le *package* `{renv}`.
 
 Bien qu'une de ces deux méthodes puisse suffire, elles peuvent être combinées
 sans difficulté.
-
 :::
 
-## Quelques détails sur comment réaliser la tâche avec les outils recommandés
+## Pourquoi fonctionner en mode projet ?
 
-::: {.conseil}
+Il est très rare d'organiser son code au sein d'un même programme monolithique.
+Afin que le code soit plus facile à gérer, celui-ci est plus souvent réparti
+entre plusieurs fichiers à l'extension `.R` au sein d'un même dossier. Ce
+dossier est la matérialisation du mode projet.
 
-Cette boîte colorée sert à donner un conseil. Son usage n'est évidemment pas
-obligatoire.
+Par exemple, vous pouvez avoir cette organisation au sein de votre dossier :
 
-:::
+    ├── import.R
+    ├── traitement.R
+    ├── graphique.R
+
+Si vous travaillez avec les projets RStudio, vous trouverez un fichier
+supplémentaire à l'extension `.Rproj` :
+
+    ├── import.R
+    ├── traitement.R
+    ├── graphique.R
+    ├── monprojet.Rproj
+
+Le fichier `.Rproj` comprend un ensemble de méta-données vous permettant de
+contrôler le comportement de RStudio afin que l'ensemble des contributeurs à ce
+projet adoptent des pratiques similaires.
 
 ::: {.remarque}
+Au sein de votre projet, il est recommandé de ranger l'ensemble des programmes R
+au sein d'un dossier nommé `R` :
 
-Cette boîte colorée sert à faire une remarque. Son usage n'est évidemment pas
-obligatoire.
-
+    ├── R/
+    ├──── import.R
+    ├──── traitement.R
+    ├──── graphique.R
+    ├── monprojet.Rproj
 :::
+
+Vous connaissez très certainement la fonction `install.packages()` qui vous
+permet d'installer un *package*. Afin de documenter le fait que vous ayez
+installé certains *packages* nécessaires à l'exécution de vos programmes, il
+vous est certainement apparu naturel de conserver ces commandes dans votre code.
+
+Cependant, vous avez également certainement remarqué que ces commandes ne sont à
+exécuter qu'une seule fois et donc qu'il convient de les mettre en commentaire
+afin de ne pas perturber l'exécution de vos programmes.
+
+Toutefois, il existe une autre approche beaucoup plus robuste, ici recommandée,
+qui considère que les dépendances d'un projet sont des méta-données nécessaires
+à sa bonne exécution.
+
+::: {.conseil}
+Ne conservez pas les commandes `install.packages()` dans vos programmes.
+Utilisez une des deux méthodes présentées dans cette fiche.
+:::
+
+Chacune de ces méthodes va déclarer les dépendances de votre projet dans un
+fichier spécifique au sein de votre projet.
+
+Avec la première méthode, celle utilisant le fichier `DESCRIPTION`, vous
+obtiendrez la structure de dossier suivante :
+
+    ├── R/
+    ├──── import.R
+    ├──── traitement.R
+    ├──── graphique.R
+    ├── monprojet.Rproj
+    ├── DESCRIPTION
+
+Le fichier `DESCRIPTION` sera le fichier dans lequel vous renseignerez les
+dépendances de votre projet.
+
+Avec la seconde méthode, celle utilisant le *package* `{renv}`, vous obtiendrez
+automatiquement la structure de dossier suivante :
+
+    ├── .Rprofile
+    ├── R/
+    ├──── import.R
+    ├──── traitement.R
+    ├──── graphique.R
+    ├── monprojet.Rproj
+    ├── renv.lock
+    ├── renv/
+
+Les dépendances seront décrites dans le fichier `renv.lock`, le fichier
+`.Rprofile` et le dosier `renv` étant là pour assurer le bon fonctionnement du
+*package* `{renv}`.
 
 ### Réaliser la tâche, cas 1
 
