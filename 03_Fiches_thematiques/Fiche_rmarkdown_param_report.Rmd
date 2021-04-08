@@ -5,7 +5,7 @@
 L'utilisateur souhaite réaliser des rapports automatisés, reproductibles et faciles à actualiser en cas de modification des données. Il souhaite également produire de nombreux rapports en modifiant, en fonction de ses besoins, certains paramètres.
 
 ::: {.recommandation}
-Il est recommandé d'utiliser `R Markdown` pour produire des rapports paramétrés Si vous ne connaissez pas `R Markdown`, il est indispensable de lire au préalable la [fiche `R Markdown`](#R Markdown).
+Il est recommandé d'utiliser `R Markdown` pour produire des rapports paramétrés. Si vous ne connaissez pas `R Markdown`, il est indispensable de lire au préalable la [fiche `R Markdown`](#R Markdown).
 :::
 
 ```{r setup, include=FALSE}
@@ -29,7 +29,7 @@ Un rapport automatisé est un document qui contient du texte et des informations
 
 Les rapports automatisés présentent deux grands avantages. Premièrement, ils sont reproductibles, car le code source contient toutes les instructions nécessaires à la production des informations contenues dans le rapport. Deuxièmement, ils sont faciles à actualiser en cas de modification des données.
 
-Dans le cas de `R Markdown`, le code source est un fichier texte portant l'extension `.Rmd`. Le document final (ou *output*) est produit après une étape de compilation, en cliquant sur le bouton `knit` de `RStudio`. Le fichier `R Markdown` combine généralement des instructions de traitements des données, mais aussi du texte, des images, des cartes... Les instructions de traitement de données sont généralement rédigées en `R`, mais il est tout à fait possible d'utiliser `R Markdown` avec d'autres langages (par exemple `python`). L'utilisatio de  `R Markdown` est détaillée dans la [fiche `R Markdown`](#R Markdown).
+Dans le cas de `R Markdown`, le code source est un fichier texte portant l'extension `.Rmd`. Le document final (ou *output*) est produit après une étape de compilation, en cliquant sur le bouton `knit` de `RStudio`. Le fichier `R Markdown` combine généralement des instructions de traitements des données, mais aussi du texte, des images, des cartes... Les instructions de traitement de données sont généralement rédigées en `R`, mais il est tout à fait possible d'utiliser `R Markdown` avec d'autres langages (par exemple `python`). L'utilisation de  `R Markdown` est détaillée dans la [fiche `R Markdown`](#R Markdown).
 
 ### Quelques bonnes pratiques
 
@@ -52,7 +52,7 @@ description: "Une description vraiment utile"
 L'en-tête permet de paramétrer finement le document de sortie, par exemple en choisissant le format du document, ou en ajoutant une table des matières et une bibliographie. Il existe un nombre considérable d'options, dont certaines sont spécifiques à un format de sortie (pdf, html, ...). La liste des options est détaillée sur le site de la documentation officielle de `R Markdown` et sur l’antisèche et le guide de référence de `R Markdown`, accessibles depuis RStudio via le menu `Help` puis `Cheatsheets.`
 
 ::: {.conseil}
-Si vous souhaitez construire un rapport automatisé que vous utiliserez régulièrement, il est vivement conseillé de prendre le temps de définir un en-tête qui corresponde précisément à ce que vous voulez produire.
+Si vous souhaitez construire un rapport automatisé que vous utiliserez régulièrement, il est vivement conseillé de prendre le temps de définir un en-tête qui correspond précisément à ce que vous voulez produire.
 :::
 
 
@@ -63,7 +63,7 @@ Dans un deuxième temps, il est souhaitable de configurer le comportement par d�
 * la position et taille des figures ;
 * l'affichage ou non des instructions `R` dans le fichier de sortie.
 
-La méthode la plus simple pour configurer `knitr` consiste à inclure un *chunk* de configuration au début du fichier `R Markdown` (juste après l'en-tête). Ce *chunk* de configuration utilise la fonction `knitr::opts_chunk$set()` pour définir les options par défaut applicables à tous les _chunks_ du code source. La fonction `opts_chunk$set` permet de définir de nombreux paramètres, dont la liste complète est disponible sur https://yihui.org/knitr/options. Voici un exemple de _chunk_ de configuration.
+La méthode la plus simple pour configurer `knitr` consiste à inclure un *chunk* de configuration au début du fichier `R Markdown` (juste après l'en-tête). Ce *chunk* de configuration utilise la fonction `knitr::opts_chunk$set()` pour définir les options par défaut applicables à tous les _chunks_ du code source. La liste complète des paramètres est disponible sur https://yihui.org/knitr/options. Voici un exemple de _chunk_ de configuration.
 
 ~~~
 ```{r configuration, include=FALSE}
@@ -97,7 +97,7 @@ library(data.table)
 library(ggplot2)
 ```
 
-```{r donnees, include = FALSE}
+```{r lecture_donnees_1, include = FALSE}
 donnees <- fread("./donnees/mesdonnees.csv")
 ```
 ~~~
@@ -106,13 +106,13 @@ donnees <- fread("./donnees/mesdonnees.csv")
 Il peut arriver qu'il soit difficile d'accéder à des fichiers en utilisant uniquement des chemins relatifs. Une solution de repli consiste à définir le chemin absolu du dossier à _un seul endroit_ dans le code source du rapport, puis à l'utiliser de façon relative dans les fonctions d'importation. Voici un exemple :
 
 ~~~
-```{r donnees, include = FALSE}
+```{r lecture_donnees_2, include = FALSE}
 # Définir UNE SEULE FOIS le répertoire des données
-dossier_donnees <- ":/chemin/vers/les/donnees/"
+dossier_donnees <- "D:/chemin/vers/les/donnees/"
 
 # Charger les données avec un chemin relatif
 donnees1 <- fread(paste0(dossier_donnees, "mesdonnees1.csv"))
-donnees2 <- fread(paste0(dossier_donnees, "mesdonnees1.csv"))
+donnees2 <- fread(paste0(dossier_donnees, "mesdonnees2.csv"))
 ```
 ~~~
 :::
@@ -129,10 +129,6 @@ addition <- 1 + 1
 
 ## La production de rapports "de masse" : les rapports paramétrés
 
-
-
-
-
 Les rapports paramétrés sont une forme particulière de rapports automatisés. Ils présentent donc les mêmes avantages que les rapports automatisés (quasi reproductibles, simple à actualiser), mais permettent d'aller un peu plus loin en terme de fonctionnalités. Il est ainsi possible de générer différents rapports utilisant la même base d'instruction, mais en distinguant les traitements selon un ou plusieurs paramètres à fixer dans l'en-tête `YAML`.
 
 Un court exemple est parfois mieux qu'un long discours, nous allons voir ci-dessous un modèle de rapport "générique" (un *template*), qui peut se décliner selon :
@@ -145,7 +141,7 @@ Bref, selon différents **paramètres**.
 
 Prenons l'exemple très simple d'un utilisateur qui doit générer une table d'effectif de chaque département français.
 
-Pour cela, il peut être tenté de multiplier les fichiers `R Markdown` (`fichierAin.Rmd`, `fichierAisne.Rmd`...).
+Pour cela, il peut être tenté de multiplier les fichiers `R Markdown` (`fichier_Ain.Rmd`, `fichier_Aisne.Rmd`...).
 
 Cette approche, si elle se justifie lorsque le nombre de document à produire est réduit, voit ses limites lorsqu'il s'agit de réaliser plusieurs dizaines de rapports. C'est à ce moment que le système de rapports paramétrés prend tout son sens.
 
@@ -153,7 +149,7 @@ L'utilisateur a eu vent de la fonctionnalité de rapports paramétrés. Il doit 
 
 ## Un exemple de *template*
 
-Voici un exemple (appelons le `rapportParametre.Rmd`) permettant de répondre au besoin de notre utilisateur :
+Voici un exemple (appelons le `rapport_parametre.Rmd`) permettant de répondre au besoin de notre utilisateur :
 
 ~~~
 
@@ -162,37 +158,37 @@ title: "Mon rapport"
 date: "`r Sys.Date()`"
 output: pdf_document
 params:
-  codeDpt: "01"
+  code_dpt: "01"
 ---
 
 ```{r doremisfasol, eval=FALSE, echo=TRUE}
 library("doremifasolData")
 ```
 
-```{r importData, eval=FALSE, echo=TRUE}
-cogCom2019 <- doremifasolData::cog_com_2019
+```{r import_data, eval=FALSE, echo=TRUE}
+cog_com_2019 <- doremifasolData::cog_com_2019
 ```
 
-```{r selectData, eval=FALSE, echo=TRUE}
-monDpt <- cogCom2019[cogCom2019$dep %in% params$codeDpt, ]
+```{r select_data, eval=FALSE, echo=TRUE}
+mon_dpt <- cog_com_2019[cog_com_2019$dep %in% params$code_dpt, ]
 ```
 
-```{r tableData, eval=FALSE, echo=TRUE}
-table(monDpt$dep)
+```{r table_data, eval=FALSE, echo=TRUE}
+table(mon_dpt$dep)
 ```
 ~~~
 
-La compilation de ce fichier, au travers de la commande `R Markdown::render(input = rapportParametre.Rmd.Rmd)` génèrera le document suivant :
+La compilation de ce fichier, au travers de la commande `rmarkdown::render(input = rapport_parametre.Rmd)` génèrera le document suivant :
 
 ~~~
  01
 393
 ~~~
 
-La fonction `render` permet de transformer un format de fichier (ici `rapportParametre.Rmd`) en un autre, défini dans l'en-tête `YAML`. On remarque que la fonction produit une table d'effectif des communes de l'Ain (département 01) car cette valeur a été définie par défaut dans l'en-tête. Si l'utilisateur souhaite produire le même type de document pour un autre département, il devra **passer explicitement le paramètre `params = list(codeDpt = "XX")`** à la fonction `render`.
+La fonction `render` permet de transformer un format de fichier (ici `rapport_parametre.Rmd`) en un autre, défini dans l'en-tête `YAML`. On remarque que la fonction produit une table d'effectif des communes de l'Ain (département 01) car cette valeur a été définie par défaut dans l'en-tête. Si l'utilisateur souhaite produire le même type de document pour un autre département, il devra **passer explicitement le paramètre `params = list(code_dpt = "XX")`** à la fonction `render`.
 
 ```{r tableDpt02, eval=FALSE, echo=TRUE}
-R Markdown::render(input = rapportParametre.Rmd, params = list(codeDpt = "02"))
+rmarkdown::render(input = rapport_parametre.Rmd, params = list(code_dpt = "02"))
 ```
 
 Dans cet exemple, l'*output* ressemblera à ceci :
@@ -211,11 +207,11 @@ Il est possible de créer une fonction pour simplifier la génération de rappor
 Afin d'illuster ce conseil, voici un exemple de fonction créée *ad hoc* par l'utilisateur désireux de simplifier la production d'un rapport paramétré :
 
 ~~~
-monRapport <- function(codeDpt) {
-	R Markdown::render(input = "rapportParametre.Rmd",
-										params = list(codeDpt = codeDpt),
+mon_rapport <- function(code_dpt) {
+	rmarkdown::render(input = "rapport_parametre.Rmd",
+										params = list(code_dpt = code_dpt),
 										envir = new.env(),
-										output_file = paste0("Rapport_", codeDpt, ".pdf")
+										output_file = paste0("Rapport_", code_dpt, ".pdf")
 	)
 }
 ~~~
@@ -223,18 +219,18 @@ monRapport <- function(codeDpt) {
 Une fois la fonction établie, les rapports se réaliseront *via* la commande :
 
 ~~~
-monRapport(codeDpt = "02")
+mon_rapport(code_dpt = "02")
 ~~~
 
 Enfin, cette fonction peut également s'utiliser dans une boucle, au sein d'un autre document `R Markdown` :
 
 ~~~
-for(i in maListeDeDpt) {
-	monRapport(i)
+for(i in ma_liste_de_dpt) {
+	mon_rapport(i)
 }
 ~~~
 
-Le modèle de *rapportParametre.Rmd* présenté dans cette fiche est disponible en téléchargement en cliquant sur le lien suivant (insérer lien vers fichier).
+Le modèle de *rapport_parametre.Rmd* présenté dans cette fiche est disponible en téléchargement en cliquant sur le lien suivant (insérer lien vers fichier).
 
 # PESP
 
