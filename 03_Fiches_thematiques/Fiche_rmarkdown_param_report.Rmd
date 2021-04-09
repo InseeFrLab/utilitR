@@ -77,7 +77,7 @@ knitr::opts_chunk$set(echo = FALSE,
 ```
 ````
 
-Dans cet exemple, il est demandé à `R Markdown` de ne pas inclure les instructions `R` dans le document de sortie (`echo = FALSE`). Les *warnings* et les messages d'informations n'apparaîtront pas non plus dans le fichier de sortie. En revanche, les erreurs apparaîtront (`error = TRUE`). Les figures sont centrées (`fig.align = "center"`) et ont une largeur de 75% de la largeur du texte (`fig.width = '75%'`).
+Dans cet exemple, il est demandé à `R Markdown` de ne pas inclure les instructions `R` dans le document de sortie (`echo = FALSE`). Les *warnings* et les messages d'informations n'apparaîtront pas non plus dans le fichier de sortie. En revanche, les erreurs apparaîtront (`error = TRUE`). Les figures sont centrées (`fig.align = "center"`) et ont une largeur de 75% de la largeur du texte (`out.width = '75%'`).
 
 ::: {.conseil}
 Une attention particulière doit être portée à l'utilisation de l'option `cache`. L'option `cache = TRUE` permet de signaler à `R Markdown` de ne pas ré-exécuter du code n'ayant pas été modifié depuis la dernière compilation. Ceci peut faire gagner beaucoup de temps, notamment pour les *chunks* d'importation de données volumineuses, mais peut conduire à des comportements non souhaités, notamment lorsque les données que vous utilisez dans votre rapport ont été actualisées. Si vous utilisez l'option `cache = TRUE`, et si aucun élément du code source n'a été modifié, alors les données ne seront pas réimportées lorsque vous recompilerez le rapport.
@@ -129,7 +129,7 @@ Il est important de donner un nom à tous les _chunks_, car cela facilite grande
 
 ````markdown
 `r ''````{r nom_du_chunk, include = FALSE}
-addition <- 1 + 1
+resultat <- 1 + 1
 ```
 ````
 
@@ -144,60 +144,33 @@ Par exemple, on peut créer un rapport paramétré qui produit des statistiques 
 Par conséquent, un même modèle de rapport "générique" (appelé *template*) peut être utilisé pour produire de multiples rapports sur différents territoires, différentes périodes, différents secteurs...
 
 
-### Un exemple de modèle de rapport paramétré
+### Définir un modèle de rapport paramétré
 
 Voici un exemple de situation dans laquelle les rapports paramétrés sont utiles. Un utilisateur souhaite produire pour chaque département français un rapport donnant le nombre de commune de ce département. Une première approche consiste à créer un rapport `R Markdown` par département (`fichierAin.Rmd`, `fichierAisne.Rmd`...). Si elle peut convenir lorsque le nombre de document à produire est réduit, cette approche n'est clairement pas adaptée lorsqu'il est question de réaliser plusieurs dizaines de rapports. C'est à ce moment que le système de rapports paramétrés prend tout son sens.
 
-Voici un exemple (`rapportParametre.Rmd`) permettant de répondre au besoin de l'utilisateur :
+Le modèle de rapport paramétré suivant répond au besoin de l'utilisateur. Vous pouvez noter que cet exemple minimal contient tous les éléments d'un rapport paramétré : un en-tête renseigné qui contient la liste des paramètres (il n'y en a qu'un seul : `codeDpt`), un _chunk_ de configuration, des _chunks_ qui importent les _packages_ et les données, du texte, et des _chunks_ manipulant des données.
 
-````markdown
----
-title: "Mon rapport"
-date: "`r Sys.Date()`"
-author: "Un agent de l'Insee"
-output: html_document
-params:
-  codeDpt: "01"
----
-  
-`r ''````{r config, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE,
-                      warning=FALSE,
-                      message=FALSE,
-                      error = TRUE,
-                      fig.align = "center",
-                      fig.width = '75%')
+```{r echo = FALSE, comment = ""}
+utilitr::render_rmd("resources/rapportsparam/rapportParametre.Rmd")
 ```
 
-`r ''````{r load-packages}
-library(doremifasolData)
-library(data.table)
+::: {.remarque}
+Vous pouvez télécharger le fichier `Rmd` de cet exemple sur cette [page](https://github.com/InseeFrLab/utilitR/blob/master/resources/rapportsparam/rapportParametre.Rmd).
+:::
+
+
+### Utiliser un modèle de rapport paramétré
+
+Une fois que le modèle de rapport paramétré est défini, il est possible de l'utiliser pour publier facilement des rapports. La compilation de ce fichier, au travers de la commande `rmarkdown::render("rapportParametre.Rmd")` génèrera le document suivant :
+
+```{r echo = FALSE, out.width = "60%"}
+utilitr::include_image("./pics/rapportsparam/rapport1.png", compression = FALSE)
 ```
 
-`r ''````{r importData}
-cog_com_2019 <- as.data.table(doremifasolData::cog_com_2019)
-```
+Ce rapport paramétré 
 
-`r ''````{r selectData}
-monDpt <- cog_com_2019[dep %in% params$codeDpt]
-```
+Vous pouvez noter que le paramètre `codeDpt` prend par défaut la valeur "01" (département de l'Ain).
 
-`r ''````{r tableData}
-table(monDpt$dep)
-```
-
-````
-
-
-
-
-
-La compilation de ce fichier, au travers de la commande `rmarkdown::render(input = "rapportParametre.Rmd")` génèrera le document suivant :
-
-~~~
- 01
-393
-~~~
 
 La fonction `render` permet de transformer un format de fichier (ici `rapportParametre.Rmd`) en un autre, défini dans l'en-tête `YAML`. On remarque que la fonction produit une table d'effectif des communes de l'Ain (département 01) car cette valeur a été définie par défaut dans l'en-tête. Si l'utilisateur souhaite produire le même type de document pour un autre département, il devra **passer explicitement le paramètre `params = list(codeDpt = "XX")`** à la fonction `render`.
 
