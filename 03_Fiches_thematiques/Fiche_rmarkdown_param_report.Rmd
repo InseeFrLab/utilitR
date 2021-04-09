@@ -65,16 +65,17 @@ Dans un deuxième temps, il est souhaitable de configurer le comportement par d�
 
 La méthode la plus simple pour configurer `knitr` consiste à inclure un *chunk* de configuration au début du fichier `R Markdown` (juste après l'en-tête). Ce *chunk* de configuration utilise la fonction `knitr::opts_chunk$set()` pour définir les options par défaut applicables à tous les _chunks_ du code source. La fonction `opts_chunk$set` permet de définir de nombreux paramètres, dont la liste complète est disponible sur https://yihui.org/knitr/options. Voici un exemple de _chunk_ de configuration.
 
-~~~
-```{r configuration, include=FALSE}
+
+````markdown
+`r ''````{r configuration, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE,
                       warning=FALSE,
                       message=FALSE,
                       error = TRUE,
                       fig.align = "center",
-                      fig.width = '75%')
+                      out.width = '75%')
 ```
-~~~
+````
 
 Dans cet exemple, il est demandé à `R Markdown` de ne pas inclure les instructions `R` dans le document de sortie (`echo = FALSE`). Les *warnings* et les messages d'informations n'apparaîtront pas non plus dans le fichier de sortie. En revanche, les erreurs apparaîtront (`error = TRUE`). Les figures sont centrées (`fig.align = "center"`) et ont une largeur de 75% de la largeur du texte (`fig.width = '75%'`).
 
@@ -90,23 +91,25 @@ Dans la mesure du possible, il est préférable d'utiliser des chemins relatifs 
 
 A titre d'exemple, les deux *chunks* qui charge les _packages_ et les données pourraient ressembler à ceci :
 
-~~~
-```{r packages, include = FALSE}
+````markdown
+`r ''````{r packages, include = FALSE}
 library(doremifasolData)
 library(data.table)
 library(ggplot2)
 ```
+````
 
-```{r donnees, include = FALSE}
+````markdown
+`r ''````{r donnees, include = FALSE}
 donnees <- fread("./donnees/mesdonnees.csv")
 ```
-~~~
+````
 
 ::: {.remarque}
 Il peut arriver qu'il soit difficile d'accéder à des fichiers en utilisant uniquement des chemins relatifs. Une solution de repli consiste à définir le chemin absolu du dossier à _un seul endroit_ dans le code source du rapport, puis à l'utiliser de façon relative dans les fonctions d'importation. Voici un exemple :
 
-~~~
-```{r donnees, include = FALSE}
+````markdown
+`r ''````{r donnees, include = FALSE}
 # Définir UNE SEULE FOIS le répertoire des données
 dossier_donnees <- ":/chemin/vers/les/donnees/"
 
@@ -114,75 +117,82 @@ dossier_donnees <- ":/chemin/vers/les/donnees/"
 donnees1 <- fread(paste0(dossier_donnees, "mesdonnees1.csv"))
 donnees2 <- fread(paste0(dossier_donnees, "mesdonnees1.csv"))
 ```
-~~~
+````
+
+
 :::
 
 ### Nommer les _chunks_
 
 Il est important de donner un nom à tous les _chunks_, car cela facilite grandement la résolution des problèmes, en particulier si votre rapport est long. En effet, si la compilation du code source génère une erreur, `R Markdown` vous indiquera le nom du _chunk_ où se trouve l'erreur. Voici comment nommer un chunk :
 
-~~~
-```{r nom_du_chunk, include = FALSE}
+
+````markdown
+`r ''````{r nom_du_chunk, include = FALSE}
 addition <- 1 + 1
 ```
-~~~
+````
 
-## La production de rapports "de masse" : les rapports paramétrés
+## Les rapports paramétrés
+
+### Définition
+
+Les rapports paramétrés sont une forme particulière de rapports automatisés. Ils présentent donc les mêmes avantages que les rapports automatisés (reproductibles et simples à actualiser), mais permettent d'aller plus loin en terme de fonctionnalités. Il est ainsi possible de générer différents rapports _utilisant le même code source_, mais en distinguant les traitements selon un ou plusieurs paramètres définis dans l'en-tête `YAML`. 
+
+Par exemple, on peut créer un rapport paramétré qui produit des statistiques descriptives sur un département, dont le numéro est un paramètre de l'en-tête YAML du code source. Il suffit alors de changer le numéro du département dans l'en-tête pour produire un rapport sur un autre département, sans modifier le code source.
+
+Par conséquent, un même modèle de rapport "générique" (appelé *template*) peut être utilisé pour produire de multiples rapports sur différents territoires, différentes périodes, différents secteurs...
 
 
+### Un exemple de modèle de rapport paramétré
 
+Voici un exemple de situation dans laquelle les rapports paramétrés sont utiles. Un utilisateur souhaite produire pour chaque département français un rapport donnant le nombre de commune de ce département. Une première approche consiste à créer un rapport `R Markdown` par département (`fichierAin.Rmd`, `fichierAisne.Rmd`...). Si elle peut convenir lorsque le nombre de document à produire est réduit, cette approche n'est clairement pas adaptée lorsqu'il est question de réaliser plusieurs dizaines de rapports. C'est à ce moment que le système de rapports paramétrés prend tout son sens.
 
+Voici un exemple (`rapportParametre.Rmd`) permettant de répondre au besoin de l'utilisateur :
 
-Les rapports paramétrés sont une forme particulière de rapports automatisés. Ils présentent donc les mêmes avantages que les rapports automatisés (quasi reproductibles, simple à actualiser), mais permettent d'aller un peu plus loin en terme de fonctionnalités. Il est ainsi possible de générer différents rapports utilisant la même base d'instruction, mais en distinguant les traitements selon un ou plusieurs paramètres à fixer dans l'en-tête `YAML`.
-
-Un court exemple est parfois mieux qu'un long discours, nous allons voir ci-dessous un modèle de rapport "générique" (un *template*), qui peut se décliner selon :
-
-+ différents territoires ;
-+ différentes périodicités ;
-+ différents code d'une nomenclature...
-
-Bref, selon différents **paramètres**.
-
-Prenons l'exemple très simple d'un utilisateur qui doit générer une table d'effectif de chaque département français.
-
-Pour cela, il peut être tenté de multiplier les fichiers `R Markdown` (`fichierAin.Rmd`, `fichierAisne.Rmd`...).
-
-Cette approche, si elle se justifie lorsque le nombre de document à produire est réduit, voit ses limites lorsqu'il s'agit de réaliser plusieurs dizaines de rapports. C'est à ce moment que le système de rapports paramétrés prend tout son sens.
-
-L'utilisateur a eu vent de la fonctionnalité de rapports paramétrés. Il doit alors réaliser un *template* de document qui s'appliquera de la même façon pour chaque département.
-
-## Un exemple de *template*
-
-Voici un exemple (appelons le `rapportParametre.Rmd`) permettant de répondre au besoin de notre utilisateur :
-
-~~~
-
+````markdown
 ---
 title: "Mon rapport"
 date: "`r Sys.Date()`"
-output: pdf_document
+author: "Un agent de l'Insee"
+output: html_document
 params:
   codeDpt: "01"
 ---
-
-```{r doremisfasol, eval=FALSE, echo=TRUE}
-library("doremifasolData")
+  
+`r ''````{r config, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      warning=FALSE,
+                      message=FALSE,
+                      error = TRUE,
+                      fig.align = "center",
+                      fig.width = '75%')
 ```
 
-```{r importData, eval=FALSE, echo=TRUE}
-cogCom2019 <- doremifasolData::cog_com_2019
+`r ''````{r load-packages}
+library(doremifasolData)
+library(data.table)
 ```
 
-```{r selectData, eval=FALSE, echo=TRUE}
-monDpt <- cogCom2019[cogCom2019$dep %in% params$codeDpt, ]
+`r ''````{r importData}
+cog_com_2019 <- as.data.table(doremifasolData::cog_com_2019)
 ```
 
-```{r tableData, eval=FALSE, echo=TRUE}
+`r ''````{r selectData}
+monDpt <- cog_com_2019[dep %in% params$codeDpt]
+```
+
+`r ''````{r tableData}
 table(monDpt$dep)
 ```
-~~~
 
-La compilation de ce fichier, au travers de la commande `R Markdown::render(input = rapportParametre.Rmd.Rmd)` génèrera le document suivant :
+````
+
+
+
+
+
+La compilation de ce fichier, au travers de la commande `rmarkdown::render(input = "rapportParametre.Rmd")` génèrera le document suivant :
 
 ~~~
  01
@@ -191,8 +201,8 @@ La compilation de ce fichier, au travers de la commande `R Markdown::render(inpu
 
 La fonction `render` permet de transformer un format de fichier (ici `rapportParametre.Rmd`) en un autre, défini dans l'en-tête `YAML`. On remarque que la fonction produit une table d'effectif des communes de l'Ain (département 01) car cette valeur a été définie par défaut dans l'en-tête. Si l'utilisateur souhaite produire le même type de document pour un autre département, il devra **passer explicitement le paramètre `params = list(codeDpt = "XX")`** à la fonction `render`.
 
-```{r tableDpt02, eval=FALSE, echo=TRUE}
-R Markdown::render(input = rapportParametre.Rmd, params = list(codeDpt = "02"))
+```{r Aisne, eval=FALSE, echo=TRUE}
+rmarkdown::render(input = "rapportParametre.Rmd", params = list(codeDpt = "02"))
 ```
 
 Dans cet exemple, l'*output* ressemblera à ceci :
