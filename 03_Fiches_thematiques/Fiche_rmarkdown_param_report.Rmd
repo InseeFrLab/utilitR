@@ -63,8 +63,7 @@ Dans un deuxième temps, il est souhaitable de configurer le comportement par d�
 * la position et taille des figures ;
 * l'affichage ou non des instructions `R` dans le fichier de sortie.
 
-La méthode la plus simple pour configurer `knitr` consiste à inclure un *chunk* de configuration au début du fichier `R Markdown` (juste après l'en-tête). Ce *chunk* de configuration utilise la fonction `knitr::opts_chunk$set()` pour définir les options par défaut applicables à tous les _chunks_ du code source. La fonction `opts_chunk$set` permet de définir de nombreux paramètres, dont la liste complète est disponible sur https://yihui.org/knitr/options. Voici un exemple de _chunk_ de configuration.
-
+La méthode la plus simple pour configurer `knitr` consiste à inclure un *chunk* de configuration au début du fichier `R Markdown` (juste après l'en-tête). Ce *chunk* de configuration utilise la fonction `knitr::opts_chunk$set()` pour définir les options par défaut applicables à tous les _chunks_ du code source. La fonction `opts_chunk$set` permet de définir de nombreux paramètres, dont la liste complète est disponible sur https://yihui.org/knitr/options. Voici un exemple de _chunk_ de configuration :
 
 ````markdown
 `r ''````{r configuration, include=FALSE}
@@ -74,8 +73,7 @@ knitr::opts_chunk$set(echo = FALSE,
                       error = TRUE,
                       fig.align = "center",
                       out.width = '75%')
-```
-````
+```````
 
 Dans cet exemple, il est demandé à `R Markdown` de ne pas inclure les instructions `R` dans le document de sortie (`echo = FALSE`). Les *warnings* et les messages d'informations n'apparaîtront pas non plus dans le fichier de sortie. En revanche, les erreurs apparaîtront (`error = TRUE`). Les figures sont centrées (`fig.align = "center"`) et ont une largeur de 75% de la largeur du texte (`out.width = '75%'`).
 
@@ -96,14 +94,12 @@ A titre d'exemple, les deux *chunks* qui charge les _packages_ et les données p
 library(doremifasolData)
 library(data.table)
 library(ggplot2)
-```
-````
+```````
 
 ````markdown
 `r ''````{r donnees, include = FALSE}
 donnees <- fread("./donnees/mesdonnees.csv")
-```
-````
+```````
 
 ::: {.remarque}
 Il peut arriver qu'il soit difficile d'accéder à des fichiers en utilisant uniquement des chemins relatifs. Une solution de repli consiste à définir le chemin absolu du dossier à _un seul endroit_ dans le code source du rapport, puis à l'utiliser de façon relative dans les fonctions d'importation. Voici un exemple :
@@ -115,23 +111,18 @@ dossier_donnees <- ":/chemin/vers/les/donnees/"
 
 # Charger les données avec un chemin relatif
 donnees1 <- fread(paste0(dossier_donnees, "mesdonnees1.csv"))
-donnees2 <- fread(paste0(dossier_donnees, "mesdonnees1.csv"))
-```
-````
-
-
+donnees2 <- fread(paste0(dossier_donnees, "mesdonnees2.csv"))
+```````
 :::
 
 ### Nommer les _chunks_
 
-Il est important de donner un nom à tous les _chunks_, car cela facilite grandement la résolution des problèmes, en particulier si votre rapport est long. En effet, si la compilation du code source génère une erreur, `R Markdown` vous indiquera le nom du _chunk_ où se trouve l'erreur. Voici comment nommer un chunk :
-
+Il est important de donner un nom à tous les _chunks_, car cela facilite grandement la résolution des problèmes, en particulier si votre rapport est long. En effet, si la compilation du code source génère une erreur, `R Markdown` vous indiquera le nom du _chunk_ où se trouve l'erreur. Voici comment nommer un _chunk_ :
 
 ````markdown
-`r ''````{r nom_du_chunk, include = FALSE}
+`r ''````{r, nom_du_chunk, include = FALSE}
 resultat <- 1 + 1
-```
-````
+```````
 
 ## Les rapports paramétrés
 
@@ -180,21 +171,28 @@ utilitr::include_image("./pics/rapportsparam/rapport2.png", compression = FALSE)
 ```
 
 
+### Automatiser la génération de rapports paramétrés
 
-
-::: {.conseil}
-Il est possible de créer une fonction pour simplifier la génération de rapports paramétrés.
-:::
+La dernière étape de l'utilisation des rapports paramétrés consiste à en automatiser la production avec une fonction. Voici comment définir une fonction qui génère automatiquement un rapport 
 
 Afin d'illuster ce conseil, voici un exemple de fonction créée *ad hoc* par l'utilisateur désireux de simplifier la production d'un rapport paramétré :
 
-~~~
-monRapport <- function(codeDpt) {
-	R Markdown::render(input = "rapportParametre.Rmd",
+
+
+```{r automatisation, include = FALSE}
+GenererRapportDep <- function(codeDpt) {
+	rmarkdown::render(input = "rapportParametre.Rmd",
 										params = list(codeDpt = codeDpt),
 										envir = new.env(),
-										output_file = paste0("Rapport_", codeDpt, ".pdf")
+										output_file = paste0("Rapport_", codeDpt, ".html")
 	)
+}
+```
+
+
+
+~~~
+
 }
 ~~~
 
