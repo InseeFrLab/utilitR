@@ -154,33 +154,29 @@ Vous pouvez télécharger le fichier `Rmd` de cet exemple sur cette [page](https
 
 Une fois que le modèle de rapport paramétré est défini, il est possible de l'utiliser pour publier facilement des rapports. La compilation du code source avec la commande `rmarkdown::render("rapportParametre.Rmd")` génèrera le document suivant :
 
-```{r echo = FALSE, out.width = "60%"}
+```{r echo = FALSE, out.width = "75%"}
 utilitr::include_image("./pics/rapportsparam/rapport1.png", compression = FALSE)
 ```
 
 Vous pouvez remarquer que ce rapport porte sur le département "01", car le paramètre `codeDpt` prend par défaut la valeur "01" d'après l'en-tête du modèle de rapport. Si l'utilisateur souhaite produire le même type de document pour un autre département, il devra **passer explicitement le paramètre `params = list(codeDpt = "XX")`** à la fonction `render`. Par exemple, le code suivant produit un rapport sur le département "02" (l'Aisne).
 
-```{r Aisne, eval=FALSE, echo=TRUE}
+```{r Aisne, eval = FALSE, echo = TRUE}
 rmarkdown::render(input = "rapportParametre.Rmd", params = list(codeDpt = "02"))
 ```
 
 Dans cet exemple, l'*output* ressemblera à ceci :
 
-```{r echo = FALSE, out.width = "60%"}
+```{r echo = FALSE, out.width = "75%"}
 utilitr::include_image("./pics/rapportsparam/rapport2.png", compression = FALSE)
 ```
 
 
 ### Automatiser la génération de rapports paramétrés
 
-La dernière étape de l'utilisation des rapports paramétrés consiste à en automatiser la production avec une fonction. Voici comment définir une fonction qui génère automatiquement un rapport 
+La dernière étape de l'utilisation des rapports paramétrés consiste à en automatiser la production avec une fonction. Voici comment définir une fonction qui génère automatiquement un rapport à partir du modèle de rapport présenté ci-dessus :
 
-Afin d'illuster ce conseil, voici un exemple de fonction créée *ad hoc* par l'utilisateur désireux de simplifier la production d'un rapport paramétré :
-
-
-
-```{r automatisation, include = FALSE}
-GenererRapportDep <- function(codeDpt) {
+```{r automatisation}
+GenererRapport <- function(codeDpt, output_file) {
 	rmarkdown::render(input = "rapportParametre.Rmd",
 										params = list(codeDpt = codeDpt),
 										envir = new.env(),
@@ -189,28 +185,9 @@ GenererRapportDep <- function(codeDpt) {
 }
 ```
 
+Une fois la fonction définie, il est possible de générer un rapport paramétré pour le département "31" (Haute-Garonne) en exécutant la commande `GenererRapport(codeDpt = "31")`. Par défaut, le fichier de sortie s'appellera `Rapport_31.html`, mais il est possible de choisir un autre nom avec l'argument `output_file`.
 
-
-~~~
-
-}
-~~~
-
-Une fois la fonction établie, les rapports se réaliseront *via* la commande :
-
-~~~
-monRapport(codeDpt = "02")
-~~~
-
-Enfin, cette fonction peut également s'utiliser dans une boucle, au sein d'un autre document `R Markdown` :
-
-~~~
-for(i in maListeDeDpt) {
-	monRapport(i)
-}
-~~~
-
-Le modèle de *rapportParametre.Rmd* présenté dans cette fiche est disponible en téléchargement en cliquant sur le lien suivant (insérer lien vers fichier).
+Enfin, cette fonction peut être utilisée dans une boucle `for` ou un appel à la fonction `lapply` pour produire un grand nombre de rapports.
 
 # Pour en savoir plus
 
