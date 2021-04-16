@@ -31,6 +31,9 @@ Ces _packages_ présentent plusieurs avantages :
 * Leur créateur, Hadley Wickham, explique que la suite de _packages_ `tidyverse` couvre environ 90% des opérations qu'un statisticien a à réaliser en général.
 Pour se servir de ces _packages_, il ne faut pas oublier de les charger avec la fonction `library`.
 
+Par exemple, la ligne `matable %>% select(mavarible) %>% summarise()` est facilement compréhensible. 
+
+
 ```{r, warning = FALSE, message = FALSE}
 library(tibble)
 library(dplyr)
@@ -50,7 +53,6 @@ Les exemples de cette fiche s’appuient sur les données disponibles dans le *p
 
 ```{r}
 library(doremifasolData)
-bpe_ens_2018 <- bpe_ens_2018
 ```
 Les objets récupérés en sortie de `doremifasolData` sont tous des `data.frame`, bien que le _package_ s'appuie sur des fonctions issues de `tidyverse`. Il est donc nécessaire de les convertir en `tibble` avec la fonction `as_tibble` du *package* `tibble`.
 
@@ -207,7 +209,7 @@ Dans `dplyr`, les manipulations simples de données sont résumées en quelques 
 | `select(matches("...")`     | vérifie une expression régulière (_cf._ fiche [Manipuler des données textuelles])  |
 | `select(all_of(...))`       | sélectionne les colonnes listées dans un vecteur en paramètre |
 | `select(any_of(...))`       | identique à `all_of()`, mais sans erreur si la colonne n'existe pas |
-| `select(everything())`      | toutes les colonnes (utile pour mettre une autre colonne devant les autres)      |
+| `select(everything())`      | toutes les colonnes (utile pour mettre une nouvelle colonne devant les autres)      |
 
 #### Renommer des variables : `rename()`
  
@@ -259,12 +261,13 @@ Voici quelques utilisations fréquentes de `arrange()` :
  
 #### Ajouter et modifier des colonnes : `mutate()`
  
-**La fonction `mutate()` permet de créer de nouvelles colonnes ou de modifier des colonnes existantes.** Il est possible d'utiliser toutes les fonctions à l'intérieur d'une étape `mutate()`. Le code suivant crée une variable `NB_EQUIP_3PLUS` qui vaut `TRUE` si le nombre d'équipement est supérieur ou égal à 3, et `FALSE` sinon. Pour créer une nouvelle variable, on utilise un nom de variable qui n'existe pas encore dans la table, pour en modifier, on utilise directement le nom de la variable qu'on veut modifier.
+**La fonction `mutate()` permet de créer de nouvelles colonnes ou de modifier des colonnes existantes.** Il est possible d'utiliser toutes les fonctions à l'intérieur d'une étape `mutate()`. Le code suivant crée une variable `NB_EQUIP_3PLUS` qui vaut `TRUE` si le nombre d'équipement est supérieur ou égal à 3, et `FALSE` sinon. 
 
 ```{r}
 bpe_ens_2018_tbl %>% 
   mutate(NB_EQUIP_3PLUS = (NB_EQUIP >= 3))
 ```
+Pour créer une nouvelle variable, on utilise un nom de variable qui n'existe pas encore dans la table, pour en modifier, on utilise directement le nom de la variable qu'on veut modifier.
 
 Voici quelques utilisations fréquentes de `mutate()` :
  
@@ -277,7 +280,11 @@ Voici quelques utilisations fréquentes de `mutate()` :
  
 #### Calculer des statistiques : `summarise()`
  
+<<<<<<< HEAD
 **La fonction `summarise()` permet de calculer une ou plusieurs statistique à partir de la table de données.** Cette fonction est souvent utilisée après la fonction `group_by()` pour calculer des statistiques par groupe, et elle conduit à une agrégation de la table en fonction des groupes définis par la fonction `group_by` (par défaut une agrégation sur l'ensemble de la table). Le code suivant calcule le nombre total d'équipements dans la BPE `sum(NB_EQUIP, na.rm = TRUE)`, et le nombre total de boulangeries `sum(NB_EQUIP * (TYPEQU == "B203"), na.rm = TRUE)`.
+=======
+**La fonction `summarise()` permet de calculer une ou plusieurs statistique à partir de la table de données.** Cette fonction est souvent utilisée après la fonction `group_by()` pour calculer des statistiques par groupe, et elle conduit à une agrégation de la table en fonction des groupes définis par la fonction `group_by` (par défaut, sans l'ins, une agrégation sur l'ensemble de la table). Le code suivant calcule le nombre total d'équipements dans la BPE (`sum(NB_EQUIP, na.rm = TRUE)`), et le nombre total de boulangeries (`sum(NB_EQUIP * (TYPEQU == "B203"), na.rm = TRUE)`).
+>>>>>>> remotes/origin/milena-git-relecture-tidyverse
  
 ```{r, warning= FALSE}
 bpe_ens_2018_tbl %>% 
