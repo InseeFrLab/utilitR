@@ -37,7 +37,7 @@ Pour effectuer exclusivement une relecture, vous pouvez vous rendre directement
 à la section dédiée
 ([:arrow_down: Comment effectuer la relecture d'une fiche?](#comment-effectuer-la-relecture-dune-fiche))
 
-## :two: Comment proposer des modifications d'une fiche?
+## :two: Comment proposer des modifications d'une fiche? 
 
 [:arrow_up: Retour à l'introduction](#one-introduction)
 
@@ -147,15 +147,17 @@ compréhensible par un utilisateur standard. En revanche, la relecture ne porte
 pas sur les recommandations formulées dans la fiche, ni sur
 son organisation globale.
 
-La relecture peut comprendre trois types de tâches:
-
-* Proposer des corrections mineures (faute d'orthographes, formulations peu claires) : ce travail de modification est décrit dans [:arrow_up: Comment proposer des modifications d'une fiche?](#two-comment-proposer-des-modifications-dune-fiche). Il convient d'adopter la convention proposée de nommer la branche `typo-XXX`;
-* Faire des commentaires (exemple: je ne parviens pas à reproduire cet exemple): ce travail de modification est décrit dans __Comment faire des commentaires sur une fiche via Github?__;
-* Des signalements de problèmes: si le relecteur pense que l'organisation d'ensemble ou le déroulement de la fiche soulève une difficulté sérieuse, ou que des points importants n'ont pas été abordés, il est invité à le signaler en suivant la procédure décrite dans la partie __Comment ouvrir une _issue_ si la fiche soulève un problème?__.
-
 Il est recommandé de lire la partie
 [:arrow_up: Comment proposer des modifications d'une fiche?](#two-comment-proposer-des-modifications-dune-fiche)
 avant de proposer des commentaires sur une fiche via Github.
+
+### Où faire des retours sur une fiche ?
+
+Le lieu idéal de retour de la part d'un relecteur ou d'une relectrice dépend du type de modification envisagée :
+
+* Proposer des corrections mineures (faute d'orthographes, formulations peu claires) : ce travail de modification est décrit dans [:arrow_up: Comment proposer des modifications d'une fiche?](#two-comment-proposer-des-modifications-dune-fiche). Les suggestions de modification sont dès lors associées à une `pull request` pour laquelle il convient d'adopter la convention proposée de nommer la branche `typo-XXX`. Lorsque la `pull request` est ouverte, il est possible de renseigner, dans la description de celle-ci, des commentaires génériques. Les commentaires relatifs à une ligne peuvent être faits sous forme de commentaire en cliquant sur l'onglet `Files changed` puis, sur la fiche en question, en ouvrant un commentaire en cliquant sur le signe `+` dans la marge ;
+* Faire des commentaires sans suggestion de modifications (exemple: je ne parviens pas à reproduire cet exemple): ce travail de modification est décrit dans __Comment faire des commentaires sur une fiche via Github?__;
+* Des signalements de problèmes: si le relecteur pense que l'organisation d'ensemble ou le déroulement de la fiche soulève une difficulté sérieuse, ou que des points importants n'ont pas été abordés, il est invité à le signaler en suivant la procédure décrite dans la partie __Comment ouvrir une _issue_ si la fiche soulève un problème?__.
 
 
 ### Comment faire des commentaires sur une fiche via Github?
@@ -163,11 +165,12 @@ avant de proposer des commentaires sur une fiche via Github.
 La démarche est un peu fastidieuse mais est possible directement depuis `Github`. 
 Dans le menu du site web www.book.utilitr.org,
 il faut d'abord se placer dans la fiche à
-relire et ensuite cliquer sur le bouton `View`, en haut à gauche.
+relire et ensuite cliquer sur le bouton `View source`, dans le menu à droite.
 
 ![](./pics/contributing/view_bs4.png)
 
-Cela ouvre l'état actuel d'une fiche avec, à gauche, pour chaque bloc, la
+Cela ouvre l'état actuel d'une fiche. CLiquer sur le bouton `blame` en haut à droite. 
+Sur la marge de gauche sera alors affichée, pour chaque bloc, la
 modification (`commit`) ayant amené à l'état actuel du bloc.
 
 ![](./pics/contributing/view2.png)
