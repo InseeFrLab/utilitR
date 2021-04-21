@@ -143,20 +143,24 @@ Par exemple, on peut créer un rapport paramétré qui produit des statistiques 
 
 Par conséquent, un même modèle de rapport "générique" (appelé *template*) peut être utilisé pour produire de multiples rapports sur différents territoires, différentes périodes, différents secteurs...
 
+### Paramétrer un rapport
 
-### Définir un modèle de rapport paramétré
+Voici un exemple de situation dans laquelle les rapports paramétrés sont utiles. Un utilisateur souhaite produire pour chaque département français un rapport donnant le nombre de communes de ce département.
 
-Voici un exemple de situation dans laquelle les rapports paramétrés sont utiles. Un utilisateur souhaite produire pour chaque département français un rapport donnant le nombre de commune de ce département. Une première approche consiste à créer un rapport `R Markdown` par département (`fichierAin.Rmd`, `fichierAisne.Rmd`...). Si elle peut convenir lorsque le nombre de document à produire est réduit, cette approche n'est clairement pas adaptée lorsqu'il est question de réaliser plusieurs dizaines de rapports. C'est à ce moment que le système de rapports paramétrés prend tout son sens.
+Une première approche consiste à créer un rapport `R Markdown` par département (`fichier_Ain.Rmd`, `fichier_Aisne.Rmd`...). Si elle peut convenir lorsque le nombre de documents à produire est réduit, cette approche n'est clairement pas adaptée lorsqu'il est question de réaliser plusieurs dizaines de rapports.
 
-Le modèle de rapport paramétré suivant répond au besoin de l'utilisateur. Vous pouvez noter que cet exemple minimal contient tous les éléments d'un rapport paramétré : un en-tête renseigné qui contient la liste des paramètres (il n'y en a qu'un seul : `codeDpt`), un _chunk_ de configuration, des _chunks_ qui importent les _packages_ et les données, du texte, et des _chunks_ manipulant des données.
+Une solution est d'introduire le département comme paramètre du rapport :
 
-```{r echo = FALSE, comment = ""}
-utilitr::render_rmd("resources/rapportsparam/rapportParametre.Rmd")
+```yaml
+---
+title: "Titre du rapport"
+output: html_document
+params:
+  codeDpt: "01"
+---
 ```
 
-::: {.remarque}
-Vous pouvez télécharger le fichier `Rmd` de cet exemple sur cette [page](https://github.com/InseeFrLab/utilitR/blob/master/resources/rapportsparam/rapportParametre.Rmd).
-:::
+Il faut ensuite remplacer dans les différents _chunks_ le code du département par `params$codeDpt`. Une fois ces 2 modifications (en-tête et _chunks_) effectués, il n'est plus besoin de changer le département qu'à un seul endroit.
 
 ### Utiliser un modèle de rapport paramétré
 
@@ -178,7 +182,6 @@ Dans cet exemple, l'*output* ressemblera à ceci :
 utilitr::include_image("./pics/rapportsparam/rapport2.png", compression = FALSE)
 ```
 
-
 ### Automatiser la génération de rapports paramétrés
 
 La dernière étape de l'utilisation des rapports paramétrés consiste à en automatiser la production avec une fonction. Voici comment définir une fonction qui génère automatiquement un rapport à partir du modèle de rapport présenté ci-dessus :
@@ -197,6 +200,18 @@ GenererRapport <- function(codeDpt) {
 Une fois la fonction définie, il est possible de générer automatiquement un rapport paramétré pour le département "31" (Haute-Garonne) en exécutant la commande `GenererRapport(codeDpt = "31")`. Par défaut, le fichier de sortie s'appellera `Rapport_31.html`, mais il est possible de choisir un autre nom avec l'argument `output_file`.
 
 Enfin, cette fonction peut être utilisée dans une boucle `for` ou un appel à la fonction `lapply` pour produire un grand nombre de rapports.
+
+### Un exemple complet de rapport
+
+Le modèle de rapport paramétré suivant répond au besoin de l'utilisateur. Vous pouvez noter que cet exemple minimal contient tous les éléments d'un rapport paramétré : un en-tête renseigné qui contient la liste des paramètres (il n'y en a qu'un seul : `codeDpt`), un _chunk_ de configuration, des _chunks_ qui importent les _packages_ et les données, du texte, et des _chunks_ manipulant des données.
+
+```{r echo = FALSE, comment = ""}
+utilitr::render_rmd("resources/rapportsparam/rapportParametre.Rmd")
+```
+
+::: {.remarque}
+Vous pouvez télécharger le fichier `Rmd` de cet exemple sur cette [page](https://github.com/InseeFrLab/utilitR/blob/master/resources/rapportsparam/rapportParametre.Rmd).
+:::
 
 # Pour en savoir plus
 
