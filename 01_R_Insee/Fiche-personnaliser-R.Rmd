@@ -1,14 +1,9 @@
 # Personnaliser la configuration de `R` {#personnaliser}
 
-
-
-L'agent souhaite personnaliser sa configuration de `R` ou de Rstudio.
-
-
+L'agent souhaite personnaliser sa configuration de `R` ou de `RStudio`.
 
 ::: {.recommandation}
-**La personnalisation de `R`, ou de `RStudio` doit être maniée avec précaution**, car personnaliser votre environnement de travail, c'est prendre le risque de rendre vos travaux difficiles à reproduire. Cette fiche vous explique ce que la personnalisation peut apporter, et ce pour quoi elle ne doit âs être utilisée.
-
+**La personnalisation de `R`, ou de `RStudio` doit être maniée avec précaution**, car personnaliser votre environnement de travail, c'est prendre le risque de rendre vos travaux difficiles à reproduire. Cette fiche vous explique ce que la personnalisation peut apporter, et ce pour quoi elle ne doit pas être utilisée.
 
 **Il est recommandé de ne pas personnaliser la configuration de `R`**, sauf dans les cas suivants :
 
@@ -16,7 +11,7 @@ L'agent souhaite personnaliser sa configuration de `R` ou de Rstudio.
 * **modifier des paramètres dont les valeurs par défaut ne sont pas adaptées au travail avec `R` à l'Insee**, comme le _proxy_ ou les chemins vers des exécutables ;
 * **changer des éléments qui n'ont aucun impact sur les résultats**, mais peuvent vous faciliter la vie, comme la taille de l'historique, l'adresse des dépots de package, le texte de l'invite de commande, etc.
 
-D'autres paramètres, notamment ceux de RStudio, sont aisément modifiables, mais parfois non automatisables (comme le changement d'apparence).
+D'autres paramètres, notamment ceux de `RStudio`, sont aisément modifiables, mais parfois non automatisables (comme le changement d'apparence).
 :::
 
 
@@ -37,7 +32,7 @@ De façon simplifiée, la procédure d'initialisation de `R` se déroule en troi
 1. R cherche des fichiers de type *environment*. Ces fichiers permettent notamment d'indiquer des chemins spécifiques où se trouvent d'autres fichiers, ou certaines caractéristiques comme le _proxy_.
 
 2. `R` cherche des fichiers de type *profile*. Ces fichiers contiennent du code `R` qui se lance automatiquement au démarrage de `R`. Ils permettent par exemple d'indiquer des _packages_ supplémentaires à charger, de personnaliser le message d'accueil de `R`, ou de sauvegarder automatiquement les informations de la session lorsqu'on la quitte.
-3. `R` prépare l'ouverture de la session avec `R`, avec les informations récupérées précédemment dans les fichiers *environment* et *profile*, et d'autres informations, comme par exemple les données qui ont pu être conservées dans un `.Rdata`. `R` charge les _packages_ de base, avant de charger l'historique des commandes (s'il en existe un). C'est lors de ce dernier temps que `R` peut charger les données et l'historique après s'être interrompu inopinément.
+3. `R` prépare l'ouverture de la session avec `R`, avec les informations récupérées précédemment dans les fichiers *environment* et *profile*, et d'autres informations, comme par exemple les données qui ont pu être conservées dans un `.Rdata`. `R` charge les _packages_ de base (installés avec `R`), avant de charger l'historique des commandes (s'il en existe un). C'est lors de ce dernier temps que `R` peut charger les données et l'historique après s'être interrompu inopinément.
 
 Enfin, il existe d'autres fichiers comme le `.Rhistory` qui contient l'historique des commandes, notamment celles réalisées à la console. Ce fichier peut également contenir des informations sensibles, il est donc rare de le partager, mais il est possible de le conserver.
 
@@ -45,16 +40,16 @@ Enfin, il existe d'autres fichiers comme le `.Rhistory` qui contient l'historiqu
 
 Il est possible de personnaliser votre configuration de `R` en définissant des fichiers *environment* et *profile*. Ces fichiers peuvent être définis à deux niveaux qu'il faut bien distinguer :
 
-- la configuration générale de `R`, qui s'applique à toutes les sessions `R` que vous ouvrez. Dans ce cas, les fichiers de configuration doivent être placés dans le répertoire `Home`. vous pouvez récupérer le chemin de ce dossier en exécutant la commande `Sys.getenv("HOME")`.
-- la configuration spécifique à un `Rproject`, qui s'applique uniquement lorsque vous travaillez sur ce projet. Dans ce cas, les fichiers de configuration doivent être placés dans le répertoire du `Rproject` auquel ils s'appliquent.
+- la configuration générale de `R`, qui s'applique à toutes les sessions `R` que vous ouvrez. Dans ce cas, les fichiers de configuration doivent être placés dans le répertoire `Home`. Vous pouvez récupérer le chemin de ce répertoire en exécutant la commande `Sys.getenv("HOME")` (sous Windows, typiquement _Mes documents_).
+- la configuration spécifique à un `Rproject` (projet `RStudio`), qui s'applique uniquement lorsque vous travaillez sur ce projet. Dans ce cas, les fichiers de configuration doivent être placés dans le répertoire du `Rproject` auquel ils s'appliquent.
 
 Définir des fichiers *environment* et *profile* spécifiques à un `Rproject` s'avère très utile lorsque les projets sur lesquels vous travaillez requièrent des configurations de `R` différentes. 
 
 **Un point essentiel est qu'une session `R` ne charge qu'un seul fichier *environment* et un seul fichier *profile*.** Les fichiers de configurations sont chargés par ordre de spécificité décroissant :
 
-1. Les fichiers présents dans le répertoire d'un `Rproject` sont prioritaires ;
-2. A défaut, les fichiers présents dans le répertoire `Home` (sous Windows, ce sera typiquement _Mes documents_) ;
-3. A défaut, les fichiers présents dans le répertoire d'installation de `R`.
+1. les fichiers présents dans le répertoire d'un `Rproject` sont prioritaires ;
+2. à défaut, les fichiers présents dans le répertoire `Home` ;
+3. à défaut, les fichiers présents dans le répertoire d'installation de `R`.
 
 Ajouter un fichier *environment* dans le répertoire d'un `Rproject` aura donc pour conséquence que l'éventuel fichier *environment* présent dans le répertoire `Home` ne sera pas chargé par la session `R` lorsque vous travaillerez sur ce projet.
 
@@ -62,7 +57,7 @@ Ajouter un fichier *environment* dans le répertoire d'un `Rproject` aura donc p
 
 ### Le fichier `.Renviron`
 
-**Le fichier d'environnement `.Renviron` sert logiquement à définir des variables d'environnement.** Ces variables sont utiles uniquement pour `R`, soit pour les interactions entre `R` et d'autres logiciels. Ces variables d'environnement peuvent également modifier la manière dont `R` réalise certaines opérations. 
+**Le fichier d'environnement `.Renviron` sert à définir des variables d'environnement.** Ces variables sont utiles pour `R` lui-même ou pour les interactions entre `R` et d'autres logiciels. Ces variables d'environnement peuvent également modifier la manière dont `R` réalise certaines opérations. 
 
 Par exemple, un `.Renviron` fictif pourrait ressembler à ceci : 
 
@@ -76,7 +71,7 @@ _R_CHECK_LENGTH_1_CONDITION_=true
 
 ```
 
-Comme vous pouvez le constater, un tel fichier n'est pas constitué de code `R`, mais de paires **nom=valeur**. Chaque paire définit une variable d'environnement qui sera exploitée par `R` pour interagir avec d'autres logiciels, ou directement pour lui. Ce fichier fictif réalise les opérations suivantes :
+Un tel fichier n'est pas constitué de code `R`, mais de paires **nom=valeur**. Chaque paire définit une variable d'environnement qui sera exploitée par `R` pour interagir avec d'autres logiciels, ou directement pour lui. Ce fichier fictif réalise les opérations suivantes :
 
 * il définit la clé d'API dans une variable MON_API_INSEE. Ultérieurement, un script `R` pourra faire appel à cette variable _via_ la commande `Sys.getenv("MON_API_INSEE")`. De cette façon, la clé confidentielle n'est pas directement visible dans le script `R`, et ce script peut être partagé sans risque de sécurité ;
 * il modifie les paramètres du _proxy_ pour permettre à `R` de se connecter à Internet ;
@@ -92,10 +87,10 @@ Voici **deux conseils importants** sur l'usage du fichier d'environnement `.Renv
 
 La méthode la plus simple pour modifier le fichier `.Renviron` est la suivante :
 
-1. Ouvrir le fichier `.Renviron`. La commande `usethis::edit_r_environ()` permet d'ouvrir le fichier `.Renviron` de votre profil utilisateur (c'est le fichier d'environnement utilisé lorsqu'il n'y a pas de fichier d'environnement à votre projet). Si vous travaillez dans un `RProject`, la commande `usethis::edit_r_environ(scope="project")` permet d'ouvrir le le fichier `.Renviron` spécifique à votre projet.
+1. Ouvrir le fichier `.Renviron`. La commande `usethis::edit_r_environ()` permet d'ouvrir le fichier `.Renviron` de votre profil utilisateur (c'est le fichier d'environnement utilisé lorsqu'il n'y a pas de fichier d'environnement à votre projet). Si vous travaillez dans un `RProject`, la commande `usethis::edit_r_environ(scope = "project")` permet d'ouvrir le le fichier `.Renviron` spécifique à votre projet.
 2. Modifier le fichier, sans oublier la ligne vide en fin de document. 
 3. Sauvegarder le fichier.
-3. Relancez `R`, via `Session > Restart R` ou <kbd>Ctrl</kbd> + <kbd>⇧ Shift</kbd> + <kbd>F10</kbd>.
+3. Relancer `R`, via `Session > Restart R` ou <kbd>Ctrl</kbd> + <kbd>⇧ Shift</kbd> + <kbd>F10</kbd> dans `RStudio`.
 
 ::: {.specificite}
 Comme dans de nombreuses institutions, la navigation sur Internet depuis un poste de l'Insee est contrôlée par un *proxy* (intermédiaire entre le *web* et un ordinateur). Il est indispensable de paramétrer l'adresse du _proxy_ pour que `R` puisse accéder à Internet (par exemple pour télécharger un _package_). Pour ce faire, vous pouvez récupérer l'adresse du _proxy_ de l'Insee en exécutant la commande suivante :
@@ -111,7 +106,7 @@ https_proxy=adresse_du_proxy
 :::
 
 ::: {.remarque}
-Il faut être prudent lorsqu'on modifie des variables internes à `R`, car ces modifications peuvent aboutir à ce que les résultats des scripts ne soient pas reproductibles. Par exemple, `R` a un comportement assez étrange dans le cas suivant : 
+Il faut être prudent lorsqu'on modifie des variables internes à `R`, car ces modifications peuvent aboutir à ce que les résultats des scripts ne soient pas reproductibles. Par exemple, `R` a un comportement potentiellement incohérent dans le cas suivant : 
 ```{r}
 vecteurboolean <- c(TRUE, FALSE, NULL)
 if (vecteurboolean) {
@@ -124,7 +119,7 @@ if (vecteurboolean) {
 Lorsqu'une condition porte sur un vecteur de booléens (`TRUE` ou `FALSE`), `R` utilise uniquement le premier élément du vecteur pour vérifier si condition est remplie, et renvoie un simple avertissement à l'utilisateur. Toutefois, il est possible de modifier ce comportement par défaut en indiquant `_R_CHECK_LENGTH_1_CONDITION_ = "TRUE"` dans le fichier `.Renviron` : `R` renverra alors une erreur et stoppera le code si `R` doit vérifier une condition sur un vecteur au lieu d'un simple scalaire. Dans ce cas, le code précédent ne renverra rien du tout et s’arrêtera avec une erreur. En revanche, chez un autre utilisateur dont le fichier `.Renviron` ne contient pas ce réglage, il n'y aura pas d'erreur. Le même code aboutit donc à des résultats différents en raison de différences dans les variables d'environnement.
 :::
 
-Il est possible de modifier les paramètres de son environnement ou d'en générer d'autres après l'ouverture de la session `R`, avec la commande `Sys.setenv()`. Vous pouvez par exemple exécuter la commande `Sys.setenv("MON_API_INSEE"="jamais")`. De même la fonction `Sys.getenv()` permet de lister certaines valeurs présentes dans l'environnement actuel. Toutefois, toutes les procédures d'initialisation de R se seront déjà déroulées alors avec les anciennes valeurs, définies par défaut. Cette subtilité peut être importante !
+Il est possible de modifier les paramètres de son environnement ou d'en générer d'autres après l'ouverture de la session `R`, avec la commande `Sys.setenv()`. Vous pouvez par exemple exécuter la commande `Sys.setenv("MON_API_INSEE"="jamais")`. De même, la fonction `Sys.getenv()` permet de lister certaines valeurs présentes dans l'environnement actuel. Toutefois, toutes les procédures d'initialisation de R se seront déjà déroulées alors avec les anciennes valeurs, définies par défaut. Cette subtilité peut être importante !
 
 
 ### Le fichier `.Rprofile`
@@ -137,7 +132,6 @@ Le fichier `.RProfile` contient du code `R` qui sera exécuté par `R` après le
 * personnaliser l'affichage de `R`.
 
 Un fichier `.Rprofile` peut par exemple ressembler à ceci :
-
 
 ```
 options(repos = c(CRAN = "https://cran.rstudio.org"))
@@ -160,28 +154,23 @@ Ce fichier `.Rprofile` permet de :
 
 * définir un miroir par défaut pour le CRAN ;
 * modifier l'affichage de l'invite de commande (le ">" de début de ligne devient "R> ") ;
-* modifier l'affichage par défaut des nombres décimaux  ;
+* modifier l'affichage par défaut des nombres décimaux ;
 * modifier l'affichage de la console lorsqu'une partie du code reste à écrire (le "+ " en début de ligne devient "+++ ") ;
 * dans le cadre d'un appel à la console, la largeur des impressions est fixée à 120 ;
 * les fonctions `.First` et `.Last` permettent d'effectuer des opérations spécifiques au lancement et à la fermeture de la session R (imprimer du texte dans le cas présent) ;
 * Attention, comme précédemment, **un fichier `.Rprofile` doit impérativement se terminer par une ligne vierge**.
 
-
-La fonction `options()` affiche les valeurs actuellement chargées pour les options. Il est possible de les modifier à la volée avec la commande `options(nom_de_l_option=valeur_de_l_option)`. Attention toutefois, modifier une option avec la fonction `options()` n'est valable que pour la session de `R` actuellement active ! Si `R` redémarre, toutes les options modifiées à la volée ne sont plus prises en compte. Si vous voulez modifier durablement la valeur d'une option, il est préférable de modifier le fichier `.Rprofile`.
+La fonction `options()` affiche les valeurs actuellement chargées pour les options. Il est possible de les modifier à la volée avec la commande `options(nom_de_l_option = valeur_de_l_option)`. Attention toutefois, modifier une option avec la fonction `options()` n'est valable que pour la session de `R` actuellement active ! Si `R` redémarre, toutes les options modifiées à la volée ne sont plus prises en compte. Si vous voulez modifier durablement la valeur d'une option, il est préférable de modifier le fichier `.Rprofile`.
 
 Un exemple plus réaliste de `.Rprofile` peut être trouvé [ici](https://github.com/InseeFrLab/utilitR/blob/master/.Rprofile) : c'est le fichier qui permet notamment de réaliser la documentation `utilitR`. Notez notamment le message à l'ouverture du projet. Avoir des fonctions n'est pas forcément interdit, tant que ces fonctions sont également partagées, comme c'est le cas dans ce projet !
-
-
 
 ::: {.conseil}
 Il n'est nullement obligatoire de définir des réglages spécifiques avec un fichier `.Rprofile`. Toutefois, si vous le faites, il est fortement conseillé de :
 
-
 * travailler dans le `.Rprofile` d'un projet, et non pas le `.Rprofile` général de votre profil d'utilisateur ;
-* partager le fichier `.Rprofile` du projet avec vos collègues _via_ Gitlab, après avoir vérifié qu'il ne contenait aucune information sensible.
+* partager le fichier `.Rprofile` du projet avec les autres contributeurs du projet _via_ une forge logicielle, après avoir vérifié qu'il ne contenait aucune information sensible.
 
-**Il est fortement déconseillé de réaliser les choses suivantes dans le fichier `.Rprofile`**:
-
+**Il est fortement déconseillé de réaliser les actions suivantes dans le fichier `.Rprofile`** :
 
 * charger des _packages_ ;
 * définir des alias de fonctions ;
@@ -189,6 +178,7 @@ Il n'est nullement obligatoire de définir des réglages spécifiques avec un fi
 
 En effet, toute personne qui ne dispose pas de ce fichier de configuration ne sera pas en mesure de reproduire vos travaux.
 :::
+
 ## Quelques bonnes pratiques
 
 **La personnalisation de `R` est une opération sensible qui ne doit pas interférer avec l'exigence de reproductibilité des travaux statistiques.** Cette personnalisation doit donc porter uniquement sur des modifications sans impact sur les calculs et sur des informations ayant vocation à ne pas être diffusées. Ces informations à ne pas diffuser peuvent être de deux types :
@@ -196,8 +186,7 @@ En effet, toute personne qui ne dispose pas de ce fichier de configuration ne se
 * **informations sensibles** (comme les identifiants d'API ou les paramètres de _proxy_). Il est important que ces informations ne figurent pas dans les programmes de façon à pouvoir partager librement les codes ;
 * **informations d'infrastructure** (comme les chemins vers des exécutables). Ces informations n'ont pas vocation à être partagées, car elles varient d'un poste d'un agent à l'autre.
 
-
-Les autres opérations modifiant le comportement de base (comme `stringAsFactors=FALSE`) doivent être partagées et accessibles, _via_ le fichier `.Rprofile`. Pour information, la version 4.0 de `R` a modifié cette valeur par défault : par défault, `stringAsFactors` est `FALSE`, alors qu'il était `TRUE`pour les versions antérieures.
+Les autres opérations modifiant le comportement de base (comme `options(stringAsFactors = FALSE)`) doivent être partagées et accessibles, _via_ le fichier `.Rprofile`. Pour information, la version 4.0 de `R` a modifié cette valeur par défault : par défault, `stringAsFactors` est `FALSE`, alors qu'il était `TRUE`pour les versions antérieures.
 
 ## Pour en savoir plus
 
