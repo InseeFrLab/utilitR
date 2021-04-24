@@ -50,7 +50,7 @@ Les API sont proposées avec plusieurs degrés de liberté pour l'utilisateur :
 Comme pour l'utilisation d'une fonction ou d'une macro SAS, l'appel d'une API s'effectue via des paramètres. 
 Chaque service se présente sous la forme d'une url. Cette url est à compléter avec les différents paramètres de la requête.
 
-Prenons l'exemple de l'API Sirene, l'url a utiliser pour avoir des informations sur un siren est : https://api.insee.fr/entreprises/sirene/V3/siren/{siren} (modifier {siren} en renseignant le numéro du siren).
+Prenons l'exemple de l'API Sirene, l'url à utiliser pour avoir des informations sur un siren est : https://api.insee.fr/entreprises/sirene/V3/siren/{siren} (modifier {siren} en renseignant le numéro du siren). De manière générale, l'ajout de paramètres permettant de délimiter la requête vient alimenter la constitution de l'url ; l'API va ensuite, au travers de cette url, renvoyer une réponse **structurée** contenant l'ensemble des informations demandées. S'agissant de l'API Sirene, l'utilisateur intéressé peut retrouver dans [la documentation](https://api.insee.fr/catalogue/site/themes/wso2/subthemes/insee/templates/api/documentation/download.jag?tenant=carbon.super&resourceUrl=/registry/resource/_system/governance/apimgt/applicationdata/provider/insee/Sirene/V3/documentation/files/INSEE%20Documentation%20API%20Sirene%20Services-V3.9.pdf) le paramétrage de l'url permettant de solliciter l'API.
 
 Chaque service proposé par l'API aura sa propre url avec ses propres paramètres.
 
@@ -85,6 +85,18 @@ set_config(config(token = token))
 # Dès lors, vous pouvez accéder aux API de l’Insee auxquelles votre application a souscrit.
 
 ```
+
+### [doremifasol](https://github.com/InseeFrLab/DoReMIFaSol)
+
+Ce package s'appuie sur le package `apinsee` pour solliciter l'API Sirène dans une procédure de requêtage intégrée. À condition d'avoir renseigné les variables d'environnement décrites ci-dessus, le package permet la sollicitation de l'API Sirene, en incluant dans le paramètre `argsApi` des éléments de paramétrage permettant la constitution de l'url pour récupérer en contrepartie les données désirées.
+
+```{r, eval = FALSE}
+# Obtenir la liste des établissements créée le 1er janvier 2020
+etablissements <- telechargerDonnees("SIRENE_SIRET", 
+                                     argsApi = list(q = "dateCreationUniteLegale:2020-01-01"))
+
+```
+
 
 ### [insee](https://hadrilec.github.io/insee/)
 
