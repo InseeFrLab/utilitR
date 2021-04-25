@@ -20,7 +20,7 @@ Le document apporte une réponse aux questions suivantes:
 
 - [:arrow_down: Comment proposer des modifications d'une fiche?](#two-comment-proposer-des-modifications-dune-fiche)
 - [:arrow_down: Comment participer aux discussions collectives?](#three-comment-participer-aux-discussions-collectives)
-- [:arrow_down: Comment effectuer la relecture d'une fiche?](#comment-effectuer-la-relecture-dune-fiche)
+- [:arrow_down: Comment effectuer la relecture d'une fiche?](#four-comment-effectuer-la-relecture-dune-fiche)
     - Comment suggérer des remarques sur une fiche via Github?
     - Comment ouvrir une issue si la fiche pose un réel problème?
 - [:arrow_down: Comment ajouter en tant que contributeur une nouvelle fiche?](#five-comment-ajouter-une-nouvelle-fiche-à-la-documentation)
