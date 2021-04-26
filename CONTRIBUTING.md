@@ -221,6 +221,12 @@ de la documentation `utilitR`.
 
 Plutôt que d'utiliser un environnement en local dont la configuration peut différer de manière parfois significative avec l'environnement canonique qui sert à générer la documentation `utilitR` sous Github, il est recommandé d'utiliser le service RStudio du SSP Cloud.
 
+#### Lancer le service RStudio configuré
+
+#### Configurer l'accès au dépôt distant Github : la méthode simple et sécurisée
+
+#### COnfigurer l'accès au dépôt distant Github : la méthode à vos risques et périls
+
 ### :one: Forker le dépôt `utilitR`
 
 Seuls les mainteneurs du dépôt `utilitR` ont les droits d'écriture sur le dépôt
