@@ -217,6 +217,10 @@ Une fois que l'équipe de contributeurs est d'accord sur l'objet de la fiche et 
 servira à mettre à jour le fork pour intégrer les dernières mises à jour
 de la documentation `utilitR`.
 
+### Utiliser un environnement de travail entièrement configuré pour disposer de l'ensemble des librairies nécessaires à la génération de la documentation
+
+Plutôt que d'utiliser un environnement en local dont la configuration peut différer de manière parfois significative avec l'environnement canonique qui sert à générer la documentation `utilitR` sous Github, il est recommandé d'utiliser le service RStudio du SSP Cloud.
+
 ### :one: Forker le dépôt `utilitR`
 
 Seuls les mainteneurs du dépôt `utilitR` ont les droits d'écriture sur le dépôt
