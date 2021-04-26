@@ -51,6 +51,11 @@ RUN apt-get update && \
 
 RUN whereis google-chrome
 
+# Installing mc
+
+RUN wget https://dl.min.io/client/mc/release/linux-amd64/mc -O /usr/local/bin/mc && \
+    chmod +x /usr/local/bin/mc
+
 # Change right permissions (see https://github.com/rocker-org/rocker-versioned/issues/104)
 # RUN  chown -R root:staff /opt/texlive \
 #   && chown -R root:staff /usr/local/texlive \
