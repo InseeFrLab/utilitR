@@ -66,14 +66,16 @@ Dans un deuxième temps, il est souhaitable de configurer le comportement par d�
 La méthode la plus simple pour configurer `knitr` consiste à inclure un *chunk* de configuration au début du fichier `R Markdown` (juste après l'en-tête). Ce *chunk* de configuration utilise la fonction `knitr::opts_chunk$set()` pour définir les options par défaut applicables à tous les _chunks_ du code source. La fonction `opts_chunk$set` permet de définir de nombreux paramètres, dont la liste complète est disponible sur https://yihui.org/knitr/options. Voici un exemple de _chunk_ de configuration :
 
 ````markdown
-`r ''````{r configuration, include=FALSE}
+`r ''`
+```{r configuration, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE,
                       warning=FALSE,
                       message=FALSE,
                       error = TRUE,
                       fig.align = "center",
                       out.width = "75%")
-```````
+```
+````
 
 Dans cet exemple, il est demandé à `R Markdown` de ne pas inclure les instructions `R` dans le document de sortie (`echo = FALSE`). Les *warnings* et les messages d'informations n'apparaîtront pas non plus dans le fichier de sortie. En revanche, les erreurs apparaîtront (`error = TRUE`). Les figures sont centrées (`fig.align = "center"`) et ont une largeur de 75% de la largeur du texte (`out.width = "75%"`).
 
@@ -94,12 +96,14 @@ A titre d'exemple, les deux *chunks* qui chargent les _packages_ et les données
 library(doremifasolData)
 library(data.table)
 library(ggplot2)
-```````
+```
+````
 
 ````markdown
 `r ''````{r donnees, include = FALSE}
 donnees <- fread("./donnees/mesdonnees.csv")
-```````
+```
+````
 
 ::: {.remarque}
 Il peut arriver qu'il soit difficile d'accéder à des fichiers en utilisant uniquement des chemins relatifs. Une solution de repli consiste à définir le chemin absolu du dossier à _un seul endroit_ dans le code source du rapport, puis à l'utiliser de façon relative dans les fonctions d'importation. Voici un exemple :
@@ -112,7 +116,8 @@ dossier_donnees <- "D:/chemin/vers/les/donnees/"
 # Charger les données avec un chemin composé
 donnees1 <- fread(paste0(dossier_donnees, "mesdonnees1.csv"))
 donnees2 <- fread(paste0(dossier_donnees, "mesdonnees2.csv"))
-```````
+```
+````
 :::
 
 ### Nommer les _chunks_
@@ -122,7 +127,8 @@ Il est important de donner un nom à tous les _chunks_, car cela facilite grande
 ````markdown
 `r ''````{r nom_du_chunk, include = FALSE}
 resultat <- 1 + 1
-```````
+```
+````
 
 ## Les rapports paramétrés
 
@@ -160,7 +166,10 @@ utilitr::include_image("./pics/rapportsparam/rapport1.png", compression = FALSE)
 Vous pouvez remarquer que ce rapport porte sur le département "01", car le paramètre `codeDpt` prend par défaut la valeur "01" d'après l'en-tête du modèle de rapport. Si l'utilisateur souhaite produire le même type de document pour un autre département, il devra **passer explicitement le paramètre `params = list(codeDpt = "XX")`** à la fonction `render`. Par exemple, le code suivant produit un rapport sur le département "02" (l'Aisne).
 
 ```{r Aisne, eval = FALSE, echo = TRUE}
-rmarkdown::render(input = "rapportParametre.Rmd", params = list(codeDpt = "02"))
+rmarkdown::render(
+  input = "rapportParametre.Rmd", 
+  params = list(codeDpt = "02")
+)
 ```
 
 Dans cet exemple, l'*output* ressemblera à ceci :
@@ -189,6 +198,6 @@ Une fois la fonction définie, il est possible de générer automatiquement un r
 
 Enfin, cette fonction peut être utilisée dans une boucle `for` ou un appel à la fonction `lapply` pour produire un grand nombre de rapports.
 
-# Pour en savoir plus
+## Pour en savoir plus
 
 - La [documentation officielle](https://bookdown.org/yihui/R Markdown/parameterized-reports.html) sur les rapports paramétrés avec `R Markdown`. 
