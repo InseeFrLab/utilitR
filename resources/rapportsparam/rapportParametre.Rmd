@@ -1,0 +1,36 @@
+---
+title: "Mon rapport"
+date: "`r Sys.Date()`"
+author: "Un agent de l'Insee"
+output: html_document
+params:
+  codeDpt: "01"
+---
+  
+```{r config, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      warning=FALSE,
+                      message=FALSE,
+                      error = TRUE,
+                      fig.align = "center",
+                      out = '75%')
+```
+
+```{r load-packages}
+library(doremifasolData)
+library(data.table)
+```
+
+```{r importData}
+cog_com_2019 <- as.data.table(doremifasolData::cog_com_2019)
+```
+
+```{r selectData}
+monDpt <- cog_com_2019[dep %in% params$codeDpt]
+```
+
+Voici un rapport paramétré très intéressant. Il porte sur le département `r params$codeDpt`.
+
+```{r tableData}
+table(monDpt$dep)
+```
