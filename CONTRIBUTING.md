@@ -225,7 +225,7 @@ Plutôt que d'utiliser un environnement en local dont la configuration peut diff
 
 #### Configurer l'accès au dépôt distant Github : la méthode simple et sécurisée
 
-#### COnfigurer l'accès au dépôt distant Github : la méthode à vos risques et périls
+#### Configurer l'accès au dépôt distant Github : la méthode à vos risques et périls
 
 ### :one: Forker le dépôt `utilitR`
 
