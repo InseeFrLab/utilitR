@@ -2,10 +2,13 @@
 
 ## Tâches concernées et recommandations
 
-L'utilisateur souhaite réaliser des rapports automatisés, reproductibles et faciles à actualiser en cas de modification des données. Il souhaite également produire de nombreux rapports en modifiant, en fonction de ses besoins, certains paramètres.
+L'utilisateur souhaite réaliser l'une des tâches suivantes :
+
+- produire un rapport automatisé, reproductible et facile à actualiser en cas de modification des données ;
+- produire de nombreux rapports automatisés sur un même modèle en faisant varier certains paramètres.
 
 ::: {.recommandation}
-Il est recommandé d'utiliser `R Markdown` pour produire des rapports paramétrés. Si vous ne connaissez pas `R Markdown`, il est indispensable de lire au préalable la [fiche `R Markdown`](#R Markdown).
+Il est recommandé d'utiliser `R Markdown` pour produire ce type de rapports. Si vous ne connaissez pas `R Markdown`, il est indispensable de lire au préalable la [fiche `R Markdown`](#rmarkdown).
 :::
 
 ```{r setup, include=FALSE}
@@ -29,7 +32,11 @@ Un rapport automatisé est un document qui contient du texte et des informations
 
 Les rapports automatisés présentent deux grands avantages. Premièrement, ils sont reproductibles, car le code source contient toutes les instructions nécessaires à la production des informations contenues dans le rapport. Deuxièmement, ils sont faciles à actualiser en cas de modification des données.
 
-Dans le cas de `R Markdown`, le code source est un fichier texte portant l'extension `.Rmd`. Le document final (ou *output*) est produit après une étape de compilation, en cliquant sur le bouton `knit` de `RStudio`. Le fichier `R Markdown` combine généralement des instructions de traitements des données, mais aussi du texte, des images, des cartes... Les instructions de traitement de données sont généralement rédigées en `R`, mais il est tout à fait possible d'utiliser `R Markdown` avec d'autres langages (par exemple `python`). L'utilisation de  `R Markdown` est détaillée dans la [fiche `R Markdown`](#R Markdown).
+Dans le cas de `R Markdown`, le code source est un fichier texte portant l'extension `.Rmd`. Il rassemble en un même endroit les instructions de traitement des données, mais aussi les commentaires associés sous forme de texte, des images, des cartes... Le document final (ou *output*) est produit après une étape de compilation, par exemple en cliquant sur le bouton <kbd>  Knit </kbd>  de `RStudio`. 
+
+::: {.remarque}
+Les instructions de traitement de données sont généralement rédigées en `R`, mais il est possible d'utiliser `R Markdown` avec d'autres langages (par exemple `python`).
+:::
 
 ### Quelques bonnes pratiques
 
@@ -37,7 +44,7 @@ Cette section détaille les bonnes pratiques à adopter pour réaliser des rappo
 
 ### Remplir l'en-tête
 
-Le code source d'un rapport automatisé commence toujours par un en-tête `YAML` qui doit contenir au minimum un titre, une date et un format de sortie. Voici un exemple d'en-tête :
+Le code source d'un rapport automatisé commence toujours par un en-tête `YAML` qui doit contenir au minimum un titre et un format de sortie. Voici un exemple d'en-tête :
 
 ~~~
 ---
@@ -49,7 +56,9 @@ description: "Une description vraiment utile"
 ---
 ~~~
 
-L'en-tête permet de paramétrer finement le document de sortie, par exemple en choisissant le format du document, ou en ajoutant une table des matières et une bibliographie. Il existe un nombre considérable d'options, dont certaines sont spécifiques à un format de sortie (pdf, html, ...). La liste des options est détaillée sur le site de la documentation officielle de `R Markdown` et sur l’antisèche et le guide de référence de `R Markdown`, accessibles depuis RStudio via le menu `Help` puis `Cheatsheets.`
+L'en-tête permet de paramétrer finement le document de sortie :  format du document, présence d'une table des matières, d'une bibliographie...
+
+Il existe un nombre considérable d'options, dont certaines sont spécifiques à un format de sortie (pdf, html, ...). La liste des options est détaillée sur le site de la documentation officielle de `R Markdown` et sur l’antisèche et le guide de référence de `R Markdown`, accessibles depuis RStudio via le menu `Help` puis `Cheatsheets.`
 
 ::: {.conseil}
 Si vous souhaitez construire un rapport automatisé que vous utiliserez régulièrement, il est vivement conseillé de prendre le temps de définir un en-tête qui corresponde précisément à ce que vous voulez produire.
@@ -58,7 +67,7 @@ Si vous souhaitez construire un rapport automatisé que vous utiliserez réguli�
 
 ### Configurer le fonctionnement de `knitr`
 
-Dans un deuxième temps, il est souhaitable de configurer le comportement par défaut de `knitr`. La [fiche `R Markdown`](#R Markdown) détaille les principales options. Dans le cas des rapports automatisés, la configuration de `knitr` doit porter au minimum sur les deux points suivants :
+Dans un deuxième temps, il est souhaitable de configurer le comportement par défaut de `knitr`. La [fiche `R Markdown`](#rmarkdown)  détaille les principales options. Dans le cas des rapports automatisés, la configuration de `knitr` doit porter au minimum sur les deux points suivants :
 
 * la position et taille des figures ;
 * l'affichage ou non des instructions `R` dans le fichier de sortie.
@@ -69,8 +78,8 @@ La méthode la plus simple pour configurer `knitr` consiste à inclure un *chunk
 `r ''`
 ```{r configuration, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE,
-                      warning=FALSE,
-                      message=FALSE,
+                      warning = FALSE,
+                      message = FALSE,
                       error = TRUE,
                       fig.align = "center",
                       out.width = "75%")
@@ -122,7 +131,7 @@ donnees2 <- fread(paste0(dossier_donnees, "mesdonnees2.csv"))
 
 ### Nommer les _chunks_
 
-Il est important de donner un nom à tous les _chunks_, car cela facilite grandement la résolution des problèmes, en particulier si votre rapport est long. En effet, si la compilation du code source génère une erreur, `R Markdown` vous indiquera le nom du _chunk_ où se trouve l'erreur. Voici comment nommer un _chunk_ :
+Il est important de donner un nom à tous les _chunks_, car cela facilite grandement la résolution des problèmes, en particulier si votre rapport est long. En effet, si la compilation du code source génère une erreur, `R Markdown` vous indiquera le nom du _chunk_ où se trouve l'erreur. Le nom du _chunk_ se positionne immédiatement avant les éventuelles options, par exemple :
 
 ````markdown
 `r ''````{r nom_du_chunk, include = FALSE}
@@ -134,26 +143,30 @@ resultat <- 1 + 1
 
 ### Définition
 
-Les rapports paramétrés sont une forme particulière de rapports automatisés. Ils présentent donc les mêmes avantages que les rapports automatisés (reproductibles et simples à actualiser), mais permettent d'aller plus loin en terme de fonctionnalités. Il est ainsi possible de générer différents rapports _utilisant le même code source_, mais en distinguant les traitements selon un ou plusieurs paramètres définis dans l'en-tête `YAML`. 
+Un rapport paramétré est une forme particulière de rapport automatisé. Il a donc les mêmes avantages que ce dernier (reproductible et simple à actualiser). Il permet en outre de générer différents _outputs_  **à partir du même code source**, mais en distinguant les traitements selon un ou plusieurs paramètres définis dans l'en-tête `YAML`.
 
 Par exemple, on peut créer un rapport paramétré qui produit des statistiques descriptives sur un département, dont le numéro est un paramètre de l'en-tête YAML du code source. Il suffit alors de changer le numéro du département dans l'en-tête pour produire un rapport sur un autre département, sans modifier le code source.
 
 Par conséquent, un même modèle de rapport "générique" (appelé *template*) peut être utilisé pour produire de multiples rapports sur différents territoires, différentes périodes, différents secteurs...
 
+### Paramétrer un rapport
 
-### Définir un modèle de rapport paramétré
+Voici un exemple de situation dans laquelle les rapports paramétrés sont utiles. Un utilisateur souhaite produire pour chaque département français un rapport donnant le nombre de communes de ce département.
 
-Voici un exemple de situation dans laquelle les rapports paramétrés sont utiles. Un utilisateur souhaite produire pour chaque département français un rapport donnant le nombre de commune de ce département. Une première approche consiste à créer un rapport `R Markdown` par département (`fichierAin.Rmd`, `fichierAisne.Rmd`...). Si elle peut convenir lorsque le nombre de document à produire est réduit, cette approche n'est clairement pas adaptée lorsqu'il est question de réaliser plusieurs dizaines de rapports. C'est à ce moment que le système de rapports paramétrés prend tout son sens.
+Une première approche consiste à créer un rapport `R Markdown` par département (`fichier_Ain.Rmd`, `fichier_Aisne.Rmd`...). Si elle peut convenir lorsque le nombre de documents à produire est réduit, cette approche n'est clairement pas adaptée lorsqu'il est question de réaliser plusieurs dizaines de rapports.
 
-Le modèle de rapport paramétré suivant répond au besoin de l'utilisateur. Vous pouvez noter que cet exemple minimal contient tous les éléments d'un rapport paramétré : un en-tête renseigné qui contient la liste des paramètres (il n'y en a qu'un seul : `codeDpt`), un _chunk_ de configuration, des _chunks_ qui importent les _packages_ et les données, du texte, et des _chunks_ manipulant des données.
+Une solution est d'introduire le département comme paramètre du rapport :
 
-```{r echo = FALSE, comment = ""}
-utilitr::render_rmd("resources/rapportsparam/rapportParametre.Rmd")
+```yaml
+---
+title: "Titre du rapport"
+output: html_document
+params:
+  codeDpt: "01"
+---
 ```
 
-::: {.remarque}
-Vous pouvez télécharger le fichier `Rmd` de cet exemple sur cette [page](https://github.com/InseeFrLab/utilitR/blob/master/resources/rapportsparam/rapportParametre.Rmd).
-:::
+Il faut ensuite remplacer dans les différents _chunks_ le code du département par `params$codeDpt`. Une fois ces 2 modifications (en-tête et _chunks_) effectués, il n'est plus besoin de changer le département qu'à un seul endroit.
 
 ### Utiliser un modèle de rapport paramétré
 
@@ -178,13 +191,12 @@ Dans cet exemple, l'*output* ressemblera à ceci :
 utilitr::include_image("./pics/rapportsparam/rapport2.png", compression = FALSE)
 ```
 
-
 ### Automatiser la génération de rapports paramétrés
 
 La dernière étape de l'utilisation des rapports paramétrés consiste à en automatiser la production avec une fonction. Voici comment définir une fonction qui génère automatiquement un rapport à partir du modèle de rapport présenté ci-dessus :
 
-```{r automatisation}
-GenererRapport <- function(codeDpt, output_file) {
+```{r automatisation, echo = TRUE}
+GenererRapport <- function(codeDpt) {
 	rmarkdown::render(
 	  input = "rapportParametre.Rmd",
 	  params = list(codeDpt = codeDpt),
@@ -197,6 +209,18 @@ GenererRapport <- function(codeDpt, output_file) {
 Une fois la fonction définie, il est possible de générer automatiquement un rapport paramétré pour le département "31" (Haute-Garonne) en exécutant la commande `GenererRapport(codeDpt = "31")`. Par défaut, le fichier de sortie s'appellera `Rapport_31.html`, mais il est possible de choisir un autre nom avec l'argument `output_file`.
 
 Enfin, cette fonction peut être utilisée dans une boucle `for` ou un appel à la fonction `lapply` pour produire un grand nombre de rapports.
+
+### Un exemple complet de rapport
+
+Le modèle de rapport paramétré suivant répond au besoin de l'utilisateur. Vous pouvez noter que cet exemple minimal contient tous les éléments d'un rapport paramétré : un en-tête renseigné qui contient la liste des paramètres (il n'y en a qu'un seul : `codeDpt`), un _chunk_ de configuration, des _chunks_ qui importent les _packages_ et les données, du texte, et des _chunks_ manipulant des données.
+
+```{r echo = FALSE, comment = ""}
+utilitr::render_rmd("resources/rapportsparam/rapportParametre.Rmd")
+```
+
+::: {.remarque}
+Vous pouvez télécharger le fichier `Rmd` de cet exemple sur cette [page](https://github.com/InseeFrLab/utilitR/blob/master/resources/rapportsparam/rapportParametre.Rmd).
+:::
 
 ## Pour en savoir plus
 
