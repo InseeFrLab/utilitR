@@ -103,11 +103,13 @@ l'appel d'une API s'effectue via des paramètres.
 
 Chaque service se présente sous la forme d'une URL. Cette URL est à compléter
 avec les différents paramètres de la requête.
+De manière générale, l'ajout de paramètres permettant de délimiter la requête vient alimenter la constitution de l'url ; l'API va ensuite, au travers de cette url, renvoyer une réponse **structurée** contenant l'ensemble des informations demandées. 
 
 Prenons l'exemple de l'API Sirene, l'URL à utiliser pour avoir des
 informations sur un Siren est : 
 <https://api.insee.fr/entreprises/sirene/V3/siren/{siren}>
 (modifier {siren} en renseignant le numéro du siren).
+S'agissant de l'API Sirene, l'utilisateur intéressé peut retrouver dans [la documentation](https://api.insee.fr/catalogue/site/themes/wso2/subthemes/insee/templates/api/documentation/download.jag?tenant=carbon.super&resourceUrl=/registry/resource/_system/governance/apimgt/applicationdata/provider/insee/Sirene/V3/documentation/files/INSEE%20Documentation%20API%20Sirene%20Services-V3.9.pdf) le paramétrage de l'url permettant de solliciter l'API.
 
 Chaque service proposé par l'API aura sa propre URL avec ses propres paramètres.
 
@@ -286,9 +288,15 @@ le nombre de données importées (filtre sur la période, sur la date de mise à
 **TO BE COMPLETED**
 
 
-### doremifasol
+### [doremifasol](https://github.com/InseeFrLab/DoReMIFaSol)
 
-TO DO
+Ce package s'appuie sur le package `apinsee` pour solliciter l'API Sirène dans une procédure de requêtage intégrée. À condition d'avoir renseigné les variables d'environnement décrites ci-dessus, le package permet la sollicitation de l'API Sirene, en incluant dans le paramètre `argsApi` des éléments de paramétrage permettant la constitution de l'url pour récupérer en contrepartie les données désirées.
+
+```{r, eval = FALSE}
+# Obtenir la liste des établissements créée le 1er janvier 2020
+etablissements <- telechargerDonnees("SIRENE_SIRET", 
+                                     argsApi = list(q = "dateCreationUniteLegale:2020-01-01"))
+```
 
 ### [OECD](https://cran.r-project.org/web/packages/OECD/index.html)
 
