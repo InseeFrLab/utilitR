@@ -42,78 +42,58 @@ L'utilisation des API présente plusieurs avantages importants :
 - Grâce aux API, il est possible de proposer des services sur mesure pour les utilisateurs (par exemple, un accès spécifique pour les gros utilisateurs).
 
 
-### Mise à disposition des API
+### Utilisation des API
 
-Les API peuvent utiliser une interface utilisateur.  
+Une API peut souvent être utilisée de deux façons : par une interface Web, et par un logiciel. Par ailleurs, les API peuvent être proposées avec un niveau de liberté variable pour l'utilisateur :
 
-Les API Insee mises à disposition se trouvent dans le
+- soit en libre accès (l'utilisation n'est pas contrôlée et l'utilisateur peut utiliser le service comme bon lui semble) ;
+- soit via la génération d'un compte et d'un jeton d'accès qui permettent de sécuriser l'utilisation de l'API et de limiter le nombre de requêtes.
+
+::: specificite
+Les API mises à disposition des utilisateurs par l'Insee se trouvent dans le
 [catalogue des API](https://api.insee.fr/catalogue/).
-Cette interface, permet :
+:::
+
+#### Consulter l'interface Web d'une API
+
+Les API peuvent proposer une interface Web, mais ce n'est pas toujours le cas. Cette interface permet notamment :
 
 - de s'inscrire aux différents services ;
 - de visualiser les différentes requêtes proposées par les services ;
 - de lancer l'API depuis cette plateforme ;
-- de documenter les API.
+- de proposer une documentation sur les API.
 
-Cependant, l'utilisation de cette interface est utile dans une démarche
-exploratoire mais trouve rapidement ses limites. 
-L'utilisateur va vite se rendre compte qu'il est beaucoup plus 
-pratique d'utiliser une API 
-via un logiciel de traitement pour automatiser un processus
-ou réaliser du chargement de masse.
-
-
-Pour d'autres API, mises à disposition par la
-[banque de données macroéconomiques (BDM) au format SDMX (*Statistical Data and Metadata Exchange*)],
-ce point d'entrée n'existe pas. De la documentation est mise à disposition
-pour permettre à l'utilisateur de comprendre l'utilisation du service.
-L'utilisateur devra ensuite utiliser l'API directement
-via son url par un navigateur internet ou
-un logiciel adapté (`R`, `Python`, `Java`...).
+L'utilisation de l'interface Web est utile dans une démarche exploratoire 
+mais trouve rapidement ses limites, notamment lorsqu'on consulte régulièrement
+l'API. L'utilisateur va rapidement se rendre compte qu'il est beaucoup plus
+commode d'utiliser une API _via_ un logiciel de traitement pour automatiser la
+consultation ou pour réaliser du téléchargement de masse. De plus, l'interface Web n'existe pas systématiquement pour toutes les API.
 
 ::: remarque
-
 Le format SDMX (*Statistical Data and Metadata Exchange*) est une initiative
 visant à promouvoir la diffusion et les échanges de données et de
 métadonnées statistiques de manière cohérente. Plusieurs institutions
 internationales, dont Eurostat et l'OCDE, sponsorisent cette approche. 
-
 :::
 
-Les API sont proposées avec plusieurs degrés de liberté pour l'utilisateur :
+#### Requêter une API
 
-- soit en libre accès (l'utilisation n'est ici pas contrôlée et l'utilisateur peut utiliser le service comme bon lui semble) ;
-- soit via la génération d'un compte et d'un jeton qui permet de sécuriser son utilisation et limiter le nombre de requêtes.
+Le mode principal de consultation d'une API consiste à adresser une requête à cette API _via_ un logiciel adapté (`R`, `Python`, `Java`...). Comme pour l'utilisation d'une fonction, l'appel d'une API comprend des paramètres qui sont détaillées dans la documentation de l'API. Voici les éléments importants à avoir en tête sur les r
 
-### Requête d'une API
+- Le point d'entrée d'un service offert par une API se présente sous la forme d'une URL (adresse web). haque service proposé par une API a sa propre URL. Par exemple, dans le cas de l'API Sirene, l'URL à utiliser pour obtenir des informations sur un Siren est :
+<https://api.insee.fr/entreprises/sirene/V3/siren/>.
+- Cette URL doit être complétée avec différents paramètres qui précisent la requête (par exemple l'identifiant Siren). Ces paramètres viennent s'ajouter à l'url (qui peut donc devenir très longue!). Chaque service proposé par une API a ses propres paramètres, détaillés dans la documentation. S'agissant de l'API Sirene, l'utilisateur intéressé peut retrouver dans la documentation le paramétrage de l'url.
 
-Comme pour l'utilisation d'une fonction ou d'une macro SAS,
-l'appel d'une API s'effectue via des paramètres. 
+<!-- Siren de la DG Insee: 120027016 -->
 
-Chaque service se présente sous la forme d'une URL (adresse web). Cette URL est à compléter
-avec les différents paramètres de la requête.
-De manière générale, l'ajout de paramètres permettant de délimiter la requête vient alimenter la constitution de l'url ; l'API va ensuite, au travers de cette url, renvoyer une réponse **structurée** contenant l'ensemble des informations demandées. 
+- Lorsque l'utilisateur soumet sa requête, l'API lui renvoie une réponse **structurée** contenant l'ensemble des informations demandées. Le résultat envoyé par une API est majoritairement aux formats `JSON` ou `XML` (deux formats dans lesquels les informations sont hiérarchisées de manière emboitée).
+Plus rarement, certains services proposent une information
+sous forme plate (de type csv). 
 
-Prenons l'exemple de l'API Sirene, l'URL à utiliser pour avoir des
-informations sur un Siren est : 
-<https://api.insee.fr/entreprises/sirene/V3/siren/{siren}>
-(modifier {siren} en renseignant le numéro du siren).
-S'agissant de l'API Sirene, l'utilisateur intéressé peut retrouver dans [la documentation](https://api.insee.fr/catalogue/site/themes/wso2/subthemes/insee/templates/api/documentation/download.jag?tenant=carbon.super&resourceUrl=/registry/resource/_system/governance/apimgt/applicationdata/provider/insee/Sirene/V3/documentation/files/INSEE%20Documentation%20API%20Sirene%20Services-V3.9.pdf) le paramétrage de l'url permettant de solliciter l'API.
-
-Chaque service proposé par l'API aura sa propre URL avec ses propres paramètres.
-
-Enfin, le résultat envoyé par une API est majoritairement au
-format `JSON` ou `XML` (formats où les informations sont hiérarchisées de
-manière emboitée).
-Certains services, mais c'est plus rare, proposent parfois une information
-sous forme plate (de type csv).  
-
-Du fait de la dimension hiérarchique des formats `JSON` ou `XML`, le résultat
-n'est pas toujours facile à récupérer. Certaines librairies, comme
+- Du fait de la dimension hiérarchique des formats `JSON` ou `XML`, le résultat
+n'est pas toujours facile à récupérer. Certains _packages_, comme
 `jsonlite` ou `xml2`, facilitent l'extraction de champs d'une sortie d'API. 
-Dans certains cas, pour faciliter les utilisations des API,
-des _packages_ ont été créés pour simplifier l'écriture d'une requête ou la 
-récupération du résultat.
+Dans certains cas, des _packages_ spécifiques à une API ont été créés pour simplifier l'écriture d'une requête ou la récupération du résultat.
 
 ## Quelques _packages_ permettant une utilisation simple des API des données Insee
 
