@@ -349,39 +349,41 @@ le résultat sous la forme d'un texte à retravailler.
 ### Accès à une API sans jeton
 
 En général, un appel à une API via `httr` s'effectue ainsi de la manière
-suivante: 
+suivante : 
 
 ```{r, eval = FALSE}
-httr::content(httr::GET(url),             # url correspond à l'url à interroger
-              as="text",                  # type de la sortie renvoyée
-              httr::content_type_json(),  # type de la réponse de l'url
-              encoding='UTF-8')           # encodage de la réponse de l'url
+httr::content(
+  httr::GET(url),             # url correspond à l'url à interroger
+  as = "text",                # type de la sortie renvoyée
+  httr::content_type_json(),  # type de la réponse de l'url
+  encoding = "UTF-8"          # encodage de la réponse de l'url
+)
 ```
 
 Prenons par exemple l'API d'*OpenFood Facts*, une base de données alimentaire. 
 Imaginons qu'on désire récupérer l'information sur un produit. Cela s'obtient
-de la manière suivante:
+de la manière suivante :
 
 ```{r}
 url <- "https://world.openfoodfacts.org/api/v0/product/3017620425400.json"
 
-r <- httr::content(httr::GET(url),             # url correspond à l'url à interroger
-                   as="text",                  # type de la sortie renvoyée
-                   httr::content_type_json(),  # type de la réponse de l'url
-                   encoding='UTF-8')           # encodage de la réponse de l'url
+resultats <- 
+  httr::content(
+    httr::GET(url),             # url correspond à l'url à interroger
+    as="text",                  # type de la sortie renvoyée
+    httr::content_type_json(),  # type de la réponse de l'url
+    encoding= "UTF-"            # encodage de la réponse de l'url
+  )
 ```
 
 Le résultat est formaté sous forme de JSON, ce qui est pratique mais peu
-intelligible:
+intelligible :
 
 ```{r}
-r
+resultats
 ```
 
-Pour en faire une information exploitable, il est nécessaire de faire quelques
-efforts. Par exemple, pour n'extraire que le libellé et le nutriscore d'un produit,
-ainsi que son indice de transformation NOVA, il faut utiliser une boucle sur
-les différentes caractéristiques à extraire :
+Pour en faire une information exploitable, il est nécessaire de retraiter le résultat de la requête. Par exemple, pour n'extraire que le libellé et le nutriscore d'un produit, ainsi que son indice de transformation NOVA, il faut utiliser une boucle sur les différentes caractéristiques à extraire :
 
 ```{r}
 df <- data.frame(
@@ -430,8 +432,7 @@ res <- httr::content(httr::GET(url),
 
 ### Le _package_ `jsonlite`
 
-La fonction principale à utiliser est `fromJSON`.
-Cette ligne permet de convertir une résultat en format `json` en un objet `R`.
+Ce _package_ propose principalement la fonction `fromJSON` qui permet de convertir une résultat en format `json` en un objet `R`.
 
 ### Temporisation
 
