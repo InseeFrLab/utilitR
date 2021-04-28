@@ -1,26 +1,11 @@
-ARG BASE_IMAGE=rocker/geospatial:4.0.4
-
-# Use a multi-stage build to install packages
-# First stage: install packages
-FROM $BASE_IMAGE AS install_packages
-# LaTeX packages 
-# COPY ./_latex_requirements.txt /tmp/build_image/
-# RUN tlmgr update --self
-# RUN tlmgr install `cat /tmp/build_image/_latex_requirements.txt | tr '\r\n' ' '`
+FROM rocker/geospatial:4.0.4
 
 # R packages 
 COPY ./DESCRIPTION /tmp/build_image/
 RUN Rscript -e "install.packages(c('xfun','knitr'))"
 RUN Rscript -e "remotes::install_deps('/tmp/build_image', dependencies = TRUE, upgrade = FALSE)"
+RUN Rscript -e "remotes::install_github('rstudio/bookdown')"
 
-# Second stage: use the installed packages directories
-FROM $BASE_IMAGE
-# COPY --from=install_packages /opt/texlive /opt/texlive
-# COPY --from=install_packages /usr/local/texlive /usr/local/texlive
-COPY --from=install_packages /usr/local/lib/R/site-library /usr/local/lib/R/site-library
-
-
-# Third stage: prepare bookdown
 RUN apt-get update \
     && apt-get -qq install gnupg \
     && sh -c 'echo "deb http://http.us.debian.org/debian stable main contrib non-free" >> /etc/apt/sources.list' \
@@ -39,7 +24,8 @@ RUN apt-get update \
        librsvg2-dev \
        libwebp-dev \
     && rm -rf /var/lib/apt/lists/* \
-    && rm -rf /src/*.deb
+    && rm -rf /src/*.deb \
+    && apt-get upgrade -y
 
 RUN apt-get update && \
   apt-get -yq install wget apt-transport-https ca-certificates gnupg --no-install-recommends && \
@@ -48,8 +34,6 @@ RUN apt-get update && \
   sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' &&\
   apt-get update && \
   apt-get -yq install google-chrome-stable --no-install-recommends 
-
-RUN whereis google-chrome
 
 # Installing mc
 
