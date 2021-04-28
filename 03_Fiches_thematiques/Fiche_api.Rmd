@@ -9,6 +9,7 @@ L'utilisateur souhaite accéder à des données _via_ une API.
 le _package_ `httr` pour transmettre des requêtes à l'API et le _package_ `jsonlite` pour retravailler le résultat des requêtes afin de la transformer dans un format plus exploitable.
 - Pour accéder à des données disponibles sur le site <https://www.insee.fr>,
 il est recommandé d'utiliser l'un des _packages_ suivants : `doremifasol`, `insee`, `inseeLocalData`. Le _package_ `apinsee` permet de gérer le renouvellement des jetons de connexion. 
+- Les jetons d'accès (*token*) doivent être utilisés sous forme de variable d'environnements, inscrits dans un fichier `.Renviron` qui n'est pas partagé. 
 - Si l'accès à internet se fait par l'intermédiaire d'un proxy, sous Windows, il est recommandé d'utiliser la fonction `curl::ie_get_proxy_for_url`.
 
 :::
@@ -406,10 +407,16 @@ df[["product_name","nova_groups","nutriscore_grade"]]
 ### Accès à une API avec jeton
 
 Pour les API protégées par des jetons, il faut rajouter
-un paramètre d'identification :
+un paramètre d'identification. Les jetons d'authentification (*token*)
+étant des informations personnelles, il ne faut pas les faire figurer dans
+un script. Comme expliqué précédemment, ils peuvent être stockés
+sous forme de variable d'environnement, par exemple
+sous le nom `MON_JETON_SECRET`. Il suffit alors d'utiliser
+`Sys.getenv` pour récupérer la valeur derrière le nom `MON_JETON_SECRET`
+:
 
 ```{r, eval = FALSE}
-jeton <- "XXXXX" # création d'une variable contenant le jeton
+jeton <- Sys.getenv("MON_JETON_SECRET") # création d'une variable contenant le jeton
 
 auth_header <- httr::add_headers('Authorization'= paste('Bearer',jeton)) # création d'une variable d'authentification
 
