@@ -100,7 +100,7 @@ La création d'un projet `RStudio` se traduit par quatre actions, quel que soit 
 Une fois que le projet est créé, le nom du projet apparaît dans la barre de projet (tout en haut à droite, rectangle rouge). Le menu en bas à droite (onglet <kbd>Files</kbd>, rectangle jaune) affiche les fichiers contenus dans le projet.
 
 
-```{r, echo = FALSE, out.width = '50%'}
+```{r, echo = FALSE, out.width = '80%'}
 utilitr::include_image("./pics/rprojects/03a_project_organization1.png", compression = FALSE)
 ```
 
@@ -114,18 +114,20 @@ utilitr::include_image("./pics/rprojects/03a_project_organization2.png", compres
 
 L'utilisation d'un projet `RStudio` modifie un certain nombre de réglages de `RStudio`. Cette section détaille les principaux points.
 
-### A l'ouverture d'un projet
+### Que se passe-t-il lors de l'ouverture d'un projet RStudio?
  
-Lorsqu'on ouvre un projet `RStudio` (en double-cliquant sur le fichier `*.Rproj` par exemple) :
+Lorsqu'on ouvre un projet `RStudio` (en double-cliquant sur le fichier `.Rproj` par exemple) :
 
 * Une nouvelle session `R` est ouverte ;
 * Les fichiers `.Rprofile` (variables d'environnement) et `.RData` (sauvegarde temporaire des données) du projet sont chargés s'ils existent ;
 * L'historique des commandes `.Rhistory` du projet est chargé (s'il existe) dans le cadre `History` ;
-* Le *working directory* est par défaut le dossier-maître du projet (le dossier dans lequel se situe le fichier `*.Rproj`) ;
+* Le *working directory* est par défaut le dossier-maître du projet (le dossier dans lequel se situe le fichier `.Rproj`) ;
 * Les documents précédemment ouverts sont restaurés dans l'éditeur `RStudio` ;
 * Les autres paramètres `RStudio` (e.g. position du curseur, etc.) sont restaurés à leur valeur précédent la fermeture du projet.
 
-### A la fermeture du projet
+### Que se passe-t-il lors de la fermeture d'un projet RStudio?
+
+Lorsqu'on ferme un projet `RStudio` :
 
 * Les fichiers `.RData` et/ou `.Rhistory` sont sauvegardés dans le projet (si les options du projet l'autorisent) ;
 * Les documents ouverts non sauvegardés sont sauvegardés temporairement ;
@@ -133,75 +135,50 @@ Lorsqu'on ouvre un projet `RStudio` (en double-cliquant sur le fichier `*.Rproj`
 * La session `R` associée au projet est arrêtée.
 
 :::{.conseil}
-Un point important concerne le fichier `.RData`. 
+Il est fortement conseillé de désactiver la sauvegarde du fichier `.RData` à la fermeture du projet. Pour ce faire, il faut aller dans `Tools > Global Options` et rester dans l'onglet `General`. Chercher `Save workspace to .RData on exit:`, et choisir l'option `Never`.
 
-Sauvegarder et recharger les données du projet avec le fichier `.RData` est une **très** mauvaise pratique en termes de reproductibilité. En effet, il se peut que les données sauvegardées dans le `.RData` aient subi des modifications non documentées (par exemple _via_ la console), ou que les instructions présentes dans les scripts du projet n'aient pas été exécutées dans l'ordre. Dans ce cas, les données contenues dans le `.RData` ne sont pas nécessairement cohérentes avec le projet, et en les utilisant vous risquez de ne pas obtenir les résultats que vous voulez. 
-
-Il est donc fortement conseillé de désactiver la sauvegarde du `.RData` à la fermeture du projet. Pour ce faire, il faut aller dans `Tools > Global Options` et rester dans l'onglet `General`. Chercher `Save workspace to .RData on exit:`, et choisir l'option `Never`.
+Voici pourquoi : sauvegarder et recharger les données du projet avec le fichier `.RData` est une **très** mauvaise pratique en termes de reproductibilité. En effet, il se peut que les données sauvegardées dans le `.RData` aient subi des modifications non documentées (par exemple _via_ la console), ou que les instructions présentes dans les scripts du projet n'aient pas été exécutées dans l'ordre. Dans ce cas, les données contenues dans le `.RData` peuvent ne pas être cohérentes avec le projet, et en les utilisant vous risquez de ne pas obtenir les résultats que vous voulez. 
 :::
+
+### Définir les options d'un projet RStudio
 
 Il est possible de définir des options dans un projet `RStudio` via `Tools > Project Options...`. Le plus souvent, il suffit de les définir une fois pour toutes, à la création du projet.
 
 * Options générales :
-    + `(Default)`: utiliser les options globales;
-    + *Restore .RData into workspace at startup* —  L'option `yes` n'est pas recommandée si les données sont volumineuses (ralentissement du démarrage de la session);
-    + *Always save history (even when not saving .RData)* — Si on choisit `yes`, le projet conserve l'historique des commandes exécutées. Pour éviter que cet historique soit partagé lorsque `git` est activé (par exemple si vous avez rentré en commande des mots de passe pour accéder à des services type *API*), assurez vous que la ligne `.Rhistory` est présente dans le fichier `.gitignore` (elle y est par défaut mais il vaut mieux vérifier)
-* Options `build`:
-    + *Use devtools package functions if available*: permet d'utiliser l'outil *devtools* pour créer le package;
-    + *Generate documentation with Roxygen*: permet d'automatiser la création des fichiers de documentation à partir du package `Roxygen`.
+    + `(Default)`: utiliser les options globales ;
+    + *Restore .RData into workspace at startup* —  L'option `yes` n'est pas recommandée si les données sont volumineuses (ralentissement du démarrage de la session) ;
+    + *Always save history (even when not saving .RData)* — Si on choisit `yes`, le projet conserve l'historique des commandes exécutées. Pour éviter que cet historique soit partagé lorsque `git` est activé (par exemple si vous avez rentré en commande des mots de passe pour accéder à des services type *API*), assurez vous que la ligne `.Rhistory` est présente dans le fichier `.gitignore` (elle y est par défaut mais il vaut mieux vérifier).
+* Options `build` (pour les utilisateurs avancés) :
+    + *Use devtools package functions if available* : permet d'utiliser l'outil *devtools* pour créer le _package_ ;
+    + *Generate documentation with Roxygen* : permet d'automatiser la création des fichiers de documentation à partir du package `Roxygen`.
     + On peut ajouter des options à la compilation. Par exemple, pour gagner du temps, on pourra utiliser l'option `--no-build-vignettes` qui évite de re-compiler les vignettes (qui peuvent mettre du temps à compiler si elles sont longues).
 
 
-## Edition de code dans `RStudio`
+## Utiliser les fonctionnalités de `RStudio`
 
-### Raccourcis utiles
+### Raccourcis utiles pour l'édition de code
 
-Pour gagner du temps, il est important d'utiliser les raccourcis pour les commandes répétitives. En voici une liste non exhaustive:
+Pour gagner du temps, il est important d'utiliser les raccourcis pour les commandes répétitives. En voici une liste non exhaustive :
 
-* `Ctrl`+`Enter`: exécuter les lignes sélectionnées;
-* `Tab`: autocomplétion;
-* `Ctrl` + `Alt` + `R`: exécuter l'ensemble d'un script;
-* `Ctrl` + `I`: réindenter code;
-* `Ctrl` + `Shift` + `A`: reformater code;
-* `Alt` + `Up/Down`: déplacer une ligne sans faire copier-coller;
-* `Ctrl` + `Deplacement souris`: passage en édition verticale (curseur en colonne);
-* `Ctrl` + `Shift` + `M`: insérer pipe `%>%`;
-* `Alt`+ `6` (windows): insérer opérateur assignation `<-`;
-* `Ctrl` + `Shift` + `F`: rechercher une expression dans plusieurs fichiers;
-* `Ctrl` + `Shift` + `K`: compilation d'un *markdown* (*knitter* en bon français);
-* `Ctrl` + `Shift` + `Alt` + `M`: renommer la variable dans la portée (*scope*), nous verrons ce dont il s'agit dans la prochaine leçon.
+* `Ctrl`+`Enter` : exécuter les lignes sélectionnées;
+* `Tab` : autocomplétion;
+* `Ctrl` + `Alt` + `R` : exécuter l'ensemble d'un script;
+* `Ctrl` + `I` : réindenter code;
+* `Ctrl` + `Shift` + `A` : reformater code;
+* `Alt` + `Up/Down` : déplacer une ligne sans faire copier-coller;
+* `Ctrl` + `Deplacement souris` : passage en édition verticale (curseur en colonne);
+* `Ctrl` + `Shift` + `M` : insérer pipe `%>%`;
+* `Alt`+ `6` (Windows) : insérer opérateur assignation `<-`;
+* `Ctrl` + `Shift` + `F` : rechercher une expression dans plusieurs fichiers;
+* `Ctrl` + `Shift` + `K` : compilation d'un *markdown* (*knitter* en bon français);
+* `Ctrl` + `Shift` + `Alt` + `M` : renommer la variable dans la portée (*scope*).
 
 ![](./pics/rprojects/rreformat_optimized.gif)
 
 
-## Addins `RStudio`
+### Les _addins_ `RStudio`
 
-::: specificite
-
-Les *addins* RStudio sont disponibles sur le
-[datalab](https://datalab.sspcloud.fr/accueil). En local, si on se trouve
-derrière un proxy, ce qui est commun dans les administrations ou entreprises,
-il est nécessaire de configurer des variables
-d'environnement `https_proxy` et `http_proxy` dans un fichier `.Renviron`. 
-Pour éditer ce fichier, taper dans la console `R`:
-
-```{r, eval = FALSE}
-usethis::edit_r_environ(scope = "user")
-```
-
-et assigner aux variables `https_proxy` et `http_proxy` l'adresse du proxy
-(qui peut être obtenu en tapant `curl::ie_get_proxy_for_url()`.
-Contrairement à ce qui est indiqué
-[sur le site de RStudio](https://support.rstudio.com/hc/en-us/articles/200488488-Configuring-R-to-Use-an-HTTP-or-HTTPS-Proxy),
-il n'est néanmoins pas nécessaire d'ajouter les variables `http_proxy_user` et
-`https_proxy_user` où seraient stockées d'hypothétiques mots de passe.
-
-Enfin, à l'Insee, sous AUS, il est certes possible d'installer des *addins* présents sur le CRAN mais le package `addinslist` ne fonctionnera pas car il va chercher la liste des *addins* disponibles sur internet, ce qui n'est pas possible sur AUS.
-
-:::
-
-
-### Addins
+#### Addins
 
 Les `addins` sont des outils pratiques pour gagner du temps dans l'édition du code. Ils génèrent automatiquement du code ou du texte utile pour les *markdown*. Par exemple, il est possible d'utiliser un `addin` pour construire un graphique avec le package `ggplot2`, puis de récupérer le code qui produit le graphique.
 
@@ -221,9 +198,31 @@ utilitr::include_image("./pics/rprojects/06_addins.png", compression = FALSE)
 utilitr::include_image("./pics/rprojects/06b_addins.png", compression = FALSE)
 ```
 
-### Quelques `addins` utiles
+::: specificite
+Les *addins* RStudio sont disponibles sur le
+[datalab](https://datalab.sspcloud.fr/accueil). En local, si on se trouve
+derrière un proxy, ce qui est commun dans les administrations ou entreprises,
+il est nécessaire de configurer des variables
+d'environnement `https_proxy` et `http_proxy` dans un fichier `.Renviron`. 
+Pour éditer ce fichier, taper dans la console `R` :
 
+```{r, eval = FALSE}
+usethis::edit_r_environ(scope = "user")
+```
 
+et assigner aux variables `https_proxy` et `http_proxy` l'adresse du proxy
+(qui peut être obtenu en tapant `curl::ie_get_proxy_for_url()`).
+Contrairement à ce qui est indiqué sur le
+[site de RStudio](https://support.rstudio.com/hc/en-us/articles/200488488-Configuring-R-to-Use-an-HTTP-or-HTTPS-Proxy),
+il n'est néanmoins pas nécessaire d'ajouter les variables `http_proxy_user` et
+`https_proxy_user` dans lesquelles seraient stockées d'hypothétiques mots de passe.
+
+Enfin, à l'Insee, sous AUS, il est certes possible d'installer des *addins* présents sur le CRAN mais le package `addinslist` ne fonctionnera pas car il va chercher la liste des *addins* disponibles sur internet, ce qui n'est pas possible sur AUS.
+:::
+
+#### Quelques `addins` utiles
+
+* `esquisse` : apprendre à réaliser des graphiques avec `ggplot2` ;
 * `snippetsaddins`: convertir automatiquement automatiquement les `/` en `\` pour avoir des chemins valides ;
     + *"monchemin/toto/fichier.csv"* -> *"monchemin\\toto\\fichier.csv"*
 * `ggedit`: aide pour générer un code pour graphiques `ggplot2` ;
