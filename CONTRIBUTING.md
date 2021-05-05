@@ -8,7 +8,8 @@ Il est possible de contribuer au projet `utilitR` de différentes manières, dé
 des contributeurs actuels, fonctionnement qui est orchestré autour de `Github` et de ses différents outils.
 Il est possible d'en acquérir très rapidement les bases à partir de ce document présentant le [Travail collaboratif avec `R`](https://linogaliana.gitlab.io/collaboratif/git.html#des-bases-de-git), ou à partir d'échanges avec les contributeurs actuels.
 
-Pour les relecteurs quelques notions de l'environnement `Github` suffisent (ou peuvent s'acquérir facilement) pour apporter sa pierre à l'édifice.
+Pour les relecteurs quelques notions de l'environnement `Github` suffisent
+(ou peuvent s'acquérir facilement) pour apporter sa pierre à l'édifice.
 
 Les mainteneurs et développeurs du projet `utilitR` sont en effet disponibles
 pour aider tous les personnes qui souhaitent contribuer, ce qui signifie
@@ -19,8 +20,8 @@ Le document apporte une réponse aux questions suivantes:
 
 - [:arrow_down: Comment proposer des modifications d'une fiche?](#two-comment-proposer-des-modifications-dune-fiche)
 - [:arrow_down: Comment participer aux discussions collectives?](#three-comment-participer-aux-discussions-collectives)
-- [:arrow_down: Comment effectuer la relecture d'une fiche?](#comment-effectuer-la-relecture-dune-fiche)
-    - Comment suggérer des remarques sur une fiche via Gitlab?
+- [:arrow_down: Comment effectuer la relecture d'une fiche?](#four-comment-effectuer-la-relecture-dune-fiche)
+    - Comment suggérer des remarques sur une fiche via Github?
     - Comment ouvrir une issue si la fiche pose un réel problème?
 - [:arrow_down: Comment ajouter en tant que contributeur une nouvelle fiche?](#five-comment-ajouter-une-nouvelle-fiche-à-la-documentation)
     - Comment faire un `fork` du dépôt `utilitR`?
@@ -32,13 +33,19 @@ La partie [:arrow_down: Comment ajouter en tant que contributeur une nouvelle fi
 est la plus technique. Elle ne concerne néanmoins qu'un type de contribution
 et n'intéressera ainsi pas toutes les modalités de contribution.
 
-## :two: Comment proposer des modifications d'une fiche?
+Pour effectuer exclusivement une relecture, vous pouvez vous rendre directement
+à la section dédiée
+([:arrow_down: Comment effectuer la relecture d'une fiche?](#comment-effectuer-la-relecture-dune-fiche))
+
+## :two: Comment proposer des modifications d'une fiche? 
 
 [:arrow_up: Retour à l'introduction](#one-introduction)
 
+Pré-requis: avoir un compte Github.
+
 Pour ce type de modifications, il est demandé d'utiliser directement
 l'outil de suggestions de changements de `Github`.
-Le livre déployé sur www.book.utilitr.org comprend un bouton `Edit` qui
+Le livre déployé sur https://www.book.utilitr.org comprend un bouton `Edit` qui
 permet de proposer, automatiquement, des modifications via l'interface de 
 `Github`. 
 
@@ -49,7 +56,7 @@ contenu depuis `Github`. Cette fonctionnalité est utilisable même
 lorsque vous n'avez pas les droits en écriture sur le dépôt (droits attachés
 au statut de *mainteneur* sur le projet):
 
-![](./pics/contributing/edit.png)
+![](./pics/contributing/edit_bs4.png)
 
 En cliquant dessus, on se retrouve sur une interface permettant d'éditer 
 de visualiser et proposer des modifications du fichier source. 
@@ -60,12 +67,17 @@ La documentation officielle de Github sur cette manière de procéder est
 disponible
 [ici](https://docs.github.com/en/free-pro-team@latest/github/managing-files-in-a-repository/editing-files-in-another-users-repository).
 
-Dans ce menu, vous avez accès au code de la fiche en `R markdown`. C'est directement dans cette fenêtre que les modifications sont à écrire. Il est recommandé de prévisualiser la modification en cliquant sur l'onglet `Preview`.
+Dans ce menu, vous avez accès au code de la fiche en `R Markdown`.
+C'est directement dans cette fenêtre que les modifications sont à écrire.
+Il est recommandé de prévisualiser la modification en cliquant sur l'onglet `Preview`.
+En cliquant sur `Preview` vous ne verrez pas la fiche mise en forme mais
+les modifications seront identifiées (rouge pour suppression, vert pour
+insertion) par le système de contrôle de version `Git`
 
 ![](./pics/contributing/Relecture_preview.png)
 
 Enfin, une fois la modification écrite, il convient de la valider.
-Cette opération, nommée `commit` dans la terminologie `Git`
+Cette opération, nommée `commit` dans la terminologie `Git`,
 peut être effectuée en: 
 
 * écrivant un message signifiant dans la fenêtre `Commit message`. Les messages cryptiques du type `modification` sont proscrits. 
@@ -84,9 +96,6 @@ modification au dépôt `utilitR` s'ouvre:
 
 ![](./pics/contributing/edit4.png)
 
-Si la modification concerne uniquement des coquilles, ajouter le label `typo`
-comme sur l'image ci-dessus.
-
 Après avoir
 éventuellement révisé le titre de la `Pull Request` et la description associée,
 cliquer sur `Create pull request`. Cela permettra aux mainteneurs du projet
@@ -95,7 +104,6 @@ discussion sur les propositions de modifications. Celles-ci sont visibles
 en cliquant sur l'onglet `Files changed`:
 
 ![](./pics/contributing/edit5.png)
-
 
 
 ## :three: Comment participer aux discussions collectives?
@@ -139,23 +147,30 @@ compréhensible par un utilisateur standard. En revanche, la relecture ne porte
 pas sur les recommandations formulées dans la fiche, ni sur
 son organisation globale.
 
-La relecture peut comprendre trois types de tâches:
+Il est recommandé de lire la partie
+[:arrow_up: Comment proposer des modifications d'une fiche?](#two-comment-proposer-des-modifications-dune-fiche)
+avant de proposer des commentaires sur une fiche via Github.
 
-* Proposer des corrections mineures (faute d'orthographes, formulations peu claires) : ce travail de modification est décrit dans [:arrow_up: Comment proposer des modifications d'une fiche?](#two-comment-proposer-des-modifications-dune-fiche). Il convient d'adopter la convention proposée de nommer la branche `typo-XXX`;
-* Faire des commentaires (exemple: je ne parviens pas à reproduire cet exemple): ce travail de modification est décrit dans __Comment faire des commentaires sur une fiche via Github?__;
+### Où faire des retours sur une fiche ?
+
+Le lieu idéal de retour de la part d'un relecteur ou d'une relectrice dépend du type de modification envisagée :
+
+* Proposer des corrections mineures (faute d'orthographes, formulations peu claires) : ce travail de modification est décrit dans [:arrow_up: Comment proposer des modifications d'une fiche?](#two-comment-proposer-des-modifications-dune-fiche). Les suggestions de modification sont dès lors associées à une `pull request` pour laquelle il convient d'adopter la convention proposée de nommer la branche `typo-XXX`. Lorsque la `pull request` est ouverte, il est possible de renseigner, dans la description de celle-ci, des commentaires génériques. Les commentaires relatifs à une ligne peuvent être faits sous forme de commentaire en cliquant sur l'onglet `Files changed` puis, sur la fiche en question, en ouvrant un commentaire en cliquant sur le signe `+` dans la marge ;
+* Faire des commentaires sans suggestion de modifications (exemple: je ne parviens pas à reproduire cet exemple): ce travail de modification est décrit dans __Comment faire des commentaires sur une fiche via Github?__;
 * Des signalements de problèmes: si le relecteur pense que l'organisation d'ensemble ou le déroulement de la fiche soulève une difficulté sérieuse, ou que des points importants n'ont pas été abordés, il est invité à le signaler en suivant la procédure décrite dans la partie __Comment ouvrir une _issue_ si la fiche soulève un problème?__.
 
 
-### Comment faire des commentaires sur une fiche via Gitlab?
+### Comment faire des commentaires sur une fiche via Github?
 
 La démarche est un peu fastidieuse mais est possible directement depuis `Github`. 
 Dans le menu du site web www.book.utilitr.org,
 il faut d'abord se placer dans la fiche à
-relire et ensuite cliquer sur le bouton `View`, en haut à gauche.
+relire et ensuite cliquer sur le bouton `View source`, dans le menu à droite.
 
-![](./pics/contributing/view.png)
+![](./pics/contributing/view_bs4.png)
 
-Cela ouvre l'état actuel d'une fiche avec, à gauche, pour chaque bloc, la
+Cela ouvre l'état actuel d'une fiche. CLiquer sur le bouton `blame` en haut à droite. 
+Sur la marge de gauche sera alors affichée, pour chaque bloc, la
 modification (`commit`) ayant amené à l'état actuel du bloc.
 
 ![](./pics/contributing/view2.png)
@@ -183,7 +198,7 @@ L'_issue_ doit avoir un titre qui renvoie explicitement à la fiche concernée (
 [:arrow_up: Retour à l'introduction](#one-introduction)
 
 
-Ajouter une nouvelle fiche thématique à la documentation représente un
+:exclamation: Ajouter une nouvelle fiche thématique à la documentation représente un
 travail conséquent qui requiert l'approbation de la
 majorité des contributeurs du projet.
 
@@ -350,7 +365,7 @@ prévisualiser en local le livre:
 >    * Option 1: utiliser l'onglet 'Build' dans Rstudio;
 >    * Option 2: taper dans la commande R:
 > ```r
-> bookdown::render_book("index.Rmd", output_dir = "_public", output_format = "utilitr::html_document")
+> bookdown::render_book("index.Rmd", output_dir = "_public", output_format = "utilitr::bs4_utilitr")
 > ```
 > 
 > Ne pas oublier d'installer le package 'utilitr' avant pour disposer des modèles de documents: 

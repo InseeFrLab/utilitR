@@ -1,8 +1,8 @@
-# Utiliser des _packages_ `R`
+# Utiliser des _packages_ `R` {#utiliser-packages}
 
 ::: {.recommandation}
-- Avant d'installer un _package_, il est indispensable de déterminer précisément quel est le _package_ dont vous avez besoin. Pour cela, vous pouvez consulter la partie 2 de la documentation `utilitR`, et la fiche [Comment choisir un _package_ ?].
-- Il est recommandé d'utiliser la fonction `install.packages` pour installer les _packages_ sans modifier les arguments `repos`, `lib`, `type` et `dependencies`.
+- Avant d'installer un _package_, il est indispensable de déterminer précisément quel est le _package_ dont vous avez besoin. Pour cela, vous pouvez consulter les autres fiches de la documentation `utilitR`, et la fiche [Comment choisir un _package_ ?].
+- Il est recommandé d'utiliser la fonction `install.packages` pour installer et mettre à jour les _packages_, sans modifier les arguments `repos`, `lib`, `type` et `dependencies`. L'usage de la fonction `update.packages` est destiné à des usages avancés.
 - Il est recommandé d'utiliser la fonction `library` pour charger les _packages_ sans modifier l'argument `lib.loc`.
 
 AJOUTER UNE REFERENCE A LA FUTURE FICHE SUR LA GESTION DES DEPENDANCES?
@@ -112,9 +112,20 @@ Le _package_ `remotes` a pour finalité principale d'installer des _packages_ de
 remotes::install_github(repo = "InseeFrLab/doremifasolData")
 ```
 
-Seul le premier argument (`repo`) est obligatoire. Il est formé du nom du compte sur la forge logicielle, suivi du nom du dépôt. Le _package_ installé contiendra les modifications les plus récentes. Installer depuis une forge permet ainsi de récupérer la version de développement d'un _package_ (seules les versions stables sont en général soumises au CRAN). Pour installer un _package_ tel qu'il était à un moment donné, il est également possible de faire suivre le nom du dépôt par une référence à un commit, un tag ou une branche. Exemples : `install_gitlab("py_b/funprog@v-0.3.0")`.
+Seul le premier argument (`repo`) est obligatoire. Il est formé du nom du
+compte sur la forge logicielle, suivi du nom du dépôt. Le _package_ installé
+contiendra les modifications les plus récentes. Installer depuis une forge
+permet ainsi de récupérer la version de développement d'un _package_
+(seules les versions stables sont en général disponibles sur le CRAN). Pour installer
+un _package_ tel qu'il était à un moment donné, il est également possible de
+faire suivre le nom du dépôt par une référence à un `with_def("commit")`, à un _tag_ (une version) ou à une `with_def("branche")`. Voici un exemple avec un _tag_ : `remotes::install_gitlab("py_b/funprog@v-0.3.0")`. Voici un exemple avec un commit : `remotes::install_github("InseeFrLab/doremifasolData@a9df2d3d0e372")`.
 
-Les fonctions créeront une archive temporaire (.tar.gz) et installeront le _package_ à partir de celle-ci. Pour les raisons évoquées plus haut, ceci implique que `Rtools` soit disponible (sous Windows).
+::: {.remarque}
+Lorsque vous installez un _package_ depuis une forge logicielle, `R` crée automatiquement une archive temporaire (un fichier `.tar.gz`), puis installe le _package_ à partir de celle-ci. Si vous travaillez dans un environnement Windows, il est nécessaire que `Rtools` soit installé sur votre poste pour que `R` puisse construire l'archive. 
+
+`Rtools` est un logiciel (pas un _package_) qui contient un certain nombre d'outils pour construire des _packages_ `R` sous Windows. `Rtools` n'est en revanche pas nécessaire sur les systèmes Mac ou Linux. Vous pouvez vérifier si `Rtools` est installé en exécutant la fonction `pkgbuild::has_rtools()`. Celle-ci renvoie `TRUE` si `Rtools` est installé, `FALSE` sinon. Si `Rtools` n'est pas installé, vous pouvez l'installer facilement en le téléchargeant sur internet.
+:::
+
 
 ### Installer depuis un fichier
 
@@ -136,9 +147,9 @@ Il est à noter que cette méthode atteint rapidement ses limites dès lors que 
 
 ### Mettre à jour les _packages_
 
-Pour savoir s'il existe une version plus récente des _packages_ installés sur sa machine, utilser la fonction `old.packages`. Cette fonction renvoie un tableau contenant notamment la version installée et la version disponible sur le dépôt distant.
+Il peut arrivez qu'un de vos programmes génère une erreur parce que vous utilisez un _package_ dans une version trop ancienne. Pour mettre à jour un _package_, il suffit de le réinstaller avec `install.packages`. Cette méthode de mise à jour est la plus simple, et résout la très grande majorité des problèmes de version de _packages_.
 
-Pour se voir offrir la possibilité de les mettre effectivement à jour, utiliser la fonction `update.packages`. Par défaut, cette fonction demande une confirmation avant de procéder à l'installation d'un _package_ obsolète.
+Il existe également la fonction `update.packages`. Cette fonction ne sert pas à mettre un _package_ particulier, mais à mettre à jour __tous__ les _packages_ d'une librairie. Vous pouvez utiliser cette fonction si vous le souhaitez, mais son usage est plus complexe que celui d'`install.packages`. Vous pouvez en apprendre davantage sur cette fonction en consultant l'aide associée (`?update.packages`).
 
 ### Gestion des _packages_ avec RStudio
 

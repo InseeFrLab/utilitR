@@ -25,7 +25,7 @@ jobs:
           Rscript -e "install.packages(c('remotes'))"
           Rscript -e "remotes::install_deps(dependencies = TRUE)"
       - name: Render Book
-        run: Rscript -e 'bookdown::render_book("index.Rmd", output_format = "utilitr::html_document", output_dir = "_public")'
+        run: Rscript -e 'bookdown::render_book("index.Rmd", output_format = "utilitr::bs4_utilitr", output_dir = "_public")'
       - uses: actions/upload-artifact@v2
         with:
           name: _public
@@ -33,16 +33,20 @@ jobs:
           retention-days: 5
       - name: Install npm
         if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
-        uses: actions/setup-node@v1          
+        uses: actions/setup-node@v2          
+        with:
+          node-version: '12'        
       - name: Deploy to Netlify
         if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
         # NETLIFY_AUTH_TOKEN and NETLIFY_SITE_ID added in the repo's secrets
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          BRANCHE_REF: ${{ github.event.pull_request.head.ref }}
         run: |
+          npm init -y
           npm install --unsafe-perm=true netlify-cli -g
           netlify init
-          netlify deploy --alias=${CI_COMMIT_REF_NAME} --dir="_public" --message "Deploy from ${GITHUB_REF}"
+          netlify deploy --alias=${BRANCHE_REF} --dir="_public" --message "Preview deploy from ${BRANCHE_REF}"
 
 #--site="$NETLIFY_SITE_ID" --auth="$NETLIFY_AUTH_TOKEN"

@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=rocker/geospatial:4.0.2
+ARG BASE_IMAGE=rocker/geospatial:4.0.4
 
 # Use a multi-stage build to install packages
 # First stage: install packages
@@ -10,7 +10,7 @@ FROM $BASE_IMAGE AS install_packages
 
 # R packages 
 COPY ./DESCRIPTION /tmp/build_image/
-RUN Rscript -e "install.packages('knitr')"
+RUN Rscript -e "install.packages(c('xfun','knitr'))"
 RUN Rscript -e "remotes::install_deps('/tmp/build_image', dependencies = TRUE, upgrade = FALSE)"
 
 # Second stage: use the installed packages directories
@@ -50,6 +50,11 @@ RUN apt-get update && \
   apt-get -yq install google-chrome-stable --no-install-recommends 
 
 RUN whereis google-chrome
+
+# Installing mc
+
+RUN wget https://dl.min.io/client/mc/release/linux-amd64/mc -O /usr/local/bin/mc && \
+    chmod +x /usr/local/bin/mc
 
 # Change right permissions (see https://github.com/rocker-org/rocker-versioned/issues/104)
 # RUN  chown -R root:staff /opt/texlive \

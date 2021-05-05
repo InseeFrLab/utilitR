@@ -1,5 +1,24 @@
 if (file.exists('~/.Rprofile')) sys.source('~/.Rprofile', envir = environment())
 
+with_def <- (function() {
+  
+  glossary <- yaml::read_yaml("resources/glossary.yml")
+  glossary <- as.data.frame(do.call(rbind, glossary), stringsAsFactors = FALSE)
+  
+  function(term, def) {
+    if (missing(def)) {
+      def <- unlist(glossary[glossary$name == tolower(term), "desc"])
+      # quick and dirty pour aussi matcher les pluriels
+      if (length(def) == 0) def <- unlist(glossary[paste0(glossary$name, "s") == tolower(term), "desc"])
+      # quick and dirty pour aussi matcher les infinitif
+      if (length(def) == 0) def <- unlist(glossary[paste0(glossary$name, "r") == tolower(term), "desc"])
+    }
+    sprintf('<abbr title="%s"><b>%s</b></abbr>', def, term)
+  }
+  
+})()
+
+
 render_rmd <- function(x) return(cat(htmltools::includeText(x)))
 
 
@@ -82,7 +101,6 @@ reminder_image <- function(path = "moncheminperso"){
   )
 }
 
-
 message(
   cat(
     c("Projet source de la documentation utilitR",
@@ -91,7 +109,7 @@ message(
       "Pour pr\u00E9visualiser la version web de l'ouvrage: ",
       "   * Option 1: utiliser l'onglet 'Build' dans Rstudio;",
       "   * Option 2: taper dans la commande R:
-         bookdown::render_book(\"index.Rmd\", output_dir = \"_public\", output_format = \"utilitr::html_document\")",
+         bookdown::render_book(\"index.Rmd\", output_dir = \"_public\", output_format = \"utilitr::bs4_utilitr\")",
       "",
       "Ne pas oublier d'installer le package 'utilitr' avant pour disposer des mod\u00E8les de documents: 
          remotes::install_github(\"https://github.com/InseeFrLab/utilitr-template\")"),

@@ -1,4 +1,4 @@
-# Manipuler des données avec `data.table`
+# Manipuler des données avec `data.table` {#datatable}
 
 ## Tâches concernées et recommandations
 
@@ -9,10 +9,9 @@ L'utilisateur souhaite manipuler des données stucturées sous forme de `data.fr
 * Pour des tables de données de grande taille (plus de 1 Go ou plus d'un million d'observations), il est recommandé d'utiliser le package `data.table` qui fait l'objet de la présente fiche.
 :::
 
-::: {.conseil}
-L'utilisation du *package* `data.table` peut paraître plus déroutante pour les débutants que l'utilisation de `dplyr`. Toutefois, l'apprentissage de `data.table` est particulièrement recommandé si vous avez l'intention d'utiliser `R` avec des données volumineuses car `data.table` est _beaucoup_ plus rapide et puissant que `dplyr`. Des remarques et conseils sont présents dans cette fiche pour vous aider à vous familiariser avec la syntaxe de `data.table`.
+::: {.remarque}
+Certains exemples de cette fiche utilisent les données disponibles dans le _package_ `doremifasolData` ; vous ne pourrez reproduire ces exemples que si ce _package_ est installé sur la machine sur laquelle vous travaillez. Si vous ne savez pas si ce _package_ est déjà installé, consulter la fiche [Comment utiliser la documentation `utilitR`](#presentation-utilitr).
 :::
-
 
 ## Présentation de `data.table`
 
@@ -48,9 +47,8 @@ dt <- dt[order(z)]
 
 <div> <!----Encapsuler dans div permet d'éviter que ce soit dans latex ---->
 
-<table class='table'>
-<tr> <th>**Base R**</th> <th>**dplyr**`</th> <th>**data.table**</th> <tr>
-<tr>
+<table class='table' style = "width : 70%;">
+<tr> <td>**`Base R`**</td> 
 <td>
 ```{r, eval=FALSE}
 aggregate(
@@ -59,6 +57,9 @@ aggregate(
   FUN = sum)
 ```
 </td>
+</tr>
+<tr>
+<td>**`dplyr`**</td> 
 <td>
 ```{r, eval=FALSE}
 dt %>%
@@ -67,16 +68,22 @@ dt %>%
   dplyr::summarise(sum(y))
 ```
 </td>
+</tr>
+<tr>
+<td>**`data.table`**</td> 
 <td>
 ```{r, eval=FALSE}
 dt[x > 3, sum(y), by = z]
 ```
 </td>
-<tr>
+</tr>
 </table>
 
 </div>
 
+::: {.conseil}
+L'utilisation du *package* `data.table` peut paraître plus déroutante pour les débutants que l'utilisation de `dplyr`. Toutefois, l'apprentissage de `data.table` est particulièrement recommandé si vous avez l'intention d'utiliser `R` avec des données volumineuses car `data.table` est _beaucoup_ plus rapide et puissant que `dplyr`. Des remarques et conseils sont présents dans cette fiche pour vous aider à vous familiariser avec la syntaxe de `data.table`.
+:::
 
 ### Quelles fonctions peut-on utiliser avec un `data.table` ?
 
@@ -147,44 +154,39 @@ Voici deux exemples d'opérations enchaînées en `data.table` dont les codes so
 <table class='table'>
 
 <tr> <th> </th> <th>
-```{asis, eval=(knitr::is_html_output()), echo=TRUE}
-Exemple 1
-```
+__Exemple 1__
 </th> 
 <th>
-```{asis, eval=(knitr::is_html_output()), echo=TRUE}
-Exemple 2
-```</th> <tr>
+__Exemple 2__
+</th> <tr>
 <tr>
 <td>
-```{asis, eval=(knitr::is_html_output()), echo=TRUE}
 **Code**
-```
 </td>
 <td>
-```{r, echo=(knitr::is_html_output()), eval=FALSE}
+```{r, echo=TRUE, eval=FALSE}
 dt[y > 3][ , newvar := 1]
 ```
 </td>
 <td>
-```{r, echo=(knitr::is_html_output()), eval=FALSE}
+```{r, echo=TRUE, eval=FALSE}
 dt[y > 3, newvar := 1]
 ```
 </td>
 </tr>
 <tr> 
 <th>
-```{asis, eval=(knitr::is_html_output()), echo=TRUE}
+```{asis, eval=TRUE, echo=TRUE}
 **Signification**
 ```
 </th> 
 <th>
-```{asis, eval=(knitr::is_html_output()), echo=TRUE}
+```{asis, eval=TRUE, echo=TRUE}
 Partir de `dt`, conserver uniquement les observations pour lesquelles `x > 3`, et créer une nouvelle variable `newvar` qui vaut 1 partout 
 ```
 </th> 
 <th>
-```{asis, eval=(knitr::is_html_output()), echo=TRUE}
+```{asis, eval=TRUE, echo=TRUE}
 Partir de `dt`, créer une nouvelle variable `newvar` qui vaut 1 pour les observations pour lesquelles `x > 3` et `NA` ailleurs</th> 
 ```
 <tr>
@@ -210,7 +212,7 @@ Dans la suite de cette section, on va illustrer les opérations de base en `data
 
 ```{r}
 # Charger la base permanente des équipements
-bpe_ens_2018 <- bpe_ens_2018
+bpe_ens_2018 <- doremifasolData::bpe_ens_2018
 # Convertir ce data.frame en data.table
 bpe_ens_2018_dt <- as.data.table(bpe_ens_2018)
 ```
@@ -350,7 +352,7 @@ Pour savoir si `un data.table` est déjà indexé, on peut exécuter la commande
 | **`melt()`**                                         | **`dcast()`**                                    |
 | :--------------------------------------------------: | :----------------------------------------------: |
 | Réorganiser les donnée dans un format `long`           | Réorganise les donnée dans un format `wide`       |
-|![](./pics/datatable/widetolong.png){width=55%}       |![](./pics/datatable/longtowide.png){width=62%}   |
+|![](./pics/datatable/widetolong.png){width=85%}       |![](./pics/datatable/longtowide.png){width=93%}   |
 
 #### `melt` : transformer des colonnes en lignes
 
@@ -366,7 +368,7 @@ Pour illustrer l'usage de cette fonction, nous allons utiliser les données du r
 
 ```{r}
 # Charger la table de Filosofi
-filosofi_epci_2016 <- filosofi_epci_2016
+filosofi_epci_2016 <- doremifasolData::filosofi_epci_2016
 # Convertir la table en data.table
 filosofi_epci_2016_dt <- as.data.table(filosofi_epci_2016)
 # Sélectionner des colonnes
@@ -479,7 +481,7 @@ Pour créer une colonne, on écrit donc directement `dt[ , nouvelle_colonne := u
 
 <!-- Output html -->
 <div> 
-<table class='table' style="width: 100%;">
+<table class='table'>
 <colgroup>
    <col span="1" style="width: 10%;">
    <col span="1" style="width: 50%;">
