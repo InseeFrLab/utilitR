@@ -39,7 +39,7 @@ Les API présentent de multiples avantages :
 
 ### Utilisation des API
 
-Une API peut souvent être utilisée de deux façons : par une interface Web, et par un logiciel. Par ailleurs, les API peuvent être proposées avec un niveau de liberté variable pour l'utilisateur :
+Une API peut souvent être utilisée de deux façons : par une interface Web, et par l'intermédiaire d'un logiciel (`R`, Python...). Par ailleurs, les API peuvent être proposées avec un niveau de liberté variable pour l'utilisateur :
 
 - soit en libre accès (l'utilisation n'est pas contrôlée et l'utilisateur peut utiliser le service comme bon lui semble) ;
 - soit via la génération d'un compte et d'un jeton d'accès qui permettent de sécuriser l'utilisation de l'API et de limiter le nombre de requêtes.
@@ -69,13 +69,14 @@ consultation ou pour réaliser du téléchargement de masse. De plus, l'interfac
 
 Le mode principal de consultation d'une API consiste à adresser une requête à cette API _via_ un logiciel adapté (`R`, `Python`, `Java`...). Comme pour l'utilisation d'une fonction, l'appel d'une API comprend des paramètres qui sont détaillées dans la documentation de l'API. Voici les éléments importants à avoir en tête sur les requêtes :
 
-- Le point d'entrée d'un service offert par une API se présente sous la forme d'une URL (adresse web). Chaque service proposé par une API a sa propre URL. Par exemple, dans le cas de l'API Sirene, l'URL à utiliser pour obtenir des informations sur un Siren est :
+- Le **point d'entrée** d'un service offert par une API se présente sous la forme d'une URL (adresse web). Chaque service proposé par une API a sa propre URL. Par exemple, dans le cas de l'API Sirene, l'URL à utiliser pour obtenir des informations sur un Siren est :
 <https://api.insee.fr/entreprises/sirene/V3/siren/>.
-- Cette URL doit être complétée avec différents paramètres qui précisent la requête (par exemple l'identifiant Siren). Ces paramètres viennent s'ajouter à l'URL (qui peut donc devenir très longue!). Chaque service proposé par une API a ses propres paramètres, détaillés dans la documentation. S'agissant de l'API Sirene, l'utilisateur intéressé peut retrouver dans la documentation le paramétrage de l'URL.
+
+- Cette URL doit être complétée avec différents paramètres qui précisent la **requête** (par exemple l'identifiant Siren). Ces paramètres viennent s'ajouter à l'URL (qui peut donc devenir très longue!). Chaque service proposé par une API a ses propres paramètres, détaillés dans la documentation. S'agissant de l'API Sirene, l'utilisateur intéressé peut retrouver dans la documentation le paramétrage de l'URL.
 
 <!-- Siren de la DG Insee: 120027016 -->
 
-- Lorsque l'utilisateur soumet sa requête, l'API lui renvoie une réponse **structurée** contenant l'ensemble des informations demandées. Le résultat envoyé par une API est majoritairement aux formats `JSON` ou `XML` (deux formats dans lesquels les informations sont hiérarchisées de manière emboitée).
+- Lorsque l'utilisateur soumet sa requête, l'API lui renvoie une **réponse structurée** contenant l'ensemble des informations demandées. Le résultat envoyé par une API est majoritairement aux formats `JSON` ou `XML` (deux formats dans lesquels les informations sont hiérarchisées de manière emboitée).
 Plus rarement, certains services proposent une information
 sous forme plate (de type csv). 
 
@@ -89,7 +90,7 @@ Dans certains cas, des _packages_ spécifiques à une API ont été créés pour
 Nous allons voir ici quelques _packages_ permettant de traiter l'information
 d'une API facilement :
 
-### [apinsee](https://github.com/InseeFrLab/apinsee)
+### Le _package_ [apinsee](https://github.com/InseeFrLab/apinsee)
 
 Ce _package_ est très utile pour l'utilisation des API mises à diposition sur
 le catalogue des API. En effet, pour ces API, pour pouvoir effectuer une requête,
@@ -164,7 +165,7 @@ Dès lors, vous pouvez accéder aux API de
 l’Insee auxquelles votre application a souscrit.
 
 
-### [doremifasol](https://github.com/InseeFrLab/DoReMIFaSol)
+### Le _package_ [doremifasol](https://github.com/InseeFrLab/DoReMIFaSol)
 
 Ce _package_ s'appuie sur le _package_ `apinsee` pour solliciter l'API Sirène
 dans une procédure de requêtage intégrée.
@@ -179,7 +180,7 @@ etablissements <- telechargerDonnees("SIRENE_SIRET",
                                      argsApi = list(q = "dateCreationUniteLegale:2020-01-01"))
 ```
 
-### [inseeLocalData](https://github.com/InseeFrLab/inseeLocalData)
+### Le _package_ [inseeLocalData](https://github.com/InseeFrLab/inseeLocalData)
 
 Ce _package_ permet de télécharger les données localisées à la commune,
 diffusées sur <https://www.insee.fr> dans la rubrique *Chiffres détaillés*,
@@ -221,7 +222,7 @@ source <- donneesAPI$source # pour accéder à la source
 *TO BE COMPLETED: il faudrait plus de détails*
 
 
-### [insee](https://github.com/InseeFr/R-Insee-Data/)
+### Le _package_ [insee](https://github.com/InseeFr/R-Insee-Data/)
 
 Ce _package_ permet de télécharger les données et leurs métadonnées
 diffusées sur le service `SDMX` de la Base de données Macroéconomique
@@ -261,7 +262,7 @@ le nombre de données importées (filtre sur la période, sur la date de mise à
 
 **TO BE COMPLETED**
 
-### [OECD](https://cran.r-project.org/web/packages/OECD/index.html)
+### Le _package_ [OECD](https://cran.r-project.org/web/packages/OECD/index.html)
 
 ::: specificite
 
@@ -302,14 +303,14 @@ Pour lire les données d'une API ne possédant pas de _package_, il faut utilise
 
 ::: remarque
 
-Selon la structure du JSON récupéré, la manipulation du résultat peut être
+Selon la structure du JSON récupéré, la manipulation du résultat d'une requête peut être
 assez fastidieuse avec `R`. `Python` propose des outils plus performants pour
-retravailler des JSON (package `json` notamment).
-Grâce au _package_ `reticulate`, il est aisé de faire tourner un code `Python`
+retravailler des JSON (le _package_ `json` notamment). Heureusement,
+grâce au _package_ `reticulate`, il est aisé de faire tourner un code `Python`
 dans une session `R` et récupérer le résultat dans un format de données (par
-exemple dataframe) de `R`. L'approche par les `API` étant plus fréquente
+exemple `data.frame`) de `R`. L'approche par les `API` étant plus fréquente
 en `Python` qu'en `R`, on trouve également plus de _packages_ facilitant
-l'accès à des données par ce biais en `Python`
+l'accès à des données par ce biais en `Python`.
 
 :::
 
