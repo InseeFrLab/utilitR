@@ -13,6 +13,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       -
+        name: Checkout
+        uses: actions/checkout@v2    
+      -
         name: Set up QEMU
         if: ${{ github.repository == 'inseefrlab/utilitr' }}
         uses: docker/setup-qemu-action@v1
@@ -36,10 +39,10 @@ jobs:
           GITHUB_PAT: ${{ secrets.PAT }}
         with:
           push: true
-          image: inseefrlab/utilitr
+          context: .
           tags: |
-            latest
-            0.7.0        
+            inseefrlab/utilitr:latest
+            inseefrlab/utilitr:0.7.0      
       -
         name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
