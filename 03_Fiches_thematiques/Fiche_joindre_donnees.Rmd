@@ -11,7 +11,7 @@ Vous souhaitez apparier deux tables de données selon une ou plusieurs variables
 :::
 
 ::: {.remarque}
-Certains exemples de cette fiche utilisent les données disponibles dans le _package_ `doremifasolData` ; vous ne pourrez reproduire ces exemples que si ce _package_ est installé sur la machine sur laquelle vous travaillez. Si vous ne savez pas si ce _package_ est déjà installé, consulter la fiche [Comment utiliser la documentation `utilitR`](#presentation-utilitr).
+Certains exemples de cette fiche utilisent les données disponibles dans le _package_ `doremifasolData` ; vous ne pourrez reproduire ces exemples que si ce _package_ est installé sur la machine sur laquelle vous travaillez. Si vous ne savez pas si ce _package_ est déjà installé, consultez la fiche [Comment utiliser la documentation `utilitR`](#presentation-utilitr).
 :::
 
 ## Les différents types de jointure
@@ -24,7 +24,7 @@ Certains exemples de cette fiche utilisent les données disponibles dans le _pac
 + _jointure externe_ (*full join*) : retourne l'ensemble des observations des deux tables, même lorsque l'identifiant ne se retrouve que dans l'une des tables.
 + _anti-jointures_ : retourne les observations de la table de gauche seulement si l'identifiant n'est pas trouvé dans la table de droite (renvoyer les observations dont l'identifiant n'existe pas dans l'autre table). Ce type de jointure est peu utilisé en pratique.
 
-Le graphique ci-dessous illustre les différentes méthodes de jointures :
+Le graphique ci-dessous illustre les différentes méthodes de jointure :
 
 | **Type de jointure** | **Exemple** |
 | :--------------------------------------------------: | :----------------------------------------------: |
@@ -39,7 +39,7 @@ Le graphique ci-dessous illustre les différentes méthodes de jointures :
 ::: {.remarque}
 Pour vous aider à comprendre le principe des jointures, voici une rapide description des opérations que `R` réalise quand on fait une jointure interne entre deux tables :
 
-* `R` isole la première observation de la table de gauche et en extrait l'identifiant (la (ou les) variable(s) de jointures) ;
+* `R` isole la première observation de la table de gauche et en extrait l'identifiant (la (ou les) variable(s) de jointure) ;
 * il compare cet identifiant avec l'identifiant de chacune des observations de la table de droite :
     * soit l'identifiant est identique, auquel cas il rajoute dans la table de sortie une nouvelle observation avec les valeurs de l'observation extraite de la table de gauche et celle de l'observation extraite de la table de droite ;
     * soit l'identifiant est différent, auquel cas il passe à la suivante de la table de droite.
@@ -128,7 +128,7 @@ head(table_jointe)
 **Avec `dplyr`, les jointures se réalisent grâce aux fonctions `left_join`, `right_join`, `inner_join`, `full_join` et `anti_join`.** Ces fonctions prennent les arguments suivants :
 
 - le nom des deux `data.frame` à joindre ;
-- les variables de jointure, défini par l'argument `by`. Lorsque la variable de jointure ne porte pas le même nom dans les deux tables, on utilise le paramètre `by = c("var_x" = "var_y")`. S'il y a plusieurs variables de jointures, on écrit `by = c("var_x1" = "var_y1", "var_x2" = "var_y2")`.
+- les variables de jointure, défini par l'argument `by`. Lorsque la variable de jointure ne porte pas le même nom dans les deux tables, on utilise le paramètre `by = c("var_x" = "var_y")`. S'il y a plusieurs variables de jointure, on écrit `by = c("var_x1" = "var_y1", "var_x2" = "var_y2")`.
 
 Il est préférable d'utiliser ces fonctions sur des objets `tibble` plutôt que `data.frame`. On va donc convertir les deux tables avant de présenter un exemple :
 
@@ -262,14 +262,14 @@ Avant de procéder à une jointure, il est essentiel de **vérifier la qualité 
 
 - **Règle n°1 : vérifier la présence de valeurs manquantes dans les variables de jointure**.
 
-  Une première approche consiste à rechercher les valeurs manquantes (`NA`) dans les variables de jointures. Le code suivant permet de calculer le nombre d'observations pour lesquelles l'identifiant est manquant :
+  Une première approche consiste à rechercher les valeurs manquantes (`NA`) dans les variables de jointure. Le code suivant permet de calculer le nombre d'observations pour lesquelles l'identifiant est manquant :
 
   ```{r, eval=TRUE}
   sum(is.na(filosofi_com_2016$CODGEO))
   sum(is.na(cog_com_2019$com))
   ```
   
-  On voit ici que les variables de jointure ne contiennent aucun `NA` dans les deux tables. Toutefois, les valeurs manquantes peuvent prendre des formes plus complexes que `NA` : `0`, `.`, `999`... c'est pourquoi il est important de procéder à une inspection visuelle des variables de jointures. Pour ce faire, vous pouvez utilisez la fonction `unique()`, qui permet d'afficher la liste des valeurs qui apparaissent dans une variable.
+  On voit ici que les variables de jointure ne contiennent aucun `NA` dans les deux tables. Toutefois, les valeurs manquantes peuvent prendre des formes plus complexes que `NA` : `0`, `.`, `999`... c'est pourquoi il est important de procéder à une inspection visuelle des variables de jointure. Pour ce faire, vous pouvez utilisez la fonction `unique()`, qui permet d'afficher la liste des valeurs qui apparaissent dans une variable.
 
   ```{r, eval=TRUE}
   unique(filosofi_com_2016$CODGEO)
@@ -277,7 +277,7 @@ Avant de procéder à une jointure, il est essentiel de **vérifier la qualité 
 
 - **Règle n°2 : vérifier la présence de doublons dans les variables de jointure**.
 
-  Si les variables de jointures contiennent un grand nombre de fois les mêmes valeurs, la jointure peut devenir très gourmande en ressources, voire irréalisable. Il est donc indispensable de repérer les doublons, et de les traiter si nécessaire. Les deux codes suivants calculent le nombre d'observations dans la table pour chaque valeur des variables de jointure, et affichent les premières lignes par nombre d'observations décroissant. Si la variable `nb_obs` est supérieure ou égale à 2, alors il y a des doublons. Le premier code est adapté si vous utilisez `tidyverse` pour manipuler des données, le second si vous utilisez `data.table`.
+  Si les variables de jointure contiennent un grand nombre de fois les mêmes valeurs, la jointure peut devenir très gourmande en ressources, voire irréalisable. Il est donc indispensable de repérer les doublons, et de les traiter si nécessaire. Les deux codes suivants calculent le nombre d'observations dans la table pour chaque valeur des variables de jointure, et affichent les premières lignes par nombre d'observations décroissant. Si la variable `nb_obs` est supérieure ou égale à 2, alors il y a des doublons. Le premier code est adapté si vous utilisez `tidyverse` pour manipuler des données, le second si vous utilisez `data.table`.
 
   ```{r, eval=TRUE}
   # Approche dplyr/tidyverse
@@ -291,7 +291,7 @@ Avant de procéder à une jointure, il est essentiel de **vérifier la qualité 
 
   ```{r, eval=FALSE}
   # Approche data.table
-  doublons <- filosofi_com_2016[, .(nb_obs = .N), by = COGDEO
+  doublons <- filosofi_com_2016_dt[, .(nb_obs = .N), by = CODGEO
                               ][nb_obs > 1][order(-nb_obs)]
   doublons
   ```
@@ -312,14 +312,14 @@ Avant de procéder à une jointure, il est essentiel de **vérifier la qualité 
 Le fait que les variables de jointure contiennent des valeurs manquantes ou des doublons n'est pas nécessairement un problème. C'est à vous de déterminer si cela pose un problème. Voici deux questions que vous pouvez vous poser pour analyser la situation :
 
 - La (ou les) variable(s) de jointure doi(ven)t-elle(s) impérativement être renseignée(s) pour chaque observation ? Si oui, il ne doit pas y avoir de valeurs manquantes.
-- La (ou les) variable(s) de jointure doivent-elles identifier de façon unique chaque observation ? Si oui, il ne doit pas y avoir de doublons.
+- La (ou les) variable(s) de jointure doi(ven)t-elle(s) identifier de façon unique chaque observation ? Si oui, il ne doit pas y avoir de doublons.
 :::
 
-+ **Règle n°3 : vérifier la compatibilité des variables de jointures**. 
++ **Règle n°3 : vérifier la compatibilité des variables de jointure**. 
   
   Il faut vérifier deux choses :
   
-  - **Une jointure ne peut être réalisée avec `R` que si les variables de jointures sont de même type.** Il faut donc vérifier que c'est le cas. Les types de variables les plus fréquemment utilisées pour des jointures avec `R` sont `integer` (nombre entier), `character` (chaîne de caractères) et `factor` (catégorie). Vous pouvez utiliser la fonction `class` pour connaître le type d'une variable. Dans l'exemple suivant, on voit que les deux variables de jointures sont de type `character`.
+  - **Une jointure ne peut être réalisée avec `R` que si les variables de jointure sont de même type.** Il faut donc vérifier que c'est le cas. Les types de variables les plus fréquemment utilisées pour des jointures avec `R` sont `integer` (nombre entier), `character` (chaîne de caractères) et `factor` (catégorie). Vous pouvez utiliser la fonction `class` pour connaître le type d'une variable. Dans l'exemple suivant, on voit que les deux variables de jointure sont de type `character`.
   
   ```{r, eval=TRUE}
   # Type de la variable de jointure dans la table Filosofi
@@ -327,7 +327,7 @@ Le fait que les variables de jointure contiennent des valeurs manquantes ou des 
   # Type de la variable de jointure dans le COG 2019
   class(cog_com_2019$com)
   ```
-  Si les variables sont de type différent, alors il faut convertir les variables de jointures dans l'une des tables. Pour ce faire, vous pouvez utiliser les fonctions `as.integer`, `as.character` et `as.factor`. Si vous convertissez une variable de jointure, il faut refaire les vérifications sur la présence de valeurs manquantes et de doublons.
+  Si les variables sont de type différent, alors il faut convertir les variables de jointure dans l'une des tables. Pour ce faire, vous pouvez utiliser les fonctions `as.integer`, `as.character` et `as.factor`. Si vous convertissez une variable de jointure, il faut refaire les vérifications sur la présence de valeurs manquantes et de doublons.
   
   - **Une jointure ne peut être réalisée que si les valeurs des variables de jointure de la table de gauche figurent (au moins pour certaines d'entre elles) parmi les valeurs des variables de jointure de la table de droite.** Il faut donc le vérifier. Voici deux exemples de code qui peuvent vous aider. 
   
@@ -380,8 +380,8 @@ Si vous faites des jointures avec `dplyr`, vous pouvez utiliser le _package_ [`t
 
 ## Pour en savoir plus {#RessourcesJointures}
 
-* Fiche [Manipuler des données avec le `tidyverse`] ;
-* Fiche [Manipuler des données avec `data.table`] ;
+* la fiche [Manipuler des données avec le `tidyverse`] ;
+* la fiche [Manipuler des données avec `data.table`] ;
 * un [tutoriel sur les jointures en SQL](https://sql.sh/cours/jointures) (entièrement en français) ;
 * un [tutoriel de Lise Vaudor sur les jointures en `dplyr`](http://perso.ens-lyon.fr/lise.vaudor/combinaisons-et-jointures-de-tables-avec-dplyr) ;
 * la [section consacrée à `dplyr` de la formation de Julien Barnier](https://juba.github.io/tidyverse/10-dplyr.html) ;
