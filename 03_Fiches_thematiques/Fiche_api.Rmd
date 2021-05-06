@@ -104,19 +104,18 @@ limitée et doivent régulièrement être renouvelés.
 Ce _package_ propose de générer facilement un jeton d'accès temporaire à partir de `R`. De cette façon, il n'y a plus besoin de naviguer entre le programme `R`
 et le catalogue des API pour renouveler un jeton. 
 
-Pour utiliser cette fonctionnalité, il faut configurer l'usage du _package_ lors de la première utilisation. Plus précisément, il faut renseigner les paramètres `INSEE_APP_KEY` et
-`INSEE_APP_SECRET` dans le fichier de configuration `.Renviron` de `R`. (voir la fiche [Personnaliser la configuration de `R`] pour une présenation détaillée des fichiers de configuration de `R`). Pour le faire, il suffit d'exécuter la commande suivante :
+Pour utiliser cette fonctionnalité, il faut configurer l'usage du _package_ lors de la première utilisation. Plus précisément, il faut renseigner les variables d'environnement `INSEE_APP_KEY` et
+`INSEE_APP_SECRET` dans le fichier de configuration `.Renviron` de `R`. (voir la fiche [Personnaliser la configuration de `R`] pour une présentation détaillée des fichiers de configuration de `R`). Pour le faire, il suffit d'exécuter la commande suivante :
 
 ```{r, eval = FALSE}
 usethis::edit_r_environ("user")
 ```
 
 Votre fichier `.Renviron` est ouvert s'il existe déjà, ou s'il n'existait pas,
-est automatiquement 
-créé (vide), enregistré et ouvert
+est automatiquement créé (vide), enregistré et ouvert
 dans `RStudio`. Il convient d'y ajouter deux variables d'environnement, `INSEE_APP_KEY` et 
 `INSEE_APP_SECRET`. Les lignes suivantes peuvent servir de modèle, en 
-remplaçant la deuxième partie de chaque ligne par la clé du compte à utiliser
+remplaçant la deuxième partie de chaque ligne par la clé du compte à utiliser :
 
 ~~~markdown
 INSEE_APP_KEY=xxxxxxxxxxxxxxxxxx    # clef du consommateur
@@ -124,7 +123,9 @@ INSEE_APP_SECRET=yyyyyyyyyyyyyyyyyy # secret du consommateur
 ~~~
 
 ::: remarque
-L'option `user` dans l'utilisation de la fonction `usethis::edit_r_environ()`
+Voici deux remarques sur le stockage des variables d'environnement :
+
+- L'option `"user"` dans l'utilisation de la fonction `usethis::edit_r_environ()`
 permet de stocker ces clés dans un fichier global, connu
 de tous les projets d'un utilisateur `R`. Cela évite, d'une part, de stocker
 la même information à deux endroits différents. D'autre part, cela évite
@@ -132,13 +133,13 @@ d'associer des informations personnelles à un projet, qui doit être sous contr
 de version (voir la Fiche [Utiliser R avec RStudio](#git)) car
 le fichier `.Renviron` est un fichier contenant des informations personnelles. 
 
-Si, vous avez choisi l'option `project` lors de
+- Si vous avez choisi l'option `"project"` lors de
 l'appel à `usethis::edit_r_environ`, il faut ajouter le `.Renviron` dans
 les fichiers à ne pas suivre avec `Git` grâce à la commande suivante :
 
-```{r, eval = FALSE}
-usethis::edit_git_ignore(".Renviron")
-```
+    ```{r, eval = FALSE}
+    usethis::edit_git_ignore(".Renviron")
+    ```
 :::
 
 Enfin, pour créer le token temporaire, il suffit d'exécuter :
