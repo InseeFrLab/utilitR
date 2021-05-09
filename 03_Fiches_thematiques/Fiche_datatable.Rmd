@@ -235,7 +235,7 @@ Voici une remarque très importante sur le fonctionnement de `data.table` : **lo
 
 **On peut sélectionner des colonnes dans un `data.table` et renvoyer un `data.table` de plusieurs façons**. 
 
-- La première consiste à indiquer les colonnes à conserver sous forme de liste. La notation `.()` est un alias pour `list()` qui est pratique et concis dans un code `data.table`. Le code suivant sélectionne le code commune, le type d’équipement et le nombre d’équipement dans la base permanente des équipements, de deux façons :
+- La première consiste à indiquer les colonnes à conserver sous forme de liste. La notation `.()` est un alias pour `list()` qui est pratique et concis dans un code `data.table`. Le code suivant sélectionne le code commune, le type d’équipement et le nombre d’équipement dans la base permanente des équipements, de deux façons équivalentes :
 
 ```{r, eval = FALSE}
 bpe_ens_2018_dt[ , list(DEPCOM, TYPEQU, NB_EQUIP)]
@@ -268,13 +268,13 @@ bpe_ens_2018_dt[order(DEPCOM, -TYPEQU)]
 
 #### Calculer des statistiques
 
-**La méthode pour sélectionner des colonnes est également valable pour calculer des statistiques, car `data.table` accepte les expressions dans `j`.** Le code suivant calcule le nombre total d’équipements dans la BPE (`sum(NB_EQUIP, na.rm = TRUE`) :
+**La méthode pour sélectionner des colonnes est également valable pour calculer des statistiques, car `data.table` accepte les expressions dans `j`.** Le code suivant calcule le nombre total d’équipements dans la BPE, `sum(NB_EQUIP, na.rm = TRUE)` :
 
 ```{r}
 bpe_ens_2018_dt[ , .(sum(NB_EQUIP, na.rm = TRUE))]
 ```
 
-Il est possible de calculer plusieurs statistiques à la fois, et de donner des noms aux variables ; il suffit de séparer les formules par une virgule. Le code suivant calcule le nombre total d’équipements dans la BPE (`sum(NB_EQUIP, na.rm = TRUE)`), et le nombre total de boulangeries (`sum(NB_EQUIP * (TYPEQU == "B203"), na.rm = TRUE)`).
+Il est possible de calculer plusieurs statistiques à la fois, et de donner des noms aux variables ; il suffit de séparer les formules par une virgule. Le code suivant calcule le nombre total d’équipements dans la BPE `sum(NB_EQUIP, na.rm = TRUE)`, et le nombre total de boulangeries `sum(NB_EQUIP * (TYPEQU == "B203"), na.rm = TRUE)`.
 
 ```{r}
 bpe_ens_2018_dt[ , 
@@ -282,7 +282,7 @@ bpe_ens_2018_dt[ ,
                    NB_BOULANG_TOT = sum(NB_EQUIP * (TYPEQU == "B203"), na.rm = TRUE))]
 ```
 
-**On peut évidemment combiner `i` et `j` pour calculer des statistiques sur un sous-ensemble d'observations.** Dans l'exemple suivant, on sélectionne les boulangeries avec `i` (`(TYPEQU == "B203")`), et on calcule le nombre total d'équipements avec `j` (`sum(NB_EQUIP, na.rm = TRUE)`). 
+**On peut évidemment combiner `i` et `j` pour calculer des statistiques sur un sous-ensemble d'observations.** Dans l'exemple suivant, on sélectionne les boulangeries avec `i`, `(TYPEQU == "B203")`, et on calcule le nombre total d'équipements avec `j`, `sum(NB_EQUIP, na.rm = TRUE)`. 
 
 ```{r}
 bpe_ens_2018_dt[TYPEQU == "B203", .(NB_BOULANG_TOT = sum(NB_EQUIP, na.rm = TRUE))]
@@ -299,16 +299,16 @@ Vous pouvez utiliser toutes les fonctions statistiques de `R` avec `data.table`.
 |`%in%`           | Nombre dans la liste                              | `dt[x %in% 1:5]` |
 |`%chin%`         | Chaîne de caractères dans la liste                | `dt[x %chin% c("a", "b")]` |
 |`%between%`      | Valeur entre deux nombres                         | `dt[x %between% c(5,13)]` |
-| `%like%`        | Reconnaissance d'une chaîne de caractères         | `dt[departement %like% "^Haute"]`
+| `%like%`        | Reconnaissance d'une chaîne de caractères (expression régulière)         | `dt[departement %like% "^Haute"]`
 
 #### Opérations par groupe
 
-**Toutes les opérations précédentes peuvent être réalisées par groupe.** il suffit d'ajouter le nom des variables de groupe dans `by` (c'est l'équivalent du `group_by()` du _package_ `dplyr`). Lorsqu'il y a plusieurs variables de groupe, on peut écrire l'argument `by` de deux façons : 
+**Toutes les opérations précédentes peuvent être réalisées par groupe.** Il suffit d'ajouter le nom des variables de groupe dans `by` (c'est l'équivalent du `group_by()` du _package_ `dplyr`). Lorsqu'il y a plusieurs variables de groupe, on peut écrire l'argument `by` de deux façons : 
 
 - soit `by = c("var1", "var2", "var3")` (attention aux guillemets) ;
 - soit `by = .(var1, var2, var3)` (attention à la notation `.()`).
 
-Le code suivant groupe les données de la BPE par département (`by = .(DEP)`) puis calcule le nombre total d’équipements (`sum(NB_EQUIP, na.rm = TRUE)`) et le nombre total de boulangeries (`sum(NB_EQUIP * (TYPEQU == "B203"), na.rm = TRUE)`).
+Le code suivant groupe les données de la BPE par département, `by = .(DEP)`, puis calcule le nombre total d’équipements, `sum(NB_EQUIP, na.rm = TRUE)` et le nombre total de boulangeries, `sum(NB_EQUIP * (TYPEQU == "B203"), na.rm = TRUE)`.
 
 ```{r}
 bpe_ens_2018_dt[ , 
@@ -323,7 +323,7 @@ L'argument `by` fonctionne également avec l'opérateur `:=`. Vous pouvez en app
 
 ### Joindre des tables avec `data.table`
 
-Pour joindre des données, `data.table` propose une fonction `merge()` plus rapide que la fonction de base. La syntaxe générale est `z <- merge(x, y, [options])`. Voici une liste des principales options (les autres options sont visibles avec `?data.table::merge`) :
+Pour joindre des données, `data.table` propose une fonction `merge()` plus rapide que la fonction de base. La syntaxe générale est `z <- merge(x, y, [options])`. Voici une liste des principales options (les autres options sont consultables avec `?data.table::merge`) :
 
 | **Option**                                | **Signification**                                                        |
 |-------------------------------------------|--------------------------------------------------------------------------|
@@ -347,7 +347,7 @@ Pour savoir si `un data.table` est déjà indexé, on peut exécuter la commande
 
 ### Réorganiser les données en `data.table`
 
-**Le *package* `data.table` permet de réorganiser facilement une table de données avec les fonctions `dcast()` et `melt()`.** La fonction `melt()` réorganise les donnée dans un format `long`. La fonction `dcast()` réorganise les donnée dans un format `wide`.
+**Le *package* `data.table` permet de réorganiser facilement une table de données avec les fonctions `dcast()` et `melt()`.** La fonction `melt()` réorganise les données dans un format `long`. La fonction `dcast()` réorganise les donnée dans un format `wide`.
 
 | **`melt()`**                                         | **`dcast()`**                                    |
 | :--------------------------------------------------: | :----------------------------------------------: |
@@ -382,7 +382,7 @@ Nous allons restructurer cette table pour obtenir une nouvelle table, avec une o
 ```{r}
 donnees_pauvrete_long <- 
   melt(data = filosofi_epci_2016_dt, 
-       c("CODGEO"), 
+       id.vars = c("CODGEO"), 
        measure.vars = c("TP6016", "TP60AGE116", "TP60AGE216", 
                         "TP60AGE316", "TP60AGE416", "TP60AGE516", "TP60AGE616"),
        variable.name = "tranche_age",
@@ -429,8 +429,8 @@ bpe_ens_2018_wide2
 ```
 
 ::: {.conseil}
-* La fonction `dcast()` crée une colonne par valeur des variables utilisées dans la partie droite de la formule (trois colonnes pour les trois valeurs de `cyl` dans l'exemple qui précède). **Il faut donc faire attention à ce que ces variables aient un nombre limité de valeurs**, pour ne pas obtenir une table *extrêmement* large. On peut éventuellement discrétiser les variables continues, ou regrouper les modalités avant d'utiliser `dcast()`.
-* On peut obtenir des **noms de colonnes peu significatifs** lorsqu'on utilise `dcast()` avec une fonction d'agrégation (`01`, `02`, `03`... dans l'exemple précédent). Il est conseillé de modifier légèrement la partie droite de la formule pour obtenir des noms plus significatifs. Voici un exemple où on ajoute le préfixe `resultat_region` :
+* La fonction `dcast()` crée une colonne par valeur des variables utilisées dans la partie droite de la formule. **Il faut donc faire attention à ce que ces variables aient un nombre limité de valeurs**, pour ne pas obtenir une table *extrêmement* large. On peut éventuellement discrétiser les variables continues, ou regrouper les modalités avant d'utiliser `dcast()`.
+* On peut obtenir des **noms de colonnes peu significatifs** lorsqu'on utilise `dcast()` avec une fonction d'agrégation. Il est conseillé de modifier légèrement la partie droite de la formule pour obtenir des noms plus significatifs. Voici un exemple où on ajoute le préfixe `resultat_region` :
   ```{r}
   bpe_ens_2018_wide2 <- dcast(bpe_ens_2018_dt, 
                            TYPEQU ~ paste0("resultat_region",REG), 
@@ -464,7 +464,7 @@ bpe_ens_2018_wide2
 
 ## La fonction d'assignation par référence (ou `:=`)
 
-Jusqu'à présent, mous avons manipulé un `data.table` existant, mais nous ne lui avons pas ajouté de nouvelles colonnes. Pour ce faire, nous allons utiliser la fonction `:=` (qui s'appelle "*assignation par référence*" et qui peut également s'écrire `` `:=`() ``). Voici comment on crée une nouvelle colonne dans `bpe_ens_2018_dt` :
+Jusqu'à présent, nous avons manipulé un `data.table` existant, mais nous ne lui avons pas ajouté de nouvelles colonnes. Pour ce faire, nous allons utiliser la fonction `:=` qui s'appelle "*assignation par référence*" et qui peut également s'appeler comme une fonction `` `:=`() ``, prenant ses arguments entre parenthèse. Voici comment on crée une nouvelle colonne dans `bpe_ens_2018_dt` :
 
 ```{r}
 bpe_ens_2018_dt[ , nouvelle_colonne :=  NB_EQUIP * 10]
@@ -541,11 +541,7 @@ bpe_ens_2018_dt[ , `:=`(nouvelle_colonne1 = NB_EQUIP * 2,
 ```
 
 ::: {.remarque}
-Si vous utilisez la notation`` `:=`() ``, alors il faut utiliser uniquement `=` à l'intérieur des parenthèses pour créer ou modifier des variables, et non `:=`. Exemple :
-```{r, eval = FALSE}
-dt[ , `:=`(var1 = "Hello", var2 = "world")]
-```
-:::
+Si vous utilisez la notation`` `:=`() ``, alors il faut utiliser uniquement `=` à l'intérieur des parenthèses pour créer ou modifier des variables, et non `:=`. 
 
 #### Supprimer une colonne
 
