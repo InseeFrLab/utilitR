@@ -194,6 +194,13 @@ Dans `dplyr`, les manipulations simples de données sont résumées en quelques 
     select(DEPCOM, TYPEQU, NB_EQUIP)
   ```
 
+- Avec la position des colonnes. Le code suivant sélectionne les cinq premières colonnes :
+ 
+  ```{r}
+  bpe_ens_2018_tbl %>% 
+    select(1:5)
+  ```
+
 - Avec une condition logique. Par exemple, la fonction `starts_with("DEP")` permet de sélectionner toutes les variables dont le nom commence par "DEP". 
 
   ```{r}
@@ -212,6 +219,14 @@ Dans `dplyr`, les manipulations simples de données sont résumées en quelques 
 | `select(any_of(...))`       | identique à `all_of()`, mais sans erreur si la colonne n'existe pas |
 | `select(everything())`      | toutes les colonnes (utile pour mettre une nouvelle colonne devant les autres)      |
 
+- On peut aussi renommer des colonnes avec la syntaxe `select(data, nouveau_nom = selection_colonne)` :
+
+```{r}
+  bpe_ens_2018_tbl %>% 
+    select(dept = DEP, depcom = DEPCOM)
+  ```
+
+
 #### Renommer des variables : `rename()`
  
 La fonction `rename()` permet de renommer des variables. La syntaxe est la suivante :  `rename(data, nouveau_nom = ancien nom)`. Voici un exemple :
@@ -219,6 +234,13 @@ La fonction `rename()` permet de renommer des variables. La syntaxe est la suiva
 ```{r}
 bpe_ens_2018_tbl %>% 
   rename(code_commune = DEPCOM)
+```
+
+La fonction `rename_with()` permet de renommer un groupe de colonnes avec une fonction. La syntaxe est la suivante :  `rename_with(data, nom_fonction, selection_colonnes)`. Voici un exemple qui met en minuscules tous les noms de colonnes :
+
+```{r}
+bpe_ens_2018_tbl %>% 
+  rename_with(tolower)
 ```
 
 
@@ -259,6 +281,8 @@ Voici quelques utilisations fréquentes de `arrange()` :
 | Trier sur une colonne en ordre croissant         | `arrange(NB_EQUIP)`                  |
 | Trier sur plusieurs colonnes en ordre croissant  | `arrange(DEPCOM, NB_EQUIP)`          |
 | Trier sur une colonne en ordre décroissant       | `arrange(desc(NB_EQUIP))`            |
+
+Comme il n'est pas nécessaire dans R de trier les tables avant de faire une jointure (merge), le tri est utile surtout pour afficher à l'écran un tableau synthétique de données.
  
 #### Ajouter et modifier des colonnes : `mutate()`
  
@@ -365,6 +389,16 @@ Trois remarques sur l'utilisation de `group_by()` :
 - si vous appliquez une instruction `group_by()` à une table qui comporte déjà des groupes, alors les groupes sont redéfinis ;
 - il est prudent d'appliquer la fonction `ungroup()` à vos données une fois que les opérations par groupe ont été réalisées, afin que les opérations suivantes ne soient pas effectuées par groupe par mégarde.
 :::
+
+#### Appliquer une fonction dplyr sur un groupe de colonnes : `across()`
+ 
+**La fonction `across()` permet de sélectionner un groupe de colonnes sur lequel on veut appliquer une fonction dplyr.** Ainsi on peut appliquer une fonction sur des colonnes en les sélectionnant comme le fait `select()`. Si on veut sélectionner des colonnes en fonction de leur type, on utilise en outre `where()`. Le code suivant groupe les données de la BPE avec les deux colonnes dont le nom commence par "DEP", puis effectue la somme de toutes les colonnes de type numérique.
+ 
+```{r, warning = FALSE,message = FALSE}
+bpe_ens_2018_tbl %>% 
+  group_by(across(starts_with('DEP'))) %>%
+  summarise(across(where(is.numeric), sum, na.rm = TRUE)) 
+```
 
 ### Manipuler plusieurs tables avec `dplyr`
  
@@ -549,7 +583,7 @@ Une table de données stocke des informations sous forme de lignes et de colonne
 
 ![Transformation *wide to long*](./pics/datatable/widetolong.png)
 
-* **Transformation *wide to long* ** : 
+* **Transformation *long to wide* ** : 
 
 ![Transformation *long to wide*](./pics/datatable/longtowide.png)
 
