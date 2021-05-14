@@ -41,7 +41,7 @@ Pour vous aider à comprendre le principe des jointures, voici une rapide descri
 
 * `R` isole la première observation de la table de gauche et en extrait l'identifiant (la (ou les) variable(s) de jointure) ;
 * il compare cet identifiant avec l'identifiant de chacune des observations de la table de droite :
-    * soit l'identifiant est identique, auquel cas il rajoute dans la table de sortie une nouvelle observation avec les valeurs de l'observation extraite de la table de gauche et celle de l'observation extraite de la table de droite ;
+    * soit l'identifiant est identique, auquel cas il rajoute dans la table de sortie une nouvelle observation avec les valeurs de l'observation extraite de la table de gauche et celles de l'observation extraite de la table de droite ;
     * soit l'identifiant est différent, auquel cas il passe à la suivante de la table de droite.
 * `R` passe ensuite à la deuxième observation de la table de gauche, et ainsi de suite.
   
@@ -96,7 +96,7 @@ Contrairement à d'autres logiciels statistiques, **il n'est pas nécessaire ni 
 La fonction pour effectuer des jointures en `base R` est la fonction `merge` (fusionner). Elle prend les arguments suivants :
 
 - le nom des deux `data.frame` à joindre ;
-- les variables de jointure, défini par les arguments `by.x` et `by.y` ou par l'argument `by` ;
+- les variables de jointure, définies par les arguments `by.x` et `by.y` ou par l'argument `by` ;
 - le type de jointure défini par les arguments `all`, `all.x` et `all.y`.
 
 Voici quelques remarques sur l'usage de `merge` :
@@ -106,9 +106,9 @@ Voici quelques remarques sur l'usage de `merge` :
 
     | Type de jointure                      | Argument de la fonction `merge`  |
     |---------------------------------------|----------------------------------|
-    | Jointure à gauche (*left outer join*) | `all.x = TRUE`                   |
-    | Jointure à droite (*right outer join*)| `all.y = TRUE`                   |
-    | Jointure externe  (*full outer join*) | `all = TRUE`                     |
+    | Jointure à gauche (*left join*) | `all.x = TRUE`                   |
+    | Jointure à droite (*right join*)| `all.y = TRUE`                   |
+    | Jointure externe  (*full join*) | `all = TRUE`                     |
 - Si deux variables portent le même nom dans les deux tables, alors dans la table jointe le nom de ces variables sera complété par un suffixe `.x` et `.y` pour pouvoir les différencier. Il est possible de modifier ces suffixes avec l'option `suffixes`.
 - Il y a d'autres options plus avancées que vous pouvez consulter avec `?merge`.
 
@@ -128,7 +128,7 @@ head(table_jointe)
 **Avec `dplyr`, les jointures se réalisent grâce aux fonctions `left_join`, `right_join`, `inner_join`, `full_join` et `anti_join`.** Ces fonctions prennent les arguments suivants :
 
 - le nom des deux `data.frame` à joindre ;
-- les variables de jointure, défini par l'argument `by`. Lorsque la variable de jointure ne porte pas le même nom dans les deux tables, on utilise le paramètre `by = c("var_x" = "var_y")`. S'il y a plusieurs variables de jointure, on écrit `by = c("var_x1" = "var_y1", "var_x2" = "var_y2")`.
+- les variables de jointure, définies par l'argument `by`. Lorsque la variable de jointure ne porte pas le même nom dans les deux tables, on utilise le paramètre `by = c("var_x" = "var_y")`. S'il y a plusieurs variables de jointure, on écrit `by = c("var_x1" = "var_y1", "var_x2" = "var_y2")`.
 
 Il est préférable d'utiliser ces fonctions sur des objets `tibble` plutôt que `data.frame`. On va donc convertir les deux tables avant de présenter un exemple :
 
@@ -182,7 +182,7 @@ Il et possible de définir une (ou plusieurs) clé(s) grâce à la commande `set
 **La fonction `merge` de `data.table` a un fonctionnement identique à celui de la fonction `merge` de `R base`, mais elle est plus rapide lorsqu'on l'utilise pour joindre des objets `data.table`** plutôt que des objets `data.frame`. Elle prend les arguments suivants :
 
 - le nom des deux `data.frame` à joindre ;
-- les variables de jointure, défini par les arguments `by.x` et `by.y` ou par l'argument `by` ;
+- les variables de jointure, définies par les arguments `by.x` et `by.y` ou par l'argument `by` ;
 - le type de jointure défini par les arguments `all`, `all.x` et `all.y`.
 
 Voici un exemple dans lequel on utilise la fonction `merge` de `data.table` pour réaliser une jointure à gauche entre la table des données Filosofi et la table des communes du COG.
@@ -201,9 +201,9 @@ Comme pour les jointures avec `base R`, la syntaxe pour réaliser les autres typ
 
 | Type de jointure                      | Argument de la fonction `merge`  |
 |---------------------------------------|----------------------------------|
-| Jointure à gauche (*left outer join*) | `all.x = TRUE`                   |
-| Jointure à droite (*right outer join*)| `all.y = TRUE`                   |
-| Jointure externe  (*full outer join*) | `all = TRUE`                     |
+| Jointure à gauche (*left join*) | `all.x = TRUE`                   |
+| Jointure à droite (*right join*)| `all.y = TRUE`                   |
+| Jointure externe  (*full join*) | `all = TRUE`                     |
 
 Il est difficile de réaliser une anti-jointure avec la commande `merge`. Pour cela, la syntaxe ci-dessous, fondée sur les crochets, s'avère nécessaire. 
 
@@ -243,9 +243,9 @@ Le tableau précédent peut être enrichi :
 | Type de jointure                      | Argument(s) de la fonction `merge`  | Approche alternative  |
 |---------------------------------------|----------------------------------|-----------------------|
 | Jointure interne (*inner join*)       | `all = FALSE` (défaut)           | `X[Y, nomatch=0]`     |
-| Jointure à gauche (*left outer join*) | `all.x = TRUE`                   | `Y[X]`                |
-| Jointure à droite (*right outer join*)| `all.y = TRUE`                   | `X[Y]`                |
-| Jointure externe  (*full outer join*) | `all = TRUE`                     |   -                   |
+| Jointure à gauche (*left join*) | `all.x = TRUE`                   | `Y[X]`                |
+| Jointure à droite (*right join*)| `all.y = TRUE`                   | `X[Y]`                |
+| Jointure externe  (*full join*) | `all = TRUE`                     |   -                   |
 | Anti-jointure (*anti join*)           | `all = TRUE, subset = NA`        | `X[!Y]`               |
 
 ## Quelques bonnes pratiques sur les jointures
