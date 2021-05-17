@@ -19,7 +19,11 @@ lapply(
   function(x) {
     print(paste0("On traite le fichier : ", x))
     if (stringr::str_detect(x, "zip$")) {
-      utils::unzip(paste0("fichiers_plats", "/", x), overwrite = TRUE, exdir = "fichiers_plats")
+      utils::unzip(
+        paste0("fichiers_plats", "/", x), 
+        overwrite = TRUE, 
+        exdir = "fichiers_plats"
+      )
     } else {
       return(NULL)
     }
