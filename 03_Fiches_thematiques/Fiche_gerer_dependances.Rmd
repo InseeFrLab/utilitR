@@ -119,14 +119,14 @@ Les dépendances seront décrites automatiquement dans le fichier `renv.lock`, l
 fichier `.Rprofile` et le dossier `renv` étant là pour assurer le bon
 fonctionnement du *package* `{renv}`.
 
-### Utilisation du fichier `DESCRIPTION`
+## Utilisation du fichier `DESCRIPTION`
 
 Le fichier `DESCRIPTION` est un fichier conçu à l'origine pour renseigner les
 méta-données d'un *package*. Cependant, il est courant de l'utiliser même dans
 le cas où le projet n'est pas un *package*. Il s'agit donc d'un usage un peu
 détourné de ce fichier mais communément admis au sein de la communauté `R`.
 
-#### La déclaration des dépendances dans le fichier `DESCRIPTION`
+### La déclaration des dépendances dans le fichier `DESCRIPTION`
 
 Utiliser un fichier `DESCRIPTION` permet de déclarer les dépendances de son
 projet mais aussi d'autres méta-données telles que les auteurs des programmes,
@@ -168,7 +168,7 @@ Nous ne commenterons pas ici les nombreux champs possibles pour un fichier
 dans la documentation officielle de `R`, [*Writing R Extensions*](https://cran.r-project.org/doc/manuals/r-release/R-exts.html#The-DESCRIPTION-file).
 :::
 
-#### Le champ `Imports`
+### Le champ `Imports`
 
 Toutes les dépendances d'un projet, c'est-à-dire l'ensemble des *packages*
 nécessaires au bon déroulement des programmes, doivent être déclarées dans la
@@ -215,7 +215,7 @@ Dans l'exemple de fichier `DESCRIPTION` précédent, nous pouvons constater que 
   et `{dplyr}` car ces *packages* sont mentionnés dans le champ `Imports`.
 - le projet requiert une version de `{dplyr}` supérieure ou égale à 1.0.0.
 
-#### Le champ `Remotes`
+### Le champ `Remotes`
 
 Deux types de dépendances peuvent être déclarées à l'aide du fichier
 `DESCRIPTION` :
@@ -238,7 +238,8 @@ petite gymnastique :
   par défaut du champ `Imports`.
 - lorsqu'un package est déclaré dans le champ `Imports` ainsi que dans le champ
   `Remotes`, cela signifie que le projet utilise une version qui n'est pas
-  disponible sur le CRAN mais "ailleurs".
+  disponible sur le CRAN mais "ailleurs" (pour comprendre ce que signifie cet
+  "ailleurs", lisez-la suite).
 
 Le fonctionnement du champ `Remotes` est le suivant :
 
@@ -280,17 +281,23 @@ Dans l'exemple de fichier `DESCRIPTION` précédent, nous pouvons constater que 
   développement sur GitHub, soit la toute dernière version disponible à l'adresse
   <https://github.com/InseeFrLab/DoReMiFaSol>.
 
-#### Manipulation au quotidien du fichier `DESCRIPTION`
+### Manipulation au quotidien du fichier `DESCRIPTION`
 
 Il est tout à fait possible de créer et de modifier le fichier `DESCRIPTION`
 manuellement. Cependant, ce fichier doit obéir à des règles très strictes,
 notamment au niveau de l'indentation. Afin de modifier ce fichier en toute
-sécurité, le package `{usethis}` propose des fonctions permettant de réaliser
+sécurité, le package `{usethis}` offre des fonctions permettant de réaliser
 facilement les modifications usuelles.
 
 Après avoir créé votre dossier qui représente votre projet, la première étape
 consiste à créer le fichier `DESCRIPTION`. Vous pouvez vous aider de la fonction `usethis::use_description()` afin de le créer. Une fois créé, vous pouvez le
-modifier en respectant ses règles de fonctionnement.
+modifier en respectant son format.
+
+::: {.conseil}
+Il est recommandé de créer le fichier `DESCRIPTION` avant même d'écrire des
+programmes `R` et de référencer les dépendances au fur et à mesure, sans quoi
+cette tâche peut s'avérer fastidieuse.
+:::
 
 ::: {.remarque}
 Si vous obtenez une erreur lors de l'utilisation de la fonction
@@ -345,34 +352,66 @@ Remotes:
     git::git@git.lab.sspcloud.fr:nom/monpackage.git
 ```
 
-### Réaliser la tâche, cas 2
+### Installer les dépendances du projet
 
-Lorsqu'on est plus avancé, on peut utiliser la fonction `hyper_fonction()` du
-*package* `hyper_package`.
+En gérant ainsi les dépendances d'un projet, une tierce personne pourra
+installer l'ensemble des dépendances en une seule commande :
 
--   Comportement par défaut ;
--   Principales options ;
--   Exemples de code.
+```{r, eval=FALSE}
+remotes::install_deps()
+```
 
-## Quelques bonnes pratiques
+## Utilisation du package `{renv}`
 
-Quelques conseils généraux sur la façon de s'y prendre.
+Le *package* `{renv}` offre une solution plus moderne et beaucoup plus simple
+que la précédente pour déclarer ses dépendances. Elle ne fonctionne que dans un
+projet. On peut choisir d'utiliser cette méthode à n'importe quel moment de la
+réalisation du projet.
 
--   Faut-il préprocesser les données avant de réaliser la tâche ;
--   Comment minimiser les temps de calculs/la charge en RAM.
+Pour commencer à utiliser `{renv}`, il suffit d'exécuter :
 
-## Sources
+```{r, eval=FALSE}
+renv::init()
+```
 
-Si le rédacteur de la fiche a réutilisé des ressources externes en français
-disponible en licence libre, il faut indiquer ici l'URL des ressources, le nom
-des auteurs et la licence de réutilisation de ces ressources.
+Cette commande crée automatiquement un ensemble de fichiers et de dossiers dont
+vous n'aurez pas à vous préoccuper (ne les supprimez pas !).
+
+Votre projet aura ainsi une structure ressemblant à la suivante
+
+    ├── .Rprofile
+    ├── R/
+    ├──── import.R
+    ├──── traitement.R
+    ├──── graphique.R
+    ├── monprojet.Rproj
+    ├── renv.lock
+    ├── renv/
+
+La particularité du package `{renv}` est qu'il construit un environnement isolé.
+Cela surprend au premier abord car les *packages* que vous aviez installés ne
+sont plus tous disponibles. Certains doivent être réinstallés grâce à la
+fonction `install.packages()`. En effet, le *package* `{renv}` va construire un
+environnement isolé de votre installation de `R`. 
+
+Les versions des *packages* utilisés par votre projet sont toutes décrites dans
+le fichier `renv.lock` de façon automatique. Il reste possible d'installer ou
+de mettre à jour un *package* comme d'habitude.
+
+Pour prendre une photo des numéros de version des *packages* installés, il faut
+utiliser la fonction `renv::snapshot()`. Cette fonction va mettre à jour les
+numéros de version des *packages* que vous utilisez.
+
+Si vous partagez votre projet avec d'autres personnes, ces dernières pourront
+installer les mêmes *packages* dans les mêmes versions grâce à la fonction
+`renv::restore()`.
+
+## Laquelle de ces deux méthodes choisir ?
+
+Si votre environnement de travail `R` est connecté à internet, il est beaucoup
+plus simple d'utiliser la méthode avec `{renv}`.
 
 ## Pour en savoir plus
 
--   la documentation des *packages* ;
--   les vignettes et *cheatsheets* si elles existent ;
--   les formations proposées par l'Insee ;
--   les formations/tutoriels disponibles sur internet.
-
-Dans la mesure du possible, il faut veiller à proposer des ressources en
-français.
+-   [Introduction à `{renv}`](https://rstudio.github.io/renv/articles/renv.html)
+    (en anglais).
