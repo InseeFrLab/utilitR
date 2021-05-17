@@ -27,7 +27,7 @@ Le *package* `haven` propose la fonction `read_sas()` pour importer des tables S
 # Charger le package haven
 library(haven)
 # Importer une table SAS depuis GEN
-dfRP <- read_sas("W:/A1090/GEN_A1090990_DINDISAS/RPADUDIF.sas7bdat")
+dfRP <- haven::read_sas("W:/A1090/GEN_A1090990_DINDISAS/RPADUDIF.sas7bdat")
 ```
 
 
@@ -51,9 +51,11 @@ Voici un exemple de code qui importe les 100 premières lignes en sélectionnant
 ```{r, eval = FALSE}
 # Importer une table SAS depuis GEN
 # Cet exemple fonctionne uniquement dans AUS
-dfRP <- read_sas("W:/A1090/GEN_A1090990_DINDISAS/RPADUDIF.sas7bdat",
-                 n_max = 100,
-                 col_select = starts_with("TYP"))
+dfRP <- 
+    haven::read_sas(
+        data_file = "W:/A1090/GEN_A1090990_DINDISAS/RPADUDIF.sas7bdat",
+        n_max = 100,
+        col_select = starts_with("TYP"))
 ```
 
 ::: {.conseil}
@@ -65,7 +67,7 @@ La fonction `read_sas()` importe les noms de variables, mais aussi les étiquett
 
 ```{r, eval = FALSE}
 library(sjlabelled)
-get_label(dfRP)
+sjlabelled::get_label(dfRP)
 ```
 
 ### Résoudre le problème des tables SAS® compressées en BINARY
