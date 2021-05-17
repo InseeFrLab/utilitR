@@ -678,6 +678,119 @@ bpe_ens_2018_tbl %>%
 * produire une table avec une colonne par année, de façon à calculer facilement un taux d'évolution entre deux dates.
 :::
 
+## Programmer des fonctions avec le `tidyverse`
+
+Lorsqu'une suite d'opérations est amenée à être effectuée plusieurs fois, une bonne pratique consiste à *factoriser* son code, notamment grâce à des fonctions définies par l'utilisateur. Le site internet [pratiques.utilitr.org](https://www.pratiques.utilitr.org/) présente notamment quelques recommandations de cet ordre.
+
+### Présentation de la difficulté à fonctionnaliser
+
+La fonctionnalisation n'est pas simple lorsqu'on travaille avec le `tidyverse`, en raison de l'*évaluation non standard* que celui-ci exploite. En effet, le `tidyverse` est un paradigme de traitement des données qui cherche à faciliter au maximum son utilisation. Pour ce faire, comme vu précédemment, il n'est pas besoin d'écrire le nom des variables entre guillemets, ou de répeter le nom de la base que l'on exploite, ni même d'utiliser le `$`. Toutefois, cette facilité génère des difficultés lorsqu'on souhaite créer une fonction. Le code suivant montre deux traitements qui, en toute logique, devrait donner des résultats similaires.
+
+```{r,eval=FALSE,message=FALSE}
+head(bpe_ens_2018) %>% select(REG) # fonctionne
+
+selectionner_colonne <- function(donnees,colonne) {
+  retour <- donnees %>%
+    select(colonne)
+  
+  return(retour)
+}
+
+# Ce code ne fonctionne pas
+selectionner_colonne(
+  donnees=head(bpe_ens_2018),
+  colonne = REG)
+```
+Alors que `R` parvient parfaitement à comprendre que le terme `REG` fait référence à un nom de colonne de la base dans le premier cas, il ne le comprend pas dans le second cas ! Ceci est dû aux fonctions du `tidyverse` qui permettent cette flexibilité,  tandis que la fonction `selectionner_colonne` cherche un __objet__ qui s'intitulerait `REG`, sans comprendre qu'il s'agit du __nom__ de la colonne du jeu de données.
+
+::: {.remarque}
+
+L'évaluation non-standard est un concept complexe et très riche dans `R`. La *tidy-evaluation* en est une utilisation spécifique.
+
+
+De nombreuses fonctionnalités élémentaires de `R` utilisent de telles évaluations. Par exemple, les commandes `library(dplyr)` ou `library("dplyr")` fonctionnent toutes les deux indifféremment. Pour autant, l'objet `dplyr` de la première expression n'existe pas. `R` comprend implicitement que nous voulions parler du nom d'un _package_ et charge le _package_ `"dplyr"`.
+
+
+L'évaluation, standard ou non-standard, repose donc sur l'idée que `R` doit savoir quand nous faisons référence au nom d'un objet ou à l'objet lui-même. Par exemple, quand on écrit `head(bpe_ens_2018)`, `R` comprend que l'appel à `bpe_ens_2018` fait référence à une table de données nommée "bpe_ens_2018", pas au nom en question. La *tidy-evaluation* permet de faire des appels un peu plus complexes. Ainsi, lorsque nous écrivons `select(REG)`, `R` comprend que quelques opérations préalables sont nécessaires :
+
+1. *patienter* : il ne faut pas chercher à comprendre immédiatement le sens de `REG` car aucun objet dans notre environnement ne s'appelle `REG` ;
+2. *transporter* : `R` va reconstituer toute la chaine de traitement `select(head(bpe_ens_2018), REG)` avant de chercher à interpréter ;
+3. *réinterpréter* : `R` peut désormais chercher à identifier si une colonne de `head(bpe_ens_2018)` se nomme `REG`.
+
+:::
+
+### Présentation de la solution
+
+Pour réussir à créer des fonctions facilement compatibles avec le `tidyverse`, il faut faire appel à un opérateur spécifique, appelé *curly-curly* ou *doublestache* : `{{ }}`. Il s'agit de l'équivalent `tidyverse` de la fonction `get` présentée dans le chapitre [Manipuler ses données avec data.table](#datatable). Son utilisation est particulièrement simple, car il suffit d'entourer la variable par ces accolades.
+
+
+```{r,eval=TRUE}
+selectionner_colonne <- function(donnees,colonne) {
+  retour <- donnees %>%
+    select({{colonne}})
+  
+  return(retour)
+}
+
+# Cette fois, le code fonctionne!
+selectionner_colonne(donnees=head(bpe_ens_2018),
+               colonne = REG)
+```
+
+Le *doublestache* est une nouvelle notation du package `rlang`(version 0.4.0), équivalent à l'opération `!!enquo()`. L'idée générale étant que `enquo()` permet de transformer un input en *symbole* à interpréter, tandis que l'opérateur *bang-bang*  `!!` détermine quand il faut l'interpréter. Parfois, certaines opérations un peu complexes, qui dépassent le cadre de cette fiche nécessitent le recours à ces opérateurs particuliers. 
+
+::: {.remarque}
+
+Il peut arriver que vous trouviez sur internet une page recommandant l'usage de l'expression `eval(parse())`. Il est fortement conseillé de ne _jamais_ l'utiliser pour les raisons suivantes :
+
+* elle est susceptible de créer des problèmes de sécurité. Tout le contenu à l'intérieur du `parse` est interprété par `R` comme du code à lancer, _quel que soit le contenu_. Il est donc particulièrement sensible aux problèmes d'[injection de code](https://fr.wikipedia.org/wiki/Injection_de_code_dans_les_applications_web) ;
+* sa performance est très mauvaise ;
+* l'identification des *bug* est particulièrement délicate, avec des messages d'erreurs peu opportuns et compliqués à comprendre.
+
+:::
+
+Lorsqu'on souhaite définir une nouvelle colonne dans le tidyverse, une légère modification est nécessaire, avec l'utilisation de l'opérateur `:=`, comme dans l'exemple suivant.
+
+
+```{r,eval=TRUE}
+selectionner_et_renommer <- function(donnees,colonne, nouveau_nom = "nouveau_nom") {
+  retour <- donnees %>%
+    select({{colonne}}) %>%
+    rename({{nouveau_nom}}:={{colonne}})
+  
+  return(retour)
+}
+
+# Ce code fonctionne!
+selectionner_et_renommer(
+  donnees=head(bpe_ens_2018),
+  colonne = REG,
+  nouveau_nom = "region")
+```
+
+Notez bien la présence des `:=` dans l'opération de renommage. Il est également prudent de proposer une valeur par défault à la variable dans la fonction. Ainsi, si l'utilisateur oublie d'indiquer un nouveau nom, la colonne sera renommée en `nouveau_nom`.
+
+::: {.remarque}
+
+L'opérateur `:=` du `tidyverse` ne remplit pas les mêmes fonctions que l'opérateur `:=` présenté dans la fiche [Manipuler ses données avec data.table](datatable): 
+
+* Dans `data.table`, l'opérateur sert à créer une nouvelle variable en limitant le coût en mémoire de cette opération ;
+* Dans le `tidyverse`, l'opérateur sert à faire comprendre à `dplyr` que la partie à gauche est un nom de colonne à ré-interpréter sans les guillemets.
+:::
+::: conseil
+
+
+Pour fonctionnaliser un code utilisant le `tidyverse`, il est recommandé :
+
+* d'utiliser au maximum l'opérateur *doublestache* `{{` qui présente l'intérêt d'être très lisible et très simple d'utilisation ;
+* lorsque l'évaluation doit avoir lieu "à gauche" d'un opérateur `=`, il faut habituellement le remplacer par `:=` ;
+* d'éviter l'utilisation de `eval(parse())`.
+
+::
+
+Si les exemples précédents se basent tous sur `dplyr`, il est à remarquer que les solutions présentées s'appliquent à tous les _packages_ du `tidyverse`, y compris `ggplot2` (_c.f._ [Faire des graphiques avec `ggplot2`](#ggplot2)).
+
+
 ## Sources
 
 Cette fiche reprend et adapte des éléments issus des sources suivantes :
@@ -692,5 +805,6 @@ Cette fiche reprend et adapte des éléments issus des sources suivantes :
 - [Vignette introductive sur `dplyr`](https://cran.r-project.org/web/packages/dplyr/vignettes/dplyr.html) (en anglais) ;
 - [Vignette sur les jointures avec `dplyr`](https://cran.r-project.org/web/packages/dplyr/vignettes/two-table.html) (en anglais) ;
 - [Vignette sur la réorganisation de données avec `tidyr`](https://cran.r-project.org/web/packages/tidyr/vignettes/pivot.html) (en anglais) ;
-- [Papier d'Hadley Whickam sur la définition du concept de *tidy data*](https://www.jstatsoft.org/index.php/jss/article/view/v059i10/v59i10.pdf) (en anglais);
-- Un [aide-mémoire](https://www.rstudio.com/wp-content/uploads/2016/01/data-wrangling-french.pdf) (*cheatsheet*) sur le `tidyverse` en français.
+- [Papier d'Hadley Whickam sur la définition du concept de *tidy data*](https://www.jstatsoft.org/index.php/jss/article/view/v059i10/v59i10.pdf) (en anglais) ;
+- Un [aide-mémoire](https://www.rstudio.com/wp-content/uploads/2016/01/data-wrangling-french.pdf) (*cheatsheet*) sur le `tidyverse` en français ;
+- l' [article de lancement de *rlang* 0.4.0](https://www.tidyverse.org/blog/2019/06/rlang-0-4-0/) (en anglais).
