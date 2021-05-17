@@ -5,11 +5,11 @@ unlink("fichiers_plats", recursive = TRUE)
 dir.create("fichiers_plats")
 
 # Télécharger les données grâce à doremifasol
-doremifasol::telechargerDonnees(
+doremifasol::telechargerFichier(
   "BPE_ENS", 
   telDir = "fichiers_plats")
 
-doremifasol::telechargerDonnees(
+doremifasol::telechargerFichier(
   "DECES_COM_0918", 
   telDir = "fichiers_plats")
 
