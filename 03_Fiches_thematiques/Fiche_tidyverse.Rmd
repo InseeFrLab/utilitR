@@ -31,7 +31,8 @@ Ces _packages_ présentent plusieurs avantages :
 * Les opérations par groupe sont facilitées par l'instruction `group_by()` ;
 * Les noms des colonnes peuvent être appelés directement (pas besoin d'adopter la syntaxe `nomtable$nomvariable` comme dans la grammaire de base). Là aussi, la lecture du code en est facilitée ;
 * Plusieurs verbes peuvent facilement être combinés en utilisant l'opérateur `%>%` (pipe) qui permet d'enchaîner les instructions (voir le paragraphe [Enchaîner les manipulations avec l'opérateur `pipe`]).
-* Leur créateur, Hadley Wickham, explique que la suite de _packages_ `tidyverse` couvre environ 90% des opérations qu'un statisticien a à réaliser en général.
+* Leur créateur, Hadley Wickham, explique que la suite de _packages_ `tidyverse` couvre environ 90% des opérations qu'un statisticien a à réaliser en général. La grammaire du `tidyverse` s'inspire du langage SQL pour fournir des commandes dont l'enchaînement est facile à comprendre, même sans faire tourner le code. Par exemple, la ligne `matable %>% select(mavarible) %>% summarise()` est facilement compréhensible. 
+
 Pour se servir de ces _packages_, il ne faut pas oublier de les charger avec la fonction `library`.
 
 ```{r, warning = FALSE, message = FALSE}
@@ -53,7 +54,6 @@ Les exemples de cette fiche s’appuient sur les données disponibles dans le *p
 
 ```{r}
 library(doremifasolData)
-bpe_ens_2018 <- bpe_ens_2018
 ```
 Les objets récupérés en sortie de `doremifasolData` sont tous des `data.frame`, bien que le _package_ s'appuie sur des fonctions issues de `tidyverse`. Il est donc nécessaire de les convertir en `tibble` avec la fonction `as_tibble` du *package* `tibble`.
 
@@ -156,7 +156,7 @@ Voici un petit tableau qui vous donne des exemples :
 
 **Un traitement statistique avec les _packages_ du `tidyverse` prend généralement la forme d'une succession de verbes séparés par l'opérateur `pipe` (`%>%`).** Il est possible d'aller à la ligne en mettant le `pipe` en bout de ligne (mais pas en début de ligne).
 
-Voici un exemple détaillé pour comprendre l'utilisation du `pipe`. Toutes les fonctions utilisées sont présentées ailleurs dans cette fiche. Ce code se lit comme ceci : on part de la base permanente des équipements 2018, puis on la transforme en `tibble`, puis on conserve uniquement les stations services (`TYPEQU == "B316"`), puis on groupe les observations par département (`group_by(DEP)`), puis on calcule la somme du nombre de stations-services par département (`summarise(nb_equip_total = sum(NB_EQUIP, na.rm = TRUE))`).
+Voici un exemple détaillé pour comprendre l'utilisation du `pipe`. Toutes les fonctions utilisées sont présentées ailleurs dans cette fiche. Ce code se lit comme ceci : on part de la base permanente des équipements 2018, puis on la transforme en `tibble`, puis on conserve uniquement les stations services `TYPEQU == "B316"`, puis on groupe les observations par département `group_by(DEP)`, puis on calcule la somme du nombre de stations-services par département `summarise(nb_equip_total = sum(NB_EQUIP, na.rm = TRUE))`.
 
 ```{r, results=TRUE,message=FALSE,warning=FALSE}
 nombre <- bpe_ens_2018 %>%
@@ -194,6 +194,13 @@ Dans `dplyr`, les manipulations simples de données sont résumées en quelques 
     select(DEPCOM, TYPEQU, NB_EQUIP)
   ```
 
+- Avec la position des colonnes. Le code suivant sélectionne les cinq premières colonnes :
+ 
+  ```{r}
+  bpe_ens_2018_tbl %>% 
+    select(1:5)
+  ```
+
 - Avec une condition logique. Par exemple, la fonction `starts_with("DEP")` permet de sélectionner toutes les variables dont le nom commence par "DEP". 
 
   ```{r}
@@ -210,7 +217,15 @@ Dans `dplyr`, les manipulations simples de données sont résumées en quelques 
 | `select(matches("...")`     | vérifie une expression régulière (_cf._ fiche [Manipuler des données textuelles])  |
 | `select(all_of(...))`       | sélectionne les colonnes listées dans un vecteur en paramètre |
 | `select(any_of(...))`       | identique à `all_of()`, mais sans erreur si la colonne n'existe pas |
-| `select(everything())`      | toutes les colonnes (utile pour mettre une autre colonne devant les autres)      |
+| `select(everything())`      | toutes les colonnes (utile pour mettre une nouvelle colonne devant les autres)      |
+
+- On peut aussi renommer des colonnes avec la syntaxe `select(data, nouveau_nom = selection_colonne)` :
+
+```{r}
+  bpe_ens_2018_tbl %>% 
+    select(dept = DEP, depcom = DEPCOM)
+  ```
+
 
 #### Renommer des variables : `rename()`
  
@@ -219,6 +234,13 @@ La fonction `rename()` permet de renommer des variables. La syntaxe est la suiva
 ```{r}
 bpe_ens_2018_tbl %>% 
   rename(code_commune = DEPCOM)
+```
+
+La fonction `rename_with()` permet de renommer un groupe de colonnes avec une fonction. La syntaxe est la suivante :  `rename_with(data, nom_fonction, selection_colonnes)`. Voici un exemple qui met en minuscules tous les noms de colonnes :
+
+```{r}
+bpe_ens_2018_tbl %>% 
+  rename_with(tolower)
 ```
 
 
@@ -259,15 +281,18 @@ Voici quelques utilisations fréquentes de `arrange()` :
 | Trier sur une colonne en ordre croissant         | `arrange(NB_EQUIP)`                  |
 | Trier sur plusieurs colonnes en ordre croissant  | `arrange(DEPCOM, NB_EQUIP)`          |
 | Trier sur une colonne en ordre décroissant       | `arrange(desc(NB_EQUIP))`            |
+
+Comme il n'est pas nécessaire dans R de trier les tables avant de faire une jointure (merge), le tri est utile surtout pour afficher à l'écran un tableau synthétique de données.
  
 #### Ajouter et modifier des colonnes : `mutate()`
  
-**La fonction `mutate()` permet de créer de nouvelles colonnes ou de modifier des colonnes existantes.** Il est possible d'utiliser toutes les fonctions à l'intérieur d'une étape `mutate()`. Le code suivant crée une variable `NB_EQUIP_3PLUS` qui vaut `TRUE` si le nombre d'équipement est supérieur ou égal à 3, et `FALSE` sinon. Pour créer une nouvelle variable, on utilise un nom de variable qui n'existe pas encore dans la table, pour en modifier, on utilise directement le nom de la variable qu'on veut modifier.
+**La fonction `mutate()` permet de créer de nouvelles colonnes ou de modifier des colonnes existantes.** Il est possible d'utiliser toutes les fonctions à l'intérieur d'une étape `mutate()`. Le code suivant crée une variable `NB_EQUIP_3PLUS` qui vaut `TRUE` si le nombre d'équipement est supérieur ou égal à 3, et `FALSE` sinon. 
 
 ```{r}
 bpe_ens_2018_tbl %>% 
   mutate(NB_EQUIP_3PLUS = (NB_EQUIP >= 3))
 ```
+Pour créer une nouvelle variable, on utilise un nom de variable qui n'existe pas encore dans la table. Pour modifier une variable qui existe déjà, on utilise directement le nom de cette variable.
 
 Voici quelques utilisations fréquentes de `mutate()` :
  
@@ -280,8 +305,8 @@ Voici quelques utilisations fréquentes de `mutate()` :
  
 #### Calculer des statistiques : `summarise()`
  
-**La fonction `summarise()` permet de calculer une ou plusieurs statistique à partir de la table de données.** Cette fonction est souvent utilisée après la fonction `group_by()` pour calculer des statistiques par groupe, et elle conduit à une agrégation de la table en fonction des groupes définis par la fonction `group_by` (par défaut une agrégation sur l'ensemble de la table). Le code suivant calcule le nombre total d'équipements dans la BPE (`sum(NB_EQUIP, na.rm = TRUE)`), et le nombre total de boulangeries (`sum(NB_EQUIP * (TYPEQU == "B203"), na.rm = TRUE)`).
- 
+**La fonction `summarise()` permet de calculer une ou plusieurs statistique à partir de la table de données.** Cette fonction est souvent utilisée après la fonction `group_by()` pour calculer des statistiques par groupe, et elle conduit à une agrégation de la table en fonction des groupes définis par la fonction `group_by` (par défaut une agrégation sur l'ensemble de la table). Le code suivant calcule le nombre total d'équipements dans la BPE `sum(NB_EQUIP, na.rm = TRUE)`, et le nombre total de boulangeries `sum(NB_EQUIP * (TYPEQU == "B203"), na.rm = TRUE)`.
+
 ```{r, warning= FALSE}
 bpe_ens_2018_tbl %>% 
   summarise(NB_EQUIP_TOT = sum(NB_EQUIP, na.rm = TRUE),
@@ -306,7 +331,7 @@ Il est possible d'utiliser un grand nombre de fonctions différentes avec `summa
 
 ::: {.remarque}
 
-Les fonctions `mutate()` et `summarise()` calculent toutes les deux de nouvelles variables. Il arrive donc fréquemment qu'on les confonde, ou qu'on ne sache pas laquelle il faut utiliser. Comme indiqué précédemment, l'une (`mutate()`) conduit à l'ajout d'une variable supplémentaire, l'autre (`summarise()`) définit une procédure d'agrégation de la donnée. Voici une règle simple pour savoir quelle fonction utiliser :
+Les fonctions `mutate()` et `summarise()` calculent toutes les deux de nouvelles variables. Il arrive donc fréquemment qu'on les confonde, ou qu'on ne sache pas laquelle il faut utiliser. Comme indiqué précédemment, l'une, `mutate()`, conduit à l'ajout d'une variable supplémentaire, l'autre, `summarise()`, définit une procédure d'agrégation de la donnée. Voici une règle simple pour savoir quelle fonction utiliser :
 
 - Si vous voulez résumer une information contenue dans une table, il faut utiliser `summarise()`. Exemple : calculer le nombre total d'équipements pour chaque commune.
 
@@ -328,7 +353,7 @@ bpe_ens_2018_tbl %>%
 
 #### Faire des opérations par groupe : `group_by()`
  
-**La fonction `group_by()` permet de définir des groupes dans la table de données pour faire des opérations par groupe.** L'utilisation de `group_by()` rend très utiles les opérations avec `summarise()`. Le code suivant groupe les données de la BPE par département (`group_by(DEP)`) puis calcule le nombre total d'équipements (`sum(NB_EQUIP, na.rm = TRUE)`) et le nombre total de boulangeries (`sum(NB_EQUIP * (TYPEQU == "B203"), na.rm = TRUE)`).
+**La fonction `group_by()` permet de définir des groupes dans la table de données pour faire des opérations par groupe.** L'utilisation de `group_by()` rend très utiles les opérations avec `summarise()`. Le code suivant groupe les données de la BPE par département `group_by(DEP)` puis calcule le nombre total d'équipements `sum(NB_EQUIP, na.rm = TRUE)` et le nombre total de boulangeries `sum(NB_EQUIP * (TYPEQU == "B203"), na.rm = TRUE)`.
  
 ```{r, warning = FALSE,message = FALSE}
 bpe_ens_2018_tbl %>% 
@@ -337,7 +362,7 @@ bpe_ens_2018_tbl %>%
             NB_BOULANGERIES_TOT = sum(NB_EQUIP * (TYPEQU == "B203"), na.rm = TRUE))
 ```
  
-La fonction `group_by` peut également modifier le comportement des fonctions `filter` et `mutate`. L'instruction suivante permet ainsi d'ajouter à la BPE une variable égale au nombre total de boulangeries dans le département.
+La fonction `group_by` peut également modifier le comportement des fonctions `filter` ou `mutate`, comme pour `summarise`. L'instruction suivante permet ainsi d'ajouter à la BPE une variable égale au nombre total de boulangeries dans le département.
 
 ```{r}
 bpe_ens_2018_tbl %>% 
@@ -353,6 +378,8 @@ bpe_ens_2018_tbl %>%
   filter(NB_EQUIP == max(NB_EQUIP))
 ```
 
+Ainsi, les opérations à la suite d'un `group_by()`, comme ici `sum` et `max`, sont calculées par groupe de lignes (ici suivant la colonne `DEP`).
+
 
 ::: {.remarque}
 
@@ -362,6 +389,16 @@ Trois remarques sur l'utilisation de `group_by()` :
 - si vous appliquez une instruction `group_by()` à une table qui comporte déjà des groupes, alors les groupes sont redéfinis ;
 - il est prudent d'appliquer la fonction `ungroup()` à vos données une fois que les opérations par groupe ont été réalisées, afin que les opérations suivantes ne soient pas effectuées par groupe par mégarde.
 :::
+
+#### Appliquer une fonction dplyr sur un groupe de colonnes : `across()`
+ 
+**La fonction `across()` permet de sélectionner un groupe de colonnes sur lequel on veut appliquer une fonction dplyr.** Ainsi on peut appliquer une fonction sur des colonnes en les sélectionnant comme le fait `select()`. Si on veut sélectionner des colonnes en fonction de leur type, on utilise en outre `where()`. Le code suivant groupe les données de la BPE avec les deux colonnes dont le nom commence par "DEP", puis effectue la somme de toutes les colonnes de type numérique.
+ 
+```{r, warning = FALSE,message = FALSE}
+bpe_ens_2018_tbl %>% 
+  group_by(across(starts_with('DEP'))) %>%
+  summarise(across(where(is.numeric), sum, na.rm = TRUE)) 
+```
 
 ### Manipuler plusieurs tables avec `dplyr`
  
@@ -478,7 +515,7 @@ La fonction `unite` permet est de réaliser l'opération inverse de `separate` :
 
 - le nom de la colonne à créer ;
 - un vecteur indiquant les noms des variables à regrouper ;
-- le séparateur `sep` qui indique quel séparateur doit être introduit entre les variables regroupées (par défaut, ``unite` utilise le caractère `_`).
+- le séparateur `sep` qui indique quel séparateur doit être introduit entre les variables regroupées (par défaut, `unite` utilise le caractère `_`).
 
 Voici un exemple où l'on regroupe le code commune Insee et le nom officiel de la commune, avec " - " comme séparateur. Vous pouvez noter que les colonnes `com` et `ncc` ont disparu, car par défaut `unite` supprime les colonnes regroupées. Si on veut les conserver, il faut ajouter l'option `remove = FALSE`.
 
@@ -513,7 +550,7 @@ df %>%
 
 #### `complete` : compléter des combinaisons de variables manquantes
 
-La fonction `complete` est permet de compléter des combinaisons manquantes de valeurs de plusieurs colonnes (autrement dit, de compléter un produit cartésien incomplet). Dans le tableau de résultats suivants, les élèves Barnabé et Chantal n'ont pas de notes dans toutes les matières. Supposons que c'est parce qu'ils étaient absents et que leur note est en fait un 0. Si on veut calculer les moyennes des élèves, on doit compléter ces notes manquantes.
+La fonction `complete` permet de compléter des combinaisons manquantes de valeurs de plusieurs colonnes (autrement dit, de compléter un produit cartésien incomplet). Dans le tableau de résultats suivants, les élèves Barnabé et Chantal n'ont pas de notes dans toutes les matières. Supposons que c'est parce qu'ils étaient absents et que leur note est en fait un 0. Si on veut calculer les moyennes des élèves, on doit compléter ces notes manquantes.
 
 ```{r}
 df <- tibble(eleve = c("Alain", "Alain", "Barnabé", "Chantal"),
@@ -546,7 +583,7 @@ Une table de données stocke des informations sous forme de lignes et de colonne
 
 ![Transformation *wide to long*](./pics/datatable/widetolong.png)
 
-* **Transformation *wide to long* ** : 
+* **Transformation *long to wide* ** : 
 
 ![Transformation *long to wide*](./pics/datatable/longtowide.png)
 
@@ -768,6 +805,6 @@ Cette fiche reprend et adapte des éléments issus des sources suivantes :
 - [Vignette introductive sur `dplyr`](https://cran.r-project.org/web/packages/dplyr/vignettes/dplyr.html) (en anglais) ;
 - [Vignette sur les jointures avec `dplyr`](https://cran.r-project.org/web/packages/dplyr/vignettes/two-table.html) (en anglais) ;
 - [Vignette sur la réorganisation de données avec `tidyr`](https://cran.r-project.org/web/packages/tidyr/vignettes/pivot.html) (en anglais) ;
-- [Papier d'Hadley Whickam sur la définition du concept de *tidy data*](https://www.jstatsoft.org/index.php/jss/article/view/v059i10/v59i10.pdf) ;
+- [Papier d'Hadley Whickam sur la définition du concept de *tidy data*](https://www.jstatsoft.org/index.php/jss/article/view/v059i10/v59i10.pdf) (en anglais) ;
 - Un [aide-mémoire](https://www.rstudio.com/wp-content/uploads/2016/01/data-wrangling-french.pdf) (*cheatsheet*) sur le `tidyverse` en français ;
-- l' [article de lancement de *rlang* 0.4.0](https://www.tidyverse.org/blog/2019/06/rlang-0-4-0/) (en anglais) ;
+- l' [article de lancement de *rlang* 0.4.0](https://www.tidyverse.org/blog/2019/06/rlang-0-4-0/) (en anglais).
