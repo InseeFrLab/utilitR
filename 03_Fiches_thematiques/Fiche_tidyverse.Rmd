@@ -722,7 +722,7 @@ L'opérateur `:=` du `tidyverse` ne remplit pas les mêmes fonctions que l'opér
 :::
 
 ```{r,eval=TRUE}
-je_selectionne_et_renomme <- function(donnees,colonne, nouveau_nom = "nouveau_nom") {
+selectionner_et_renommer <- function(donnees,colonne, nouveau_nom = "nouveau_nom") {
   retour <- donnees %>%
     select({{colonne}}) %>%
     rename({{nouveau_nom}}:={{colonne}})
@@ -730,9 +730,11 @@ je_selectionne_et_renomme <- function(donnees,colonne, nouveau_nom = "nouveau_no
   return(retour)
 }
 
-je_selectionne_et_renomme(donnees=head(bpe_ens_2018),
-               colonne = REG,
-               nouveau_nom = "region") # fonctionne !
+# Ce code fonctionne!
+selectionner_et_renommer(
+  donnees=head(bpe_ens_2018),
+  colonne = REG,
+  nouveau_nom = "region")
 ```
 
 Notez bien la présence des `:=` dans l'opération de renommage. Il est également prudent de proposer une valeur par défault à la variable dans la fonction. Ainsi, si l'utilisateur oublie d'indiquer un nouveau nom, la colonne sera renommée en `nouveau_nom`.
