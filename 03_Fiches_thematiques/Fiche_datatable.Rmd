@@ -671,20 +671,8 @@ head(creation_var(filosofi_com_2016_dt,
 
 `c(nouveau_nom)` permet de s'assurer que `data.table` crée une nouvelle colonne dont le nom est défini en argument (et qui ne s'appelle donc pas `nouveau_nom`).
 
-::: {.remarque}
-Il est particulièrement complexe d'écrire avec `dplyr` des fonctions génériques faisant appel à des noms de variables en arguments : il est nécessaire de faire appel à plusieurs fonctionnalités de `rlang` pour être en mesure d'effectuer une opération équivalente. Voici pour information la version `dplyr` de l'exemple précédent :
-
-```{r, eval = FALSE}
-modif_var <- function(data, nom_variable){
-  data %>% 
-    dplyr::mutate(nouveau_nom =  !!rlang::sym(nom_variable) + 1]
-}
-```
-C'est l'une des raisons pour lesquelles il est préférable d'utiliser `data.table` lorsqu'on souhaite manipuler fréquemment des données à l'aide de fonctions. Le lecteur intéressé par la question pourra consulter ce [post](https://linogaliana.netlify.com/post/datatable/datatable-nse/) sur le sujet.
-:::
-
 ::: {.conseil}
-Lorsqu'on définit des fonctions pour effectuer des traitements génériques, il est conseillé de privilégier `data.table` sur `dplyr`. Une précaution est néanmoins nécessaire pour ne pas modifier les données en entrée de la fonction si l'opérateur `:=` est utilisée. Il est recommandé dans ce cas de créer une copie du dataframe en entrée (`data.table::copy(df)`) et d'effectuer les traitements sur cette copie. 
+Lorsqu'on définit des fonctions pour effectuer des traitements génériques, une précaution est nécessaire pour ne pas modifier les données en entrée de la fonction si l'opérateur `:=` est utilisée. Il est recommandé dans ce cas de créer une copie du dataframe en entrée (`data.table::copy(df)`) et d'effectuer les traitements sur cette copie. 
 :::
 
 ## Pour en savoir plus
