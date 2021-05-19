@@ -21,7 +21,7 @@ En revanche, **le SSP Cloud n'est pas une infrastructure de production, et n'off
 
 ### Créer un compte sur le SSP Cloud
 
-Il est nécessaire de disposer d'un compte personnel **SSP Cloud** pour en utiliser les services. Si vous n'avez pas de compte sur le **SSP Cloud**, vous pouvez vous en créer un en [cliquant sur ce lien (https://datalab.sspcloud.fr/accueil)](https://datalab.sspcloud.fr/accueil) puis suivre les indications. Deux points sont importants à noter :
+Il est nécessaire de disposer d'un compte personnel **SSP Cloud** pour en utiliser les services. Si vous n'avez pas de compte sur le **SSP Cloud**, vous pouvez vous en créer un en [cliquant sur ce lien (https://datalab.sspcloud.fr/home)](https://datalab.sspcloud.fr/home) puis suivre les indications. Deux points sont importants à noter :
 
 - vous devez utiliser votre adresse mail professionnelle (de l'Insee ou de votre SSM) ;
 - **votre nom d'utilisateur ne doit contenir ni caractères accentués, ni caractère spécial, ni signe de ponctuation**. Ce point est essentiel, car votre compte ne fonctionnera pas si votre nom d'utilisateur comprend l'un de ces caractères. Le plus simple est que votre nom d'utilisateur respecte le format `prenomnom`. Par exemple, si vous vous appelez Jérôme-Gérard L'Hâltère, votre nom d'utilisateur pourra être `jeromegerardlhaltere`.
@@ -40,7 +40,8 @@ utilitr::include_image("./pics/SSPCloud/inline_pics/01_bouton_services.png", com
 ```
 
 - La fenêtre suivante s'affiche (pour y accéder directement,
-[suivre ce lien](https://datalab.sspcloud.fr/catalog-new/inseefrlab-helm-charts-datascience)). 
+[suivre ce lien](https://datalab.sspcloud.fr/catalog/inseefrlab-helm-charts-datascience)). 
+
 
 ```{r lancer-rstudio, echo = FALSE, fig.cap= "Lancer un service RStudio", out.width = "100%"}
 utilitr::include_image("./pics/SSPCloud/01_catalogue_services.png", ratio_compression = 1)
@@ -134,10 +135,10 @@ utilitr::include_image("./pics/SSPCloud/99_SSPCloud_3bis.png", ratio_compression
 
 Les principales options sont les suivantes :
 
-- L'**option `memory`** (dans l'onglet `resources`) définit la quantité maximale de mémoire vive (mesurée en Mo) que votre service  RStudio peut utiliser. **Cette option est particulièrement importante** et vous devez choisir soigneusement sa valeur : si vos traitements requièrent plus de mémoire que la valeur de `mem`, la seule solution consiste à lancer un autre service  RStudio avec une valeur de `mem` plus élevée. Il est conseillé d'utiliser 10000 comme valeur par défaut.
-- L'**option `cpu`** (dans l'onglet `service`) définit le nombre minimal de processeurs alloués à votre service  RStudio. Contrairement à l'option `mem`, il ne s'agit pas d'un maximum mais d'un moment réservé, une valeur basse ne risque donc pas de bloquer vos traitements. Il est conseillé d'utiliser 2 comme valeur par défaut si vos traitements nécessitent de la parallélisation et laisser l'option par défaut sinon.
+- L'**option `memory`** (dans l'onglet `resources`) définit la quantité minimum garantie de mémoire vive (mesurée en Mo) que votre service  RStudio peut utiliser. **Cette option est particulièrement importante** et vous devez choisir soigneusement sa valeur : si vos traitements requièrent plus de mémoire que la valeur de `mem`, la seule solution consiste à lancer un autre service  RStudio avec une valeur de `mem` plus élevée. Il est conseillé d'utiliser 10000 comme valeur par défaut.
+- L'**option `cpu`** (dans l'onglet `resources`) définit le nombre minimal de processeurs alloués à votre service  RStudio, c'est un minimum garanti. Il est conseillé d'utiliser 2 comme valeur par défaut si vos traitements nécessitent de la parallélisation et laisser l'option par défaut sinon.
 - L'**option `custom name`** (dans l'onglet `Onyxia`) permet de définir le nom de votre service. Cette option n'a aucun impact sur le fonctionnement de votre service, mais peut vous aider à vous y retrouver si vous avez plusieurs services  RStudio en parallèle.
-- L'**option `Enable IP protection`** (dans l'onglet `Networking`) est une option de sécurité informatique assez contraignante, qui est activée par défaut. Il est conseillé de la laisser activée. Toutefois, vous pouvez éventuellement la désactiver, notamment si vous savez que vous allez devoir accéder à l'environnement RStudio depuis des addresses IP différentes (exemple : au bureau puis en télétravail).
+- L'**option `Enable IP protection`** (dans l'onglet `Security`) est une option de sécurité informatique assez contraignante, qui est activée par défaut. Il est conseillé de la laisser activée. Toutefois, vous pouvez éventuellement la désactiver, notamment si vous savez que vous allez devoir accéder à l'environnement RStudio depuis des adresses IP différentes (exemple : au bureau puis en télétravail).
 - L'**option `version`** (dans l'onglet `R`) détermine l'environnement dans lequel RStudio va s'ouvrir. Il s'agit d'un environnement contenant une version donnée de `R` ainsi que des packages pré-installés. Par exemple, l'image `utilitR` disponible propose l'ensemble des dépendances (elles sont nombreuses...) nécessaires pour reproduire tous les exemples présents dans cette documentation.
 
 ::: {.remarque}
@@ -152,7 +153,7 @@ rendre disponibles à d'autres personnes, il est nécessaire d'utiliser une
 plateforme type Gitlab et Github. 
 
 Dans le catalogue des services, une plateforme Gitlab est disponible. 
-Son adresse est XXXX. Cependant, elle n'apporte pas un niveau de sécurité 
+Son adresse est <https://git.lab.sspcloud.fr/> (c'est un [`Service partagé`](https://datalab.sspcloud.fr/services)). Cependant, elle n'apporte pas un niveau de sécurité 
 supérieur aux plateformes <https://www.gitlab.com> ou
 <https://www.github.com>. Il est donc recommandé de privilégier l'une de
 ces deux plateformes plutôt que le `Gitlab` mis à disposition sur le 
@@ -161,7 +162,7 @@ SSPCloud.
 Le SSPCloud ne permet qu'une authentification HTTPS. L'authentification SSH
 est donc désactivée
 (voir la fiche [Configurer `Git` sur son poste de travail](#git-config) pour plus
-de détails). Les fonctionalités standards de RStudio pour favoriser l'usage
+de détails). Les fonctionnalités standards de RStudio pour favoriser l'usage
 de Git sont disponibles (voir la fiche [Utiliser `Git` avec RStudio](#git) pour plus
 de détails).
 
@@ -169,7 +170,7 @@ de détails).
 ### Supprimer un service RStudio
 
 Les services RStudio peuvent être arrêtés à tout moment. Avant d'arrêter un service
-RStudio, il est recommandé de s'assurer que les codes (via Gitlab, voir ci-dessus)
+RStudio, il est recommandé de s'assurer que les codes (via Gitlab ou autre Forge utilisant Git, voir ci-dessus)
 et les données (via S3, voir ci-dessous) à conserver ont bien été
 sauvegardés. 
 
@@ -187,16 +188,16 @@ précédemment, un service. Tous les codes et toutes les données qui étaient
 stockés dans la session temporaire seront supprimés. Il faut donc sauvegarder vos codes _via_ Gitlab et/ou vos données _via_ S3 avant d'utiliser ce bouton, si vous voulez les retrouvez dans la nouvelle session ;
 * Le bouton du milieu permet d'accéder à *Graphana*, un outil qui permet de
 suivre en temps réel l'usage mémoire et CPU d'un service RStudio ;
-* Le dernier bouton permet de tuer définitivement une session qui disparaîtra
+* Le dernier bouton permet de tuer définitivement un service qui disparaîtra
 du tableau des services ouverts.
 
 ## Utiliser des données stockées sur le système de stockage S3
 
 ### Pourquoi utiliser S3 sur le SSP Cloud ?
 
-Le SSP Cloud propose des environnements (comme les services ` RStudio`, `Jupyter`, etc. [LIEN VERS PARTIE PERTINENTE]) pour exécuter des programmes informatiques. Ces environnements sont **temporaires par définition** (quelques heures ou quelques jours), et ne peuvent donc pas servir à stocker des données ou des programmes infomatiques. Cela a pour conséquence que les programmes informatiques et les données doivent être stockés dans d'autres espaces :
+Le SSP Cloud propose des environnements (comme les services ` RStudio`, `Jupyter`, etc. [LIEN VERS PARTIE PERTINENTE]) pour exécuter des programmes informatiques. Ces environnements sont **temporaires par définition** (quelques heures ou quelques jours), et ne peuvent donc pas servir à stocker des données ou des programmes informatiques. Cela a pour conséquence que les programmes informatiques et les données doivent être stockés dans d'autres espaces :
 
-* *stockage des codes* : il est nécessaire d'utiliser une plate-forme de développement pour stocker des programmes informatiques, tel que [Gitlab](www.gitlab.com) ou [Github](www.github.com).
+* *stockage des codes* : il est nécessaire d'utiliser une plate-forme de développement pour stocker des programmes informatiques, telles que [Gitlab](www.gitlab.com) ou [Github](www.github.com).
 * *stockage des données* :  la plateforme SSP Cloud propose un système de stockage de données nommé S3. Depuis votre service  RStudio, vous pourrez facilement accéder à des données stockées sur S3 grâce au _package_ `aws.s3`.
 
 ::: {.remarque}
@@ -210,7 +211,7 @@ Voici deux règles à respecter pour faire un bon usage de ces deux espaces de s
 
 Le système S3 (*Simple Storage System*) est un système de stockage développé par Amazon et qui est maintenant devenu une référence pour le stockage en ligne. Il s'agit d'une architecture à la fois sécurisée (données cryptées, accès restreints) et performante.
 
-Le concept central du système S3 est le *bucket*. Un *bucket* est un espace (privé ou partagé) où on peut stocker une arborescence de fichiers. Pour accéder aux fichiers figurant dans un *bucket* privé, il fournir des jetons d'accès (l'équivalent d'un mot de passe) reconnus par le serveur de stockage. On peut alors lire et écrire dans le *bucket*.
+Le concept central du système S3 est le *bucket*. Un *bucket* est un espace (privé ou partagé) où on peut stocker une arborescence de fichiers. Pour accéder aux fichiers figurant dans un *bucket* privé, il faut fournir des jetons d'accès (l'équivalent d'un mot de passe) reconnus par le serveur de stockage. On peut alors lire et écrire dans le *bucket*.
 
 ### Explorer son dépôt de fichiers
 
@@ -233,7 +234,7 @@ utilitr::include_image("./pics/SSPCloud/minio/onyxia_files3.png", ratio_compress
 
 ### Utiliser S3 avec un service  RStudio
 
-**Lorsqu'on crée un service  RStudio sur le SSP Cloud, des droits d'accès temporaires au système S3 sont automatiquement initialisés.** Ces droits permettent de communiquer avec le serveur de stockage, mais leur usage est complexe. Heureusement, il existe le _package_ `aws.s3` qui simplifie beaucoup les interactions entre le service  RStudio et S3 en proposant des fonctions de lecture et d'écritures similaires à celles existantes pour lire ou écrire un fichier depuis un poste personnel.
+**Lorsqu'on crée un service  RStudio sur le SSP Cloud, des droits d'accès temporaires au système S3 sont automatiquement initialisés.** Ces droits permettent de communiquer avec le serveur de stockage, mais leur usage est complexe. Heureusement, il existe le _package_ `aws.s3` qui simplifie beaucoup les interactions entre le service  RStudio et S3 en proposant des fonctions de lecture et d'écriture similaires à celles existantes pour lire ou écrire un fichier depuis un poste personnel.
 
 #### Vérifier les droits d'accès à un *bucket*
 
