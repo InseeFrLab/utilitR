@@ -1,0 +1,447 @@
+# Gérer les dépendances {#gerer-dependances}
+
+## Tâches concernées et recommandations
+
+Un programme `R` utilise le plus souvent des *packages* qui sont autant de
+dépendances. Cette fiche présente les méthodes pour déclarer et gérer les
+dépendances avec `R`, tâche à effectuer avec soin lorsqu'on partage ses
+programmes. Il est recommandé d'avoir lu les fiches
+[Utiliser des _packages_ `R`](#utiliser-packages) et [Utiliser les projets RStudio](#rproject) au préalable.
+
+::: {.recommandation}
+Il est recommandé :
+
+-   de ne pas écrire `install.packages()` au début de ses programmes ;
+-   de toujours utiliser l'organisation par projet. [La fiche Utiliser les projets `RStudio`](#rproject) présente avec plus de détails ces éléments
+
+Il existe deux méthodes pour gérer les dépendances :
+
+- utiliser le *package* `{renv}`, qui permet à un autre utilisateur
+    d'installer les dépendances à l'aide de la fonction `renv::restore()` ;
+-   les déclarer dans un fichier `DESCRIPTION` situé à la racine de son
+    projet, ce qui permet à un autre utilisateur d'installer les dépendances à
+    l'aide la fonction `remotes::install_deps()` .
+
+Il est recommandé d'adopter la méthode reposant sur `{renv}`.  
+Toutefois, ce _package_ nécessite un accès internet pour fonctionner. 
+Si vous travaillez dans AUS, vous êtes contraints d'utiliser la méthode 
+utilisant le fichier DESCRIPTION.
+
+
+Pour bien gérer les dépendances, il faut adopter une approche déclarative et non pas
+impérative. Cela revient à décrire de façon formelle les pré-requis à la
+bonne exécution des programmes. Il est préférable de procéder ainsi car
+de cette manière on sépare la construction de l'environnement
+d'exécution du code de son exécution proprement dite, en en laissant la
+maîtrise à l'utilisateur. Inversement, utiliser la commande
+`install.packages()` directement dans les codes forcerait 
+la modification de la configuration de l'utilisateur
+du projet sans avoir recueilli son accord 
+(et risquerait de lui créer des problèmes sur ses autres projets).
+:::
+
+::: {.specificite}
+Le package `{renv}` nécessite que votre environnement de travail ait accès à
+internet, ce qui n'est pas le cas d'AUS.
+:::
+
+## Pourquoi fonctionner en mode projet ?
+
+Il est très rare d'organiser son code au sein d'un même programme monolithique ; il s'agit même d'une mauvaise pratique car elle rend le code moins lisible.
+Afin que le code soit plus facile à gérer, celui-ci est plus souvent réparti
+entre plusieurs fichiers à l'extension `.R` au sein d'un même dossier. Ce
+dossier est la matérialisation du mode projet.
+
+Par exemple, vous pouvez avoir cette organisation au sein de votre dossier :
+
+    ├── import.R
+    ├── traitement.R
+    ├── graphique.R
+
+Si vous travaillez avec les projets RStudio, vous trouverez un fichier
+supplémentaire à l'extension `.Rproj` :
+
+    ├── import.R
+    ├── traitement.R
+    ├── graphique.R
+    ├── monprojet.Rproj
+
+Le fichier `.Rproj` comprend un ensemble de méta-données vous permettant de
+contrôler le comportement de RStudio afin que l'ensemble des personnes
+travaillant sur ce projet aient un comportement similaire de RStudio. 
+Vous pouvez en apprendre davantage sur les projets RStudio en lisant
+la fiche [Utiliser les projets RStudio](#rproject).
+
+::: {.remarque}
+Au sein de votre projet, il est recommandé de ranger l'ensemble des programmes R
+au sein d'un dossier nommé `R` :
+
+    ├── R/
+    ├──── import.R
+    ├──── traitement.R
+    ├──── graphique.R
+    ├── monprojet.Rproj
+:::
+
+Vous connaissez très certainement la fonction `install.packages()` qui vous
+permet d'installer un *package*. Afin de documenter le fait que vous ayez
+installé certains *packages* nécessaires à l'exécution de vos programmes, il
+vous est certainement apparu naturel de conserver ces commandes dans votre code.
+
+Cependant, vous avez également certainement remarqué que ces commandes ne sont à
+exécuter qu'une seule fois et donc qu'il convient de les mettre en commentaire
+afin de ne pas perturber l'exécution de vos programmes.
+
+Toutefois, il existe une autre approche beaucoup plus robuste, ici recommandée,
+qui considère que les dépendances d'un projet sont des méta-données nécessaires
+à sa bonne exécution et qu'elles doivent être déclarées de façon explicite.
+
+::: {.conseil}
+Ne conservez pas les commandes `install.packages()` dans vos programmes.
+Utilisez une des deux méthodes déclaratives présentées dans cette fiche.
+:::
+
+Chacune de ces méthodes va déclarer les dépendances de votre projet dans un
+fichier spécifique.
+
+Avec [la première méthode](#approche-description), celle utilisant le fichier `DESCRIPTION`, vous
+obtiendrez la structure de dossier suivante :
+
+    ├── DESCRIPTION
+    ├── R/
+    ├──── import.R
+    ├──── traitement.R
+    ├──── graphique.R
+    ├── monprojet.Rproj
+
+Le fichier `DESCRIPTION` sera le fichier dans lequel vous renseignerez les
+dépendances de votre projet.
+
+Avec la [seconde méthode](#renv), celle utilisant le *package* `{renv}`, vous obtiendrez
+automatiquement la structure de dossier suivante :
+
+    ├── .Rprofile
+    ├── R/
+    ├──── import.R
+    ├──── traitement.R
+    ├──── graphique.R
+    ├── monprojet.Rproj
+    ├── renv.lock
+    ├── renv/
+
+Les dépendances seront décrites automatiquement dans le fichier `renv.lock`, le
+fichier `.Rprofile` et le dossier `renv` étant là pour assurer le bon
+fonctionnement du *package* `{renv}`.
+
+## Utilisation du fichier `DESCRIPTION` {#approche-description}
+
+Le fichier `DESCRIPTION` est un fichier conçu à l'origine pour renseigner les
+méta-données d'un *package*. Cependant, il est courant de l'utiliser même dans
+le cas où le projet n'est pas un *package*. Il s'agit donc d'un usage un peu
+détourné de ce fichier mais communément admis au sein de la communauté `R`.
+
+
+::: remarque
+La méthode utilisant le fichier `DESCRIPTION` n'est pas la plus fiable pour gérer les dépendances. Si votre session R a accès à internet, il est préférable d'adopter la méthode qui repose sur le _package_ `{renv}`.
+:::
+
+::: specificite 
+La méthode utilisant le fichier `DESCRIPTION` est la seule méthode qui fonctionne dans l'espace informatique AUS.
+:::
+### La déclaration des dépendances dans le fichier `DESCRIPTION`
+
+Utiliser un fichier `DESCRIPTION` permet de déclarer les dépendances de son
+projet mais aussi d'autres méta-données telles que les auteurs des programmes,
+la date de réalisation, une description textuelle du projet, etc.
+
+Voici un exemple de fichier `DESCRIPTION` que nous analyserons par la suite : 
+
+```
+Package: stage
+Type: Book
+Title: Stage de Fin d'Études
+Version: 0.0.0.9000
+Date: 2021-06-08
+Authors@R: c(person("Ella", "Lapêche", role = c("aut", "cre"),
+                     email = "ella.lapeche@insee.fr"),
+              person("Jacques", "Ouzi", role = "aut",
+                     email = "jacques.ouzi@insee.fr"))
+Description: Ce projet comprend les programmes
+  réalisés durant notre stage de fin d'études.
+Encoding: UTF-8
+Language: fr
+Imports:
+    bookdown,
+    data.table,
+    doremifasol,
+    dplyr (>=1.0.0)
+Remotes: 
+    rstudio/bookdown@v0.20,
+    InseeFrLab/DoReMiFaSol
+```
+
+Les rubriques servant à déclarer des dépendances à notre projet sont nommées
+`Imports` et `Remotes` et c'est à elles que nous allons nous intéresser par la
+suite.
+
+::: {.remarque}
+Nous ne commenterons pas ici les nombreux champs possibles pour un fichier
+`DESCRIPTION`. Les lecteurs intéressés peuvent se référer à la section idoine
+dans la documentation officielle de `R`, [*Writing R Extensions*](https://cran.r-project.org/doc/manuals/r-release/R-exts.html#The-DESCRIPTION-file).
+:::
+
+### Le champ `Imports`
+
+Toutes les dépendances d'un projet, c'est-à-dire l'ensemble des *packages*
+nécessaires au bon déroulement des programmes, doivent être déclarées dans la
+rubrique `Imports`.  
+Si les programmes utilisent des *packages* qui ne sont pas disponibles sur le
+CRAN (vous utilisez, par exemple, un *package* mis à disposition par des
+collègues), vous devez aussi les déclarer dans la rubrique `Imports`.
+
+::: {.conseil}
+Au lieu d'écrire `install.packages("nomdunpackage")` dans vos programmes, vous
+déclarerez ainsi `nomdunpackage` dans la rubrique `Imports`.
+:::
+
+::: {.remarque}
+Prenez garde que les noms de package soient bien séparés par des virgules (`,`).
+:::
+
+Lorsque les programmes ont besoin d'une version récente d'un *package*, vous
+pouvez l'indiquer de la façon suivante :
+
+```
+Imports:
+    dplyr (>=1.0.0)
+```
+
+Cela signifie que les programmes nécessitent au moins la version 1.0.0 de
+`{dplyr}` pour fonctionner. Cela peut être utile lorsque vous souhaitez indiquer
+que vous utilisez des fonctionnalités récentes offertes par ce *package*.
+
+::: {.remarque}
+Il n'est pas possible de mentionner une version exacte d'un *package* dans la
+rubrique `Imports`, on ne peut indiquer qu'une version minimale. Autrement dit,
+vous pouvez écrire `dplyr (>=1.0.0)` mais vous ne pouvez pas écrire
+`dplyr (==1.0.0)`.
+
+Ce mode de fonctionnement, qui est un choix de conception de `R`, est
+particulièrement ennuyeux et c'est précisément l'utilisation du champ `Remotes`
+qui peut nous permettre de fixer précisément une version donnée d'un *package*.
+:::
+
+Dans l'exemple de fichier `DESCRIPTION` précédent, nous pouvons constater que :
+
+- le projet a quatre dépendances : `{bookdown}`, `{data.table}`, `{doremifasol}`
+  et `{dplyr}` car ces *packages* sont mentionnés dans le champ `Imports`.
+- le projet requiert une version de `{dplyr}` supérieure ou égale à 1.0.0.
+
+### Le champ `Remotes`
+
+Deux types de dépendances peuvent être déclarées à l'aide du fichier
+`DESCRIPTION` :
+
+- des *packages* dans leur dernière version disponible sur le CRAN
+- des *packages* dans une version qui n'est pas disponible sur le CRAN
+
+::: {.remarque}
+Le CRAN ne met à disposition que la dernière version de chaque *package*. Il
+s'agit d'un choix important de conception effectué par le CRAN qui peut créer
+des difficultés. 
+:::
+
+Savoir différencier les deux situations précédentes demande d'effectuer une
+petite gymnastique :
+
+- lorsqu'un *package* est uniquement déclaré dans le champ `Imports` sans être
+  déclaré dans le champ `Remotes`, cela signifie que le projet utilise la
+  version de ce *package* disponible sur le CRAN. Il s'agit du fonctionnement
+  par défaut du champ `Imports`.
+- lorsqu'un package est déclaré dans le champ `Imports` ainsi que dans le champ
+  `Remotes`, cela signifie que le projet utilise une version qui n'est pas
+  disponible sur le CRAN mais "ailleurs" (pour comprendre ce que signifie cet
+  "ailleurs", lisez-la suite).
+
+Le fonctionnement du champ `Remotes` est le suivant :
+
+- lorsque la valeur du champ `Remotes` est de la forme `org/project`, cela
+  signifie que la dernière version disponible sur GitHub est utilisée, soit le
+  code source disponible à l'adresse `https://github.com/org/project`.
+  Attention, les codes disponibles sur GitHub peuvent évoluer quotidiennement.
+  Il est donc plus prudent d'utiliser la méthode suivante.
+- lorsque la valeur du champ `Remotes` est de la forme `org/project@version`,
+  cela signifie que la version utilisée sera celle référencée sur GitHub,
+  c'est-à-dire disponible à l'adresse
+  `https://github.com/org/project/tree/version`.
+- lorsque la valeur du champ `Remotes` est de la forme
+  `git::git@git.lab.sspcloud.fr:nom/projet.git`, cela signifie que la version
+  utilisée sera celle disponible à l'adresse
+  `https://git.lab.sspcloud.fr/nom/projet`.
+
+::: {.specificite}
+L'environnement de travail AUS n'ayant pas accès à internet, les utilisateurs de
+R à l'Insee ne pourront pas utiliser une version disponible sur internet comme
+GitHub, par exemple.  
+En revanche, il est possible d'utiliser une version disponible sur le GitLab
+interne de l'Insee grâce à la dernière méthode.
+:::
+
+Dans l'exemple de fichier `DESCRIPTION` précédent, nous pouvons constater que :
+
+- le projet a quatre dépendances : `{bookdown}`, `{data.table}`, `{doremifasol}`
+  et `{dplyr}` car ces *packages* sont mentionnés dans le champ `Imports`.
+- les versions disponibles sur le CRAN sont utilisées pour les *packages*
+  `{data.table}` et `{dplyr}` car ces deux *packages* ne sont pas déclarés dans
+  le champ `Remotes`.
+- les versions des *packages* `{bookdown}` et `{doremifasol}` nécessaires ne sont
+  pas celles mises à disposition par le CRAN car ces deux _packages_ apparaissent
+  dans le champ `Remotes`.
+- la version du *package* `{bookdown}` utilisée sera la version v0.20 disponible
+  à l'adresse <https://github.com/rstudio/bookdown/tree/v0.20>.
+- la version du *package* `{doremifasol}` utilisée sera la version de
+  développement sur GitHub, soit la toute dernière version disponible à l'adresse
+  <https://github.com/InseeFrLab/DoReMiFaSol>.
+
+### Manipulation au quotidien du fichier `DESCRIPTION`
+
+Il est tout à fait possible de créer et de modifier le fichier `DESCRIPTION`
+manuellement. Cependant, ce fichier doit obéir à des règles très strictes,
+notamment au niveau de l'indentation. Afin de modifier ce fichier en toute
+sécurité, le package `{usethis}` offre des fonctions permettant de réaliser
+facilement les modifications usuelles.
+
+Après avoir créé votre dossier qui représente votre projet, la première étape
+consiste à créer le fichier `DESCRIPTION`.
+Vous pouvez vous aider de la fonction `usethis::use_description()` afin de le créer. Une fois créé, vous pouvez le
+modifier en respectant son format.
+
+::: {.conseil}
+Il est recommandé de créer le fichier `DESCRIPTION` avant même d'écrire des
+programmes `R` et de référencer les dépendances au fur et à mesure, sans quoi
+cette tâche peut s'avérer fastidieuse.
+:::
+
+::: {.remarque}
+Si vous obtenez une erreur lors de l'utilisation de la fonction
+`usethis::use_description()`, il est fort probable que cela provienne du nom
+de votre dossier. Dans ce cas, n'hésitez pas à utiliser
+`usethis::use_description(check_name = FALSE)`.
+:::
+
+Afin de déclarer une dépendance à votre projet, vous pouvez ajouter le nom du
+*package* dans la rubrique `Imports` du fichier `DESCRIPTION` ou bien utiliser
+la fonction `usethis::use_package()`. Cela vous évitera notamment d'oublier une
+virgule.  
+Ainsi, en exécutant
+
+```{r, eval=FALSE}
+usethis::use_package("dplyr")
+```
+
+Cela ajoutera le *package* `{dplyr}` dans la rubrique `Imports` s'il ne l'est
+déjà. Vous pouvez également déclarer une version minimum :
+
+```{r, eval=FALSE}
+usethis::use_package("dplyr", min_version = "1.0.0")
+```
+
+Ce qui ajoutera la ligne
+
+```
+dplyr (>=1.0.0)
+```
+
+dans le champ `Imports`.
+
+Pour déclarer une dépendance dont la version n'est pas disponible sur le CRAN,
+on pourra utiliser la fonction `usethis::use_dev_package()` qui modifiera
+simultanément les champs `Imports` et `Remotes` du fichier `DESCRIPTION`. Par
+exemple, l'exécution de cette commande
+
+```{r, eval=FALSE}
+usethis::use_dev_package(
+  "monpackage",
+  remote = "git::git@git.lab.sspcloud.fr:nom/monpackage.git"
+)
+```
+
+modifiera les champs `Imports` et `Remotes` de la façon suivante :
+
+```
+Imports: 
+    monpackage
+Remotes: 
+    git::git@git.lab.sspcloud.fr:nom/monpackage.git
+```
+
+### Installer les dépendances du projet
+
+En gérant ainsi les dépendances d'un projet, une tierce personne pourra
+installer l'ensemble des dépendances en une seule commande :
+
+```{r, eval=FALSE}
+remotes::install_deps()
+```
+
+::: remarque
+Par défaut, la fonction `remotes::install_deps()` installe les _packages_ utilisés par un projet dans les librairies générales de `R`. Par conséquent, vos autres projets peuvent être indirectement affectés lorsque vous utilisez cette fonction pour installer les dépendances d'un projet. C'est pour cette raison qu'il est préférable d'utiliser `{renv}`, qui est conçu pour éviter ce problème.
+:::
+## Utilisation du package `{renv}` {#renv}
+
+Le *package* `{renv}` offre une solution plus moderne et beaucoup plus simple
+que la précédente pour déclarer ses dépendances. Elle ne fonctionne que dans un
+projet. On peut choisir d'utiliser cette méthode à n'importe quel moment de la
+réalisation du projet.
+::: specificite 
+La méthode reposant sur le package `{renv}` ne fonctionne pas dans l'espace informatique AUS.
+:::
+Pour commencer à utiliser `{renv}`, il suffit d'exécuter :
+
+```{r, eval=FALSE}
+renv::init()
+```
+
+Cette commande crée automatiquement un ensemble de fichiers et de dossiers dont
+vous n'aurez pas à vous préoccuper (ne les supprimez pas !) car c'est notamment dans
+le dossier `renv` que le *package* `{renv}` va sauvegarder les *packages* dont le projet
+a besoin.
+
+Votre projet aura ainsi une structure ressemblant à la suivante :
+
+    ├── .Rprofile
+    ├── R/
+    ├──── import.R
+    ├──── traitement.R
+    ├──── graphique.R
+    ├── monprojet.Rproj
+    ├── renv.lock
+    ├── renv/
+
+La particularité du package `{renv}` est qu'il construit un environnement isolé.
+Cela surprend au premier abord car les *packages* que vous aviez installés ne
+sont plus tous disponibles. Certains doivent être réinstallés grâce à la
+fonction `install.packages()`. En effet, le *package* `{renv}` va construire un
+environnement isolé de votre installation de `R`. 
+
+Les versions des *packages* utilisés par votre projet sont toutes décrites dans
+le fichier `renv.lock` de façon automatique. Il reste possible d'installer ou
+de mettre à jour un *package* comme d'habitude.
+
+Pour prendre une photo des numéros de version des *packages* installés, il faut
+utiliser la fonction `renv::snapshot()`. Cette fonction va mettre à jour les
+numéros de version des *packages* que vous utilisez.
+
+Si vous partagez votre projet avec d'autres personnes, ces dernières pourront
+installer les mêmes *packages* dans les mêmes versions grâce à la fonction
+`renv::restore()`.
+
+## Laquelle de ces deux méthodes choisir ?
+
+Si votre environnement de travail `R` est connecté à internet, il est beaucoup
+plus simple d'utiliser la méthode avec `{renv}`.
+
+## Pour en savoir plus
+
+-   [Introduction à `{renv}`](https://rstudio.github.io/renv/articles/renv.html)
+    (en anglais).
