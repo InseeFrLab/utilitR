@@ -223,6 +223,14 @@ Plutôt que d'utiliser un environnement en local dont la configuration peut diff
 
 #### Lancer le service RStudio configuré
 
+Pour contribuer à `utilitR`, il est possible de créer un service RStudio entièrement paramétré, de la manière suivante :
+* dans le catalogue de service, choisir un service RStudio
+* sous l'onglet `R`, sélectionner l'image utilitR
+
+![](./pics/contributing/creation_service_utilitr.png)
+
+Une autre solution consiste à lancer le service directement via [ce lien](https://datalab.sspcloud.fr/my-lab/catalogue/inseefrlab-helm-charts-datascience/rstudio/deploiement?r.version=inseefrlab/utilitr:0.7.0).
+
 #### Configurer l'accès au dépôt distant Github : la méthode simple et sécurisée
 
 #### Configurer l'accès au dépôt distant Github : la méthode à vos risques et périls
