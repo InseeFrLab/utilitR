@@ -233,6 +233,18 @@ Une autre solution consiste à lancer le service directement via [ce lien](https
 
 #### Configurer l'accès au dépôt distant Github : la méthode simple et sécurisée
 
+Pour accéder au dépôt distant Github (très généralement un _fork_ du dépôt officiel d'`utilitR`, comme expliqué plus bas), il faut que l'identifiant du compte corresponde à celui configuré dans l'image (dont on peut voir la valeur prise par défaut dans l'onglet Git de la configuration du service, à l'item _user.email_). Dans l'éventualité où cet identifiant ne correspondrait, il est possible de le reconfigurer une fois le service lancé en soumettant dans un terminal la commande suivante :
+
+``` shell
+git config --global user.email "mon.adresse@mail.com"
+```
+
+Il est également possible, pour les utilisateurs avancés, d'incorporer cette commande dans un script d'initialisation qui se lance au démarrage du service, en utilisant également la commande `runuser` de manière à lancer la commande git pour le _user_ `rstudio` et non en _root_ comme cela se fait par défaut.
+
+Enfin, comme montré dans la capture d'écran ci-dessous, il est possible de configurer le mot de passe associé au compte Github de manière à ce qu'il soit conservé dans le cache du service pendant une durée limitée (dans l'exemple ci-dessous, une heure). Une fois le temps écoulé, l'utilisateur devra de nouveau entrer son mot de passe.
+
+![](./pics/contributing/creation_service_utilitr.png)
+
 #### Configurer l'accès au dépôt distant Github : la méthode à vos risques et périls
 
 ### :one: Forker le dépôt `utilitR`
