@@ -236,6 +236,7 @@ Une autre solution consiste à lancer le service directement via [ce lien](https
 Pour accéder au dépôt distant Github (très généralement un _fork_ du dépôt officiel d'`utilitR`, comme expliqué plus bas), il faut que l'identifiant du compte corresponde à celui configuré dans l'image (dont on peut voir la valeur prise par défaut dans l'onglet Git de la configuration du service, à l'item _user.email_). Dans l'éventualité où cet identifiant ne correspondrait, il est possible de le reconfigurer une fois le service lancé en soumettant dans un terminal la commande suivante :
 
 ``` shell
+git config --global user.name "Prénom Nom"
 git config --global user.email "mon.adresse@mail.com"
 ```
 
@@ -243,7 +244,7 @@ Il est également possible, pour les utilisateurs avancés, d'incorporer cette c
 
 Enfin, comme montré dans la capture d'écran ci-dessous, il est possible de configurer le mot de passe associé au compte Github de manière à ce qu'il soit conservé dans le cache du service pendant une durée limitée (dans l'exemple ci-dessous, une heure). Une fois le temps écoulé, l'utilisateur devra de nouveau entrer son mot de passe.
 
-![](./pics/contributing/creation_service_utilitr.png)
+![](./pics/contributing/configurer_git_cache.png)
 
 #### Configurer l'accès au dépôt distant Github : la méthode à vos risques et périls
 
