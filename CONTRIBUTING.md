@@ -263,7 +263,7 @@ de la manière suivante :
 
 ![](./pics/contributing/mes_secrets_utilitr.png)
 
-On peut ensuite lancer le [service configuré dans ce lien](https://datalab.sspcloud.fr/my-lab/catalogue/inseefrlab-helm-charts-datascience/rstudio/deploiement?init.personnalInit=https://raw.githubusercontent.com/pierre-lamarche/utilitR/contribute_and_use_docker/init_utilitr.sh&r.version=inseefrlab/utilitr:0.7.0&vault.secret=utilitr/utilitr) pour obtenir un service avec une identification persistante.
+On peut ensuite lancer le [service configuré dans ce lien](https://datalab.sspcloud.fr/my-lab/catalogue/inseefrlab-helm-charts-datascience/rstudio/deploiement?init.personnalInit=https://raw.githubusercontent.com/inseefrlab/utilitR/contribute_and_use_docker/init_utilitr.sh&r.version=inseefrlab/utilitr:0.7.0&vault.secret=utilitr/utilitr) pour obtenir un service avec une identification persistante.
 
 ### :one: Forker le dépôt `utilitR`
 
