@@ -252,18 +252,18 @@ La méthode présentée ci-dessus a l'inconvénient qu'elle oblige l'utilisateur
 
 **ATTENTION : cette méthode comporte des risques car dans l'éventualité où un attaquant parvient à accéder à votre compte sur le SSP Cloud, il récupère des identifiants lui permettant d'accéder, de manière plus ou moins limitée selon la solution retenue, à votre compte Github et à interagir avec vos dépôts. À ce stade, ce n'est pas une méthode recommandée et si elle est utilisée, il convient d'utiliser un jeton d'accès aux droits limités. La fiche `utilitR` [Configurer Git](https://www.book.utilitr.org/git-config.html) présente plus de détails sur la question des jetons d'accès à Github
 
-Ainsi, il est possible de récupérer, de manière systématique, son mot de passe ou, de manière un peu plus sécurisée, le token créé sous Github pour communiquer avec le dépôt. La configuration de l'accès de manière automatique peut se configurer en rajoutant dans un script d'initialisation les lignes de code suivantes :
+Ainsi, il est possible de récupérer, de manière systématique, son mot de passe ou, de manière un peu plus sécurisée, le token créé sous Github pour communiquer avec le dépôt. La configuration de l'accès de manière automatique peut se configurer en définissant les secrets ci-dessous dans un dossier `utilitr` :
 
-``` shell
-echo "$PROTOCOL://$USERNAME:$TOKEN@$HOST" > /home/rstudio/git.store
-chown rstudio /home/rstudio/git.store
-chmod o-r,g-r /home/rstudio/git.store
-```
-et en ayant défini les secrets suivants :
 * `PROTOCOL` : prend la valeur `https`
 * `USERNAME` : l'identifiant du compte Github ou Gitlab avec lequel on souhaite interagir sur le dépôt
 * `TOKEN` : il s'agit du token mentionné précédemment
-* `HOST` : pour un accès à Github, la valeur à insérer est `github.com` ; pour un accès au Gitlab du SSP Cloud, il s'agit de `git.lab.sspcloud.fr`
+* `HOST` : pour un accès à Github, la valeur à insérer est `github.com`
+
+de la manière suivante :
+
+![](./pics/contributing/mes_secrets_utilitr.png)
+
+On peut ensuite lancer le [service configuré dans ce lien](https://datalab.sspcloud.fr/my-lab/catalogue/inseefrlab-helm-charts-datascience/rstudio/deploiement?init.personnalInit=https://raw.githubusercontent.com/pierre-lamarche/utilitR/contribute_and_use_docker/init_utilitr.sh&r.version=inseefrlab/utilitr:0.7.0&vault.secret=utilitr/utilitr) pour obtenir un service avec une identification persistante.
 
 ### :one: Forker le dépôt `utilitR`
 
