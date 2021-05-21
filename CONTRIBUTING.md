@@ -248,6 +248,23 @@ Enfin, comme montré dans la capture d'écran ci-dessous, il est possible de con
 
 #### Configurer l'accès au dépôt distant Github : la méthode à vos risques et périls
 
+La méthode présentée ci-dessus a l'inconvénient qu'elle oblige l'utilisateur à insérer son mot de passe de façon régulière, et quoi qu'il en soit, pour chaque nouveau service RStudio créé sur le SSP Cloud. Il est ainsi possible d'insérer le mot de passe en question dans les variables d'environnement isérées au moment de la création du service, via l'interface Mes secrets du SSP Cloud. L'utilisateur intéressé pourra s'il le souhaite consulter la [vidéo de démonstration](https://github.com/InseeFrLab/onyxia-ui/releases/download/assets/Demo_My_Secrets.mp4) explicitant l'usage de ce service.
+
+**ATTENTION : cette méthode comporte des risques car dans l'éventualité où un attaquant parvient à accéder à votre compte sur le SSP Cloud, il récupère des identifiants lui permettant d'accéder, de manière plus ou moins limitée selon la solution retenue, à votre compte Github et à interagir avec vos dépôts. À ce stagde, ce n'est pas une méthode recommandée.**
+
+Ainsi, il est possible de récupérer, de manière systématique, son mot de passe ou, de manière un peu plus sécurisée, le token créé sous Github pour communiquer avec le dépôt. La configuration de l'accès de manière automatique peut se configurer en rajoutant dans un script d'initialisation les lignes de code suivantes :
+
+``` shell
+echo "$PROTOCOL://$USERNAME:$TOKEN@$HOST" > /home/rstudio/git.store
+chown rstudio /home/rstudio/git.store
+chmod o-r,g-r /home/rstudio/git.store
+```
+et en ayant défini les secrets suivants :
+* `PROTOCOL` : prend la valeur `https`
+* `USERNAME` : l'identifiant du compte Github ou Gitlab avec lequel on souhaite interagir sur le dépôt
+* `TOKEN` : il s'agit du token mentionné précédemment
+* `HOST` : pour un accès à Github, la valeur à insérer est `github.com` ; pour un accès au Gitlab du SSP Cloud, il s'agit de `git.lab.sspcloud.fr`
+
 ### :one: Forker le dépôt `utilitR`
 
 Seuls les mainteneurs du dépôt `utilitR` ont les droits d'écriture sur le dépôt
