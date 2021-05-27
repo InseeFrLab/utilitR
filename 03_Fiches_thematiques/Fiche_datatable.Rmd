@@ -32,12 +32,31 @@ dt <- data.table(x = c("A", "B", "C"),
 dt
 ```
 
+::: {.conseil}
+Modifier les options globales de data.table permet d'avoir un affichage encore un plus informatif avec les classes de chaque colonne et l'éventuel clé de la base (voir plus bas) :
+```{r}
+options(
+  "datatable.print.keys" = TRUE,
+  "datatable.print.class" = TRUE
+  )
+dt
+options(
+  "datatable.print.keys" = FALSE,
+  "datatable.print.class" = FALSE
+  )
+```
+:::
+
 **La fonction fondamentale de `data.table` est l'opérateur `[...]` (crochets).** Lorsqu'on les applique à un objet `data.frame` de base, les crochets `df[...]` servent uniquement à sélectionner des lignes ou des colonnes. Dans un `data.table`, les crochets `dt[...]` permettent de faire beaucoup plus de choses (quasiment tout, en pratique). En fait, les instructions à l'intérieur des crochets peuvent être envisagées comme des requêtes `SQL` mises en forme différemment. 
 
 **La forme générale de l'opérateur `[...]` est la suivante : `DT[i, j, by]`**. Cette grammaire peut se lire comme ceci : "on part du `data.table` `DT`, on sélectionne certaines lignes avec `i`, puis on calcule `j` pour chaque groupe défini par `by`. Si on fait un parallèle avec `SQL`, `i` correspond au `WHERE`, `j` au `SELECT` et `by` au `GROUP BY`. La fonction `[...]` présente deux grands avantages :
 
 - Il n'est pas nécessaire d'utiliser le préfixe `DT$` pour se référer aux variables à l'intérieur de `[...]` ;
 - Le code est très concis, ce qui aide à le rendre lisible.
+
+::: {.remarque}
+Cette syntaxe compacte est aussi un des atouts fondamental de data.table pour sa rapidité : au moment de faire le regroupement par z, il sait déjà qu'il n'aura que y à traiter et donc ne manipule pas les colonnes non concernées.
+:::
 
 Voici un exemple simple. A partir des données générées ci-dessus, on veut calculer la moyenne de `y` par groupe défini par `x`, uniquement sur les observations pour lesquelles `x` est supérieur à 3. Voici comment on peut réaliser cette opération avec `Base R`, `dplyr` et `data.table`. Vous pouvez juger vous-même de la concision du code.
 
@@ -296,10 +315,14 @@ Vous pouvez utiliser toutes les fonctions statistiques de `R` avec `data.table`.
 |-----------------|---------------------------------------------------|-------------------------------------------------------------|
 |`.N`             | Nombre d'observations                             | `dt[ , .N, by = 'group_var']` |
 |`uniqueN()`      | Nombre d'observations uniques de la variable `x`  | `dt[ , uniqueN(x), by = 'group_var']` |
-|`%in%`           | Nombre dans la liste                              | `dt[x %in% 1:5]` |
+|`nafill`         | Remplit les valeurs manquantes                              | `dt[,nafill(y, type="locf")]` |
 |`%chin%`         | Chaîne de caractères dans la liste                | `dt[x %chin% c("a", "b")]` |
 |`%between%`      | Valeur entre deux nombres                         | `dt[x %between% c(5,13)]` |
 | `%like%`        | Reconnaissance d'une chaîne de caractères         | `dt[departement %like% "^Haute"]`
+
+::: {.remarque}
+La fonction `.N` permet de créer facilement des compteurs avec la syntaxe `1:.N`. Par exemple `dt[ , compteur := 1:.N, by = 'group_var']`
+:::
 
 #### Opérations par groupe
 
@@ -681,6 +704,33 @@ modif_var <- function(data, nom_variable){
 }
 ```
 C'est l'une des raisons pour lesquelles il est préférable d'utiliser `data.table` lorsqu'on souhaite manipuler fréquemment des données à l'aide de fonctions. Le lecteur intéressé par la question pourra consulter ce [post](https://linogaliana.netlify.com/post/datatable/datatable-nse/) sur le sujet.
+:::
+
+::: {.remarque}
+La version 1.14.1 de data.table (encore en développement au 13/05/2021) apporte une syntaxe améliorée dans ce cas et considère l'utilisation de get comme désuète. Le `[...]` admet un nouvel argument `env` à qui on donne tous les remplacements que l'on souhaite. L'exemple devient :
+
+```
+creation_var <- function(data, nom_variable, nouveau_nom){
+  data[, nouveau_nom := nom_variable + 1, 
+    env = list(nouveau_nom = nouveau_nom, nom_variable = nom_variable)]
+}
+head(creation_var(filosofi_com_2016_dt, 
+                  nom_variable = "NBMENFISC16",
+                  nouveau_nom  = "nouvelle_variable"), 2)
+```
+
+L'avantage c'est qu'on peut effectuer de tels remplacements dans i et qu'on peut même remplacer des fonctions :
+
+```
+creation_var <- function(data, nom_variable, nouveau_nom, fonction){
+  data[, nouveau_nom := fonction(nom_variable), 
+    env = list(nouveau_nom = nouveau_nom, nom_variable = nom_variable, fonction= fonction)]
+  head(creation_var(filosofi_com_2016_dt, 
+                  nom_variable = "NBMENFISC16",
+                  nouveau_nom  = "nouvelle_variable",
+                  fonction = "sqrt"), 2)
+}
+```
 :::
 
 ::: {.conseil}
