@@ -2,7 +2,7 @@
 
 <!-- badges: start -->
 [![build-doc Actions Status](https://github.com/InseeFrLab/utilitR/workflows/Production%20de%20la%20documentation/badge.svg)](https://github.com/InseeFrLab/utilitR/actions)
-
+[![Docker Pulls](https://img.shields.io/docker/pulls/inseefrlab/utilitr)](https://hub.docker.com/repository/docker/inseefrlab/utilitr/general)
 
 <!--[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gl/linogaliana%2FdocumentationR/binder?urlpath=rstudio)--->
 <!-- badges: end -->
@@ -28,6 +28,8 @@ Les exemples sont construits sur des données ouvertes, disponibles sur www.inse
 Le package [`doremifasolData`](https://github.com/InseeFrLab/DoReMIFaSolData) facilite
 l'import de ces données dans la documentation. Le modèle de document est
 encapsulé dans un *package* `R` dédié: https://github.com/InseeFrLab/utilitr-template 
+
+L'ensemble des ressources du projet `utilitR` sont disponibles sur https://www.utilitr.org
 
 <br>
 

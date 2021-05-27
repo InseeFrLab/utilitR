@@ -25,7 +25,7 @@ L’utilisateur souhaite traiter avec `R` des données spatiales (données géol
 
 Les données spatiales rassemblent classiquement deux types de données :
 
-1. des **données géographiques** (ou géométries) : objets géométriques tels que des points, des vecteurs, des polygones, ou des maillages (*raster*). Exemple : la forme de chaque chaque commune, les coordonnées d'un bâtiment ;
+1. des **données géographiques** (ou géométries) : objets géométriques tels que des points, des lignes, des polygones, ou des maillages (*raster*). Exemple : la forme de chaque chaque commune, les coordonnées d'un bâtiment ;
 2. des **données attributaires** (ou attributs) : des mesures et des caractéristiques associés aux objets géométriques. Exemple : la population de chaque commune, le nombre de fenêtres et le nombre d'étages d'un bâtiment.
 
 **Les données spatiales sont fréquemment traitées à l'aide d'un système d'information géographique (SIG)**, c'est-à-dire un système d'information capable de stocker, d'organiser et de présenter des données alphanumériques spatialement référencées par des coordonnées dans un système de référence (CRS). `R` dispose de fonctionnalités lui permettant de réaliser les mêmes tâches qu'un SIG (traitement de données spatiales, représentations cartographiques).
@@ -41,7 +41,7 @@ Les données spatiales rassemblent classiquement deux types de données :
 
 Le *package* `sf` est une boîte à outils conçue pour faciliter la manipulation de données spatiales. **La grande force de `sf` est qu'il permet de manipuler des données spatiales comme s'il s'agissait de données traditionnelles**, car il repose sur le standard ISO 19125 [*simple feature access*](https://en.wikipedia.org/wiki/Simple_Features) défini conjointement par l'*Open Geospatial Consortium (OGC)* et l'*International Organization for Standardization (ISO)*. Cette fiche illustre l'usage de `sf` avec le jeu de données `martinique` du package `cartography`.
 
-Les fonctions de `sf` sont pour la plupart préfixées par `st_` et permettent notamment de :
+Les fonctions de `sf` sont pour la plupart préfixées par `st_` *(Spatial Type)* et permettent notamment de :
 
 * Calculer des distances et des surfaces ;
 * Agréger rapidement des zonages (regrouper les communes en département par exemple) ;
@@ -67,6 +67,9 @@ La fonction **`sf::st_read()`** permet de lire différents formats de données g
 * `crs`, pour définir le système de projection. Ce paramètre est facultatif. Si le système de projection a été défini à l'écriture du fichier, `sf` peut le repérer automatiquement à la lecture. Sinon, il faut le définir à la lecture avec l'argument `crs`.
 
 ```{r}
+# Installation du package cartography
+# install.packages("cartography")
+
 # Charger les données sur la Martinique
 martinique <- sf::st_read(
   dsn = system.file("gpkg/mtq.gpkg", package="cartography"),
@@ -75,7 +78,7 @@ martinique <- sf::st_read(
 
 #### Reconstituer des données géographiques à partir de données brutes
 
-Il peut arrive que les données géographiques ne soient pas stockées dans un format adapté. Par exemple, vous pouvez disposer d'un fichier `.csv` qui contient une table géolocalisées de logements avec leurs caractéristiques. En ce cas, vous pouvez créer une table de donnée géographiques en deux temps :
+Il peut arrive que les données géographiques ne soient pas stockées dans un format adapté. Par exemple, vous pouvez disposer d'un fichier `.csv` qui contient une table géolocalisée de logements avec leurs caractéristiques. En ce cas, vous pouvez créer une table de données géographiques en deux temps :
 
 - Importer les données brutes (ou tabulées, cf + haut) dans `R` voir la fiche [Importer des fichiers plats (`.csv`, `.tsv`, `.txt`)] ;
 - Transformer le `data.frame` en objet `sf` grâce à la commande `sf::st_set_geometry()`. Par exemple, si les variables `lon` et `lat` contiennent des données GPS (code epsg `4326`) alors on peut faire :
@@ -87,13 +90,13 @@ Il peut arrive que les données géographiques ne soient pas stockées dans un f
 
 ### Structure d'un objet `sf`
 
-La commande `head()` fait apparaître la structure de l'objet `sf` `martinique`. L'en-tête précise le type de `geometry` (`polygon`, en l'occurrence le contour des communes), et le système de projection (`32620`). La table de données contient la liste des communes avec leurs caractéristiques (nom, population...). Enfin, la dernière colonne (`geometry`) contient l'information géographique (le contour des communes).
+La commande `head()` fait apparaître la structure de l'objet `sf` `martinique`. L'en-tête précise le type de `geometry` (`polygon`, en l'occurrence le contour des communes), et le système de projection (`WGS 84 / UTM zone 20N`). La table de données contient la liste des communes avec leurs caractéristiques (nom, population...). Enfin, la dernière colonne (`geometry`) contient l'information géographique (le contour des communes).
 
 ```{r}
 head(martinique, 3)
 ```
 
-Pour revenir à un `dataframe` traditionnel, c'est-à-dire sans la dimension géographique, la manière la plus simple est de rendre nulle la géométrie grâce à la commande **`sf::st_set_geometry`**. Exemple : `martinique <- martinique %>% sf::st_set_geometry(NULL)`.
+Pour revenir à un `dataframe` traditionnel, c'est-à-dire sans la dimension géographique, la manière la plus simple est de rendre nulle la géométrie grâce à la commande **`sf::drop_geometry`**. Exemple : `martinique <- martinique %>% sf::st_drop_geometry()`.
 
 On peut produire très rapidement une représentation cartographique d'un attribut avec la fonction `plot()` :
 
@@ -186,7 +189,7 @@ Les jointures spatiales peuvent être très gourmandes en ressources (car il peu
 
 ### Gérer le système de projection
 
-Le système de projection est fondamental pour que la dimension spatiale soit bien interprétée par `R`. Si un système de projection est défini, il s'affiche dans la ligne `epsg (SRID)` lorsqu'on applique la fonction `head()` à un objet `sf`. Pour vérifier le système de projection d'une base de données, on peut utiliser `sf::st_crs` :
+Le système de projection est fondamental pour que la dimension spatiale soit bien interprétée par `R`. Si un système de projection est défini, il s'affiche dans la ligne `Projected CRS` lorsqu'on applique la fonction `head()` à un objet `sf`. Pour vérifier le système de projection d'une base de données, on peut utiliser `sf::st_crs` :
 
 ```{r}
 sf::st_crs(martinique)
@@ -224,9 +227,29 @@ Selon le besoin exact, plusieurs autres *packages* proposent des fonctionnalité
 
 ## Où trouver des données géographiques et des *shapefiles* ?
 
-L'Insee propose un outil pour sélectionner et télécharger des données géographiques : [Créacarte](http://creacartes.insee.fr/).
+Il s'agit du domaine où la diffusion de données par l'*open data* a permis une grande diversité des
+sources disponibles. Certaines données sont disponibles sous forme de *shapefiles* d'autres avec
+des identifiants géographiques comme le code commune à apparier à un shapefile proposant la même
+variable.
 
-**TO BE COMPLETED**
+Les limites administratives de référence sont disponibles sur le site
+[Admin Express](https://www.data.gouv.fr/fr/datasets/admin-express/) de l'IGN (anciennement `GeoFla`). 
+
+Le code officiel géographique (COG), qui tient à jour les entités administratives (codes communes, régions, etc.)
+est disponible sur [le site de l'Insee](https://www.insee.fr/fr/information/2560452) et via
+l'API Métadonnées [lien vers la fiche API quand elle sera finie]
+
+Il est également possible de trouver des données géographiques sur [data.gouv](https://www.data.gouv.fr/fr/),
+[insee.fr](insee.fr/) ou sur d'autres ressources d'open data, qu'ils
+soient génériques comme [opendatasoft](https://public.opendatasoft.com/explore/) ou plus institutionnels
+comme [opendata.paris.fr/](https://opendata.paris.fr/)
+
+::: specificite
+
+L'Insee propose un outil pour sélectionner et télécharger des données géographiques via l'application `creacartes`.
+
+:::
+
 
 ## Pour en savoir plus
 
@@ -234,4 +257,4 @@ L'Insee propose un outil pour sélectionner et télécharger des données géogr
     - le [site officiel](http://r-spatial.github.io/sf) du *package* ;
     - la [documentation](https://www.rdocumentation.org/packages/sf) du *package* ;
     - la [*cheeatsheet*](https://github.com/rstudio/cheatsheets/raw/master/sf.pdf) du *package* (en anglais) ;
-* un [tutoriel](https://rcarto.github.io/carto_avec_r) détaillé sur les données spatiale et sur la cartographie avec `R` (en français).
+* un [tutoriel](https://rcarto.github.io/carto_avec_r) détaillé sur les données spatiales et sur la cartographie avec `R` (en français).

@@ -20,7 +20,7 @@ Le document apporte une réponse aux questions suivantes:
 
 - [:arrow_down: Comment proposer des modifications d'une fiche?](#two-comment-proposer-des-modifications-dune-fiche)
 - [:arrow_down: Comment participer aux discussions collectives?](#three-comment-participer-aux-discussions-collectives)
-- [:arrow_down: Comment effectuer la relecture d'une fiche?](#comment-effectuer-la-relecture-dune-fiche)
+- [:arrow_down: Comment effectuer la relecture d'une fiche?](#four-comment-effectuer-la-relecture-dune-fiche)
     - Comment suggérer des remarques sur une fiche via Github?
     - Comment ouvrir une issue si la fiche pose un réel problème?
 - [:arrow_down: Comment ajouter en tant que contributeur une nouvelle fiche?](#five-comment-ajouter-une-nouvelle-fiche-à-la-documentation)
@@ -37,7 +37,7 @@ Pour effectuer exclusivement une relecture, vous pouvez vous rendre directement
 à la section dédiée
 ([:arrow_down: Comment effectuer la relecture d'une fiche?](#comment-effectuer-la-relecture-dune-fiche))
 
-## :two: Comment proposer des modifications d'une fiche?
+## :two: Comment proposer des modifications d'une fiche? 
 
 [:arrow_up: Retour à l'introduction](#one-introduction)
 
@@ -147,15 +147,17 @@ compréhensible par un utilisateur standard. En revanche, la relecture ne porte
 pas sur les recommandations formulées dans la fiche, ni sur
 son organisation globale.
 
-La relecture peut comprendre trois types de tâches:
-
-* Proposer des corrections mineures (faute d'orthographes, formulations peu claires) : ce travail de modification est décrit dans [:arrow_up: Comment proposer des modifications d'une fiche?](#two-comment-proposer-des-modifications-dune-fiche). Il convient d'adopter la convention proposée de nommer la branche `typo-XXX`;
-* Faire des commentaires (exemple: je ne parviens pas à reproduire cet exemple): ce travail de modification est décrit dans __Comment faire des commentaires sur une fiche via Github?__;
-* Des signalements de problèmes: si le relecteur pense que l'organisation d'ensemble ou le déroulement de la fiche soulève une difficulté sérieuse, ou que des points importants n'ont pas été abordés, il est invité à le signaler en suivant la procédure décrite dans la partie __Comment ouvrir une _issue_ si la fiche soulève un problème?__.
-
 Il est recommandé de lire la partie
 [:arrow_up: Comment proposer des modifications d'une fiche?](#two-comment-proposer-des-modifications-dune-fiche)
 avant de proposer des commentaires sur une fiche via Github.
+
+### Où faire des retours sur une fiche ?
+
+Le lieu idéal de retour de la part d'un relecteur ou d'une relectrice dépend du type de modification envisagée :
+
+* Proposer des corrections mineures (faute d'orthographes, formulations peu claires) : ce travail de modification est décrit dans [:arrow_up: Comment proposer des modifications d'une fiche?](#two-comment-proposer-des-modifications-dune-fiche). Les suggestions de modification sont dès lors associées à une `pull request` pour laquelle il convient d'adopter la convention proposée de nommer la branche `typo-XXX`. Lorsque la `pull request` est ouverte, il est possible de renseigner, dans la description de celle-ci, des commentaires génériques. Les commentaires relatifs à une ligne peuvent être faits sous forme de commentaire en cliquant sur l'onglet `Files changed` puis, sur la fiche en question, en ouvrant un commentaire en cliquant sur le signe `+` dans la marge ;
+* Faire des commentaires sans suggestion de modifications (exemple: je ne parviens pas à reproduire cet exemple): ce travail de modification est décrit dans __Comment faire des commentaires sur une fiche via Github?__;
+* Des signalements de problèmes: si le relecteur pense que l'organisation d'ensemble ou le déroulement de la fiche soulève une difficulté sérieuse, ou que des points importants n'ont pas été abordés, il est invité à le signaler en suivant la procédure décrite dans la partie __Comment ouvrir une _issue_ si la fiche soulève un problème?__.
 
 
 ### Comment faire des commentaires sur une fiche via Github?
@@ -163,11 +165,12 @@ avant de proposer des commentaires sur une fiche via Github.
 La démarche est un peu fastidieuse mais est possible directement depuis `Github`. 
 Dans le menu du site web www.book.utilitr.org,
 il faut d'abord se placer dans la fiche à
-relire et ensuite cliquer sur le bouton `View`, en haut à gauche.
+relire et ensuite cliquer sur le bouton `View source`, dans le menu à droite.
 
 ![](./pics/contributing/view_bs4.png)
 
-Cela ouvre l'état actuel d'une fiche avec, à gauche, pour chaque bloc, la
+Cela ouvre l'état actuel d'une fiche. CLiquer sur le bouton `blame` en haut à droite. 
+Sur la marge de gauche sera alors affichée, pour chaque bloc, la
 modification (`commit`) ayant amené à l'état actuel du bloc.
 
 ![](./pics/contributing/view2.png)
@@ -213,6 +216,54 @@ Une fois que l'équipe de contributeurs est d'accord sur l'objet de la fiche et 
 :exclamation: Ne pas travailler sur la branche `master` de son fork. Celle-ci
 servira à mettre à jour le fork pour intégrer les dernières mises à jour
 de la documentation `utilitR`.
+
+### Utiliser un environnement de travail entièrement configuré pour disposer de l'ensemble des librairies nécessaires à la génération de la documentation
+
+Plutôt que d'utiliser un environnement en local dont la configuration peut différer de manière parfois significative avec l'environnement canonique qui sert à générer la documentation `utilitR` sous Github, il est recommandé d'utiliser le service RStudio du SSP Cloud.
+
+#### Lancer le service RStudio configuré
+
+Pour contribuer à `utilitR`, il est possible de créer un service RStudio entièrement paramétré, de la manière suivante :
+* dans le catalogue de service, choisir un service RStudio
+* sous l'onglet `R`, sélectionner l'image utilitR
+
+![](./pics/contributing/creation_service_utilitr.png)
+
+Une autre solution consiste à lancer le service directement via [ce lien](https://datalab.sspcloud.fr/my-lab/catalogue/inseefrlab-helm-charts-datascience/rstudio/deploiement?r.version=inseefrlab/utilitr:0.7.0).
+
+#### Configurer l'accès au dépôt distant Github : la méthode simple et sécurisée
+
+Pour accéder au dépôt distant Github (très généralement un _fork_ du dépôt officiel d'`utilitR`, comme expliqué plus bas), il faut que l'identifiant du compte corresponde à celui configuré dans l'image (dont on peut voir la valeur prise par défaut dans l'onglet Git de la configuration du service, à l'item _user.email_). Dans l'éventualité où cet identifiant ne correspondrait, il est possible de le reconfigurer une fois le service lancé en soumettant dans un terminal la commande suivante :
+
+``` shell
+git config --global user.name "Prénom Nom"
+git config --global user.email "mon.adresse@mail.com"
+```
+
+Il est également possible, pour les utilisateurs avancés, d'incorporer cette commande dans un script d'initialisation qui se lance au démarrage du service, en utilisant également la commande `runuser` de manière à lancer la commande git pour le _user_ `rstudio` et non en _root_ comme cela se fait par défaut.
+
+Enfin, comme montré dans la capture d'écran ci-dessous, il est possible de configurer le mot de passe associé au compte Github de manière à ce qu'il soit conservé dans le cache du service pendant une durée limitée (dans l'exemple ci-dessous, une heure). Une fois le temps écoulé, l'utilisateur devra de nouveau entrer son mot de passe.
+
+![](./pics/contributing/configurer_git_cache.png)
+
+#### Configurer l'accès au dépôt distant Github : la méthode à vos risques et périls
+
+La méthode présentée ci-dessus a l'inconvénient qu'elle oblige l'utilisateur à insérer son mot de passe de façon régulière, et quoi qu'il en soit, pour chaque nouveau service RStudio créé sur le SSP Cloud. Il est ainsi possible d'insérer le mot de passe en question dans les variables d'environnement insérées au moment de la création du service, via l'interface `Mes secrets` du SSP Cloud. L'utilisateur intéressé pourra s'il le souhaite consulter la [vidéo de démonstration](https://github.com/InseeFrLab/onyxia-ui/releases/download/assets/Demo_My_Secrets.mp4) explicitant l'usage de ce service.
+
+**ATTENTION : cette méthode comporte des risques car dans l'éventualité où un attaquant parvient à accéder à votre compte sur le SSP Cloud, il récupère des identifiants lui permettant d'accéder, de manière plus ou moins limitée selon la solution retenue, à votre compte Github et à interagir avec vos dépôts. À ce stade, ce n'est pas une méthode recommandée et si elle est utilisée, il convient d'utiliser un jeton d'accès aux droits limités. La fiche `utilitR` [Configurer Git](https://www.book.utilitr.org/git-config.html) présente plus de détails sur la question des jetons d'accès à Github
+
+Ainsi, il est possible de récupérer, de manière systématique, son mot de passe ou, de manière un peu plus sécurisée, le token créé sous Github pour communiquer avec le dépôt. La configuration de l'accès de manière automatique peut se configurer en définissant les secrets ci-dessous dans un dossier `utilitr` :
+
+* `PROTOCOL` : prend la valeur `https`
+* `USERNAME` : l'identifiant du compte Github ou Gitlab avec lequel on souhaite interagir sur le dépôt
+* `TOKEN` : il s'agit du token mentionné précédemment
+* `HOST` : pour un accès à Github, la valeur à insérer est `github.com`
+
+de la manière suivante :
+
+![](./pics/contributing/mes_secrets_utilitr.png)
+
+On peut ensuite lancer le [service configuré dans ce lien](https://datalab.sspcloud.fr/my-lab/catalogue/inseefrlab-helm-charts-datascience/rstudio/deploiement?init.personnalInit=https://raw.githubusercontent.com/inseefrlab/utilitR/contribute_and_use_docker/init_utilitr.sh&r.version=inseefrlab/utilitr:0.7.0&vault.secret=utilitr/utilitr) pour obtenir un service avec une identification persistante.
 
 ### :one: Forker le dépôt `utilitR`
 

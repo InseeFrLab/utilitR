@@ -1,0 +1,513 @@
+# Travailler avec des API {#api}
+
+L'utilisateur souhaite accéder à des données _via_ une API.
+
+::: recommandation
+
+- En premier lieu, il est recommandé de vérifier s'il existe un _package_ `R` spécifique à l'API que vous voulez utiliser.
+- S'il n'existe de _package_ spécifique,il est recommandé d'utiliser
+le _package_ `httr` pour transmettre des requêtes à l'API et le _package_ `jsonlite` pour retravailler le résultat des requêtes afin de la transformer dans un format plus exploitable.
+- Pour accéder à des données disponibles sur le site <https://www.insee.fr>,
+il est recommandé d'utiliser l'un des _packages_ suivants : `doremifasol`, `insee`, `inseeLocalData`. Le _package_ `apinsee` permet de gérer le renouvellement des jetons de connexion. 
+- Les jetons d'accès (*token*) doivent être utilisés sous forme de variable d'environnements, inscrits dans un fichier `.Renviron` qui n'est pas partagé. 
+- Si l'accès à internet se fait par l'intermédiaire d'un proxy, sous Windows, il est recommandé d'utiliser la fonction `curl::ie_get_proxy_for_url`.
+
+:::
+
+## Rappels des notions essentielles sur les API
+
+### Qu'est-ce qu'une API ?
+
+Une *Application Programming Interface* (ou **API**) est une
+interface de programmation qui permet d'utiliser une application existante
+pour restituer des données. Le terme d'API peut être paraître intimidant, mais il s'agit simplement d'une façon de mettre à disposition des données : plutôt que de laisser l'utilisateur consulter directement des bases de données (souvent volumineuses et complexes), l'API lui propose de formuler une requête qui est traitée par le serveur hébergeant la base de données, puis de recevoir des données en réponse à sa requête.
+
+D'un point de vue informatique, une API est une porte d'entrée clairement identifiée par laquelle un logiciel offre des services à d'autres logiciels (ou utilisateurs). L'objectif d'une API est de fournir un point d'accès à une fonctionnalité qui soit facile à utiliser et qui masque les détails de la mise en oeuvre. Par exemple, l'API Sirene permet de récupérer la raison sociale d'une entreprise à partir de son identifiant Siren en interrogeant le référentiel disponible sur Internet directement depuis un script `R`, sans avoir à connaître tous les détails du répertoire Sirene.
+
+À l'Insee comme ailleurs, la connexion entre les bases de données pour
+les nouveaux projets tend à se réaliser par des API. L'accès à des données par des API devient ainsi de plus en plus commun et est amené
+à devenir une compétence de base de tout utilisateur de données. 
+
+### Avantages des API
+
+Les API présentent de multiples avantages :
+
+- Les API rendent les programmes plus reproductibles. En effet, grâce aux API, il est possible de mettre à jour facilement les données utilisées par un programme si celles-ci évoluent. Cette flexibilité accrue pour l'utilisateur évite au producteur de données d'avoir à réaliser de multiples extractions, et réduit le problème de la coexistence de versions différentes des données.
+- Grâce aux API, l'utilisateur peut extraire facilement une petite partie d'une base de données plus conséquente.
+- Les API permettent de mettre à disposition des données tout en limitant le nombre de personnes ayant accès aux bases de données elles-mêmes.
+- Grâce aux API, il est possible de proposer des services sur mesure pour les utilisateurs (par exemple, un accès spécifique pour les gros utilisateurs).
+
+### Utilisation des API
+
+Une API peut souvent être utilisée de deux façons : par une interface Web, et par l'intermédiaire d'un logiciel (`R`, Python...). Par ailleurs, les API peuvent être proposées avec un niveau de liberté variable pour l'utilisateur :
+
+- soit en libre accès (l'utilisation n'est pas contrôlée et l'utilisateur peut utiliser le service comme bon lui semble) ;
+- soit via la génération d'un compte et d'un jeton d'accès qui permettent de sécuriser l'utilisation de l'API et de limiter le nombre de requêtes.
+
+::: specificite
+Les API mises à disposition des utilisateurs par l'Insee se trouvent dans le
+[catalogue des API](https://api.insee.fr/catalogue/).
+:::
+
+#### Consulter l'interface Web d'une API
+
+Les API peuvent proposer une interface Web, mais ce n'est pas toujours le cas. Cette interface permet notamment :
+
+- de s'inscrire aux différents services ;
+- de visualiser les différentes requêtes proposées par les services ;
+- de lancer l'API depuis cette plateforme ;
+- de proposer une documentation sur les API.
+
+
+L'utilisation de l'interface Web est utile dans une démarche exploratoire 
+mais trouve rapidement ses limites, notamment lorsqu'on consulte régulièrement
+l'API. L'utilisateur va rapidement se rendre compte qu'il est beaucoup plus
+commode d'utiliser une API _via_ un logiciel de traitement pour automatiser la
+consultation ou pour réaliser du téléchargement de masse. De plus, l'interface Web n'existe pas systématiquement pour toutes les API.
+
+#### Requêter une API
+
+Le mode principal de consultation d'une API consiste à adresser une requête à cette API _via_ un logiciel adapté (`R`, `Python`, `Java`...). Comme pour l'utilisation d'une fonction, l'appel d'une API comprend des paramètres qui sont détaillées dans la documentation de l'API. Voici les éléments importants à avoir en tête sur les requêtes :
+
+- Le **point d'entrée** d'un service offert par une API se présente sous la forme d'une URL (adresse web). Chaque service proposé par une API a sa propre URL. Par exemple, dans le cas de l'API Sirene, l'URL à utiliser pour obtenir des informations sur un Siren est :
+<https://api.insee.fr/entreprises/sirene/V3/siren/>.
+
+- Cette URL doit être complétée avec différents paramètres qui précisent la **requête** (par exemple l'identifiant Siren). Ces paramètres viennent s'ajouter à l'URL (qui peut donc devenir très longue!). Chaque service proposé par une API a ses propres paramètres, détaillés dans la documentation. S'agissant de l'API Sirene, l'utilisateur intéressé peut retrouver dans la documentation le paramétrage de l'URL.
+
+<!-- Siren de la DG Insee: 120027016 -->
+
+- Lorsque l'utilisateur soumet sa requête, l'API lui renvoie une **réponse structurée** contenant l'ensemble des informations demandées. Le résultat envoyé par une API est majoritairement aux formats `JSON` ou `XML` (deux formats dans lesquels les informations sont hiérarchisées de manière emboitée).
+Plus rarement, certains services proposent une information
+sous forme plate (de type csv). 
+
+- Du fait de la dimension hiérarchique des formats `JSON` ou `XML`, le résultat
+n'est pas toujours facile à récupérer. Certains _packages_, comme 
+`jsonlite` ou `xml2`, facilitent l'extraction de champs d'une sortie d'API. 
+Dans certains cas, des _packages_ spécifiques à une API ont été créés pour simplifier l'écriture d'une requête ou la récupération du résultat.
+
+## Quelques _packages_ permettant une utilisation simple des API des données Insee
+
+Nous allons voir ici quelques _packages_ permettant de traiter l'information
+d'une API facilement :
+
+### Le _package_ [apinsee](https://github.com/InseeFrLab/apinsee)
+
+Ce _package_ est très utile pour l'utilisation des API mises à diposition sur
+le catalogue des API. En effet, pour ces API, pour pouvoir effectuer une requête,
+il est nécessaire de s'authentifier à différents niveaux : 
+
+1. S'authentifier grâce à une clé personnelle, associée à un compte créé
+sur <https://api.insee.fr> ;
+2. Avoir un jeton d'accès temporaire. Ces jetons ont une durée de vie
+limitée et doivent régulièrement être renouvelés.
+
+Ce _package_ propose de générer facilement un jeton d'accès temporaire à partir de `R`. De cette façon, il n'y a plus besoin de naviguer entre le programme `R`
+et le catalogue des API pour renouveler un jeton. 
+
+Pour utiliser cette fonctionnalité, il faut configurer l'usage du _package_ lors de la première utilisation. Plus précisément, il faut renseigner les variables d'environnement `INSEE_APP_KEY` et
+`INSEE_APP_SECRET` dans le fichier de configuration `.Renviron` de `R`. (voir la fiche [Personnaliser la configuration de `R`] pour une présentation détaillée des fichiers de configuration de `R`). Pour le faire, il suffit d'exécuter la commande suivante :
+
+```{r, eval = FALSE}
+usethis::edit_r_environ("user")
+```
+
+Votre fichier `.Renviron` est alors ouvert par RStudio s'il existe déjà. Si le fichier `.Renviron` n'existe pas encore, il est automatiquement créé (vide), enregistré et ouvert
+par `RStudio`. Il convient d'y ajouter deux variables d'environnement, `INSEE_APP_KEY` et 
+`INSEE_APP_SECRET`. Les lignes suivantes peuvent servir de modèle, en 
+remplaçant la deuxième partie de chaque ligne par la clé du compte à utiliser :
+
+~~~markdown
+INSEE_APP_KEY=xxxxxxxxxxxxxxxxxx    # clef du consommateur
+INSEE_APP_SECRET=yyyyyyyyyyyyyyyyyy # secret du consommateur
+~~~
+
+::: remarque
+Voici deux remarques sur le stockage des variables d'environnement :
+
+- L'option `"user"` dans l'utilisation de la fonction `usethis::edit_r_environ()`
+permet de stocker ces clés dans un fichier global, connu
+de tous les projets d'un utilisateur `R`. Cela évite, d'une part, de stocker
+la même information à deux endroits différents. D'autre part, cela évite
+d'associer des informations personnelles à un projet, qui doit être sous contrôle
+de version (voir la Fiche [Utiliser R avec RStudio](#git)) car
+le fichier `.Renviron` est un fichier contenant des informations personnelles. 
+
+- Si vous avez choisi l'option `"project"` lors de
+l'appel à `usethis::edit_r_environ`, il faut ajouter le `.Renviron` dans
+les fichiers à ne pas suivre avec `Git` grâce à la commande suivante :
+
+    ```{r, eval = FALSE}
+    usethis::edit_git_ignore(".Renviron")
+    ```
+:::
+
+Enfin, pour créer le token temporaire, il suffit d'exécuter :
+
+
+```{r, eval = FALSE}
+token <- apinsee::insee_auth()
+```
+
+Ce token peut ensuite être utilisé comme valeur du paramètre token de
+la fonction `httr::config()` qui sert à contrôler les paramètres d'une requête
+vers internet faite par `R`
+
+```{r, eval = FALSE}
+library(httr)
+set_config(config(token = token))
+```
+
+Dès lors, vous pouvez accéder aux API de
+l’Insee auxquelles votre application a souscrit.
+
+
+### Le _package_ [doremifasol](https://inseefrlab.github.io/DoReMIFaSol)
+
+Ce _package_ permet entre autres de solliciter l'API Sirène dans une procédure de requêtage intégrée. 
+
+`doremifasol` s'appuie sur le _package_ `apinsee`, il faut donc renseigner les variables d'environnement décrites ci-dessus. Il reste ensuite à préciser le type d'information souhaitée (unités légales, établissements...) et la requête via l'argument `argsApi`. Par exemple, pour lister tous les bouchers de la ville de Tourcoing :
+
+```{r, eval = FALSE}
+bouchers_tourcoing <-
+  telechargerDonnees(
+    "SIRENE_SIRET",
+    argsApi = list(q = "codeCommuneEtablissement:59599 AND activitePrincipaleUniteLegale:47.22Z")
+  )
+```
+
+### Le _package_ [inseeLocalData](https://github.com/InseeFrLab/inseeLocalData)
+
+Ce _package_ permet de télécharger les données localisées à la commune,
+diffusées sur <https://www.insee.fr> dans la rubrique *Chiffres détaillés*,
+sous forme de cubes prédéfinis. Cette API est hébergée sur le catalogue des
+API de l'Insee. Une authentification par un jeton est donc nécessaire.
+
+Le _package_ comporte une fonction unique qui permet d’importer les données
+présentes dans l’API *Données Locales* dans une liste contenant 4 objets :
+
+* les données statistiques ;
+* les modalités de chaque variable ;
+* l’information sur la zone demandée ;
+* l’information sur la source et le jeu de données demandé.
+
+
+Exemple d'utilisation du _package_ pour importer le nombre
+d'entreprises et d'établissements en 2017 (en géographie au 01/01/2017)
+selon l'activité en 5 catégories et une indicatrice indiquant s'il s'agit
+d'une entreprise individuelle ou non pour la commune de Nantes :
+
+```{r, eval = FALSE}
+library(inseeLocalData)
+
+croisement <- "NA5_B-ENTR_INDIVIDUELLE"
+jeu_donnees <- "GEO2017REE2017"
+nivgeo <- "COM"
+codgeo <- "44109" #CODE GEO DE NANTES
+modalite <- "all.all"
+
+donneesAPI <- get_dataset(jeton, jeu_donnees, croisement, modalite, nivgeo, codgeo)
+
+donnees <- donneesAPI$donnees # pour accéder aux données
+liste_code <- donneesAPI$liste_code # pour accéder aux nomenclatures
+info_zone <- donneesAPI$info_zone # pour accéder aux données géographiques
+source <- donneesAPI$source # pour accéder à la source
+
+```
+
+<!--- *TO BE COMPLETED: il faudrait plus de détails* --->
+
+
+### Le _package_ [insee](https://github.com/InseeFr/R-Insee-Data/)
+
+Ce _package_ permet de télécharger les données et leurs métadonnées
+diffusées sur le service `SDMX` de la Base de données Macroéconomique
+de l'Insee (BDM). Cette API étant ouverte, son accès ne demande pas
+d'identification, ni de jeton. Il est uniquement nécessaire de déterminer
+les données souhaitées soit via une liste de catégories (`idbank`),
+soit via une liste de données (`dataset`). 
+
+```{r echo = FALSE, message = FALSE, warning = FALSE}
+library(magrittr)
+df <- data.frame("Information" = c("Liste des jeux de données",
+                                   "Liste des séries"),
+                 "Fonction" = c("insee::get_dataset_list()",
+                                "insee::get_idbank_list()")
+)
+df %>% 
+  knitr::kable(escape = F, position = "center", full_width = F, align="ccl") %>%
+  kableExtra::column_spec(1, width = "3cm", bold = TRUE) %>%
+  kableExtra::column_spec(2, width = "2cm")
+
+```
+
+
+
+
+```{r, eval = FALSE}
+library(insee)
+
+# Importer les données à partir de leur idbank ou importer un dataset à partir de leur identifiant:
+table_bp <- get_insee_dataset("BALANCE-PAIEMENTS")
+indicateur_001694056 <- get_insee_idbank("001694056")
+```
+
+Il est possible de rajouter des filtres à ces fonctions afin de limiter
+le nombre de données importées (filtre sur la période, sur la date de mise à jour, sur les filtres).
+
+
+<!----- **TO BE COMPLETED** ------->
+
+### Le _package_ [OECD](https://cran.r-project.org/web/packages/OECD/index.html)
+
+
+Ce _package_ permet de télécharger les données mises à disposition sur le 
+site de l'[OCDE](https://stats.oecd.org/index.aspx?lang=fr). Cette API étant ouverte, son accès ne demande pas d'identification, ni de jeton. Il est uniquement nécessaire de déterminer les données souhaitées. 
+
+::: specificite
+Ce _package_ utilise la librarie `rsmdx` qui n'est pas compatible avec
+la technologie *Direct Access*. Il ne fonctionne pas en télétravail pour les
+postes nomades qui accèdent à internet par ce biais. En revanche il fonctionne sur site.
+:::
+
+Voici quelques utilisations possibles de ce _package_ :
+
+```{r, eval = FALSE}
+library(OECD)
+
+# Obtenir la liste des tables présentes sur le site :
+dsets <- get_datasets()
+
+# Voir les métadonnées d'une table, via l'ouverture d'une page web (ici la table DUR_D) :
+browse_metadata("DUR_D")
+
+# Importer une table de données (ici la table DUR_D) :
+data <- get_dataset("DUR_D")
+```
+
+## Exemple d'utilisation d'une API sans _package_
+
+Les exemples précédents proposaient l'accès à une API par le biais d'un _package_.
+Pour lire les données d'une API ne possédant pas de _package_, il faut utiliser les deux _packages_ `R` suivants :  
+
+-	le _package_ `httr` pour lancer la requête ;  
+-	puis le _package_ `jsonlite` pour transformer en `data.frame` le résultat de la requête (qui est structurée en `JSON`).
+
+::: remarque
+
+Selon la structure du JSON récupéré, la manipulation du résultat d'une requête peut être
+assez fastidieuse avec `R`. `Python` propose des outils plus performants pour
+retravailler des JSON (le _package_ `json` notamment). Heureusement,
+grâce au _package_ `reticulate`, il est aisé de faire tourner un code `Python`
+dans une session `R` et récupérer le résultat dans un format de données (par
+exemple `data.frame`) de `R`. L'approche par les `API` étant plus fréquente
+en `Python` qu'en `R`, on trouve également plus de _packages_ facilitant
+l'accès à des données par ce biais en `Python`.
+
+:::
+
+### Le _package_ `httr`
+
+Le _package_ `httr` permet de se connecter aux sites web et de se connecter aux API.  
+
+Il est possible de configuer la connexion internet localement sans
+modifier les variables système :  
+
+- `set_config()` permet de configurer l'accés internet utilisée par les fonctions du _package_.   
+- `use_proxy()` permet de déterminer le proxy à utiliser.
+De nombreuses institutions utilisent passent par un intermédiaire, le proxy,
+pour accéder à internet. L'adresse du proxy est à ajouter au requête car sinon
+`R` ne sait pas communiquer avec internet. Il s'agit d'un paramètre à ajouter dans
+les options `httr`.
+
+::: remarque
+
+Sous windows, le proxy peut être paramétré de la manière suivante: 
+
+```{r, eval = FALSE}
+proxy <- curl::ie_get_proxy_for_url()
+httr::set_config(httr::use_proxy(proxy))
+```
+
+:::
+
+Le _package_ `httr` permet, lorsqu'on effectue une requête `GET` (une
+requête d'accès au résultat d'une recherche), de récupérer
+le résultat sous la forme d'un texte à retravailler. 
+
+### Accès à une API sans jeton
+
+En général, un appel à une API via `httr` s'effectue ainsi de la manière
+suivante : 
+
+```{r, eval = FALSE}
+httr::content(
+  httr::GET(url),             # url correspond à l'url à interroger
+  as = "text",                # type de la sortie renvoyée
+  httr::content_type_json(),  # type de la réponse de l'url
+  encoding = "UTF-8"          # encodage de la réponse de l'url
+)
+```
+
+Prenons par exemple l'API d'*OpenFood Facts*, une base de données alimentaire. 
+Imaginons qu'on désire récupérer l'information sur un produit. Cela s'obtient
+de la manière suivante :
+
+```{r}
+url <- "https://world.openfoodfacts.org/api/v0/product/3017620425400.json"
+
+resultats <- 
+  httr::content(
+    httr::GET(url),             # url correspond à l'url à interroger
+    as="text",                  # type de la sortie renvoyée
+    httr::content_type_json(),  # type de la réponse de l'url
+    encoding= "UTF-8"            # encodage de la réponse de l'url
+  )
+```
+
+Le résultat est formaté sous forme de JSON, ce qui est pratique mais peu
+intelligible :
+
+```{r}
+resultats
+```
+
+Pour en faire une information exploitable, il est nécessaire de retraiter le résultat de la requête. Par exemple, pour n'extraire que le libellé et le nutriscore d'un produit, ainsi que son indice de transformation NOVA, il faut utiliser une boucle sur les différentes caractéristiques à extraire :
+
+```{r}
+df <- data.frame(
+  lapply(c("product_name","nova_groups","nutriscore_grade"), function(x){
+    jsonlite::fromJSON(resultats, flatten = TRUE)$product[[x]]
+  })
+)
+colnames(df) <- c("product_name","nova_groups","nutriscore_grade")
+df
+```
+
+
+### Accès à une API avec jeton
+
+Pour les API protégées par des jetons, il faut rajouter
+un paramètre d'identification. Les jetons d'authentification (*token*)
+étant des informations personnelles, il ne faut pas les faire figurer dans
+un script. Comme expliqué précédemment, ils peuvent être stockés
+sous forme de variable d'environnement, par exemple
+sous le nom `MON_JETON_SECRET`. Il suffit alors d'utiliser
+`Sys.getenv` pour récupérer la valeur derrière le nom `MON_JETON_SECRET`
+:
+
+```{r, eval = FALSE}
+jeton <- Sys.getenv("MON_JETON_SECRET") # création d'une variable contenant le jeton
+
+auth_header <- httr::add_headers('Authorization'= paste('Bearer',jeton)) # création d'une variable d'authentification
+
+res <- httr::content(httr::GET(url),
+                     auth_header, # ajout de la variable d'authentification
+                     as="text", 
+                     httr::content_type_json(), 
+                     encoding='UTF-8')
+```
+
+### Le _package_ `jsonlite`
+
+Ce _package_ propose principalement la fonction `fromJSON` qui permet de convertir une résultat en format `json` en un objet `R`.
+
+### Temporisation
+
+Pour l'utilisation d'API avec un jeton, comme celle proposées sur le
+catalogue des API de l'Insee, le nombre de requête par minute est limité
+(30 pour un compte standard sur le catalogue des API).
+Pour ne pas être bloqué par cette limite, il est important de temporiser
+les appels successifs en introduisant une latence.
+La fonction permettant cela est `Sys.sleep`. Par exemple, pour 
+laisser 30 secondes d'attente, taper `Sys.sleep(30)`.
+
+
+**Exemple d'utilisation sur l'API interne RMèS**
+
+Une API interne sur les métadonnées de l'Insee est disponible (programme `RMès`).
+Elle permet d'obtenir de manière simplifiée des métadonnées
+(sources, concepts, liste de codes géographiques).
+Comme cette API est disponible en interne à l'Insee, il n'y a pas, comme pour accéder
+à celles sur internet, de proxy.
+
+Voici un exemple de requête pour accéder aux données au niveau
+division de la `Naf-rev2` :
+
+```{r, eval = FALSE}
+library(dplyr)
+library(stringr)
+library(httr)
+library(jsonlite)
+
+# L'API est disponible en interne. Il n'y a pas de proxy pour cette API
+set_config(use_proxy(""))
+
+# url de la requête : ici on souhaite afficher la naf rev 2
+url <- "url_de_la_requete"
+
+
+# connexion à l'API pour récupérer les données en JSON
+res <- content(GET(url),
+                     as="text", content_type_json(), encoding='UTF-8')
+
+# transformation des données pour les transformer en dataframe
+res_ok <- as.data.frame(fromJSON(res))
+
+# travail de la table pour obtenir le niveau division de la NAF-rev2
+division <- res_ok %>% 
+  filter(str_detect(uri,'division')) %>% 
+  select(c('code', 'intituleFr'))
+```
+
+::: specificite
+L'URL de cette API est uniquement disponible en interne à l'Insee. ELle n'est pas rendu publique pour des raisons de sécurité. 
+:::
+
+
+### Exemple d'utilisation de l'[API Sirene](https://api.insee.fr/catalogue/site/themes/wso2/subthemes/insee/pages/item-info.jag?name=Sirene&version=V3&provider=insee)
+
+Cet exemple va aller chercher les liens de succession pour un établissement :
+
+```{r, eval = FALSE}
+library(apinsee)
+library(httr)
+library(jsonlite)
+
+url <- "https://api.insee.fr/entreprises/sirene/V3/siret/liensSuccession?q=siretEtablissementPredecesseur:39478192600016"
+url <- URLencode(url, reserved = TRUE)
+token <- insee_auth()
+set_config(config(token = token))
+res <- content(GET(url, config(token = token)), 
+               as="text", 
+               content_type_json(), 
+               encoding='UTF-8')
+
+res <- fromJSON(res)
+sortie <- as.data.frame(res$liensSuccession)
+```
+
+L'API Sirene permet d'effectuer des recherches multicritères. Dans ce cas, il
+faut séparer les codes par `%20OR%20` (code HTML signifiant ` OR `) :
+
+```{r, eval = FALSE}
+url <- "https://api.insee.fr/entreprises/sirene/V3/siret/liensSuccession?q=siretEtablissementPredecesseur%3A39478192600016%20OR%20siretEtablissementPredecesseur%3A39488939800027"
+token <- apinsee::insee_auth()
+set_config(config(token = token))
+res <- content(httr::GET(url, httr::config(token = token)), 
+               as="text", 
+               content_type_json(), 
+               encoding='UTF-8')
+
+res<-fromJSON(res)
+sortie <- as.data.frame(res$liensSuccession)
+```
+
+<!-----
+## Références
+------->
+
+
+<!----
+Liste des API utiles:
+TO BE COMPLETED
+------>
