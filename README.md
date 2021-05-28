@@ -29,6 +29,8 @@ Le package [`doremifasolData`](https://github.com/InseeFrLab/DoReMIFaSolData) fa
 l'import de ces données dans la documentation. Le modèle de document est
 encapsulé dans un *package* `R` dédié: https://github.com/InseeFrLab/utilitr-template 
 
+L'ensemble des ressources du projet `utilitR` sont disponibles sur https://www.utilitr.org
+
 <br>
 
 ## :two: Objectifs de la documentation :book:
