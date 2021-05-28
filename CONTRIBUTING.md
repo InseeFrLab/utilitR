@@ -217,6 +217,54 @@ Une fois que l'équipe de contributeurs est d'accord sur l'objet de la fiche et 
 servira à mettre à jour le fork pour intégrer les dernières mises à jour
 de la documentation `utilitR`.
 
+### Utiliser un environnement de travail entièrement configuré pour disposer de l'ensemble des librairies nécessaires à la génération de la documentation
+
+Plutôt que d'utiliser un environnement en local dont la configuration peut différer de manière parfois significative avec l'environnement canonique qui sert à générer la documentation `utilitR` sous Github, il est recommandé d'utiliser le service RStudio du SSP Cloud.
+
+#### Lancer le service RStudio configuré
+
+Pour contribuer à `utilitR`, il est possible de créer un service RStudio entièrement paramétré, de la manière suivante :
+* dans le catalogue de service, choisir un service RStudio
+* sous l'onglet `R`, sélectionner l'image utilitR
+
+![](./pics/contributing/creation_service_utilitr.png)
+
+Une autre solution consiste à lancer le service directement via [ce lien](https://datalab.sspcloud.fr/my-lab/catalogue/inseefrlab-helm-charts-datascience/rstudio/deploiement?r.version=inseefrlab/utilitr:0.7.0).
+
+#### Configurer l'accès au dépôt distant Github : la méthode simple et sécurisée
+
+Pour accéder au dépôt distant Github (très généralement un _fork_ du dépôt officiel d'`utilitR`, comme expliqué plus bas), il faut que l'identifiant du compte corresponde à celui configuré dans l'image (dont on peut voir la valeur prise par défaut dans l'onglet Git de la configuration du service, à l'item _user.email_). Dans l'éventualité où cet identifiant ne correspondrait, il est possible de le reconfigurer une fois le service lancé en soumettant dans un terminal la commande suivante :
+
+``` shell
+git config --global user.name "Prénom Nom"
+git config --global user.email "mon.adresse@mail.com"
+```
+
+Il est également possible, pour les utilisateurs avancés, d'incorporer cette commande dans un script d'initialisation qui se lance au démarrage du service, en utilisant également la commande `runuser` de manière à lancer la commande git pour le _user_ `rstudio` et non en _root_ comme cela se fait par défaut.
+
+Enfin, comme montré dans la capture d'écran ci-dessous, il est possible de configurer le mot de passe associé au compte Github de manière à ce qu'il soit conservé dans le cache du service pendant une durée limitée (dans l'exemple ci-dessous, une heure). Une fois le temps écoulé, l'utilisateur devra de nouveau entrer son mot de passe.
+
+![](./pics/contributing/configurer_git_cache.png)
+
+#### Configurer l'accès au dépôt distant Github : la méthode à vos risques et périls
+
+La méthode présentée ci-dessus a l'inconvénient qu'elle oblige l'utilisateur à insérer son mot de passe de façon régulière, et quoi qu'il en soit, pour chaque nouveau service RStudio créé sur le SSP Cloud. Il est ainsi possible d'insérer le mot de passe en question dans les variables d'environnement insérées au moment de la création du service, via l'interface `Mes secrets` du SSP Cloud. L'utilisateur intéressé pourra s'il le souhaite consulter la [vidéo de démonstration](https://github.com/InseeFrLab/onyxia-ui/releases/download/assets/Demo_My_Secrets.mp4) explicitant l'usage de ce service.
+
+**ATTENTION : cette méthode comporte des risques car dans l'éventualité où un attaquant parvient à accéder à votre compte sur le SSP Cloud, il récupère des identifiants lui permettant d'accéder, de manière plus ou moins limitée selon la solution retenue, à votre compte Github et à interagir avec vos dépôts. À ce stade, ce n'est pas une méthode recommandée et si elle est utilisée, il convient d'utiliser un jeton d'accès aux droits limités. La fiche `utilitR` [Configurer Git](https://www.book.utilitr.org/git-config.html) présente plus de détails sur la question des jetons d'accès à Github
+
+Ainsi, il est possible de récupérer, de manière systématique, son mot de passe ou, de manière un peu plus sécurisée, le token créé sous Github pour communiquer avec le dépôt. La configuration de l'accès de manière automatique peut se configurer en définissant les secrets ci-dessous dans un dossier `utilitr` :
+
+* `PROTOCOL` : prend la valeur `https`
+* `USERNAME` : l'identifiant du compte Github ou Gitlab avec lequel on souhaite interagir sur le dépôt
+* `TOKEN` : il s'agit du token mentionné précédemment
+* `HOST` : pour un accès à Github, la valeur à insérer est `github.com`
+
+de la manière suivante :
+
+![](./pics/contributing/mes_secrets_utilitr.png)
+
+On peut ensuite lancer le [service configuré dans ce lien](https://datalab.sspcloud.fr/my-lab/catalogue/inseefrlab-helm-charts-datascience/rstudio/deploiement?init.personnalInit=https://raw.githubusercontent.com/inseefrlab/utilitR/contribute_and_use_docker/init_utilitr.sh&r.version=inseefrlab/utilitr:0.7.0&vault.secret=utilitr/utilitr) pour obtenir un service avec une identification persistante.
+
 ### :one: Forker le dépôt `utilitR`
 
 Seuls les mainteneurs du dépôt `utilitR` ont les droits d'écriture sur le dépôt
