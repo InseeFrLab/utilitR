@@ -521,7 +521,7 @@ La fonction `unite` permet est de réaliser l'opération inverse de `separate` :
 
 Voici un exemple où l'on regroupe le code commune Insee et le nom officiel de la commune, avec " - " comme séparateur. Vous pouvez noter que les colonnes `com` et `ncc` ont disparu, car par défaut `unite` supprime les colonnes regroupées. Si on veut les conserver, il faut ajouter l'option `remove = FALSE`.
 
-```{r}
+```{r unite}
 cog_com_2019_tbl %>% 
   unite(code_et_nom, c("com", "ncc"), sep = " - ") 
 ```
@@ -530,14 +530,14 @@ cog_com_2019_tbl %>%
 
 La fonction `replace_na` permet de remplacer des valeurs manquantes (`NA`). Cette fonction peut être utilisée de deux façons, que l'on va illustrer avec les données suivantes :
 
-```{r}
+```{r replace_na}
 df <- tibble(x = c(1, 2, 3, NA), y = c("a", NA, "b", NA))
 df
 ```
 
 Premier usage : on remplace les valeurs manquantes **dans une colonne** d'un `data.frame`. Dans ce cas, la fonction prend deux arguments : le nom de la variable et la valeur utilisée pour remplacer les valeurs manquantes. Voici un exemple :
 
-```{r}
+```{r replace_na2}
 df %>% 
   mutate(x = replace_na(x, 888))
 ```
@@ -545,32 +545,32 @@ df %>%
 Second usage : on remplace les valeurs manquantes **dans toutes les colonnes** d'un `data.frame`. Dans ce cas, la fonction prend deux arguments : le nom du `data.frame`, et une liste donnant pour chaque variable la valeur à utiliser pour remplacer les valeurs manquantes. Voici un exemple :
 
 
-```{r}
+```{r replace_na3}
 df %>% 
   replace_na(list(x = 888, y = "zzz"))
 ```
 
 #### `complete` : compléter des combinaisons de variables manquantes
 
-La fonction `complete` permet de compléter des combinaisons manquantes de valeurs de plusieurs colonnes (autrement dit, de compléter un produit cartésien incomplet). Dans le tableau de résultats suivants, les élèves Barnabé et Chantal n'ont pas de notes dans toutes les matières. Supposons que c'est parce qu'ils étaient absents et que leur note est en fait un 0. Si on veut calculer les moyennes des élèves, on doit compléter ces notes manquantes.
+La fonction `complete` permet de compléter des combinaisons manquantes de valeurs de plusieurs colonnes (autrement dit, de compléter un produit cartésien incomplet). Dans le tableau de donnée suivant, seuls les pays ayant remporté la Coupe du Monde de football sont renseignés, avec l'année de leur victoire. Supposons qu'on veuille compléter ce tableau, en indiquant 0 lorsqu'un pays n'a pas remporté la Coupe du Monde.
 
 ```{r}
-df <- tibble(eleve = c("Alain", "Alain", "Barnabé", "Chantal"),
-             matiere = c("Maths", "Français", "Maths", "Français"),
-             note = c(16, 9, 17, 11))
+df <- tibble(pays = c("France", "France", "Espagne", "Angleterre"),
+             annee = c(1998, 2018, 2010, 1966),
+             victoire = c(1, 1, 1, 1))
 df
 ```
 
 On peut l'utiliser de cette manière :
 
 ```{r}
-df %>% complete(eleve, matiere)
+df %>% complete(pays, annee)
 ```
 
-On voit que les combinaisons manquante "Barnabé - Français" et "Chantal - Maths" ont bien été ajoutées par `complete`. Par défaut les lignes insérées comprennent des valeurs manquantes `NA` pour les colonnes restantes. On peut néanmoins choisir une autre valeur avec l'argument `fill`, qui prend la forme d'une liste nommée :
+On voit que les combinaisons manquantes ont bien été ajoutées par `complete`. Par défaut les lignes insérées comprennent des valeurs manquantes `NA` pour les colonnes restantes. On peut néanmoins choisir une autre valeur avec l'argument `fill`, qui prend la forme d'une liste nommée. Dans le cas présent, la liste ne comprend qu'un seul élément car il n'y a qu'une seule variable à compléter :
 
 ```{r}
-df %>% complete(eleve, matiere, fill = list(note = 0))
+df %>% complete(pays, annee, fill = list(victoire = 0))
 ```
 
 Si l'on ne souhaite pas inclure toutes les colonnes dans le calcul des combinaisons de valeurs, on peut utiliser l'option `nesting` (taper `?tidyr::complete` pour les détails).
