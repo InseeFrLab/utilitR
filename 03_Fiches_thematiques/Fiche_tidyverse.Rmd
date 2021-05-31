@@ -306,12 +306,14 @@ Voici quelques utilisations fréquentes de `mutate()` :
  
 #### Calculer des statistiques : `summarise()`
  
-**La fonction `summarise()` permet de calculer une ou plusieurs statistique à partir de la table de données.** Cette fonction est souvent utilisée après la fonction `group_by()` pour calculer des statistiques par groupe, et elle conduit à une agrégation de la table en fonction des groupes définis par la fonction `group_by` (par défaut une agrégation sur l'ensemble de la table). Le code suivant calcule le nombre total d'équipements dans la BPE `sum(NB_EQUIP, na.rm = TRUE)`, et le nombre total de boulangeries `sum(NB_EQUIP * (TYPEQU == "B203"), na.rm = TRUE)`.
+**La fonction `summarise()` permet de calculer une ou plusieurs statistiques à partir de la table de données.** Cette fonction est souvent utilisée après la fonction `group_by()` pour calculer des statistiques par groupe, et elle conduit à une agrégation de la table en fonction des groupes définis par la fonction `group_by` (par défaut une agrégation sur l'ensemble de la table). Le code suivant calcule le nombre total d'équipements dans la BPE `sum(NB_EQUIP, na.rm = TRUE)`, et le nombre total de boulangeries `sum(NB_EQUIP * (TYPEQU == "B203"), na.rm = TRUE)`.
 
-```{r, warning= FALSE}
+```{r, warning = FALSE}
 bpe_ens_2018_tbl %>% 
-  summarise(NB_EQUIP_TOT = sum(NB_EQUIP, na.rm = TRUE),
-            NB_BOULANGERIES_TOT = sum(NB_EQUIP * (TYPEQU == "B203"), na.rm = TRUE))
+  summarise(
+    NB_EQUIP_TOT = sum(NB_EQUIP, na.rm = TRUE),
+    NB_BOULANGERIES_TOT = sum(NB_EQUIP * (TYPEQU == "B203"), na.rm = TRUE)
+  )
 ```
 
 Il est possible d'utiliser un grand nombre de fonctions différentes avec `summarise()`. Ces fonctions peuvent être combinées entre elles, et il est possible d'en définir de nouvelles. Voici quelques fonctions courantes :
@@ -328,7 +330,7 @@ Il est possible d'utiliser un grand nombre de fonctions différentes avec `summa
 | Nombre de lignes                  | `n()`          |
 | Nombre de valeurs distinctes      | `n_distinct()` |
 | Somme                             | `sum()`        |
-| Somme cumulée                     | `cumsum()`        |
+| Somme cumulée                     | `cumsum()`     |
 
 ::: {.remarque}
 
@@ -336,20 +338,19 @@ Les fonctions `mutate()` et `summarise()` calculent toutes les deux de nouvelles
 
 - Si vous voulez résumer une information contenue dans une table, il faut utiliser `summarise()`. Exemple : calculer le nombre total d'équipements pour chaque commune.
 
-```{r, eval = FALSE, warning= FALSE}
-bpe_ens_2018_tbl %>%  
-  group_by(DEPCOM) %>% 
-  summarise(NB_EQUIP_TOT = sum(NB_EQUIP, na.rm = TRUE))
-```
+  ```{r, eval = FALSE, warning= FALSE}
+  bpe_ens_2018_tbl %>%  
+    group_by(DEPCOM) %>% 
+    summarise(NB_EQUIP_TOT = sum(NB_EQUIP, na.rm = TRUE))
+  ```
 
-- Si vous voulez ajouter une information dans une table (en conservant toutes les autres variables), il faut utiliser `mutate()`. Exemple : ajouter dans la BPE une colonne donnant le nombre total d'équipements pour chaque commune.
+- Si vous voulez ajouter une information dans une table (en conservant toutes les autres variables), il faut utiliser `mutate()`. Exemple : ajouter dans la table `bpe_ens_2018_tbl` une colonne donnant le nombre total d'équipements pour chaque commune.
 
-```{r, eval = FALSE, warning= FALSE}
-bpe_ens_2018_tbl %>%  
+  ```{r, eval = FALSE, warning= FALSE}
+  bpe_ens_2018_tbl %>%  
   group_by(DEPCOM) %>% 
   mutate(NB_EQUIP_TOT = sum(NB_EQUIP, na.rm = TRUE))
-```
-
+  ```
 :::
 
 #### Faire des opérations par groupe : `group_by()`
