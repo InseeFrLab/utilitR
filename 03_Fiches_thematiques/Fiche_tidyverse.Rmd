@@ -129,7 +129,7 @@ Le second code modifie la table `bpe_ens_2018_tbl` en utilisant l'opérateur `<-
 bpe_ens_2018_tbl <- select(bpe_ens_2018_tbl, TYPEQU)
 ```
 
-Ce fonctionnement des fonctions du `tidyverse` a pour avantage qu'il est difficile d'écraser ses données par mégarde. Il a pour inconvénient d'être très gourmand en mémoire vive (RAM) car les données sont temporairement dupliquées. C'est pour cette raison que le `tidyverse` n'est pas adapté à la manipulation de données volumineuses.
+Ce fonctionnement des fonctions du `tidyverse` a pour avantage qu'il est difficile d'écraser ses données par mégarde. Il a pour inconvénient d'être gourmand en mémoire vive (RAM) car les données sont temporairement dupliquées. C'est pour cette raison que le `tidyverse` n'est pas adapté à la manipulation de données volumineuses.
 
 :::
 
@@ -224,7 +224,7 @@ Dans `dplyr`, les manipulations simples de données sont résumées en quelques 
 ```{r}
   bpe_ens_2018_tbl %>% 
     select(dept = DEP, depcom = DEPCOM)
-  ```
+```
 
 
 #### Renommer des variables : `rename()`
@@ -246,7 +246,7 @@ bpe_ens_2018_tbl %>%
 
 #### Sélectionner des observations : `filter()`
  
-**Le verbe `filter()` permet de sélectionner des observations selon une ou plusieurs conditions.** Voici un exemple de code qui sélectionne les magasins de chaussures (`TYPEQU == "B304"`) dans le premier arrondissement de Paris (`DEPCOM == "75101"`) dans la BPE.
+**Le verbe `filter()` permet de sélectionner des observations selon une ou plusieurs conditions logiques.** Voici un exemple de code qui sélectionne les magasins de chaussures (`TYPEQU == "B304"`) dans le premier arrondissement de Paris (`DEPCOM == "75101"`) dans la BPE.
 
 ```{r}
 bpe_ens_2018_tbl %>% 
@@ -257,7 +257,7 @@ Voici quelques utilisations fréquentes de `filter()` :
  
 | Action                                                                | Code                                    |
 |-----------------------------------------------------------------------|-----------------------------------------|
-| Filtrer sur les modalités qualitatives d'une colonne                  | `filter(DEP == "75")`                   |
+| Filtrer sur les modalités qualitatives d'une colonne                  | `filter(DEP %in% c("75", "92"))`                   |
 | Filtrer sur les modalités quantitatives d'une colonne                 | `filter(NB_EQUIP == 1)`                 |
 | Filtrer sur une variable caractère (voir la [fiche données textuelles](Manipuler des données textuelles)) | `filter(str_detect(TYPEQU, "^A"))`      |
 | Filtrer sur deux conditions (et)                                      | `filter(DEP == "75" & NB_EQUIP == 1)`   |
@@ -282,16 +282,17 @@ Voici quelques utilisations fréquentes de `arrange()` :
 | Trier sur plusieurs colonnes en ordre croissant  | `arrange(DEPCOM, NB_EQUIP)`          |
 | Trier sur une colonne en ordre décroissant       | `arrange(desc(NB_EQUIP))`            |
 
-Comme il n'est pas nécessaire dans R de trier les tables avant de faire une jointure (merge), le tri est utile surtout pour afficher à l'écran un tableau synthétique de données.
+Comme il n'est pas nécessaire dans `R` de trier les tables avant de faire une jointure (merge), le tri est utile surtout pour afficher à l'écran un tableau synthétique de données.
  
 #### Ajouter et modifier des colonnes : `mutate()`
  
-**La fonction `mutate()` permet de créer de nouvelles colonnes ou de modifier des colonnes existantes.** Il est possible d'utiliser toutes les fonctions à l'intérieur d'une étape `mutate()`. Le code suivant crée une variable `NB_EQUIP_3PLUS` qui vaut `TRUE` si le nombre d'équipement est supérieur ou égal à 3, et `FALSE` sinon. 
+**La fonction `mutate()` permet de créer de nouvelles colonnes ou de modifier des colonnes existantes.** Il est possible d'utiliser toutes sortes de fonctions à l'intérieur d'une étape `mutate()`. Le code suivant crée une variable `NB_EQUIP_3PLUS` qui vaut `TRUE` si le nombre d'équipement est supérieur ou égal à 3, et `FALSE` sinon. 
 
 ```{r}
 bpe_ens_2018_tbl %>% 
   mutate(NB_EQUIP_3PLUS = (NB_EQUIP >= 3))
 ```
+
 Pour créer une nouvelle variable, on utilise un nom de variable qui n'existe pas encore dans la table. Pour modifier une variable qui existe déjà, on utilise directement le nom de cette variable.
 
 Voici quelques utilisations fréquentes de `mutate()` :
