@@ -167,7 +167,7 @@ resultat
 
 #### ... car on peut facilement faire des erreurs
 
-**L'enchaînement des opérations en `data.table` est puissant, mais peut aboutir à des résultats non désirés si on ne fait pas attention.** Les exemples de ce paragraphe utilisent la fonction `:=` ; si vous ne la connaissez pas encore, il est fortement conseillé de lire la section [La fonction d'assignation par référence (ou `:=`)] avant de poursuivre la lecture. 
+**L'enchaînement des opérations en `data.table` est puissant, mais peut aboutir à des résultats non désirés si on ne fait pas attention.** Les exemples de ce paragraphe utilisent la fonction `:=` ; si vous ne la connaissez pas encore, il est fortement conseillé de lire la section [La fonction d'assignation par référence (ou `:=`)](#assignation-reference) avant de poursuivre la lecture. 
 
 Voici deux exemples d'opérations enchaînées en `data.table` dont les codes sont très similaires et qui aboutissent à des résultats très différents. Le premier exemple ne conserve qu'une partie de la table `dt` puis crée une variable, tandis que le second crée une variable avec une valeur non manquante pour une partie de la table uniquement.
 
@@ -227,7 +227,7 @@ library(doremifasolData)
 
 Il y a principalement deux méthodes pour mettre des données sous forme d'un `data.table` :
 
-- la fonction `fread()` importe un fichier plat comme les `.csv` (voir la fiche [Importer des fichiers plats (`.csv`, `.tsv`, `.txt`)]) ;
+- la fonction `fread()` importe un fichier plat comme les `.csv` (voir la fiche [Importer des fichiers plats (`.csv`, `.tsv`, `.txt`)](#importcsv) ;
 - Les fonctions `setDT()` et `as.data.table()` convertissent un `data.frame` en `data.table`.
 
 Dans la suite de cette section, on va illustrer les opérations de base en `data.table` avec la base permanente des équipements (table `bpe_ens_2018`), qu'on transforme en `data.table`.
@@ -324,7 +324,7 @@ Vous pouvez utiliser toutes les fonctions statistiques de `R` avec `data.table`.
 | `%like%`        | Reconnaissance d'une chaîne de caractères (expression régulière)         | `dt[departement %like% "^Haute"]`
 
 ::: {.remarque}
-La fonction `.N` permet de créer facilement des compteurs avec la syntaxe `1:.N`. Par exemple `dt[ , compteur := 1:.N, by = 'group_var']` permet de créer une variable `compteur` qui vaut de 1 à N pour chaque groupe d'observations défini par `group_var`.
+La fonction `.N` permet de créer facilement des compteurs avec la syntaxe `1:.N` ou `seq(.N)`. Par exemple `dt[ , compteur := seq(.N), by = 'x']` permet de créer une variable `compteur` qui vaut de 1 à N pour chaque groupe d'observations défini par `x`.
 :::
 
 #### Opérations par groupe
@@ -344,7 +344,7 @@ bpe_ens_2018_dt[ ,
 ```
 
 ::: {.remarque}
-L'argument `by` fonctionne également avec l'opérateur `:=`. Vous pouvez en apprendre davantage sur l'usage de cet opérateur dans la partie [La fonction d'assignation par référence (ou `:=`)].
+L'argument `by` fonctionne également avec l'opérateur `:=`. Vous pouvez en apprendre davantage sur l'usage de cet opérateur dans la partie [La fonction d'assignation par référence (ou `:=`)](#assignation-reference).
 :::
 
 ### Joindre des tables avec `data.table`
@@ -373,7 +373,7 @@ Pour savoir si `un data.table` est déjà indexé, on peut exécuter la commande
 
 ### Réorganiser les données en `data.table`
 
-**Le *package* `data.table` permet de réorganiser facilement une table de données avec les fonctions `dcast()` et `melt()`.** La fonction `melt()` réorganise les données dans un format `long`. La fonction `dcast()` réorganise les donnée dans un format `wide`.
+**Le *package* `data.table` permet de réorganiser facilement une table de données avec les fonctions `dcast()` et `melt()`.** La fonction `melt()` réorganise les données dans un format `long`. La fonction `dcast()` réorganise les données dans un format `wide`.
 
 | **`melt()`**                                         | **`dcast()`**                                    |
 | :--------------------------------------------------: | :----------------------------------------------: |
@@ -488,7 +488,7 @@ bpe_ens_2018_wide2
 <!--   ``` -->
 <!-- ::: -->
 
-## La fonction d'assignation par référence (ou `:=`)
+## La fonction d'assignation par référence (ou `:=`) {#assignation-reference}
 
 Jusqu'à présent, nous avons manipulé un `data.table` existant, mais nous ne lui avons pas ajouté de nouvelles colonnes. Pour ce faire, nous allons utiliser la fonction `:=` qui s'appelle "*assignation par référence*" et qui peut également s'appeler comme une fonction `` `:=`() ``, prenant ses arguments entre parenthèses. Voici comment on crée une nouvelle colonne dans `bpe_ens_2018_dt` :
 
@@ -566,12 +566,13 @@ bpe_ens_2018_dt[ , `:=`(nouvelle_colonne1 = NB_EQUIP * 2,
                         nouvelle_colonne2 = NB_EQUIP + 3)]
 ```
 
-::: {.remarque}
+::: remarque
 Si vous utilisez la notation`` `:=`() ``, alors il faut utiliser uniquement `=` à l'intérieur des parenthèses pour créer ou modifier des variables, et non `:=`.  Par exemple,
 ```{r, eval = FALSE}
 dt[ , `:=`(var1 = "Hello", var2 = "world")]
 ```
-
+:::
+  
 #### Supprimer une colonne
 
 On peut facilement supprimer une colonne en lui assignant la valeur `NULL` (c'est hyper rapide !). Voici un exemple :
