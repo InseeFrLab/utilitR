@@ -260,6 +260,7 @@ Ainsi, il est possible de récupérer, de manière systématique, son mot de pas
 * `USERNAME` : l'identifiant du compte Github ou Gitlab avec lequel on souhaite interagir sur le dépôt
 * `TOKEN` : il s'agit du token mentionné précédemment
 * `HOST` : pour un accès à Github, la valeur à insérer est `github.com`
+* `FORK` : une variable optionnelle (qui peut donc être omise) qui, dans le cas où elle prend la valeur `TRUE`, permet de clôner le dépôt _fork_ d'`utilitR` de l'utilisateur. Si elle prend toute autre valeur non vide, elle permet de clôner le dépôt `utilitR`, sur lesquel l'utilisateur, s'il n'est pas identifié comme mainteneur, ne pourra pas réaliser de _push_. Dans le cas où la variable n'est pas spécifiée, ou mise à vide, aucun clônage de dépôt n'est réalisé.
 
 de la manière suivante :
 
