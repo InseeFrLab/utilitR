@@ -231,7 +231,7 @@ Pour contribuer à `utilitR`, il est possible de créer un service RStudio enti�
 
 ![](./pics/contributing/creation_service_utilitr.png)
 
-Une autre solution consiste à lancer le service directement via [ce lien](https://datalab.sspcloud.fr/my-lab/catalogue/inseefrlab-helm-charts-datascience/rstudio/deploiement?r.version=inseefrlab/utilitr:0.7.0).
+Une autre solution consiste à lancer le service directement via [ce lien](https://datalab.sspcloud.fr/launcher/inseefrlab-helm-charts-datascience/rstudio?onyxia.friendlyName=%C2%AButilitr%C2%BB&r.version=%C2%ABinseefrlab%2Futilitr%3A0.7.0%C2%BB).
 
 #### Configurer l'accès au dépôt distant Github : la méthode simple et sécurisée
 
@@ -260,12 +260,13 @@ Ainsi, il est possible de récupérer, de manière systématique, son mot de pas
 * `USERNAME` : l'identifiant du compte Github ou Gitlab avec lequel on souhaite interagir sur le dépôt
 * `TOKEN` : il s'agit du token mentionné précédemment
 * `HOST` : pour un accès à Github, la valeur à insérer est `github.com`
+* `FORK` : une variable optionnelle (qui peut donc être omise) qui, dans le cas où elle prend la valeur `TRUE`, permet de clôner le dépôt _fork_ d'`utilitR` de l'utilisateur. Si elle prend toute autre valeur non vide, elle permet de clôner le dépôt `utilitR`, sur lesquel l'utilisateur, s'il n'est pas identifié comme mainteneur, ne pourra pas réaliser de _push_. Dans le cas où la variable n'est pas spécifiée, ou mise à vide, aucun clônage de dépôt n'est réalisé.
 
 de la manière suivante :
 
 ![](./pics/contributing/mes_secrets_utilitr.png)
 
-On peut ensuite lancer le [service configuré dans ce lien](https://datalab.sspcloud.fr/my-lab/catalogue/inseefrlab-helm-charts-datascience/rstudio/deploiement?init.personnalInit=https://raw.githubusercontent.com/inseefrlab/utilitR/contribute_and_use_docker/init_utilitr.sh&r.version=inseefrlab/utilitr:0.7.0&vault.secret=utilitr/utilitr) pour obtenir un service avec une identification persistante.
+On peut ensuite lancer le [service configuré dans ce lien](https://datalab.sspcloud.fr/launcher/inseefrlab-helm-charts-datascience/rstudio?onyxia.friendlyName=%C2%AButilitr%C2%BB&init.personnalInit=%C2%ABhttps%3A%2F%2Fminio.lab.sspcloud.fr%2Fpierrelamarche%2Futilitr%2Finit_utilitr.sh%C2%BB&r.version=%C2%ABinseefrlab%2Futilitr%3A0.7.0%C2%BB&vault.secret=%C2%AButilitr%2Futilitr%C2%BB) pour obtenir un service avec une identification persistante.
 
 ### :one: Forker le dépôt `utilitR`
 
