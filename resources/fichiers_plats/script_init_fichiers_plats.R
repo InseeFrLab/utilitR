@@ -1,20 +1,20 @@
 remotes::install_github("inseefrlab/doremifasol")
 
-# Créer un dossier
-unlink("fichiers_plats", recursive = TRUE)
-dir.create("fichiers_plats")
-
 # Télécharger les données grâce à doremifasol
-options(doremifasol.telDir = "fichiers_plats")
+options(doremifasol.telDir = "~")
 doremifasol::telechargerFichier("BPE_ENS")
 doremifasol::telechargerFichier("DECES_COM_0918")
+
+fichiers_zip <- list.files(pattern = "\\.zip$", full.names = TRUE)
 
 # Décompresser les fichiers .zip
 invisible(
   lapply(
-    list.files("fichiers_plats", pattern = "\\.zip$", full.names = TRUE), 
+    fichiers_zip, 
     utils::unzip,
-    overwrite = TRUE, 
-    exdir = "fichiers_plats"
+    overwrite = TRUE
   )
 )
+
+# Supprimer les fichiers .zip
+unlink(fichiers_zip)
