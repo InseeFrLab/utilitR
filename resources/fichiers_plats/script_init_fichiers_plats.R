@@ -1,4 +1,5 @@
 remotes::install_github("inseefrlab/doremifasol")
+install.packages("esquisse")
 
 # Télécharger les données grâce à doremifasol
 options(doremifasol.telDir = "~")
