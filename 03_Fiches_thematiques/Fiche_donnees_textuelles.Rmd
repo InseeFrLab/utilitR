@@ -15,7 +15,7 @@ L'utilisateur souhaite manipuler du texte (repérer et extraire une chaîne de c
 
 ### Présentation du _package_
 
-Les packages `stringi` et `stringr` facilitent beaucoup le travail sur les chaînes de caractères. `stringi` propose un grand nombre de fonctions avancées, et `stringr` propose un petit nombre de fonctions simples à utiliser (qui utilisent les fonctions de `stringi`). Il est donc préférable de commencer à travailler avec `stringr`. Toutes les fonctions de `stringi` et `stringr` sont stucturées de la même façon : le premier argument de la fonction est **toujours** une chaîne de caractères ; les arguments suivants sont des options.
+Les packages `stringi` et `stringr` facilitent beaucoup le travail sur les chaînes de caractères. `stringi` propose un grand nombre de fonctions avancées, et `stringr` propose un petit nombre de fonctions simples à utiliser (qui reposent sur les fonctions de `stringi`). Il est donc préférable de commencer à travailler avec `stringr`. Toutes les fonctions de `stringi` et `stringr` sont stucturées de la même façon : le premier argument de la fonction est **toujours** une chaîne de caractères ; les arguments suivants sont des options.
 
 Pour utiliser `stringr`, il faut charger le _package_ :
 
@@ -76,7 +76,7 @@ str_c(c("B", "o", "n", "j", "o", "u", "r"), collapse = "")
 
 #### Scinder des chaînes de caractères
 
-La fonction `str_sub` permet d'extraire une sous-chaîne de caractères en fonction de sa position. On peut préciser les positions des premiers et derniers caractères extraits par les arguments `start` et `end`. Par défaut, l'extraction commence au premier caractère et se termine au dernier. Il est préférable d'ajouter un `L` aux nombres dans `start` et `end` pour indiquer qu'il s'agit de nombres entiers.
+La fonction `str_sub` permet d'extraire une sous-chaîne de caractères en fonction de sa position dans une chaîne de caractères. On peut préciser les positions des premiers et derniers caractères extraits par les arguments `start` et `end`. Par défaut, l'extraction commence au premier caractère et se termine au dernier. Il est préférable d'ajouter un `L` aux nombres dans `start` et `end` pour indiquer clairement qu'il s'agit de nombres entiers.
 
 ```{r}
 str_sub("abcdefghikl", start = 3L, end = 5L) 
@@ -84,26 +84,30 @@ str_sub("abcdefghikl", end = 5L)
 str_sub("abcdefghikl", start = 6L) 
 ```
 
-La fonction `str_split` permet de scinder une chaîne de caractères en fonction d'un délimiteur. Le délimiteur est défini par l'argument `pattern`. Il est possible d'utiliser un motif (voir ci-après) pour définir le délimiteur. Voici un exemple simple :
+La fonction `str_split` permet de scinder une chaîne de caractères en fonction d'un délimiteur. Le délimiteur est défini par l'argument `pattern`. Il est possible d'utiliser une expression régulière (voir ci-après) pour définir le délimiteur. Voici un exemple simple :
 
 ```{r}
-str_split("un-deux-trois", pattern = "-") 
+str_split("Chat-Chien-Canari", pattern = "-") 
 ```
 
 On peut appliquer la fonction à un vecteur de chaîne de caractères. Dans ce cas le résultat sera une liste :
 
 ```{r}
-str_split(c("un-deux-trois", "quatre-cinq"), pattern = "-")
+str_split(c("Chat-Chien-Canari", "Dauphin-Dodo"), pattern = "-")
 ```
 
 On peut obtenir une matrice en ajoutant l'option `simplify = TRUE`.
 
 ```{r}
-str_split(c("un-deux-trois", "quatre-cinq"), pattern = "-", simplify = TRUE)
+str_split(
+    c("Chat-Chien-Canari", "Dauphin-Dodo"), 
+    pattern = "-", simplify = TRUE
+)
 ```
 
 ::: {.remarque}
 La fonction `tstrsplit` du _package_ `data.table` permet de découper efficacement des chaînes de caractères et de transformer les sous-chaînes en variables dans un objet `data.table` (voir `?data.table::tstrsplit` pour les détails). Voici un exemple, dans lequel on découpe une chaîne de caractères pour récupérer une latitude et une longitude :
+
 ```{r}
 library(data.table)
 df <- data.table(string = c("48.853_2.35","48.8162841_2.3082668"))
@@ -125,7 +129,7 @@ Dans le cas le plus simple, un motif est une chaîne de caractères précise (pa
 
 Le package `stringr` propose quatre fonctions pour vérifier si les éléments d'un vecteur de type `character` respectent un certain motif (`pattern`) :
 
-* **`str_detect()`** vérifie si chaque élément du vecteur respecte le `pattern` et renvoie un vecteur de `TRUE` et `FALSE` ;
+* **`str_detect()`** vérifie si chaque élément du vecteur respecte le `pattern` et renvoie un vecteur de valeurs logiques (`TRUE` et `FALSE`) ;
 * **`str_count()`**  compte le nombre de fois que le `pattern` est trouvé dans chaque élément du vecteur ;
 * **`str_which()`**  renvoie la position des éléments qui respectent le `pattern` ;
 * **`str_subset()`**  sélectionne les éléments du vecteur qui respectent le `pattern`.
@@ -455,18 +459,7 @@ Beaucoup de fonctions disponibles dans `stringi` et `stringr` sont en réalité 
 <!-- | `str_trim(x)`                             |  `trimws(x)`                            | -->
 
 
-
-
-
-
-## Sources
-
-Cette fiche reprend et adapte des éléments issus des sources suivantes :
-
-- la [partie `stringr`](https://juba.github.io/tidyverse/11-stringr.html) de l'introduction à `R` et au `tidyverse` ;
-- la [vignette](https://github.com/tidyverse/stringr/blob/master/vignettes/from-base.Rmd) comparant `stringr` et `base R`.
-
-## Pour en savoir plus
+## Pour en savoir plus {#stringrRessources}
 
 * sur le *package* `stringr` :
     - la [documentation](https://www.rdocumentation.org/packages/stringr) du *package* (en anglais) ;
@@ -476,6 +469,7 @@ Cette fiche reprend et adapte des éléments issus des sources suivantes :
     - [une page en français sur la construction des expressions régulières avec R](https://thinkr.fr/r-les-expressions-regulieres/) ;
     - un très bon [article de blog](http://perso.ens-lyon.fr/lise.vaudor/strings-et-expressions-regulieres/) en français sur les expressions régulières en `R` ;
     - une [vignette](https://cran.r-project.org/web/packages/stringr/vignettes/regular-expressions.html) sur les expressions régulières avec `stringr` (en anglais) ;
+    - la [partie `stringr`](https://juba.github.io/tidyverse/11-stringr.html) de l'introduction à `R` et au `tidyverse` (en français) ;
     - [un aide-mémoire en anglais sur la construction des expressions régulières avec R](https://github.com/rstudio/cheatsheets/raw/master/strings.pdf) ;
 * sur le *package* `RVerbalExpressions` :
     - la [documentation](https://cran.r-project.org/web/packages/RVerbalExpressions/RVerbalExpressions.pdf) du *package* (en anglais) ;

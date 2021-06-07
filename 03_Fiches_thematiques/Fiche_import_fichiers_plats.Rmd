@@ -20,7 +20,7 @@ Le *package* `readr` propose plusieurs fonctions adaptées pour importer des fic
 
 Il faut charger le *package* `readr` pour utiliser ces fonctions :
 
-```{r} 
+```{r, message = FALSE, warning = FALSE} 
 library(readr)
 ```
 
@@ -70,7 +70,6 @@ Voici les principales options de `read_csv()` et de `read_csv2()` :
 | `file`      | Aucune            | Le chemin du fichier à importer                                |
 | `col_names` | `TRUE`              | La première ligne contient-elle les noms de colonne ?           |
 | `col_types` | `NULL`              | Définir le type des variables                                  |
-| `cols_only` | Toutes les variables  | Sélecionner les variables (voir ci-dessous)          |
 | `skip`      | `0`                 | Sauter les n premières lignes (0 par défaut)                   |
 | `n_max`     | `Inf`               | Nombre maximum de lignes à importer (pas de limite par défaut) |
 | `locale`    |                   | Réglages locaux (encodage, marqueur décimal...)                |
@@ -78,7 +77,7 @@ Voici les principales options de `read_csv()` et de `read_csv2()` :
 Quelques remarques sur les options de `read_csv()` :
 
 * `read_csv()` essaie par défaut de deviner le type des colonnes (*integer* pour les nombres entiers, *character* pour les chaînes de caractères...). L'option `col_types` permet de choisir le type des colonnes, et doit être égale à un vecteur dont chaque élément est de la forme `nom_variable = [type de colonne]`. Les types de colonnes disponibles sont `col_integer()`, `col_logical()`, `col_double()`, `col_character()` (voir `?cols` pour la liste complète).
-Exemple : si on importe une variable comme nombre entier et une variable comme caractère, on écrit : `col_types = c(var1 = col_integer(), var2 = col_character())`.
+Exemple : si on importe une variable comme nombre entier et une variable comme caractère, on écrit : `col_types = cols(var1 = col_integer(), var2 = col_character())`.
 * `read_csv()` importe par défaut toutes les colonnes du fichier. Il est possible de sélectionner les colonnes qu'on veut importer avec certaines options, mais l'usage de `read_csv()` devient vraiment complexe. Si vous avez besoin de sélectionner des colonnes, **il est fortement recommandé d'utiliser `fread()`** plutôt que `read_csv` (voir plus bas).
 
 **Exemple** : on veut importer le fichier des communes du code officiel géographique (version 2019, [disponible ici](https://www.insee.fr/fr/information/3720946)), en déclarant que le fichier est encodé en UTF-8 et en imposant que le code commune (`com`) soit lu comme une chaîne de caractères et le code région (`reg`) comme un nombre entier. On écrit le code suivant : 
@@ -88,8 +87,8 @@ Exemple : si on importe une variable comme nombre entier et une variable comme c
 library(readr)
 communes <- read_csv("Z:/mon_IDEP/communes-01012019.csv", 
                      locale = locale(encoding ="UTF-8"),
-                     col_types = c(com = col_character(),
-                                   reg = col_integer())
+                     col_types = cols(com = col_character(),
+                                      reg = col_integer())
                      )
 names(communes)
 ```
@@ -180,7 +179,7 @@ Voici quelques bonnes pratiques à avoir en tête pour importer des données :
 * Il est important d'**importer un nombre réduit de colonnes**. Bien sélectionner les colonnes permet souvent de réduire significativement la taille des données et de résoudre le problème mentionné au point précédent. Toutefois, seule la fonction `fread()` de `data.table` permet de sélectionner facilement les colonnes (option `select`).
 * **Vous pouvez choisir le *package* que vous utilisez en fonction des outils que vous voulez utiliser pour manipuler les données** : les fonctions de `readr` renvoient un objet `tibble` tandis que `fread()` renvoie un objet `data.table`. Si vous prévoyez d'utiliser des *packages* du *tidyverse* (notamment `tidyr` et `dplyr`), il est préférable d'utiliser `readr`. Si vous prévoyez d'utiliser `data.table`, il est préférable d'utiliser `fread()`.
 
-## Pour en savoir plus
+## Pour en savoir plus {#RessourcesImportCSV}
 
 * Sur `readr` :
 
@@ -190,7 +189,6 @@ Voici quelques bonnes pratiques à avoir en tête pour importer des données :
     
 * sur `data.table` :
     - la [documentation du *package*](https://www.rdocumentation.org/packages/data.table) (en anglais).
-
 
 
 
