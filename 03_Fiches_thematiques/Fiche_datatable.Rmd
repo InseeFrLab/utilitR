@@ -617,8 +617,8 @@ L'utilisation de la fonction `:=` est déroutante lorsqu'on découvre `data.tabl
   En effet, au moment où la fonction `:=` est exécutée, la colonne `nouvelle_colonne1` n'existe pas encore, donc la formule `nouvelle_colonne2 = nouvelle_colonne1 + 3` n'a pas encore de sens. Si vous créez des variables en chaîne, il faut décomposer l'opération en plusieurs étapes enchaînées. Voici le code qui permet de créer les deux colonnes à la suite :
   
   ```{r, eval = FALSE}
-  bpe_ens_2018_dt[ , `:=`(nouvelle_colonne1 :=  NB_EQUIP * 2
-                  ][ , nouvelle_colonne2 :=  nouvelle_colonne1 + 3)]
+  bpe_ens_2018_dt[ , nouvelle_colonne1 :=  NB_EQUIP * 2
+                  ][ , nouvelle_colonne2 :=  nouvelle_colonne1 + 3]
   ```
 
 - **Un mauvais usage de la fonction `:=` peut vous amener à écraser par erreur vos données.** En effet, si vous exécuter par erreur la commande `dt[ , ma_variable_importante := 0]`, vous écrasez la variable `ma_variable_importante`. Vous devez alors recharger vos données... Il faut donc bien réfléchir à ce que vous voulez faire avant de remplacer ou modifier une variable existante avec la fonction `:=`. Si vous modifiez un `data.table` dans une fonction, un filet de sécurité consiste à d'abord copier le `data.table` initial et ainsi faire les modifications sur le nouvel objet, de la manière suivante :
