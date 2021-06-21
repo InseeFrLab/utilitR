@@ -187,6 +187,14 @@ Les jointures spatiales peuvent être très gourmandes en ressources (car il peu
 - Il est parfois possible d'écrire une fonction qui réduit la taille du problème. Exemple : vous voulez déterminer dans quelle commune se situe un logement dont vous connaissez les coordonnées et le département ; vous pouvez écrire une fonction qui réalise pour chaque département une jointure spatiale entre les logements situés dans ce département et les communes de ce département, puis empiler les 101 tables de sorties.
 :::
 
+::: {.conseil}
+Une application possible de la jointure spatiale est l'obtention de données sur un zonage à façon.
+
+Il est, par exemple, possible d'utiliser les données carroyées mises en ligne sur [le site de l'Insee](https://www.insee.fr/fr/statistiques/4176290?sommaire=4176305) pour obtenir des données sur chaque zone du zonage à façon en transformant des agrégats au niveau carré dans la granularité spatiale désirée.
+
+Une fonction `R` réalisant une jointure spatiale entre carreaux et zones est déjà disponible [sur le site de l'Insee](https://www.insee.fr/fr/statistiques/4176290?sommaire=4176305). Le principe de la fonction consiste à déterminer, pour une zone donnée, l'ensemble des carreaux qui la recouvrent puis à calculer les agrégats sur cet ensemble de carreaux. En plus des agrégats, elle permet de calculer, pour chaque zone, la part de la population vivant dans des carreaux imputés, ce qui donne une idée de la fiabilité des résultats obtenus.
+:::
+
 ### Gérer le système de projection
 
 Le système de projection est fondamental pour que la dimension spatiale soit bien interprétée par `R`. Si un système de projection est défini, il s'affiche dans la ligne `Projected CRS` lorsqu'on applique la fonction `head()` à un objet `sf`. Pour vérifier le système de projection d'une base de données, on peut utiliser `sf::st_crs` :
