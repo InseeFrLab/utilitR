@@ -10,7 +10,7 @@ Deux méthodes sont recommandées pour importer des tables SAS avec `R` :
 * méthode en une étape : **utiliser la fonction `read_sas()` du *package* `haven`.**
 * méthode en deux étapes : **Exporter les données SAS en format `.csv`, puis les importer en `R`**.
 
-Les particularités du format des tables SAS peuvent être source de difficultés lorsqu'on veut les importer avec `R`. **Il est fortement recommandé de tester la méthode d'importation choisie sur un petit échantillon de données avant d'importer les données**, en particulier lorsque celles-ci sont volumineuses. Il est également recommandé d'essayer l'autre méthode si la première ne fonctionne pas correctement.
+Les particularités du format des tables SAS peuvent être source de difficultés lorsqu'on veut les importer avec `R`. **Il est fortement recommandé de tester la méthode d'importation choisie sur un petit échantillon de données avant d'importer les données**, en particulier lorsque celles-ci sont volumineuses. Il est également recommandé d'essayer l'autre méthode si la première ne fonctionne pas correctement, ou si elle est trop lente.
 
 En revanche, il est **fortement déconseillé** d'utiliser les *packages*  suivants pour importer des données SAS : `sas7dbat`, `foreign`, `Hmisc`, `SASxport`.
 :::
@@ -72,7 +72,9 @@ sjlabelled::get_label(dfRP)
 
 ### Résoudre le problème des tables SAS® compressées en BINARY
 
-Une des limites de la fonction `read_sas()` est qu'elle ne peut pas importer les tables SAS compressées en BINARY. Si vous rencontrez une erreur à l'importation d'une table SAS, vous pouvez vérifier que la table est compressée en BINARY : `clic droit sur la table SAS > Propriétés > Onglet Détails`. 
+Jusqu'à une date récente, la fonction `read_sas()` ne pouvait pas importer les tables SAS compressées en mode BINARY. Cette fonction le peut désormais, depuis la version 2.4.0 du _package_ `haven`. Il faut donc utiliser cette version de `haven`, ou une version plus récente pour importer des tables SAS compressées en BINARY.
+
+Si vous rencontrez une erreur à l'importation d'une table SAS, vous pouvez vérifier que la table est compressée en BINARY : `clic droit sur la table SAS > Propriétés > Onglet Détails`. 
 
 ```{r echo = FALSE}
 utilitr::include_image("./pics/Importer_donnees_SAS/donnees_SAS_compressees_BINARY.png")
@@ -80,8 +82,9 @@ utilitr::include_image("./pics/Importer_donnees_SAS/donnees_SAS_compressees_BINA
 
 ![](./pics/Importer_donnees_SAS/donnees_SAS_compressees_BINARY.png){width=100%} 
 
-Si vous êtes dans cette situation, vous avez deux solutions :
+Si vous êtes dans cette situation, vous avez trois pistes de solutions :
 
+* Mettre à jour le _package_ `haven` avec la fonction `install.packages("haven")`, puis réessayer d'importer la table SAS ;
 * Réenregistrer la table SAS en n'utilisant pas le format BINARY ;
 * Importer les données avec `R` en procédant en deux temps (voir plus bas).
 
