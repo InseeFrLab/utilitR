@@ -8,6 +8,7 @@ La librairie `targets` peut être particulièrement intéressante dans le cas d'
 
 1. Viser la reproductibilité de l'ensemble des étapes de traitement, tout en minimisant au strict nécessaire la répétition de ces étapes, parfois longues
 2. Adopter des bonnes pratiques de développement en R par l'usage (modulariser son code, assurer la lisibilité des étapes successives du traitement..)
+3. Représenter les étapes de sa chaîne de traitement et leurs dépendances par un graphique directionnel
 
 ## Quelles sont les tâches automatisées par `targets`?
 
@@ -20,8 +21,7 @@ Target permets de définir et d'exécuter une chaîne de traitement avec:
 Ainsi, le lancement du traitement et la vérification de la reproductibilité sont effectués ensemble au cours du développement du projet par l'appel de `tar_make()`. Vérifier la reproductibilité ne revient pas à 'tout relancer' de 0 (ce qui représente un coût élevé). `targets` automatise le travail d'aller-retour dans les étapes d'une étude (j'ai modifié l'étape 1, il faut donc que je relance l'étape 2 qui en dépend...), en construisant un graphe des dépendances des différentes étapes du traitement.  
 
 
-
-Pour la suite de la fiche, prenons l'exemple d'une étude qui se structurerait suivant les étapes suivantes: 0 Charger les données, 1. Traiter les données, 2. Produire des résultats, 3. Représenter les résultats. 
+Pour la suite de la fiche, prenons l'exemple d'une étude qui se structurerait suivant les étapes suivantes: 0 Charger les données, 1. Traiter les données, 2. Produire des résultats, 3. Représenter des résultats.
 
 ## Un projet minimal pour comprendre l'essentiel
 
@@ -31,21 +31,108 @@ Les principaux éléments:
 * Un dossier `R` comprenant les scripts définissant les fonctions utilisées par le projet
 * Un dossier `data` pour les données externes (non générées au cours du projet)
 
-TODO: 
-1. Reprendre les éléments de https://books.ropensci.org/targets/walkthrough.html sur un exemple maison (sans données externes d'abord).
+La structure du projet doit être structurée comme suit:
 
-2. Run/Modification minimale/ Rerun
+    ├── _targets.R
+    ├── R/
+    ├──── mesfonctions_pour_faire_ceci.R
+    ├──── mesfonctions_pour_faire_cela.R
+    ├──── ...
+    ├── data/
+    └──── donnes_entrees.csv
+    └──── ...
 
-3. Améliorer la lisibilité de ce premier script en utilisant des fonctions.
+Le fichier `_targets.R` détaille l'enchaînement des traitements. Il doit toujours charger la librairie `targets`.
 
-## Le projet `targets` et l'extérieur
+```{r, eval=FALSE}
+# _targets.R file
 
-Où s'arrête le suivi de modifications? Comment suivre également les modifications des fichiers d'entrée (non généré par le projet)?
+library(targets)
 
-* Les données/fichiers externes (`format = 'file'`)
-* Les packages / (renv?) 
+source("R/mesfonctions_pour_faire_ceci.R")
+source("R/mesfonctions_pour_faire_cela.R")
+
+tar_option_set(packages = c("data.table","xtable"))
+
+list(
+  tar_target(
+    data_file,
+    "data/donnes_entrees.csv",
+    format = "file"
+  ),
+  tar_target(
+    data,
+    read.csv(data_file)
+  ),
+  tar_target(
+    data_clean,
+    ma_fonction_de_nettoyage(data)
+  ),
+  tar_target(
+    regression,
+    lm(Y ~ X, data=data_clean)
+  ),
+  tar_target(
+    table,
+    ma_fonction_de_presentation_des_resultats(regression)
+  )
+)
+```
+
+Les fonctions écrites par l'analyste et utilisées dans la chaîne de traitement, en l'occurence `ma_fonction_de_nettoyage` et `ma_fonction_de_presentation` sont contenues dans les fichiers que l'on "source" au départ, ici `"R/mesfonctions_pour_faire_ceci.R` et `R/mesfonctions_pour_faire_cela.R`. 
+
+Les packages dont dépendent les analyses sont spécifiés via la fonction `tar_option_set` de la librairie `targets`. 
+
+La chaîne de traitement est représentée par une liste de `tar_target`, soit les objets R qui sont les cibles intermédiaires de l'analyse. Ils sont le résultat de l'application à une cible précédente d'une fonction pour obtenir la cible suivante. Ici la première cible est particulière (`format = file`): on spécifie où sont les données d'entrée afin de surveiller si elles changent.  La seconde prend en entrée la première cible `data_file` et la transforme en appliquant la fonction `read.csv` en un nouvel objet R, `data`. La troisième applique cette fois une fonction écrite par l'utilisateur à `data` pour obtenir `data_clean`, et ainsi de suite. Ainsi, le fichier `_targets.R` contient la description de l'ensemble des étapes du traitements.
+
+Afin de faire tourner l'analyse, l'utilisateur fait appel au sein du projet à la fonction `tar_make()`. L'utilisateur est informé de l'évolution des calculs.
+
+```{r, eval=FALSE}
+tar_make()
+```
+
+```
+#> • start target data_file
+#> • built target data_file
+#> • start target data
+#> • built target data
+#> • start target data_clean
+#> • built target data_clean
+#> • start target regression
+#> • built target regression
+#> • start target table
+#> • built target table
+#> • end pipeline
+
+```
+
+L'utilisateur décide ensuite de modifier la fonction `ma_fonction_de_nettoyage`. Il n'a pas besoin par la suite de déterminer quels sont les codes à refaire tourner, il refait appel à:
+
+```{r, eval=FALSE}
+tar_make()
+```
+```
+#> ✔ skip target data_file
+#> ✔ skip target data
+#> • start target data_clean
+#> • built target data_clean
+#> • start target regression
+#> • built target regression
+#> • start target table
+#> • built target table
+#> • end pipeline
+```
+
+qui a bien compris que la modification de la fonction `ma_fonction_de_nettoyage` entraîne la nécessaire mise à jour de `data_clean` et toutes les cibles qui en dépendent, mais pas du début de la chaîne de traitement!
+
+
+Les cibles définies sont calculées successivement, stockées et mises à jour automatiquement dans un dossier `_targets/objects/`. On peut facilement accéder à un objet cible ensuite à l'aide de la fonction `tar_read()`.
+
+
+A partir de cette spécification de la chaîne, `targets` construit un graphe de dépendance, qui peut être visualisé avec `tar_visnetwork()`, et décrit avec `tar_manifest()`.
 
 ## Dynamic Branching
+
 
 - Appliquer une même fonction à des variantes d'arguments (par exemple, un graphique de restitution pour plusieurs populations d'intérêt), et créer autant de targets automatiquement (sans écrire explicitement dans `_targets.R` chacune d'entre elles)
 
