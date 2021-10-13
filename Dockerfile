@@ -12,10 +12,10 @@ RUN apt-get update \
     && apt-get -qq install gnupg
     
 RUN sh -c 'echo "deb http://http.us.debian.org/debian stable main contrib non-free" >> /etc/apt/sources.list' \
-    && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 04EE7237B7D453EC \
+    && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 04EE7237B7D453EC
 
 RUN apt-get update \
-    && echo "ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true" | debconf-set-selections \
+    && echo "ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true" | debconf-set-selections
 
 RUN apt-get -qq install --no-install-recommends \
        ttf-mscorefonts-installer \
@@ -27,9 +27,9 @@ RUN apt-get -qq install --no-install-recommends \
        ghostscript \
        libgs-dev \
        librsvg2-dev \
-       libwebp-dev \
+       libwebp-dev
 RUN rm -rf /var/lib/apt/lists/* \
-    && rm -rf /src/*.deb \
+    && rm -rf /src/*.deb
 RUN apt-get upgrade -y
 
 RUN apt-get update && \
