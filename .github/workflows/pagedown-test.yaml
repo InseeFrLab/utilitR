@@ -7,6 +7,7 @@ jobs:
     if: "!contains(github.event.commits[0].message, '[skip ci]')"
     runs-on: ubuntu-latest
     container: inseefrlab/utilitr:latest
+    continue-on-error: true    
     steps:
       - name: Checkout Repository
         uses: actions/checkout@master
@@ -16,7 +17,7 @@ jobs:
         run: |
           Rscript -e "install.packages(c('remotes'))"
           Rscript -e "remotes::install_github('rstudio/pagedown')"
-          Rscript -e "remotes::install_deps(dependencies = TRUE)"
+          Rscript -e "remotes::install_github('rstudio/htmltools')"
       - name: Render Book
         run: |
           mkdir _pagedown_output -p

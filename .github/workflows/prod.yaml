@@ -59,7 +59,9 @@ jobs:
       - name: Install Dependencies
         run: |
           Rscript -e "install.packages(c('remotes'))"
-          Rscript -e "remotes::install_deps(dependencies = TRUE)"
+          Rscript -e "remotes::install_github('rstudio/htmltools')"
+        env:
+          GITHUB_PAT: ${{ secrets.PAT }}
       - name: Render Book
         run: Rscript -e 'bookdown::render_book("index.Rmd", output_dir = "_public", output_format = "utilitr::bs4_utilitr")'
       - uses: actions/upload-artifact@v2
@@ -85,6 +87,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: docker
     container: inseefrlab/utilitr:latest
+    continue-on-error: true    
     steps:
       - name: Checkout Repository
         uses: actions/checkout@master
@@ -94,7 +97,7 @@ jobs:
         run: |
           Rscript -e "install.packages(c('remotes'))"
           Rscript -e "remotes::install_github('rstudio/pagedown')"
-          Rscript -e "remotes::install_deps(dependencies = TRUE)"
+          Rscript -e "remotes::install_github('rstudio/htmltools')"
       - name: Render Book
         run: |
           mkdir _pagedown_output -p

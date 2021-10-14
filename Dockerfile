@@ -9,12 +9,17 @@ RUN Rscript -e "remotes::install_github('inseefrlab/inseelocaldata')"
 RUN Rscript -e "remotes::install_github('inseefrlab/doremifasol')"
 
 RUN apt-get update \
-    && apt-get -qq install gnupg \
-    && sh -c 'echo "deb http://http.us.debian.org/debian stable main contrib non-free" >> /etc/apt/sources.list' \
-    && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 04EE7237B7D453EC \
-    && apt-get update \
-    && echo "ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true" | debconf-set-selections \
-    && apt-get -qq install --no-install-recommends \
+    && apt-get -qq install gnupg
+    
+RUN sh -c 'echo "deb http://http.us.debian.org/debian stable main contrib non-free" >> /etc/apt/sources.list' \
+    && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 648ACFD622F3D138 \
+    && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 0E98404D386FA1D9 \
+    && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 605C66F00D6C9793
+
+RUN apt-get update \
+    && echo "ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true" | debconf-set-selections
+
+RUN apt-get -qq install --no-install-recommends \
        ttf-mscorefonts-installer \
        fonts-liberation \
        fonts-freefont-ttf \
@@ -24,10 +29,10 @@ RUN apt-get update \
        ghostscript \
        libgs-dev \
        librsvg2-dev \
-       libwebp-dev \
-    && rm -rf /var/lib/apt/lists/* \
-    && rm -rf /src/*.deb \
-    && apt-get upgrade -y
+       libwebp-dev
+RUN rm -rf /var/lib/apt/lists/* \
+    && rm -rf /src/*.deb
+RUN apt-get upgrade -y
 
 RUN apt-get update && \
   apt-get -yq install wget apt-transport-https ca-certificates gnupg --no-install-recommends && \
