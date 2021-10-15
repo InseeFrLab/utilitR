@@ -29,7 +29,9 @@ RUN apt-get -qq install --no-install-recommends \
        ghostscript \
        libgs-dev \
        librsvg2-dev \
-       libwebp-dev
+       libwebp-dev \
+       jq
+
 RUN rm -rf /var/lib/apt/lists/* \
     && rm -rf /src/*.deb
 RUN apt-get upgrade -y
@@ -38,9 +40,11 @@ RUN apt-get update && \
   apt-get -yq install wget apt-transport-https ca-certificates gnupg --no-install-recommends && \
   apt-get -yq install libgconf-2-4 && \
   wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
-  sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' &&\
+  sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list' &&\
   apt-get update && \
-  apt-get -yq install google-chrome-stable --no-install-recommends 
+  apt-get -yq install google-chrome-stable --no-install-recommends &&\
+  apt-get upgrade -y &&\
+  apt-get autoremove -y
 
 # Installing mc
 
