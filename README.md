@@ -13,7 +13,7 @@
 ## :one: Présentation du projet `utilitR`
  
 Code source pour le projet `utilitR`, documentation collaborative `R` 
-faite par des agents de l'**Insee** et du **Système Statistique Public**.
+faite par des agents de l'**Insee** et du **Service Statistique Public**.
 Elle a vocation à être validée annuellement afin de produire un guide des bonnes pratiques et des fiches techniques.
 
 Elle prend la forme suivante :
