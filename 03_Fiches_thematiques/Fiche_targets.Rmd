@@ -12,7 +12,7 @@ Ce package ne sera approprié que si la chaîne de traitement est exclusivement 
 
 ## Pourquoi utiliser `targets`?
 
-La librairie `targets` peut être particulièrement intéressante dans le cas d'un projet d'étude qui vise à une forte reproductibilité. Plus précisément, utiliser `targets` pour un projet permet de:
+Le *package* `targets` peut être particulièrement intéressante dans le cas d'un projet d'étude qui vise à une forte reproductibilité. Plus précisément, utiliser `targets` pour un projet permet de:
 
 1. Viser la reproductibilité de l'ensemble des étapes de traitement, tout en minimisant au strict nécessaire la répétition de ces étapes, parfois longues
 2. Adopter des bonnes pratiques de développement en R par l'usage (modulariser son code, assurer la lisibilité des étapes successives du traitement..)
@@ -53,7 +53,7 @@ La structure du projet doit être comme suit:
     └───── donnes_entrees.csv
     └───── ...
 
-Le nouvel utilisateur qui souhaite tester `targets` crée un projet Rstudio au sein duquel il crée un fichier `_targets.R`. En prévision des futures fonctions qu'il va écrire, il crée un dossier 'R'. Le fichier `_targets.R` détaille l'enchaînement des traitements. Il doit toujours charger la librairie `targets`.
+Le nouvel utilisateur qui souhaite tester `targets` crée un projet Rstudio au sein duquel il crée un fichier `_targets.R`. En prévision des futures fonctions qu'il va écrire, il crée un dossier 'R'. Le fichier `_targets.R` détaille l'enchaînement des traitements. Il doit toujours charger le *package* `targets`.
 
 ```{r, eval=FALSE}
 # _targets.R file
@@ -92,7 +92,7 @@ list(
 
 Les fonctions écrites par l'analyste et utilisées dans la chaîne de traitement, en l'occurence `ma_fonction_de_nettoyage` et `ma_fonction_de_presentation` sont contenues dans les fichiers que l'on "source" au départ, ici `"R/mesfonctions_pour_faire_ceci.R` et `R/mesfonctions_pour_faire_cela.R`. 
 
-Les packages dont dépendent les analyses sont spécifiés via la fonction `tar_option_set` de la librairie `targets`. 
+Les packages dont dépendent les analyses sont spécifiés via la fonction `tar_option_set` du *package* `targets`. 
 
 La chaîne de traitement est représentée par une liste de `tar_target`, soit les objets R qui sont les cibles intermédiaires de l'analyse. Ils sont le résultat de l'application à une cible précédente d'une fonction pour obtenir la cible suivante. Ici la première cible est particulière (`format = file`): on spécifie où sont les données d'entrée afin de surveiller si elles changent.  La seconde prend en entrée la première cible `data_file` et la transforme en appliquant la fonction `read.csv` en un nouvel objet R, `data`. La troisième applique cette fois une fonction écrite par l'utilisateur à `data` pour obtenir `data_clean`, et ainsi de suite. Ainsi, le fichier `_targets.R` contient la description de l'ensemble des étapes du traitements. La complexité des traitements est resumé de façon concise par un ensemble minimal de fonction résumant les grandes étapes.
 
@@ -307,7 +307,7 @@ Etc...
 
 ## Intégrer un rapport en Rmarkdown
 
-La librairie `tarchetypes` est un complément utile. Cette librairie permet d'intégrer simplement des rapports Rmarkdown dans la pipeline avec `tarchetypes::tar_render()`. L'essentiel des calculs doit être en amont du rapport markdown, qui doit être rapide à exécuter. 
+Le *package* `tarchetypes` est un complément utile. Ce *package* permet d'intégrer simplement des rapports Rmarkdown dans la pipeline avec `tarchetypes::tar_render()`. L'essentiel des calculs doit être en amont du rapport markdown, qui doit être rapide à exécuter. 
 
 Par exemple, on peut écrire un Rmarkdown `report.Rmd` considéré comme une des cibles de l'analyse (par exemple, c'est le compte-rendu de l'analyse), et qui dépend d'autres cibles. On souhaite également qu'il soit reproductible, et mis à jour automatiquement en fonction des modifications sur les cibles dont il dépend. Il suffit d'intégrer ces cibles via `tar_read(data)` ou `tar_load(data)` appelé dans un chunk du .Rmd, et de spécifier un `_targets.R` sur le modèle suivant:
 
