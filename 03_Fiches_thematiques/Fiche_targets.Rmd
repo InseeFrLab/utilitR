@@ -12,7 +12,7 @@ Ce package ne sera approprié que si la chaîne de traitement est exclusivement 
 
 ## Pourquoi utiliser `targets`?
 
-Le *package* `targets` peut être particulièrement intéressante dans le cas d'un projet d'étude qui vise à une forte reproductibilité. Plus précisément, utiliser `targets` pour un projet permet de:
+Le *package* `targets` peut être particulièrement intéressant dans le cas d'un projet d'étude qui vise à une forte reproductibilité. Plus précisément, utiliser `targets` pour un projet permet de :
 
 1. Viser la reproductibilité de l'ensemble des étapes de traitement, tout en minimisant au strict nécessaire la répétition de ces étapes, parfois longues
 2. Adopter des bonnes pratiques de développement en R par l'usage (modulariser son code, assurer la lisibilité des étapes successives du traitement..)
@@ -22,7 +22,7 @@ Le *package* `targets` peut être particulièrement intéressante dans le cas d'
 
 ## Quelles sont les tâches automatisées par `targets`?
 
-`targets` permets de définir et d'exécuter une chaîne de traitement avec:
+`targets` permet de définir et d'exécuter une chaîne de traitement avec :
 
 * Sauvegarde automatique de résultats intermédiaires, ce qu'on appelle les "targets" (cibles)
 * Traçabilité de ces résultats intermédiaires par `targets`: lors de la répétition d'une exécution de la chaîne de traitement, ils ne sont mobilisés que si ils sont reproductibles.
@@ -31,7 +31,12 @@ Le *package* `targets` peut être particulièrement intéressante dans le cas d'
 Ainsi, le lancement du traitement et la vérification de la reproductibilité sont effectués ensemble au cours du développement du projet par l'appel de `tar_make()`. Vérifier la reproductibilité ne revient pas à 'tout relancer' de 0 (ce qui représente un coût élevé). `targets` automatise le travail d'aller-retour dans les étapes d'une étude (j'ai modifié l'étape 1, il faut donc que je relance l'étape 2 qui en dépend...), en construisant un graphe des dépendances des différentes étapes du traitement.  
 
 
-Pour la suite de la fiche, prenons l'exemple d'une étude qui se structurerait suivant les étapes suivantes: 0 Charger les données, 1. Traiter les données, 2. Produire des résultats, 3. Représenter des résultats.
+Pour la suite de la fiche, prenons l'exemple d'une étude qui se structurerait suivant les étapes suivantes :
+
+  0. Charger les données
+  1. Traiter les données
+  2. Produire des résultats
+  3. Représenter des résultats
 
 ## Un projet minimal pour comprendre l'essentiel
 
@@ -94,7 +99,7 @@ Les fonctions écrites par l'analyste et utilisées dans la chaîne de traitemen
 
 Les packages dont dépendent les analyses sont spécifiés via la fonction `tar_option_set` du *package* `targets`. 
 
-La chaîne de traitement est représentée par une liste de `tar_target`, soit les objets R qui sont les cibles intermédiaires de l'analyse. Ils sont le résultat de l'application à une cible précédente d'une fonction pour obtenir la cible suivante. Ici la première cible est particulière (`format = file`): on spécifie où sont les données d'entrée afin de surveiller si elles changent.  La seconde prend en entrée la première cible `data_file` et la transforme en appliquant la fonction `read.csv` en un nouvel objet R, `data`. La troisième applique cette fois une fonction écrite par l'utilisateur à `data` pour obtenir `data_clean`, et ainsi de suite. Ainsi, le fichier `_targets.R` contient la description de l'ensemble des étapes du traitements. La complexité des traitements est resumé de façon concise par un ensemble minimal de fonction résumant les grandes étapes.
+La chaîne de traitement est représentée par une liste de `tar_target`, soit les objets R qui sont les cibles intermédiaires de l'analyse. Ils sont le résultat de l'application à une cible précédente d'une fonction pour obtenir la cible suivante. Ici la première cible est particulière (`format = file`) : on spécifie où sont les données d'entrée afin de surveiller si elles changent.  La seconde prend en entrée la première cible `data_file` et la transforme en appliquant la fonction `read.csv` en un nouvel objet R, `data`. La troisième applique cette fois une fonction écrite par l'utilisateur à `data` pour obtenir `data_clean`, et ainsi de suite. Ainsi, le fichier `_targets.R` contient la description de l'ensemble des étapes du traitements. La complexité des traitements est resumé de façon concise par un ensemble minimal de fonction résumant les grandes étapes.
 
 Afin de faire tourner l'analyse, l'utilisateur fait appel au sein du projet à la fonction `tar_make()`. L'utilisateur est informé de l'évolution des calculs.
 
@@ -117,7 +122,7 @@ tar_make()
 
 ```
 
-L'utilisateur décide ensuite de modifier la fonction `ma_fonction_de_nettoyage`. Il n'a pas besoin par la suite de déterminer quels sont les codes à refaire tourner, il refait appel à:
+L'utilisateur décide ensuite de modifier la fonction `ma_fonction_de_nettoyage`. Il n'a pas besoin par la suite de déterminer quels sont les codes à refaire tourner, il refait appel à :
 
 ```{r, eval=FALSE}
 tar_make()
