@@ -17,7 +17,7 @@ Le *package* `targets` peut être particulièrement intéressant dans le cas d'u
 1. Viser la reproductibilité de l'ensemble des étapes de traitement, tout en minimisant au strict nécessaire la répétition de ces étapes, parfois longues
 2. Adopter des bonnes pratiques de développement en R par l'usage (modulariser son code, assurer la lisibilité des étapes successives du traitement..)
 3. Représenter les étapes de sa chaîne de traitement et leurs dépendances par un graphique directionnel
-4. Faciliter la prise en main par une autre personne par une organisation standardisée des codes et une description complète de l'enchainement des étapes intégrée dans le code lui-même
+4. Faciliter la prise en main par une autre personne par une organisation standardisée des codes et une description complète de l'enchaînement des étapes intégrée dans le code lui-même
 
 
 ## Quelles sont les tâches automatisées par `targets`?
@@ -97,11 +97,11 @@ list(
 )
 ```
 
-Les fonctions écrites par l'analyste et utilisées dans la chaîne de traitement, en l'occurence `ma_fonction_de_nettoyage` et `ma_fonction_de_presentation` sont contenues dans les fichiers que l'on "source" au départ, ici `"R/mesfonctions_pour_faire_ceci.R` et `R/mesfonctions_pour_faire_cela.R`. 
+Les fonctions écrites par l'analyste et utilisées dans la chaîne de traitement, en l'occurrence `ma_fonction_de_nettoyage` et `ma_fonction_de_presentation` sont contenues dans les fichiers que l'on "source" au départ, ici `"R/mesfonctions_pour_faire_ceci.R` et `R/mesfonctions_pour_faire_cela.R`. 
 
 Les packages dont dépendent les analyses sont spécifiés via la fonction `tar_option_set` du *package* `targets`. 
 
-La chaîne de traitement est représentée par une liste de `tar_target`, soit les objets R qui sont les cibles intermédiaires de l'analyse. Ils sont le résultat de l'application à une cible précédente d'une fonction pour obtenir la cible suivante. Ici la première cible est particulière (`format = file`) : on spécifie où sont les données d'entrée afin de surveiller si elles changent.  La seconde prend en entrée la première cible `data_file` et la transforme en appliquant la fonction `read.csv` en un nouvel objet R, `data`. La troisième applique cette fois une fonction écrite par l'utilisateur à `data` pour obtenir `data_clean`, et ainsi de suite. Ainsi, le fichier `_targets.R` contient la description de l'ensemble des étapes du traitements. La complexité des traitements est resumé de façon concise par un ensemble minimal de fonction résumant les grandes étapes.
+La chaîne de traitement est représentée par une liste de `tar_target`, soit les objets R qui sont les cibles intermédiaires de l'analyse. Ils sont le résultat de l'application à une cible précédente d'une fonction pour obtenir la cible suivante. Ici la première cible est particulière (`format = file`) : on spécifie où sont les données d'entrée afin de surveiller si elles changent.  La seconde prend en entrée la première cible `data_file` et la transforme en appliquant la fonction `read.csv` en un nouvel objet R, `data`. La troisième applique cette fois une fonction écrite par l'utilisateur à `data` pour obtenir `data_clean`, et ainsi de suite. Ainsi, le fichier `_targets.R` contient la description de l'ensemble des étapes du traitements. La complexité des traitements est résumé de façon concise par un ensemble minimal de fonction résumant les grandes étapes.
 
 
 Afin de faire tourner l'analyse, l'utilisateur fait appel au sein du projet à la fonction `tar_make()`. L'utilisateur est informé de l'évolution des calculs.
@@ -188,7 +188,7 @@ list(
 ```
 
 
-Ce qui distingue ici la cible `resultat`  de ce qui a été vu précédement, c'est l'utilisation de l'argument `pattern`, qui a vocation à itérer sur les vecteurs cibles x et y grâce à `map`.
+Ce qui distingue ici la cible `resultat`  de ce qui a été vu précédemment, c'est l'utilisation de l'argument `pattern`, qui a vocation à itérer sur les vecteurs cibles x et y grâce à `map`.
 
 Dans la console R, l'utilisateur qui fait appel à `tar_make()` voit apparaître la déclinaison de `resultat` en trois branches, exécutées en parallèle.
 
