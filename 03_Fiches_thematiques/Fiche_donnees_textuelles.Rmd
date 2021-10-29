@@ -15,7 +15,7 @@ L'utilisateur souhaite manipuler du texte (repérer et extraire une chaîne de c
 
 ### Présentation du _package_
 
-Les packages `stringi` et `stringr` facilitent beaucoup le travail sur les chaînes de caractères. `stringi` propose un grand nombre de fonctions avancées, et `stringr` propose un petit nombre de fonctions simples à utiliser (qui reposent sur les fonctions de `stringi`). Il est donc préférable de commencer à travailler avec `stringr`. Toutes les fonctions de `stringi` et `stringr` sont stucturées de la même façon : le premier argument de la fonction est **toujours** une chaîne de caractères ; les arguments suivants sont des options.
+Les packages `stringi` et `stringr` facilitent beaucoup le travail sur les chaînes de caractères. `stringi` propose un grand nombre de fonctions avancées, et `stringr` propose un petit nombre de fonctions simples à utiliser (qui reposent sur les fonctions de `stringi`). Il est donc préférable de commencer à travailler avec `stringr`. Toutes les fonctions de `stringi` et `stringr` sont structurées de la même façon : le premier argument de la fonction est **toujours** une chaîne de caractères ; les arguments suivants sont des options.
 
 Pour utiliser `stringr`, il faut charger le _package_ :
 
@@ -195,7 +195,7 @@ str_replace_all("j'ai une première voiture et une deuxième voiture",
 
 **Les expressions régulières sont un outil permettant de décrire un ensemble de chaînes de caractères possibles selon une syntaxe précise, et donc de définir un motif (ou `pattern`).** Les expressions régulières servent par exemple lorsqu'on veut extraire une partie d'une chaîne de caractères, ou remplacer une partie d'une chaîne de caractères. Une expression régulière prend la forme d'une chaîne de caractères, qui peut contenir à la fois des éléments littéraux et des caractères spéciaux qui ont un sens logique. 
 
-Par exemple, `"ch.+n"` est une expression régulière qui décrit le motif suivant : la chaîne littérale `ch`, suivi de n'importe quelle chaîne d'au moins un caractère (`.+`), suivie de la lettre `n`. Dans la chaîne `"J'ai un chien."`, la sous-chaîne `"chien"` correspond à ce motif. De même pour `"chapeau ron"` dans `"J'ai un chapeau rond"`. En revanche, dans la chaîne `"La soupe est chaude."`, aucune sous-chaîne ne correpsond à ce motif (car aucun `n` n'apparaît après le `ch`).
+Par exemple, `"ch.+n"` est une expression régulière qui décrit le motif suivant : la chaîne littérale `ch`, suivi de n'importe quelle chaîne d'au moins un caractère (`.+`), suivie de la lettre `n`. Dans la chaîne `"J'ai un chien."`, la sous-chaîne `"chien"` correspond à ce motif. De même pour `"chapeau ron"` dans `"J'ai un chapeau rond"`. En revanche, dans la chaîne `"La soupe est chaude."`, aucune sous-chaîne ne correspond à ce motif (car aucun `n` n'apparaît après le `ch`).
 
 ::: {.remarque}
 **Les expressions régulières (*regex*) sont notoirement difficiles à maîtriser.** Il existe des outils qui facilitent le travail avec les expressions régulières. Ils sont présentés dans la section [Comment construire des expressions régulières en `R`]. 
@@ -292,7 +292,7 @@ str_detect("Le chapeau coûte 20$.", fixed("20$"))
 Voici quelques exemples un peu complexes pour vous aider à construire vos propres expressions régulières :
 
 * L'expression régulière `"(Mr|M|Mme)\\.?\\s+[\\w\\-]+"` permet de rechercher un nom de famille éventuellement composé, précédé de Mr, M ou Mme. Exemple : `str_detect("Mme Dupont-Durand habite au 21", pattern = "(Mr|M|Mme)\\.?\\s+[\\w\\-]+")` ;
-* L'expression régulière `"([0-9]{2}\\.*){5}"` permet de rechecher cinq séries de deux chiffres éventuellement séparées par un point. Exemple : `str_detect("12.12.12.12.12.", pattern = "([0-9]{2}\\.*){5}")`.
+* L'expression régulière `"([0-9]{2}\\.*){5}"` permet de rechercher cinq séries de deux chiffres éventuellement séparées par un point. Exemple : `str_detect("12.12.12.12.12.", pattern = "([0-9]{2}\\.*){5}")`.
 
 
 ## Comment construire des expressions régulières en `R`
@@ -319,7 +319,7 @@ Un problème fréquent avec les testeurs d'expressions régulières est qu'ils u
 
 #### Principe : la fonction `rex`
 
-Le _package_ `rex` permet de construire des expressions régulères complexes avec une syntaxe relativement facile à comprendre. Vous pouvez utiliser la fonction `rex` pour assembler les différents éléments qui décrivent un motif, en les séparant par des virgules. Une expression régulière construite avec `rex` ressemble à ceci : `rex(element1, element2, element3)`. 
+Le _package_ `rex` permet de construire des expressions régulières complexes avec une syntaxe relativement facile à comprendre. Vous pouvez utiliser la fonction `rex` pour assembler les différents éléments qui décrivent un motif, en les séparant par des virgules. Une expression régulière construite avec `rex` ressemble à ceci : `rex(element1, element2, element3)`. 
 Voici un exemple : `rex(start, "Le pivert", anything, n_times("toc", 3))` décrit le motif suivant : la chaîne de caractères commence par "Le pivert", suivi de n'importe quelle chaîne de caractères (`anything`), suivie de "toc " répété trois fois (`n_times("toc", 3)`). Ce motif est équivalent à l'expression régulière `"^Le pivert.*(?:toc ){3}"`. La fonction `rex` peut être utilisée de deux façons :
 
 - soit pour obtenir une expression régulière :
