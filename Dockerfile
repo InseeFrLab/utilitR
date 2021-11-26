@@ -1,4 +1,4 @@
-FROM rocker/geospatial:4.0.4
+FROM rocker/geospatial:4.1.1
 
 # R packages 
 COPY ./DESCRIPTION /tmp/build_image/
