@@ -9,6 +9,12 @@ jobs:
     container: rocker/verse:latest
     steps:
       - name: Checkout Repository
+        if: ${{ github.repository == 'inseefrlab/utilitr' }}
+        env:
+          GITHUB_PAT: ${{ secrets.PAT }}
+        uses: actions/checkout@master
+      - name: Checkout Repository
+        if: ${{ github.repository != 'inseefrlab/utilitr' }}
         env:
           GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
         uses: actions/checkout@master
