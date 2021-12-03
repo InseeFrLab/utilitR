@@ -36,7 +36,7 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v2
         env:
-          GITHUB_PAT: ${{ secrets.PAT }}
+          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
         with:
           push: true
           context: .
@@ -54,7 +54,7 @@ jobs:
     steps:
       - name: Checkout Repository
         env:
-          GITHUB_PAT: ${{ secrets.PAT }}
+          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
         uses: actions/checkout@master
       - name: Install Dependencies
         run: |
@@ -62,7 +62,7 @@ jobs:
           Rscript -e "remotes::install_github('rstudio/rmarkdown')"
           Rscript -e "remotes::install_github('rstudio/htmltools')"
         env:
-          GITHUB_PAT: ${{ secrets.PAT }}
+          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       - name: Render Book
         run: Rscript -e 'bookdown::render_book("index.Rmd", output_dir = "_public", output_format = "utilitr::bs4_utilitr")'
       - uses: actions/upload-artifact@v2
@@ -95,7 +95,7 @@ jobs:
         uses: actions/checkout@master
       - name: Install Dependencies
         env:
-          GITHUB_PAT: ${{ secrets.PAT }}
+          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
         run: |
           Rscript -e "install.packages(c('remotes'))"
           Rscript -e "remotes::install_github('rstudio/rmarkdown')"
