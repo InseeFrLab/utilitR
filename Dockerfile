@@ -7,7 +7,7 @@ RUN Rscript -e "remotes::install_deps('/tmp/build_image', dependencies = TRUE, u
 RUN Rscript -e "remotes::install_github('kevinushey/rex')"
 RUN Rscript -e "remotes::install_github('rstudio/bookdown')"
 RUN Rscript -e "remotes::install_github('inseefrlab/inseelocaldata')"
-RUN Rscript -e "remotes::install_github('inseefrlab/doremifasol')"
+RUN Rscript -e "remotes::install_github('inseefrlab/doremifasol', build_vignettes = TRUE)"
 
 RUN apt-get update \
     && apt-get -qq install gnupg
