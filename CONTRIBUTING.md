@@ -266,7 +266,7 @@ de la manière suivante :
 
 ![](./pics/contributing/mes_secrets_utilitr.png)
 
-On peut ensuite lancer le [service configuré dans ce lien](https://datalab.sspcloud.fr/launcher/inseefrlab-helm-charts-datascience/rstudio?onyxia.friendlyName=%C2%AButilitr-contrib%C2%BB&init.personalInit=%C2%ABhttps%3A%2F%2Fraw.githubusercontent.com%2FInseeFrLab%2FutilitR%2Fmaster%2Finit_utilitr.sh%C2%BB&service.image.version=%C2%ABinseefrlab%2Futilitr%3A0.8.0%C2%BB&vault.secret=%C2%AButilitr%2Futilitr%C2%BB) pour obtenir un service avec une identification persistante.
+On peut ensuite lancer le [service configuré dans ce lien](https://datalab.sspcloud.fr/launcher/inseefrlab-helm-charts-datascience/rstudio?autoLaunch=true&onyxia.friendlyName=«utilitr»&init.personalInit=«https%3A%2F%2Fraw.githubusercontent.com%2FInseeFrLab%2FutilitR%2Fmaster%2Finit_utilitr.sh»&service.image.version=«inseefrlab%2Futilitr%3A0.8.0»&vault.secret=«utilitr%2Futilitr») pour obtenir un service avec une identification persistante.
 
 ### :one: Forker le dépôt `utilitR`
 
