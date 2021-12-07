@@ -12,17 +12,18 @@ Ce package ne sera approprié que si la chaîne de traitement est exclusivement 
 
 ## Pourquoi utiliser `targets`?
 
-Le *package* `targets` peut être particulièrement intéressante dans le cas d'un projet d'étude qui vise à une forte reproductibilité. Plus précisément, utiliser `targets` pour un projet permet de:
+Le *package* `targets` peut être particulièrement intéressant dans le cas d'un projet d'étude qui vise à une forte reproductibilité. Plus précisément, utiliser `targets` pour un projet permet de :
 
 1. Viser la reproductibilité de l'ensemble des étapes de traitement, tout en minimisant au strict nécessaire la répétition de ces étapes, parfois longues
 2. Adopter des bonnes pratiques de développement en R par l'usage (modulariser son code, assurer la lisibilité des étapes successives du traitement..)
 3. Représenter les étapes de sa chaîne de traitement et leurs dépendances par un graphique directionnel
-4. Faciliter la prise en main par une autre personne par une organisation standardisée des codes et une description complète de l'enchainement des étapes intégrée dans le code lui-même
+4. Faciliter la prise en main par une autre personne par une organisation standardisée des codes et une description complète de l'enchaînement des étapes intégrée dans le code lui-même
 
 
 ## Quelles sont les tâches automatisées par `targets`?
 
-`targets` permets de définir et d'exécuter une chaîne de traitement avec:
+`targets` permet de définir et d'exécuter une chaîne de traitement avec :
+
 
 * Sauvegarde automatique de résultats intermédiaires, ce qu'on appelle les "targets" (cibles)
 * Traçabilité de ces résultats intermédiaires par `targets`: lors de la répétition d'une exécution de la chaîne de traitement, ils ne sont mobilisés que si ils sont reproductibles.
@@ -31,7 +32,13 @@ Le *package* `targets` peut être particulièrement intéressante dans le cas d'
 Ainsi, le lancement du traitement et la vérification de la reproductibilité sont effectués ensemble au cours du développement du projet par l'appel de `tar_make()`. Vérifier la reproductibilité ne revient pas à 'tout relancer' de 0 (ce qui représente un coût élevé). `targets` automatise le travail d'aller-retour dans les étapes d'une étude (j'ai modifié l'étape 1, il faut donc que je relance l'étape 2 qui en dépend...), en construisant un graphe des dépendances des différentes étapes du traitement.  
 
 
-Pour la suite de la fiche, prenons l'exemple d'une étude qui se structurerait suivant les étapes suivantes: 0 Charger les données, 1. Traiter les données, 2. Produire des résultats, 3. Représenter des résultats.
+Pour la suite de la fiche, prenons l'exemple d'une étude qui se structurerait suivant les étapes suivantes :
+
+  0. Charger les données
+  1. Traiter les données
+  2. Produire des résultats
+  3. Représenter des résultats
+
 
 ## Un projet minimal pour comprendre l'essentiel
 
@@ -90,11 +97,12 @@ list(
 )
 ```
 
-Les fonctions écrites par l'analyste et utilisées dans la chaîne de traitement, en l'occurence `ma_fonction_de_nettoyage` et `ma_fonction_de_presentation` sont contenues dans les fichiers que l'on "source" au départ, ici `"R/mesfonctions_pour_faire_ceci.R` et `R/mesfonctions_pour_faire_cela.R`. 
+Les fonctions écrites par l'analyste et utilisées dans la chaîne de traitement, en l'occurrence `ma_fonction_de_nettoyage` et `ma_fonction_de_presentation` sont contenues dans les fichiers que l'on "source" au départ, ici `"R/mesfonctions_pour_faire_ceci.R` et `R/mesfonctions_pour_faire_cela.R`. 
 
 Les packages dont dépendent les analyses sont spécifiés via la fonction `tar_option_set` du *package* `targets`. 
 
-La chaîne de traitement est représentée par une liste de `tar_target`, soit les objets R qui sont les cibles intermédiaires de l'analyse. Ils sont le résultat de l'application à une cible précédente d'une fonction pour obtenir la cible suivante. Ici la première cible est particulière (`format = file`): on spécifie où sont les données d'entrée afin de surveiller si elles changent.  La seconde prend en entrée la première cible `data_file` et la transforme en appliquant la fonction `read.csv` en un nouvel objet R, `data`. La troisième applique cette fois une fonction écrite par l'utilisateur à `data` pour obtenir `data_clean`, et ainsi de suite. Ainsi, le fichier `_targets.R` contient la description de l'ensemble des étapes du traitements. La complexité des traitements est resumé de façon concise par un ensemble minimal de fonction résumant les grandes étapes.
+La chaîne de traitement est représentée par une liste de `tar_target`, soit les objets R qui sont les cibles intermédiaires de l'analyse. Ils sont le résultat de l'application à une cible précédente d'une fonction pour obtenir la cible suivante. Ici la première cible est particulière (`format = file`) : on spécifie où sont les données d'entrée afin de surveiller si elles changent.  La seconde prend en entrée la première cible `data_file` et la transforme en appliquant la fonction `read.csv` en un nouvel objet R, `data`. La troisième applique cette fois une fonction écrite par l'utilisateur à `data` pour obtenir `data_clean`, et ainsi de suite. Ainsi, le fichier `_targets.R` contient la description de l'ensemble des étapes du traitements. La complexité des traitements est résumé de façon concise par un ensemble minimal de fonction résumant les grandes étapes.
+
 
 Afin de faire tourner l'analyse, l'utilisateur fait appel au sein du projet à la fonction `tar_make()`. L'utilisateur est informé de l'évolution des calculs.
 
@@ -117,7 +125,8 @@ tar_make()
 
 ```
 
-L'utilisateur décide ensuite de modifier la fonction `ma_fonction_de_nettoyage`. Il n'a pas besoin par la suite de déterminer quels sont les codes à refaire tourner, il refait appel à:
+L'utilisateur décide ensuite de modifier la fonction `ma_fonction_de_nettoyage`. Il n'a pas besoin par la suite de déterminer quels sont les codes à refaire tourner, il refait appel à :
+
 
 ```{r, eval=FALSE}
 tar_make()
@@ -145,7 +154,8 @@ Et voilà, c'est tout pour l'essentiel. La suite décrit des fonctions de target
 
 ## Les branches
 
-Souvent, les cibles d'une analyses (étapes intermédiaires) sont nombreuses et ont un certain degré de redondance. 
+Souvent, les cibles d'une analyse (étapes intermédiaires) sont nombreuses et ont un certain degré de redondance. 
+
 Comment créer des cibles automatiquement (sans écrire explicitement dans `_targets.R` chacune d'entre elles)? `targets` propose de décliner les cibles en "branches".
 
 On distingue les branches définies dynamiquement (avant l'exécution, le nombre de branches est inconnu), et statiquement (le nombre de branche est définie précisément avant l'exécution). Le premier cas correspond à la répétition d'un grand nombre de tâches homogènes, le second plutôt à un petit nombre de tâches hétérogènes. Les branches statiques, qui nécessitent l'usage du package `tarchetypes`, ne sont pas abordées ici. 
@@ -178,9 +188,10 @@ list(
 ```
 
 
-Ce qui distingue la ici cible `resultat`  de ce qui a été vu précédement, c'est l'utilisation de l'argument "pattern", qui a vocation à itérer sur les vecteurs cibles x et y grâce à "map".
+Ce qui distingue ici la cible `resultat`  de ce qui a été vu précédemment, c'est l'utilisation de l'argument `pattern`, qui a vocation à itérer sur les vecteurs cibles x et y grâce à `map`.
 
-Dans la console R, l'utilisateur qui fait appel à `tar_make()` voit apparaître la déclinaison de "resultat" en trois branches, exécutées en parallèle.
+Dans la console R, l'utilisateur qui fait appel à `tar_make()` voit apparaître la déclinaison de `resultat` en trois branches, exécutées en parallèle.
+
 
 ```{r, eval=FALSE}
 tar_make()
@@ -207,7 +218,8 @@ argument_1 argument_2 res
 
 ### Itérer, croiser les arguments pour créer des branches
 
-Les patterns peuvent être de plusieurs types : "map" (itérer sur les arguments ligne à ligne), "cross" (produit cartésien des arguments), "head" (pour récupérer les premiers arguments), "select" (pour récupérer certains arguments) ... Par exemple, remplacer "map" par "cross" dans la pipeline précédente donne lieu après un `tar_make()` à 
+Les patterns peuvent être de plusieurs types : `map` (itérer sur les arguments ligne à ligne), `cross` (produit cartésien des arguments), `head` (pour récupérer les premiers arguments), `select` (pour récupérer certains arguments) ... Par exemple, remplacer `map` par `cross` dans la pipeline précédente donne lieu après un `tar_make()` à 
+
 
 ```
 ✓ skip target x
