@@ -1,23 +1,54 @@
 # Une chaîne de traitement reproductible avec `targets` {#targets}
 
+## Tâches concernées et recommandations
+
 L'utilisateur souhaite automatiser une chaîne de traitement complexe afin de la rendre reproductible et rapide à s'exécuter en cas de modification.
 
 ::: {.recommandation}
 
 Le *package* `targets` permet de réaliser ce type d'automatisation.
 
-Ce package ne sera approprié que si la chaîne de traitement est exclusivement écrite en `R`.
+Ce package ne sera approprié que si la chaîne de traitement
+est exclusivement écrite en `R`.
 
 :::
 
 ## Pourquoi utiliser `targets`?
 
-Le *package* `targets` peut être particulièrement intéressant dans le cas d'un projet d'étude qui vise à une forte reproductibilité. Plus précisément, utiliser `targets` pour un projet permet de :
+Le *package* `targets` peut être particulièrement intéressant: 
 
-1. Viser la reproductibilité de l'ensemble des étapes de traitement, tout en minimisant au strict nécessaire la répétition de ces étapes, parfois longues
-2. Adopter des bonnes pratiques de développement en R par l'usage (modulariser son code, assurer la lisibilité des étapes successives du traitement..)
-3. Représenter les étapes de sa chaîne de traitement et leurs dépendances par un graphique directionnel
-4. Faciliter la prise en main par une autre personne par une organisation standardisée des codes et une description complète de l'enchaînement des étapes intégrée dans le code lui-même
+* dans le cadre d'un prototype ayant vocation à devenir une chaîne de production
+pérenne écrite avec `R` ;
+* dans le cas d'un projet d'étude qui vise à une forte reproductibilité.
+
+Plus précisément, utiliser `targets` pour un projet permet de :
+
+1. Viser la __reproductibilité__
+de l'ensemble des étapes de traitement,
+tout en minimisant au strict nécessaire la répétition de ces étapes, parfois longues
+2. Adopter des __bonnes pratiques__ de développement en `R` par l'usage
+(modulariser son code,
+assurer la lisibilité des étapes successives du traitement...)
+3. __Représenter sous forme de *pipeline*__ les étapes de sa chaîne
+de traitement et leurs dépendances à partir d'une technique de
+graphiques directionnels asynchrones (appelés *DAG* pour l'acronyme anglais
+dans la sphère informatique)
+4. Faciliter la prise en main par une autre personne
+par une __organisation standardisée des codes__
+et une description complète de l'enchaînement des étapes intégrée
+dans le code lui-même
+
+::: note
+
+Le [guide des bonnes pratiques `utilitR`](https://www.pratiques.utilitr.org/)
+devrait prochainement s'enrichir d'éléments concernant la gestion de
+_pipelines_ de données en `R` et en `Python`. 
+
+Les premiers éléments du débat sont disponibles sur 
+[l'issue #388](https://github.com/InseeFrLab/utilitR/issues/388)
+dans le dépôt `Github` d'`utilitR`.
+ 
+:::
 
 
 ## Quelles sont les tâches automatisées par `targets`?
@@ -25,14 +56,29 @@ Le *package* `targets` peut être particulièrement intéressant dans le cas d'u
 `targets` permet de définir et d'exécuter une chaîne de traitement avec :
 
 
-* Sauvegarde automatique de résultats intermédiaires, ce qu'on appelle les "targets" (cibles)
-* Traçabilité de ces résultats intermédiaires par `targets`: lors de la répétition d'une exécution de la chaîne de traitement, ils ne sont mobilisés que si ils sont reproductibles.
-* Si une fonction ou un input nécessaire au calcul d'une "target" est modifié, `targets` repère automatiquement les étapes à reconduire, et seulement celles-ci
+* Sauvegarde automatique de résultats intermédiaires, ce qu'on appelle les
+_"targets"_ (cibles)
+* Traçabilité de ces résultats intermédiaires par `targets`:
+lors de la répétition d'une exécution de la chaîne de traitement,
+ils ne sont mobilisés que si ils sont reproductibles.
+* Si une fonction ou un _input_ nécessaire au calcul d'une _"target"_
+est modifié, `targets` repère automatiquement les étapes à reconduire,
+et seulement celles-ci. 
 
-Ainsi, le lancement du traitement et la vérification de la reproductibilité sont effectués ensemble au cours du développement du projet par l'appel de `tar_make()`. Vérifier la reproductibilité ne revient pas à 'tout relancer' de 0 (ce qui représente un coût élevé). `targets` automatise le travail d'aller-retour dans les étapes d'une étude (j'ai modifié l'étape 1, il faut donc que je relance l'étape 2 qui en dépend...), en construisant un graphe des dépendances des différentes étapes du traitement.  
+Ainsi, le lancement du traitement et la vérification de la reproductibilité
+sont effectués ensemble au cours du développement du
+projet par l'appel de `tar_make()`.
+
+__Vérifier la reproductibilité ne revient ainsi pas à 'tout relancer' de 0__ !
+Ceci représenterait un coût trop élevé.
+`targets` automatise le travail d'aller-retour dans les étapes d'une étude ou
+de prototypage
+(j'ai modifié l'étape 1, il faut donc que je relance l'étape 2 qui en dépend...),
+en construisant un graphe des dépendances des différentes étapes du traitement.  
 
 
-Pour la suite de la fiche, prenons l'exemple d'une étude qui se structurerait suivant les étapes suivantes :
+Pour la suite de la fiche,
+prenons l'exemple d'une étude qui se structurerait suivant les étapes suivantes :
 
   0. Charger les données
   1. Traiter les données
@@ -43,13 +89,15 @@ Pour la suite de la fiche, prenons l'exemple d'une étude qui se structurerait s
 ## Un projet minimal pour comprendre l'essentiel
 
 
-Un projet `targets` est un projet R qui contient les principaux éléments suivants :
+Un projet `targets` est un projet `R` avec une structure canonique. Ce projet
+contient les principaux éléments suivants :
 
-* `_targets.R` pour décrire les éléments de configuration (e.g. packages utilisés) et l'enchaînement des traitements. 
+* `_targets.R` pour décrire les éléments de configuration (par exemple
+_packages_ utilisés) et l'enchaînement des traitements. 
 * Un dossier `R` comprenant les scripts définissant les fonctions utilisées par le projet
 * Un dossier `data` pour les données externes (non générées au cours du projet)
 
-La structure du projet doit être comme suit:
+La structure du projet doit ainsi être comme suit:
 
     ├── _targets.R
     ├── R/
@@ -60,7 +108,14 @@ La structure du projet doit être comme suit:
     └───── donnes_entrees.csv
     └───── ...
 
-Organiser ses fichiers de cette façon est très commun, mais pas indispensable pour l'utilisation de `targets`. La seule obligation est que le fichier `_targets.R` soit positionné dans le répertoire de travail. Une manière commode pour un utilisateur souhaitant tester `targets`  est donc de créer un [projet RStudio](rproject.html) à la racine duquel il place ce fichier. En prévision des futures fonctions qu'il va écrire, il crée un dossier 'R'. Le fichier `_targets.R` détaille l'enchaînement des traitements. Il doit toujours contenir une instruction chargeant le *package* `targets`.
+Organiser ses fichiers de cette façon est très commun,
+mais pas indispensable pour l'utilisation de `targets`.
+La seule obligation est que le fichier `_targets.R`
+soit positionné dans le répertoire de travail.
+
+Une manière commode pour un utilisateur souhaitant tester `targets`  est donc de créer un [projet RStudio](rproject.html) à la racine duquel il place ce fichier.
+En prévision des futures fonctions qu'il va écrire, il crée un dossier `/R`. Le fichier `_targets.R` détaille l'enchaînement des traitements.
+Il doit toujours contenir une instruction chargeant le *package* `targets`.
 
 ```{r, eval=FALSE}
 # _targets.R file
@@ -344,8 +399,8 @@ Landau, W. M., (2021). The targets R package: a dynamic Make-like function-orien
 
 ## Pour en savoir plus
 
-* Manuel d'utilisation de `targets` https://books.ropensci.org/targets/ 
-* High Performance Computing avec `targets`: https://books.ropensci.org/targets/hpc.html 
+* [Manuel d'utilisation de `targets`](https://books.ropensci.org/targets/)
+* [_High Performance Computing avec `targets`_](https://books.ropensci.org/targets/hpc.html)
 * https://cran.r-project.org/web/packages/targets/targets.pdf 
 * https://docs.ropensci.org/tarchetypes/ 
 * Un exemple https://github.com/InseeFrLab/lockdown-maps-R/ 
