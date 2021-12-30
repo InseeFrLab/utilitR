@@ -118,17 +118,17 @@ Il y a deux façons de faire pour exporter une table SAS vers un format `.csv` :
 La solution la plus simple consiste à exporter uniquement la table de données de SAS vers un fichier `.csv`. Voici un exemple de code SAS qui exporte une table SAS en `.csv`. L'option `(keep = var1 var2 var3 var8)` permet de choisir les variables qu'on exporte. Vous pouvez le copier-coller dans SAS, et l'adapter.
 
 ```
-* Définir le répertoire d'exportation ;
-%let versR = "D:/le/dossier/pour/exporter/le/fichier/csv" ;
+/* Définir le répertoire d'exportation */
+%let versR = D:/le/dossier/pour/exporter/le/fichier/csv ;
 
-* Définir le nom du fichier CSV et son encodage ;
+/* Définir le nom du fichier CSV et son encodage */
 filename f "&versR./data.csv" encoding = "utf8" ;
 
-* Exporter les données en sélectionnant des colonnes ;
-PROC EXPORT DATA= ma_table_SAS (keep = var1 var2 var3 var8)
-            OUTFILE= f
-            DBMS=CSV REPLACE ;
-     PUTNAMES=YES ;
+/* Exporter les données en sélectionnant des colonnes */
+PROC EXPORT DATA = ma_table_SAS (keep = var1 var2 var3 var8)
+            OUTFILE = f
+            DBMS = CSV REPLACE ;
+     PUTNAMES = YES ;
 RUN ;
 ```
 
@@ -137,32 +137,28 @@ RUN ;
 Voici un exemple de code SAS qui exporte l'intégralité d'une table SAS sous forme de trois fichiers `.csv` : un pour les données *stricto sensu*, un pour les étiquettes des variables, et un pour les formats des variables. L'option `(keep = var1 var2 var3 var8)` permet de choisir les variables qu'on exporte. Vous pouvez le copier-coller dans SAS, et l'adapter.
 
 ```
-* Définir le répertoire d'exportation ;
-%let versR = "D:/le/dossier/pour/exporter/le/fichier/csv" ;
+/* Définir le répertoire d'exportation */
+%let versR = D:/le/dossier/pour/exporter/le/fichier/csv ;
 
-* Définir le nom du fichier CSV et son encodage ;
+/* Définir le nom du fichier CSV et son encodage */
 filename f1 "&versR./data.csv" encoding = "utf8" ;
 filename f2 "&versR./labelvariables.csv" encoding = "utf8" ;
 
-* Exporter les données en sélectionnant des colonnes ;
-PROC EXPORT DATA= ma_table_SAS (keep = var1 var2 var3 var8)
-            OUTFILE= f1
-            DBMS=CSV REPLACE ;
-     PUTNAMES=YES ;
+/* Exporter les données en sélectionnant des colonnes */
+PROC EXPORT DATA = ma_table_SAS (keep = var1 var2 var3 var8)
+            OUTFILE = f1
+            DBMS = CSV REPLACE ;
+     PUTNAMES = YES ;
 RUN ;
 
-* Exporter les étiquettes des variables ;
-PROC CONTENT DATA = ma_table_SAS OUT = labelVar ;
+/* Exporter les étiquettes des variables */
+PROC CONTENTS DATA = ma_table_SAS OUT = labelVar ;
 RUN ;
 
-DATA labelVar (RENAME = (_name_ = name _label_ = label)) ;
-SET labelVar ;
-RUN ;
-
-PROC EXPORT DATA= labelVar (keep = name label)
-            OUTFILE= f2
-            DBMS=CSV REPLACE ;
-     PUTNAMES=NO ;
+PROC EXPORT DATA = labelVar (keep = name label)
+            OUTFILE = f2
+            DBMS = CSV REPLACE ;
+     PUTNAMES = NO ;
 RUN ;
 ```
 

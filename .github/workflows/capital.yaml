@@ -9,10 +9,24 @@ jobs:
     container: rocker/verse:latest
     steps:
       - name: Checkout Repository
+        if: ${{ github.repository == 'inseefrlab/utilitr' }}
         env:
           GITHUB_PAT: ${{ secrets.PAT }}
         uses: actions/checkout@master
+      - name: Checkout Repository
+        if: ${{ github.repository != 'inseefrlab/utilitr' }}
+        env:
+          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+        uses: actions/checkout@master
       - name: Install utilitr library
         run: Rscript -e "remotes::install_github('https://github.com/InseeFrLab/utilitr-template')"
+        if: ${{ github.repository == 'inseefrlab/utilitr' }}
+        env:
+          GITHUB_PAT: ${{ secrets.PAT }}
+      - name: Install utilitr library
+        run: Rscript -e "remotes::install_github('https://github.com/InseeFrLab/utilitr-template')"
+        if: ${{ github.repository != 'inseefrlab/utilitr' }}
+        env:
+          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       - name: Détection des majuscules
         run: Rscript -e 'utilitr:::upper_extension("PNG")'

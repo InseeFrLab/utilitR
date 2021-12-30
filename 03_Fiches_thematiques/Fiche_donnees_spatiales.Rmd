@@ -66,7 +66,7 @@ La fonction **`sf::st_read()`** permet de lire différents formats de données g
 * `layer`, le nom de la couche. Ce paramètre est facultatif si les données ne contiennent qu'une seule couche ;
 * `crs`, pour définir le système de projection. Ce paramètre est facultatif. Si le système de projection a été défini à l'écriture du fichier, `sf` peut le repérer automatiquement à la lecture. Sinon, il faut le définir à la lecture avec l'argument `crs`.
 
-```{r}
+```{r load_sf}
 # Installation du package cartography
 # install.packages("cartography")
 
@@ -92,7 +92,7 @@ Il peut arriver que les données géographiques ne soient pas stockées dans un 
 
 La commande `head()` fait apparaître la structure de l'objet `sf` `martinique`. L'en-tête précise le type de `geometry` (`polygon`, en l'occurrence le contour des communes), et le système de projection (`WGS 84 / UTM zone 20N`). La table de données contient la liste des communes avec leurs caractéristiques (nom, population...). Enfin, la dernière colonne (`geometry`) contient l'information géographique (le contour des communes).
 
-```{r}
+```{r head_sf}
 head(martinique, 3)
 ```
 
@@ -100,7 +100,7 @@ Pour revenir à un `dataframe` traditionnel, c'est-à-dire sans la dimension gé
 
 On peut produire très rapidement une représentation cartographique d'un attribut avec la fonction `plot()` :
 
-```{r}
+```{r plot_sf}
 # Produire une carte de la population par commune
 plot(martinique['POP'])
 ```
@@ -111,7 +111,7 @@ plot(martinique['POP'])
 
 **Il est possible d'appliquer aux attributs des objets `sf` les fonctions de la grammaire `dplyr`** comme si l'objet était un `data.frame` standard. On peut ainsi sélectionner un sous-champ de la base avec `dplyr::filter()`, faire du tri avec `dplyr::arrange()` et créer de nouvelles variables avec `dplyr::mutate()` :
 
-```{r}
+```{r sf_dplyr}
 grandes_villes_martinique <- martinique %>% 
   dplyr::filter(POP > 10000) %>% 
   dplyr::arrange(POP) %>% 
@@ -120,7 +120,7 @@ grandes_villes_martinique <- martinique %>%
 
 On peut également appliquer des fonctions de statistiques descriptives avec `dplyr::summarise()` et construire des groupes avec `dplyr::group_by()`. Le `group_by()` sur un objet spatial va également agréger les géométries : il va créer une nouvelle géométrie recoupant l'ensemble des points, des lignes ou des polygones appartenant au groupe. Par exemple, on peut construire très facilement une géométrie plus agrégée par regroupement des géométries plus fines. Imaginons que la table de données sur la Martinique comprend deux groupes : les villes de plus de 10 000 habitants et celles de moins de 10 000 habitants. On désire faire la somme de la variable `POP` pour chaque groupe. Dans ce cas, après avoir créé les groupes, on va effectuer un `group_by()` puis un `summarise()` :
 
-```{r}
+```{r aggregate}
 martinique_agg <- martinique %>%
   dplyr::mutate(group = (POP < 10000)) %>%
   dplyr::group_by(group) %>%
@@ -149,7 +149,7 @@ Les manipulations de données sur un `sf` sont nettement plus lentes que sur un 
 
 Par exemple, on peut calculer la superficie d'un polygone avec `sf::st_area()`. Si l'unité ne convient pas, il est possible de convertir cette superficie en $km^2$ :
 
-```{r}
+```{r st_area}
 martinique %>%
   dplyr::mutate(area = sf::st_area(.)) %>%
   dplyr::mutate(x = units::set_units(area, km^2)) %>%
@@ -199,7 +199,7 @@ Une fonction `R` réalisant une jointure spatiale entre carreaux et zones est d�
 
 Le système de projection est fondamental pour que la dimension spatiale soit bien interprétée par `R`. Si un système de projection est défini, il s'affiche dans la ligne `Projected CRS` lorsqu'on applique la fonction `head()` à un objet `sf`. Pour vérifier le système de projection d'une base de données, on peut utiliser `sf::st_crs` :
 
-```{r}
+```{r st_crs}
 sf::st_crs(martinique)
 ```
 
@@ -210,13 +210,13 @@ Les deux principales fonctions pour définir le système de projection utilisé 
 
 La définition du système de projection se fait de la manière suivante :
 
-```{r}
+```{r st_set_crs}
 martinique <- martinique %>% sf::st_set_crs(32620)
 ```
 
 Alors que la reprojection s'obtient de la manière suivante :
 
-```{r}
+```{r st_transform, eval = FALSE}
 martinique <- martinique %>% sf::st_transform(4326)
 ```
 
@@ -264,5 +264,5 @@ L'Insee propose un outil pour sélectionner et télécharger des données géogr
 * la documentation du *package* `sf` :
     - le [site officiel](http://r-spatial.github.io/sf) du *package* ;
     - la [documentation](https://www.rdocumentation.org/packages/sf) du *package* ;
-    - la [*cheeatsheet*](https://github.com/rstudio/cheatsheets/raw/master/sf.pdf) du *package* (en anglais) ;
+    - la [*cheatsheet*](https://github.com/rstudio/cheatsheets/raw/master/sf.pdf) du *package* (en anglais) ;
 * un [tutoriel](https://rcarto.github.io/carto_avec_r) détaillé sur les données spatiales et sur la cartographie avec `R` (en français).

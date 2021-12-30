@@ -1,12 +1,13 @@
-FROM rocker/geospatial:4.0.4
+FROM rocker/geospatial:4.1.1
 
 # R packages 
 COPY ./DESCRIPTION /tmp/build_image/
 RUN Rscript -e "install.packages(c('xfun','knitr', 'insee', 'OECD'))"
 RUN Rscript -e "remotes::install_deps('/tmp/build_image', dependencies = TRUE, upgrade = FALSE)"
+RUN Rscript -e "remotes::install_github('kevinushey/rex')"
 RUN Rscript -e "remotes::install_github('rstudio/bookdown')"
 RUN Rscript -e "remotes::install_github('inseefrlab/inseelocaldata')"
-RUN Rscript -e "remotes::install_github('inseefrlab/doremifasol')"
+RUN Rscript -e "remotes::install_github('inseefrlab/doremifasol', build_vignettes = TRUE)"
 
 RUN apt-get update \
     && apt-get -qq install gnupg

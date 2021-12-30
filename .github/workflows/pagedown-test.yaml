@@ -9,10 +9,28 @@ jobs:
     container: inseefrlab/utilitr:latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@master
-      - name: Install Dependencies
+        if: ${{ github.repository == 'inseefrlab/utilitr' }}
         env:
           GITHUB_PAT: ${{ secrets.PAT }}
+        uses: actions/checkout@master
+      - name: Checkout Repository
+        if: ${{ github.repository != 'inseefrlab/utilitr' }}
+        env:
+          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+        uses: actions/checkout@master
+      - name: Install Dependencies
+        if: ${{ github.repository == 'inseefrlab/utilitr' }}
+        env:
+          GITHUB_PAT: ${{ secrets.PAT }}
+        run: |
+          Rscript -e "install.packages(c('remotes'))"
+          Rscript -e "remotes::install_github('rstudio/rmarkdown')"
+          Rscript -e "remotes::install_github('rstudio/pagedown')"
+          Rscript -e "remotes::install_github('rstudio/htmltools')"
+      - name: Install Dependencies
+        if: ${{ github.repository != 'inseefrlab/utilitr' }}
+        env:
+          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
         run: |
           Rscript -e "install.packages(c('remotes'))"
           Rscript -e "remotes::install_github('rstudio/rmarkdown')"
