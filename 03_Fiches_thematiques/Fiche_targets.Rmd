@@ -114,7 +114,7 @@ La seule obligation est que le fichier `_targets.R`
 soit positionné dans le répertoire de travail.
 
 Une manière commode pour un utilisateur souhaitant tester `targets`  est donc de créer un [projet RStudio](rproject.html) à la racine duquel il place ce fichier.
-En prévision des futures fonctions qu'il va écrire, il crée un dossier `/R`. Le fichier `_targets.R` détaille l'enchaînement des traitements.
+En prévision des futures fonctions qu'il va écrire, il crée un dossier `R/`. Le fichier `_targets.R` détaille l'enchaînement des traitements.
 Il doit toujours contenir une instruction chargeant le *package* `targets`.
 
 ```{r, eval=FALSE}
@@ -152,14 +152,30 @@ list(
 )
 ```
 
-Les fonctions écrites par l'analyste et utilisées dans la chaîne de traitement, en l'occurrence `ma_fonction_de_nettoyage` et `ma_fonction_de_presentation` sont contenues dans les fichiers que l'on "source" au départ, ici `"R/mesfonctions_pour_faire_ceci.R` et `R/mesfonctions_pour_faire_cela.R`. 
+Les fonctions écrites par l'analyste et utilisées dans la chaîne de traitement,
+en l'occurrence `ma_fonction_de_nettoyage` et `ma_fonction_de_presentation` sont contenues dans les fichiers que l'on _"source"_ au départ,
+ici `"R/mesfonctions_pour_faire_ceci.R` et `R/mesfonctions_pour_faire_cela.R`. 
 
-Les packages dont dépendent les analyses sont spécifiés via la fonction `tar_option_set` du *package* `targets`. 
+Les packages dont dépendent les analyses sont spécifiés via la fonction
+`tar_option_set` du *package* `targets`. 
 
-La chaîne de traitement est représentée par une liste de `tar_target`, soit les objets R qui sont les cibles intermédiaires de l'analyse. Ils sont le résultat de l'application à une cible précédente d'une fonction pour obtenir la cible suivante. Ici la première cible est particulière (`format = file`) : on spécifie où sont les données d'entrée afin de surveiller si elles changent.  La seconde prend en entrée la première cible `data_file` et la transforme en appliquant la fonction `read.csv` en un nouvel objet R, `data`. La troisième applique cette fois une fonction écrite par l'utilisateur à `data` pour obtenir `data_clean`, et ainsi de suite. Ainsi, le fichier `_targets.R` contient la description de l'ensemble des étapes du traitements. La complexité des traitements est résumé de façon concise par un ensemble minimal de fonction résumant les grandes étapes.
+La chaîne de traitement est représentée par une liste de `tar_target`,
+soit les objets `R` qui sont les cibles intermédiaires de l'analyse.
+Ils sont le résultat de l'application à une cible précédente d'une fonction pour obtenir la cible suivante : 
+
+1. Ici la première cible est particulière (`format = file`) : on spécifie où sont les données d'entrée afin de surveiller si elles changent.
+2. La seconde prend en entrée la première cible `data_file` et la transforme en appliquant la fonction `read.csv` en un nouvel objet R, `data`.
+3. La troisième applique cette fois une fonction écrite par l'utilisateur à `data` pour obtenir `data_clean`, et ainsi de suite...
+
+Ainsi, le fichier `_targets.R` contient la description de
+l'ensemble des étapes du traitements.
+La complexité des traitements est résumé de façon concise
+par un ensemble minimal de fonction résumant les grandes étapes.
 
 
-Afin de faire tourner l'analyse, l'utilisateur fait appel au sein du projet à la fonction `tar_make()`. L'utilisateur est informé de l'évolution des calculs.
+Afin de faire tourner l'analyse,
+l'utilisateur fait appel au sein du projet à la fonction `tar_make()`.
+L'utilisateur est informé de l'évolution des calculs.
 
 ```{r, eval=FALSE}
 tar_make()
@@ -180,7 +196,9 @@ tar_make()
 
 ```
 
-L'utilisateur décide ensuite de modifier la fonction `ma_fonction_de_nettoyage`. Il n'a pas besoin par la suite de déterminer quels sont les codes à refaire tourner, il refait appel à :
+L'utilisateur décide ensuite de modifier la fonction `ma_fonction_de_nettoyage`.
+Il n'a pas besoin par la suite de déterminer quels sont les codes à refaire tourner,
+il refait appel à :
 
 
 ```{r, eval=FALSE}
@@ -198,14 +216,28 @@ tar_make()
 #> • end pipeline
 ```
 
-La modification de la fonction `ma_fonction_de_nettoyage` entraîne la nécessaire mise à jour de `data_clean` et toutes les cibles qui en dépendent, mais pas du début de la chaîne de traitement !
+La modification de la fonction `ma_fonction_de_nettoyage`
+entraîne la nécessaire mise à jour de `data_clean`
+et toutes les cibles qui en dépendent, mais pas du début de la chaîne de traitement !
+
+Les cibles définies sont calculées successivement, stockées et mises à jour automatiquement dans un dossier `_targets/objects/`.
+On peut facilement accéder à un objet cible ensuite à l'aide de la fonction `tar_read()` dans la console `R`,
+par exemple `tar_read(data_clean)` renvoie l'objet `data_clean`
+dans la dernière version construite par `tar_make()`.
+
+A partir de cette spécification de la chaîne, `targets` construit un graphe de dépendance, qui peut être :
+
+* visualisé avec `tar_visnetwork()` ou `tar_glimpse()` ;
+* décrit avec `tar_manifest()`.
+
+```{r, eval=FALSE}
+tar_glimpse()
+```
 
 
-Les cibles définies sont calculées successivement, stockées et mises à jour automatiquement dans un dossier `_targets/objects/`. On peut facilement accéder à un objet cible ensuite à l'aide de la fonction `tar_read()` dans la console R, par exemple `tar_read(data_clean)` renvoie l'objet `data_clean` dans la dernière version construite par `tar_make()`.
-
-A partir de cette spécification de la chaîne, `targets` construit un graphe de dépendance, qui peut être visualisé avec `tar_visnetwork()`, et décrit avec `tar_manifest()`.
-
-Et voilà, c'est tout pour l'essentiel. La suite décrit des fonctions de targets qui aide à complexifier la chaîne de traitement. 
+Et voilà, c'est tout pour l'essentiel.
+La suite décrit des fonctions de targets qui aident
+à complexifier la chaîne de traitement. 
 
 ## Les branches
 
@@ -393,14 +425,11 @@ list(
 ```
 
 
-## Source
-
-Landau, W. M., (2021). The targets R package: a dynamic Make-like function-oriented pipeline toolkit for reproducibility and high-performance computing. Journal of Open Source Software, 6(57), 2959, https://doi.org/10.21105/joss.02959 
-
 ## Pour en savoir plus
 
 * [Manuel d'utilisation de `targets`](https://books.ropensci.org/targets/)
 * [_High Performance Computing avec `targets`_](https://books.ropensci.org/targets/hpc.html)
+* Landau, W. M., (2021). The targets R package: a dynamic Make-like function-oriented pipeline toolkit for reproducibility and high-performance computing. _Journal of Open Source Software_, 6(57), 2959, https://doi.org/10.21105/joss.02959 
 * https://cran.r-project.org/web/packages/targets/targets.pdf 
 * https://docs.ropensci.org/tarchetypes/ 
 * Un exemple https://github.com/InseeFrLab/lockdown-maps-R/ 
