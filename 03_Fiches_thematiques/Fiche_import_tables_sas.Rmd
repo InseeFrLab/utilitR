@@ -63,11 +63,10 @@ dfRP <-
 :::
 
 
-La fonction `read_sas()` importe les noms de variables, mais aussi les étiquettes des variables (`labels`). Il est possible de récupérer les étiquettes de colonnes de la table importée avec la fonction `get_label()` du *package* `sjlabelled` :
+La fonction `read_sas()` importe les noms de variables, mais aussi les étiquettes des variables (`labels`). Il est possible de récupérer les étiquettes de colonnes de la table importée dans un vecteur avec :
 
 ```{r, eval = FALSE}
-library(sjlabelled)
-sjlabelled::get_label(dfRP)
+sapply(dfRP, attr, "label")
 ```
 
 ### Résoudre le problème des tables SAS® compressées en BINARY
@@ -168,7 +167,7 @@ Les méthodes pour importer les données `csv` en `R` sont détaillées dans la 
 
 * Importer le fichier `data.csv` sous le nom `df_sas` ;
 * Importer le fichier `labelvariables.csv` sous le nom `labels_sas` ;
-* Associer les étiquettes avec les variables avec la commande `label(df_sas) <- lapply(labels_sas, function(x) x)`.
+* Associer les étiquettes avec les variables avec la commande `for (i in seq(labels_sas)) attr(df_sas[[i]], "label") <- labels_sas[i]`.
 
 ## Pour en savoir plus {#RessourcesImportSAS}
 
