@@ -71,7 +71,7 @@ Deux points importants sont à noter:
 Le projet est mené par un groupe de contributeurs qui en définissent eux-mêmes le contenu, la structure
 et le calendrier. Les objectifs et l'approche collaborative du projet `utilitR` sont détaillés dans [`ce document`](Manifeste.md).
 
-**Toute personne qui le souhaite peut modifier ou compléter la documentation en fonction de ses connaissances et de ses expériences**, et toutes les contributions sont les bienvenues: compléments, corrections d'erreur, améliorations, questions... Il n'y a aucun prérequis, et aucun niveau minimal en `R` n'est demandé. Le dépôt de la documentation est situé [ici](https://github.com/InseeFrLab/utilitR). Toute personne intéressée à contribuer au projet est invité à consulter le guide des contributeurs (`CONTRIBUTING.md`).
+**Toute personne qui le souhaite peut modifier ou compléter la documentation en fonction de ses connaissances et de ses expériences**, et toutes les contributions sont les bienvenues: compléments, corrections d'erreur, améliorations, questions... Il n'y a aucun prérequis, et aucun niveau minimal en `R` n'est demandé. Le dépôt de la documentation est situé [ici](https://github.com/InseeFrLab/utilitR). Toute personne intéressée à contribuer au projet est invitée à consulter le guide des contributeurs (`CONTRIBUTING.md`).
 
 <br>
 
