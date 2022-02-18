@@ -52,16 +52,19 @@ permet de proposer, automatiquement, des modifications via l'interface de
 `Github`. 
 
 Dans le menu du document, il faut d'abord se placer dans la fiche à
-relire et ensuite cliquer sur le bouton `Edit`, en haut à gauche.
-Un lien s'ouvre automatiquement sur la fiche `.Rmd` et permet d'éditer le
-contenu depuis `Github`. Cette fonctionnalité est utilisable même
-lorsque vous n'avez pas les droits en écriture sur le dépôt (droits attachés
-au statut de *mainteneur* sur le projet):
+relire et ensuite cliquer sur le bouton `Edit`, en haut à gauche :
 
 ![](./pics/contributing/edit_bs4.png)
 
-En cliquant dessus, on se retrouve sur une interface permettant d'éditer 
-de visualiser et proposer des modifications du fichier source. 
+Un lien s'ouvre automatiquement sur la fiche `.Rmd` et permet d'éditer le
+contenu depuis `Github`. Cette fonctionnalité est utilisable même
+lorsque vous n'avez pas les droits en écriture sur le dépôt (droits attachés
+au statut de *mainteneur* sur le projet), grâce à la notion de [*fork*](https://github.com/InseeFrLab/utilitr-bonnes-pratiques/edit/master/CONTRIBUTING.md#one-forker-le-d%C3%A9p%C3%B4t-utilitr).
+
+A l'ouverture du lien, s'il n'existe pas de fork du projet sur son compte, un pop-up s'ouvre pour indiquer qu'il faut en créer un pour pouvoir proposer des modifications : en acceptant, un fork est créé automatiquement.
+
+On se retrouve alors sur une interface permettant d'éditer,
+de visualiser et de proposer des modifications du fichier source. 
 
 ![](./pics/contributing/edit2.png)
 
