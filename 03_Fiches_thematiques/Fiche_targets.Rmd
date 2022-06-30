@@ -263,9 +263,91 @@ fonctions dans le fichier `XXXXX.R` et en créant l'étape
 `tar_target` adéquate. 
 
 
-box conseil: parler 
-1/ format de stockage : qs, fst_dt ou parquet
-2/ localisation du `_store_`
+::: {.conseil}
+
+Par défaut, les cibles sont stockées
+au format `rds`. Ce format présente
+deux inconvénients:
+
+- il est spécifique à `R` et ne permet
+pas de lire les étapes intermédiaires
+dans un autre langage (par exemple `Python`) ;
+- la sérialisation des objets `R` nécessaire
+pour écrire sous format `rds` ou lire un tel fichier
+est assez lente. 
+
+Il est conseillé d'utiliser
+un autre format de stockage
+des cibles.
+
+En premier lieu, le format par défaut
+qui peut être utilisé est le
+format [qs](https://cran.r-project.org/web/packages/qs/index.html).
+Celui-ci est, comme `rds`, est un format spécifique à `R` mais
+présente l'avantage d'être beaucoup plus rapide et ainsi limiter
+les temps en lecture/écriture.
+Pour cela, il convient d'ajouter la ligne suivante
+au début des options du fichier `_targets.R`
+
+```{r, eval = FALSE}
+tar_option_set(format = "fst_dt")
+```
+
+Pour les dataframes, il est possible d'utiliser
+des formats plus universels ou plus 
+appropriés. Les formats à privilégier sont
+les suivants:
+
+- `parquet`: un format qui tend à devenir un standard dans le monde
+de la science des données. Ce format présente plusieurs avantages,
+parmi lesquels le fait qu'il est
+très compressé, très rapide et qu'il conserve
+les métadonnées du fichier ce qui permet, à la différence
+des formats type CSV, de conserver l'intégrité des typages des colonnes ;
+- `fst_tbl` (utilisateurs du tidyverse) ou `fst_dt` (utilisateurs de data.table) : un format qui est spécifique à `R` mais présente
+des avantages proches de ceux d'un fichier `parquet`. L'avantage de ces
+formats est qu'ils préservent la nature d'un dataframe, ce qui permet de
+repartir d'un tibble ou d'un datatable sans avoir à faire de conversion
+à chaque étape du pipeline.
+
+Le choix du format de stockage d'un objet se fait directement
+lors de la déclaration de la cible dans `_targets.R`:
+
+```{r, eval = FALSE}
+tar_target(
+    grandes_villes, garde_grandes_villes(raw_filosofi_epci),
+    format = "parquet"
+)
+```
+
+Dans le dossier `_targets/object`, le fichier sera ainsi stocké au 
+format exigé. 
+
+Il n'est pas recommandé d'utiliser les formats `parquet`, `fst_dt` ou
+`fst_tbl` par défaut car ils ne permettent de stocker que des 
+dataframes. Or, un _pipeline_ peut stocker des objets de nature
+beaucoup plus diverses (listes, objets ggplot, etc.)
+
+:::
+
+
+::: {.remarque}
+
+Il est tout à fait possible de stocker l'ensemble des 
+cibles intermédiaires dans un emplacement différent
+du projet. Il s'agit même d'une bonne pratique de
+séparer le lieu de stockage du code de celui des données. 
+
+Là encore, il sera nécessaire d'éditer les options
+de la chaine dans le fichier `_targets.R`. Par exemple 
+de la manière suivante:
+
+```{r, eval  = FALSE}
+tar_config_set(store = "mon_dossier_donnees/projet-toto")
+```
+:::
+
+
 
 ## Intégrer un rapport en Rmarkdown
 
