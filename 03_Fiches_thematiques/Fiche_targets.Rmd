@@ -192,6 +192,24 @@ tar_visnetwork()
 On obtient bien un diagramme linéaire comme
 on en avait l'intuition. 
 
+::: {.remarque}
+
+Il est tout à fait possible de stocker l'ensemble des 
+cibles intermédiaires dans un emplacement différent
+du projet. Il s'agit même d'une bonne pratique de
+séparer le lieu de stockage du code de celui des données. 
+
+Il sera nécessaire d'éditer les options
+de la chaine dans le fichier `_targets.R`. Par exemple 
+avec cette ligne de commande, au début du fichier
+`_targets.R` (mais après l'appel à `library(targets)`:
+
+```{r, eval  = FALSE}
+tar_config_set(store = "mon_dossier_donnees/projet-toto")
+```
+:::
+
+
 ## Modification d'une étape intermédiaire
 
 L'utilisateur décide ensuite de modifier la définition 
@@ -254,6 +272,7 @@ suivante
 
 ```{r}
 tar_load(grandes_villes)
+head(grandes_villes)
 ```
 
 Cela permettra à l'utilisateur de `targets` de prototyper une 
@@ -331,22 +350,30 @@ beaucoup plus diverses (listes, objets ggplot, etc.)
 :::
 
 
+
+
 ::: {.remarque}
 
-Il est tout à fait possible de stocker l'ensemble des 
-cibles intermédiaires dans un emplacement différent
-du projet. Il s'agit même d'une bonne pratique de
-séparer le lieu de stockage du code de celui des données. 
+L'utilisation du _garbage collector_ peut
+parfois s'avérer utile pour nettoyer la 
+mémoire de la session `R` dans laquelle
+tourne le _pipeline_. Ceci est
+particulièrement utile lorsque les
+objets manipulés sont volumineux (voir
+la fiche [Superviser sa session R](https://www.book.utilitr.org/superviser-ressources.html)).
 
-Là encore, il sera nécessaire d'éditer les options
-de la chaine dans le fichier `_targets.R`. Par exemple 
-de la manière suivante:
+Dans `targets`, cette opération est possible en ajoutant
+l'argument `garbage_collection = TRUE` à la définition de
+la cible :
 
-```{r, eval  = FALSE}
-tar_config_set(store = "mon_dossier_donnees/projet-toto")
+```{r, eval = FALSE}
+tar_target(
+    grandes_villes, garde_grandes_villes(raw_filosofi_epci),
+    garbage_collection = TRUE
+)
 ```
-:::
 
+:::
 
 
 ## Intégrer un rapport en Rmarkdown
