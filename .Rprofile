@@ -101,18 +101,3 @@ reminder_image <- function(path = "moncheminperso"){
   )
 }
 
-message(
-  cat(
-    c("Projet source de la documentation utilitR",
-      "-----------------------------------------",
-      "",
-      "Pour pr\u00E9visualiser la version web de l'ouvrage: ",
-      "   * Option 1: utiliser l'onglet 'Build' dans Rstudio;",
-      "   * Option 2: taper dans la commande R:
-         bookdown::render_book(\"index.Rmd\", output_dir = \"_public\", output_format = \"utilitr::bs4_utilitr\")",
-      "",
-      "Ne pas oublier d'installer le package 'utilitr' avant pour disposer des mod\u00E8les de documents: 
-         remotes::install_github(\"https://github.com/InseeFrLab/utilitr-template\")"),
-    sep = "\n"
-  )
-)
