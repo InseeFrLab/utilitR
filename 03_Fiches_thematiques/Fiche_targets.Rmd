@@ -73,13 +73,12 @@ Ainsi, le lancement du traitement et la vérification de la reproductibilité
 sont effectués ensemble au cours du développement du
 projet par l'appel de `tar_make()`.
 
-__Vérifier la reproductibilité ne revient ainsi pas à 'tout relancer' de 0__ !
+__Vérifier la reproductibilité revient ainsi à ne pas 'tout relancer' de 0__ !
 Ceci représenterait un coût trop élevé.
 `targets` automatise le travail d'aller-retour dans les étapes d'une étude ou
 de prototypage
 (j'ai modifié l'étape 1, il faut donc que je relance l'étape 2 qui en dépend...),
-en construisant un graphe des dépendances des différentes étapes du traitement.  
-
+en construisant un graphe des dépendances des différentes étapes du traitement.
 
 Pour la suite de la fiche,
 prenons l'exemple d'une étude qui se structurerait suivant les étapes suivantes :
@@ -94,33 +93,38 @@ prenons l'exemple d'une étude qui se structurerait suivant les étapes suivante
 
 ### Structure du projet
 
-Un projet `targets` est un projet `R` avec une structure canonique. Ce projet
-contient les principaux éléments suivants :
+Un projet `targets` est un projet `R` en règle générale structuré de la sorte :
 
-* `_targets.R` pour décrire les éléments de configuration (par exemple
-_packages_ utilisés) et l'enchaînement des traitements. 
-* Un dossier `R` comprenant les scripts définissant les fonctions utilisées par le projet
-* Un dossier `data` pour les données externes (non générées au cours du projet)
+* un fichier `_targets.R` décrivant les éléments de configuration (par exemple
+_packages_ utilisés) et l'enchaînement des traitements
+* un dossier `R` comprenant les scripts définissant les fonctions utilisées par le projet
+* un dossier `data` pour les données externes (non générées au cours du projet)
 
-La structure du projet doit ainsi être comme suit:
+L'architecture des dossiers du projet ressemble par conséquent à ceci :
 
+```
 ├── _targets.R
 ├── R/
 ├───── mesfonctions_pour_faire_ceci.R
 ├───── mesfonctions_pour_faire_cela.R
 ├──── ...
 ├── data/
-└───── donnes_entrees.csv
+├───── donnees_entrees.csv
 └───── ...
+```
+
+::: {.conseil}
 
 Organiser ses fichiers de cette façon est très commun,
 mais pas indispensable pour l'utilisation de `targets`.
 La seule obligation est que le fichier `_targets.R`
 soit positionné dans le répertoire de travail.
 
-Une manière commode pour un utilisateur souhaitant tester `targets`  est donc de créer un [projet RStudio](rproject.html) à la racine duquel il place ce fichier.
+Une manière commode pour un utilisateur souhaitant utiliser `targets`  est donc de créer un [projet RStudio](rproject.html) à la racine duquel il place ce fichier.
 En prévision des futures fonctions qu'il va écrire, il crée un dossier `R/`. Le fichier `_targets.R` détaille l'enchaînement des traitements.
 Il doit toujours contenir une instruction chargeant le *package* `targets`.
+
+:::
 
 ### Premier exemple
 
@@ -130,7 +134,7 @@ file.copy("resources/targets/_targets.R", "_targets.R", overwrite = TRUE)
 file.copy("resources/targets/mesfonctions_pour_faire_ceci.R", "mesfonctions_pour_faire_ceci.R", overwrite = TRUE)
 ```
 
-Partons d'un exemple simple: 
+Partons d'un exemple simple : 
 
 - on lit les données de population depuis un fichier CSV ;
 - on a créé une fonction pour ne garder que les communes de plus
@@ -138,24 +142,24 @@ de 200 000 habitants ;
 - sur ces communes, on désire connaître la proportion dont le revenu
 médian est supérieur à 25 000 euros.
 
-La chaine de traitement est donc ici linéaire. Chaque étape dépend
+La chaîne de traitement est donc ici linéaire. Chaque étape dépend
 de la précédente et uniquement de celle-ci. Le fichier d'instruction
 `_targets` prendra alors la forme suivante:
 
 ```{r eval=FALSE, code=readLines('_targets.R'), cache=FALSE}
 ```
 
-Les fonctions écrites par l'analyste et utilisées dans la chaîne de traitement,
-en l'occurrence `garde_grandes_villes` sont contenues dans les fichiers que l'on _"source"_ au départ,
+Les fonctions écrites par l'analyste et utilisées dans la chaîne de traitement
+(en l'occurrence `garde_grandes_villes`) sont contenues dans les fichiers que l'on _"source"_ au départ,
 ici depuis un script `"mesfonctions_pour_faire_ceci.R`. 
 
 Les _packages_ utilisés dans les traitements sont définis via la fonction
 `tar_option_set` du *package* `targets`. Ici, on a besoin des 
-_packages_ `dplyr` et `readr` dans notre chaine de traitement.
+_packages_ `dplyr` et `readr` dans notre chaîne de traitement.
 
 La chaîne de traitement est représentée par une liste de `tar_target`,
 soit les objets `R` qui sont les cibles intermédiaires de l'analyse.
-Ils sont le résultat de l'application à une cible précédente d'une fonction pour obtenir la cible suivante : 
+Ils sont le résultat de l'application à une cible précédente d'une fonction pour obtenir la cible suivante :
 
 1. Ici la première cible est particulière (`format = file`) : on spécifie où sont les données d'entrée afin de surveiller si elles changent.
 2. La seconde prend en entrée la première cible `data_file` et la transforme en appliquant la fonction `readr::read_csv` en un nouvel objet R, `raw_filosofi_epci`. Il s'agit ainsi des données brutes après l'import
@@ -163,8 +167,8 @@ dans `R`, avant toute modification
 3. La troisième applique cette fois une fonction écrite par l'utilisateur à `raw_filosofi_epci` pour obtenir `grandes_villes`, et ainsi de suite...
 
 Ainsi, le fichier `_targets.R` contient la description de
-l'ensemble des étapes du traitements.
-La complexité des traitements est résumé de façon concise
+l'ensemble des étapes du traitement.
+La complexité des traitements est résumée de façon concise
 par un ensemble minimal de fonction résumant les grandes étapes.
 Afin de faire tourner l'analyse,
 l'utilisateur fait appel au sein du projet à la fonction `tar_make()`.
@@ -176,9 +180,8 @@ L'utilisateur est informé de l'évolution des calculs.
 tar_make()
 ```
 
-Lorsque la chaine de traitement est de taille relativement
-modeste, comme ici, on peut la
-visualiser avec la fonction
+Lorsque la chaîne de traitement est de taille relativement
+modeste (comme ici), on peut la visualiser avec la fonction
 `tar_visnetwork`:
 
 ```{r, echo = FALSE}
@@ -200,7 +203,7 @@ du projet. Il s'agit même d'une bonne pratique de
 séparer le lieu de stockage du code de celui des données. 
 
 Il sera nécessaire d'éditer les options
-de la chaine dans le fichier `_targets.R`. Par exemple 
+de la chaîne dans le fichier `_targets.R`. Par exemple 
 avec cette ligne de commande, au début du fichier
 `_targets.R` (mais après l'appel à `library(targets)`:
 
@@ -220,7 +223,7 @@ pour ne garder que celles dont la population est supérieure
 nécessaire de changer
 la définition de l'étape de définition de 
 `grandes_villes`. Cela amènera à une 
-chaine ayant la structure suivante
+chaîne ayant la structure suivante
 
 ```{r, include = FALSE}
 # move in root dir
@@ -250,7 +253,7 @@ entraîne la nécessaire mise à jour de `grandes_villes`
 et toutes les cibles qui en dépendent, mais pas du début de la chaîne de traitement !
 
 `targets` va ainsi intelligemment utiliser ceci pour minimiser
-le temps nécessaire pour mettre à jour l'ensemble de la chaine
+le temps nécessaire pour mettre à jour l'ensemble de la chaîne
 de traitement
 
 ```{r}
@@ -262,7 +265,7 @@ Les cibles définies sont calculées successivement, stockées et mises à jour 
 ### Accéder à des éléments du pipeline dans une session `R`
 
 On peut facilement accéder à un objet cible, quel que soit son
-emplacement dans la chaine de traitement, puisque chaque
+emplacement dans la chaîne de traitement, puisque chaque
 cible est stockée sous la forme d'un fichier temporaire. 
 
 La fonction `tar_load` permet de charger dans l'environnement
@@ -380,23 +383,23 @@ tar_target(
 
 L'un des principaux gains à utiliser `targets` est 
 dans la fiabilisation du processus de production
-de fichiers markdown à l'issue d'une chaine de
+de fichiers markdown à l'issue d'une chaîne de
 traitement. 
 
 Néanmoins, deux philosophies existent pour produire un 
-fichier reproductible dans une chaine de traitement :
+fichier reproductible dans une chaîne de traitement :
 
-- Intégrer directement le fichier à la chaine
+- Intégrer directement le fichier à la chaîne
 comme une étape finale du processus
 de production. Cela revient à produire le `RMarkdown`
 via un `tar_target` particulier ;
-- Exécuter la chaine de traitement, ou les parties nouvelles
-de la chaine de traitement, directement depuis le fichier `RMarkdown`.
+- Exécuter la chaîne de traitement, ou les parties nouvelles
+de la chaîne de traitement, directement depuis le fichier `RMarkdown`.
 Dans ce cas, le fichier `.Rmd` n'est plus exécuté depuis le `_targets.R`
 mais au contraire sert à l'exécuter.
 
 
-## Concevoir un rapport en sortie de chaine de traitement
+## Concevoir un rapport en sortie de chaîne de traitement
 
 Le *package* `tarchetypes` est un complément utile.
 Ce *package* permet d'intégrer simplement des rapports `Rmarkdown`
@@ -425,11 +428,11 @@ list(
 
 ```
 
-## Utiliser des objets issus d'une chaine de traitement dans un R Markdown
+## Utiliser des objets issus d'une chaîne de traitement dans un R Markdown
 
 Cette méthode est particulièrement appropriée lorsqu'on 
 désire prototyper un rapport en utilisant un ou plusieurs
-objets de la chaine de traitement.
+objets de la chaîne de traitement.
 
 Plus d'éléments sont disponibles [dans la documentation officielle](https://books.ropensci.org/targets/markdown.html#target-markdown)
 
