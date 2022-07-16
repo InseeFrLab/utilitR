@@ -12,14 +12,16 @@ L'utilisateur souhaite automatiser une chaîne de traitement complexe afin de la
 
 Le *package* `targets` permet de construire simplement une chaîne de traitement reproductible.
 
-Ce package ne sera approprié que si la chaîne de traitement
-est exclusivement écrite en `R`.
+Les deux éléments suivants sont à prendre en considération :
 
-Il est fortement recommandé de savoir créer des fonctions, afin de modulariser le code.
+- ce *package* ne sera approprié que si la chaîne de traitement
+est exclusivement écrite en `R` ;
+- il est fortement recommandé de savoir créer des fonctions, afin de modulariser
+le code.
 
 :::
 
-## Pourquoi utiliser `targets`?
+## Pourquoi utiliser `targets` ?
 
 Le *package* `targets` peut être particulièrement intéressant : 
 
@@ -57,10 +59,9 @@ dans le dépôt `Github` d'`utilitR`.
 :::
 
 
-## Quelles sont les tâches automatisées par `targets`?
+## Quelles sont les tâches automatisées par `targets` ?
 
 `targets` permet de définir et d'exécuter une chaîne de traitement avec :
-
 
 * Sauvegarde automatique de résultats intermédiaires, ce qu'on appelle les
 _"targets"_ (cibles)
@@ -291,7 +292,7 @@ fonctions dans le fichier `XXXXX.R` et en créant l'étape
 
 Par défaut, les cibles sont stockées
 au format `rds`. Ce format présente
-deux inconvénients:
+deux inconvénients :
 
 - il est spécifique à `R` et ne permet
 pas de lire les étapes intermédiaires
@@ -304,14 +305,12 @@ Il est conseillé d'utiliser
 un autre format de stockage
 des cibles.
 
-En premier lieu, le format par défaut
-qui peut être utilisé est le
+En premier lieu, le format par défaut qui peut être utilisé est le
 format [qs](https://cran.r-project.org/web/packages/qs/index.html).
-Celui-ci est, comme `rds`, est un format spécifique à `R` mais
-présente l'avantage d'être beaucoup plus rapide et ainsi limiter
-les temps en lecture/écriture.
+À l'instar du format `rds`, celui-ci est spécifique à `R` mais
+présente l'avantage d'être beaucoup plus rapide en termes de temps en lecture/écriture.
 Pour cela, il convient d'ajouter la ligne suivante
-au début des options du fichier `_targets.R`
+au début des options du fichier `_targets.R` :
 
 ```{r, eval = FALSE}
 tar_option_set(format = "fst_dt")
@@ -322,17 +321,17 @@ des formats plus universels ou plus
 appropriés. Les formats à privilégier sont
 les suivants:
 
-- `parquet`: un format qui tend à devenir un standard dans le monde
+- `parquet`: format qui tend à devenir un standard dans le monde
 de la science des données. Ce format présente plusieurs avantages,
 parmi lesquels le fait qu'il est
 très compressé, très rapide et qu'il conserve
 les métadonnées du fichier ce qui permet, à la différence
 des formats type CSV, de conserver l'intégrité des typages des colonnes ;
-- `fst_tbl` (utilisateurs du tidyverse) ou `fst_dt` (utilisateurs de data.table) : un format qui est spécifique à `R` mais présente
-des avantages proches de ceux d'un fichier `parquet`. L'avantage de ces
-formats est qu'ils préservent la nature d'un dataframe, ce qui permet de
+- `fst_tbl` (utilisateurs du tidyverse) ou `fst_dt` (utilisateurs de data.table) :
+formats spécifiques à `R` présentant des avantages proches de ceux d'un fichier
+`parquet`. Ils préservent la nature d'un data.frame, ce qui permet de
 repartir d'un tibble ou d'un datatable sans avoir à faire de conversion
-à chaque étape du pipeline.
+à chaque étape du *pipeline*.
 
 Le choix du format de stockage d'un objet se fait directement
 lors de la déclaration de la cible dans `_targets.R`:
@@ -353,8 +352,6 @@ dataframes. Or, un _pipeline_ peut stocker des objets de nature
 beaucoup plus diverses (listes, objets ggplot, etc.)
 
 :::
-
-
 
 
 ::: {.remarque}
@@ -388,7 +385,7 @@ dans la fiabilisation du processus de production
 de fichiers markdown à l'issue d'une chaîne de
 traitement. 
 
-Néanmoins, deux philosophies existent pour produire un 
+Deux philosophies existent pour produire un 
 fichier reproductible dans une chaîne de traitement :
 
 - Intégrer directement le fichier à la chaîne
@@ -400,7 +397,6 @@ de la chaîne de traitement, directement depuis le fichier `RMarkdown`.
 Dans ce cas, le fichier `.Rmd` n'est plus exécuté depuis le `_targets.R`
 mais au contraire sert à l'exécuter.
 
-
 ## Concevoir un rapport en sortie de chaîne de traitement
 
 Le *package* `tarchetypes` est un complément utile.
@@ -409,16 +405,18 @@ dans la pipeline avec `tarchetypes::tar_render()`.
 L'essentiel des calculs doit être en amont du rapport markdown,
 qui doit être rapide à exécuter. 
 
-Par exemple, on peut écrire un Rmarkdown `report.Rmd` considéré comme une des cibles de l'analyse (par exemple, c'est le compte-rendu de l'analyse), et qui dépend d'autres cibles.
+Par exemple, on peut écrire un Rmarkdown `report.Rmd` considéré comme une des
+cibles de l'analyse (par exemple, c'est le compte-rendu de l'analyse), et qui
+dépend d'autres cibles.
 On souhaite également qu'il soit reproductible,
 et mis à jour automatiquement en fonction des modifications
 sur les cibles dont il dépend. 
 
-Il suffit d'intégrer ces cibles via `tar_read(data)` ou `tar_load(data)` appelé dans un chunk du `.Rmd`, et de spécifier un `_targets.R` sur le modèle suivant:
-
+Il suffit d'intégrer ces cibles via `tar_read(data)` ou `tar_load(data)` appelé
+dans un chunk du `.Rmd`, et de spécifier un `_targets.R` sur le modèle suivant :
 
 ```{r, eval=FALSE}
-# _targets.R file
+# Fichier _targets.R
 # report.Rmd est présent dans le projet.
 library(targets)
 library(tarchetypes)
@@ -438,12 +436,13 @@ objets de la chaîne de traitement.
 
 Plus d'éléments sont disponibles [dans la documentation officielle](https://books.ropensci.org/targets/literate-programming.html#target-markdown)
 
-
 ## Les branches
 
 Souvent, les cibles d'une analyse (étapes intermédiaires) sont nombreuses et ont un certain degré de redondance. 
 
-Comment créer des cibles automatiquement (sans écrire explicitement dans `_targets.R` chacune d'entre elles)? `targets` propose de décliner les cibles en _"branches"_.
+Comment créer des cibles automatiquement (sans écrire explicitement dans
+`_targets.R` chacune d'entre elles) ? `targets` propose de décliner les cibles
+en _"branches"_.
 
 On distingue :
 
@@ -465,37 +464,35 @@ Pour cela, `targets` propose les _branches dynamiques_.
 
 ### Un exemple
 
-Voici un exemple minimal de pipeline qui va itérer sur _N_ couples d'arguments une même _"simulation"_, en évitant de créer _N_ cibles distinctes pour les _N_ résultats,
-et plutôt créer une seule cible résultats qui donnera lieu à autant de branches
-que de _"simulations"_: 
-
+Voici un exemple minimal de pipeline qui va itérer sur _N_ couples d'arguments
+une même _"simulation"_, en évitant de créer _N_ cibles distinctes pour les _N_ 
+résultats, et plutôt créer une seule cible résultats qui donnera lieu à autant
+de branches que de _"simulations"_ : 
 
 ```{r, eval=FALSE}
 #_targets.R
 library(targets)
 
-simulation <- function(x,y){
-  x*y
-}
+simulation <- function(x, y) x * y
 
 list(
-  tar_target(x, c(10,20,30)),
-  tar_target(y, c(1,2,3)),
+  tar_target(x, c(10, 20, 30)),
+  tar_target(y, c(1, 2, 3)),
   tar_target(
     resultat,
-    data.frame(argument_1 = x, argument_2 = y, res = simulation(x,y)),
-    pattern = map(x,y))
+    data.frame(argument_1 = x, argument_2 = y, res = simulation(x, y)),
+    pattern = map(x, y))
 )
 ```
 
 
-Ce qui distingue ici la cible `resultat`  de ce qui a été vu précédemment, c'est l'utilisation de l'argument `pattern`,
-qui a vocation à itérer sur les vecteurs cibles `x`  et `y` grâce à `map`.
+Ce qui distingue ici la cible `resultat`  de ce qui a été vu précédemment, c'est
+l'utilisation de l'argument `pattern`, qui a vocation à itérer sur les vecteurs
+cibles `x`  et `y` grâce à `map`.
 
 Dans la console `R`, l'utilisateur qui fait appel à `tar_make()`
 voit apparaître la déclinaison de `resultat` en trois branches,
 exécutées en parallèle.
-
 
 ```{r, eval=FALSE}
 tar_make()
@@ -526,7 +523,6 @@ Les patterns peuvent être de plusieurs types : `map` (itérer sur les arguments
 
 Par exemple, remplacer `map` par `cross` dans la pipeline précédente donne lieu après un `tar_make()` à 
 
-
 ```
 ✓ skip target x
 ✓ skip target y
@@ -545,8 +541,9 @@ Par exemple, remplacer `map` par `cross` dans la pipeline précédente donne lie
 Plutôt que d'appliquer la fonction simulation itérativement
 aux couples d'`x` et `y` (3 branches),
 la fonction est appliquée au produit cartésien de `x` et `y` (3 x 3 branches).
-On remarque d'ailleurs que `targets` a compris que cela ne changeait pas certains résultats précédents
-(3 branches strictement identiques, qui ne sont pas recalculées).
+On remarque d'ailleurs que `targets` a compris que cela ne changeait pas
+certains résultats précédents (3 branches strictement identiques, qui ne sont
+pas recalculées).
 
 ```{r, eval=FALSE}
 tar_read(resultat)
@@ -564,29 +561,28 @@ argument_1 argument_2 res
 9         30          3  90
 ```
 
-Les pattern peuvent être combinés, avec par exemple `pattern = cross(x,map(y,z))`.
+Les *pattern* peuvent être combinés, avec par exemple `pattern = cross(x, map(y, z))`.
 
 ```{r, eval=FALSE}
 #_targets.R
 library(targets)
 
-simulation <- function(x,y,z){
-  x*y + z
-}
+simulation <- function(x, y, z) x * y + z
 
 list(
-  tar_target(x, c(10,20,30)),
-  tar_target(y, c(1,2,3)),
-  tar_target(z, c(2,4,6)),
+  tar_target(x, c(10, 20, 30)),
+  tar_target(y, c(1, 2, 3)),
+  tar_target(z, c(2, 4, 6)),
   tar_target(
     resultat,
-    data.frame(argument_1 = x, argument_2 = y, argument_3 = z, res = simulation(x,y,z)),
-    pattern = cross(x,map(y,z)))
+    data.frame(argument_1 = x, argument_2 = y, argument_3 = z, res = simulation(x, y, z)),
+    pattern = cross(x, map(y, z)))
 )
 ```
-qui donne le résultat :
-```
 
+qui donne le résultat :
+
+```
 argument_1 argument_2 argument_3 res
 1         10          1          2  12
 2         10          2          4  24
@@ -597,7 +593,6 @@ argument_1 argument_2 argument_3 res
 7         30          1          2  32
 8         30          2          4  64
 9         30          3          6  96
-
 ```
 
 Si l'on souhaite itérer sur des listes, plutôt que sur des vecteurs,
@@ -613,23 +608,22 @@ library(targets)
 #' @param: df: data.frame
 #' @param: factor: int
 multiply <- function(df, factor){
-  df$a <- df$a*factor
+  df$a <- df$a * factor
   df
 }
 
 list(
-  tar_target(x, list(data.frame(name = c('Marie','Marwan'), a = c(1,2)),
-                     data.frame(name = c('Bill','Boule'), a = c(2,4))), iteration = 'list'),
-  tar_target(y, c(2,3)),
+  tar_target(x, list(data.frame(name = c('Marie','Marwan'), a = c(1, 2)),
+                     data.frame(name = c('Bill','Boule'), a = c(2, 4))), iteration = 'list'),
+  tar_target(y, c(2, 3)),
   tar_target(
     resultat,
-    multiply(x,y),
-    pattern = map(x,y))
+    multiply(x, y),
+    pattern = map(x, y))
 )
 ```
 
 Etc...
-
 
 ## Pour en savoir plus
 
