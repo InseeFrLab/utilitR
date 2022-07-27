@@ -162,7 +162,9 @@ count_log <- dbGetQuery(conn,
                          from count_log")
 ```
 
-La première requête crée une table temporaire `count_log` qui contient le département et la commune de chaque local, ainsi qu'une variable indicatrice indiquant s'il s'agit d'un logement. Cette requête est envoyée au serveur avec `dbSendQuery` et ne renvoie donc aucun résultat vers `R`. La seconde requête compte le nombre de logements par commune à partir de la table temporaire et renvoie vers `R` un objet de type `data.frame` appelé `count_log` donnant le nombre de logements (`nb_logement`) par commune (`code_com`).
+La première requête crée une table temporaire `count_log` qui contient le département et la commune de chaque local, ainsi qu'une variable indicatrice indiquant s'il s'agit d'un logement. Cette requête est envoyée au serveur avec `dbSendQuery` et ne renvoie donc aucun résultat vers `R`. La création de cette table temporaire nécessite d'avoir les droits en écriture dans la base.
+
+La seconde requête compte le nombre de logements par commune à partir de la table temporaire et renvoie vers `R` un objet de type `data.frame` appelé `count_log` donnant le nombre de logements (`nb_logement`) par commune (`code_com`).
 
 ::: {.remarque}
 Il est fréquent que les bases de données contiennent des données volumineuses, dont le téléchargement et le traitement peuvent dépasser les capacités de votre poste local. C'est pourquoi **il est recommandé d'éviter de télécharger les données brutes et de réaliser les traitements en `R`.** Dans la mesure du possible, **il vaut mieux faire exécuter les traitements par la base de données, et ne récupérer en `R` qu'un résultat agrégé.** 
@@ -227,9 +229,9 @@ dbDisconnect(conn)
 
 ## Quelques bonnes pratiques
 
-En général, on se connecte à une base de données à l'aide d'un identifiant et d'un mot de passe. **Une bonne pratique consiste à ne pas inscrire ces éléments directement dans le code** (en particulier si on veut partager le code en question avec d'autres personnes). Dans ce cas, on pourra utiliser la fonction `askForPassword()` du package `rstudioapi`, qui permet d'obtenir une boîte de dialogue interactive pour la saisie de ces éléments.
+En général, on se connecte à une base de données à l'aide d'un identifiant et d'un mot de passe. **Une bonne pratique consiste à ne pas inscrire ces éléments directement dans le code** (en particulier si on veut partager le code en question avec d'autres personnes). Dans ce cas, on pourra utiliser la fonction `askForPassword()` du package `rstudioapi`, qui permet d'obtenir une boîte de dialogue interactive pour la saisie de ces éléments. Une autre façon de procéder est d'utiliser un fichier `.Renviron` pour disposer de ces informations sous forme de variables d'environnement.
 
-Il est fréquent que les bases de données contiennent des données volumineuses, dont le téléchargement et le traitement peuvent dépasser les capacités de votre poste local. C'est pourquoi **il est recommandé d'éviter de télécharger les données brutes et de réaliser les traitements en `R`.** Dans la mesure du possible, **il vaut mieux faire exécuter les traitements par la base de données, et ne récupérer en `R` qu'un résultat agrégé.** 
+Il est fréquent que les bases de données contiennent des données volumineuses, dont le téléchargement et le traitement peuvent dépasser les capacités de votre poste local. C'est pourquoi **il est recommandé d'éviter de télécharger les données brutes et de réaliser les traitements en `R`.** Dans la mesure du possible, **il vaut mieux faire exécuter les traitements par la base de données, et ne récupérer en `R` qu'un résultat agrégé** (ceci nécessite parfois d'avoir des droits en écriture sur la base de données).
 
 ## Sources
 
