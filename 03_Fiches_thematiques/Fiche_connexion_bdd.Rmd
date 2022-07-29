@@ -150,11 +150,12 @@ Pour lancer des requêtes sur la base de données, l'utilisateur a la possibilit
 Ainsi, pour un utilisateur qui est connecté à la base de données PostgreSQL qui contient le schéma de diffusion - une sorte de librairie SAS - de Fidéli (`s_diff_2018`) et qui souhaite requêter la table des logements (`d_logement`) pour compter le nombre de logements par commune et selon le critère du type de local (critère n°2 dans la documentation utilisateur), on peut lancer les requêtes SQL suivantes :
 
 ```{r, eval = FALSE}
-dbSendQuery(conn, 
-            "create temp table count_log as 
-             select csdep, cne, 
-             case when natloc in ('MA', 'ME', 'AP') then 1 else 0 end as logement 
-             from s_diff_2018.d_logement")
+q <- dbSendQuery(conn, 
+                 "create temp table count_log as 
+                  select csdep, cne, 
+                  case when natloc in ('MA', 'ME', 'AP') then 1 else 0 end as logement 
+                  from s_diff_2018.d_logement")
+dbClearResult(q)
 
 count_log <- dbGetQuery(conn, 
                         "select distinct concat(csdep, cne) as code_com,
@@ -162,9 +163,24 @@ count_log <- dbGetQuery(conn,
                          from count_log")
 ```
 
-La première requête crée une table temporaire `count_log` qui contient le département et la commune de chaque local, ainsi qu'une variable indicatrice indiquant s'il s'agit d'un logement. Cette requête est envoyée au serveur avec `dbSendQuery` et ne renvoie donc aucun résultat vers `R`. La création de cette table temporaire nécessite d'avoir les droits en écriture dans la base.
+La première requête crée une table temporaire `count_log` qui contient le département et la commune de chaque local, ainsi qu'une variable indicatrice indiquant s'il s'agit d'un logement. Cette requête est envoyée au serveur avec `dbSendQuery` et ne renvoie donc aucun résultat vers `R`. La création de cette table temporaire nécessite d'avoir les droits minimaux en écriture dans la base.
 
 La seconde requête compte le nombre de logements par commune à partir de la table temporaire et renvoie vers `R` un objet de type `data.frame` appelé `count_log` donnant le nombre de logements (`nb_logement`) par commune (`code_com`).
+
+Dans le cas où l'utilisateur n'a pas les droits pour créer des tables temporaires, il est toujours possible de procéder à des sous-requêtes (**sub-query**) en SQL. Cela consiste à enchasser la première requête dans la seconde sans passer par la création d'une table temporaire, de la manière suivante :
+
+```{r, eval = FALSE}
+q <- dbSendQuery(conn, 
+            "select distinct concat(csdep, cne) as code_com,
+                         sum(logement) as nb_logement 
+                         from (select csdep, cne, 
+                         case when natloc in ('MA', 'ME', 'AP') then 1 else 0 end as logement 
+                         from s_diff_2018.d_logement) as a")
+
+dbFetch(q)
+dbClearResult(q)
+
+```
 
 ::: {.remarque}
 Il est fréquent que les bases de données contiennent des données volumineuses, dont le téléchargement et le traitement peuvent dépasser les capacités de votre poste local. C'est pourquoi **il est recommandé d'éviter de télécharger les données brutes et de réaliser les traitements en `R`.** Dans la mesure du possible, **il vaut mieux faire exécuter les traitements par la base de données, et ne récupérer en `R` qu'un résultat agrégé.** 
@@ -186,19 +202,31 @@ Une fois la référence créée, on peut manipuler les données de la table `d_l
 
 ```{r, eval = FALSE}
 count_log <- d_logement %>%
-    mutate(logement = ifelse(natloc %in% c('MA', 'ME', 'AP'), 1, 0)) %>%
-    select(csdep, cne, logement) %>%
-    compute()
+  mutate(logement = ifelse(natloc %in% c('MA', 'ME', 'AP'), 1, 0)) %>%
+  select(csdep, cne, logement) %>%
+  compute()
 
 count_log <- count_log %>%
-    group_by(csdep, cne) %>%
-    summarise(nb_logement = sum(logement)) %>%
-    collect()
+  group_by(csdep, cne) %>%
+  summarise(nb_logement = sum(logement)) %>%
+  collect()
 ```
 
 Dans cet exemple, la nature de l'objet `count_log` change entre la première et la seconde instruction. Au départ, il s'agit d'une interprétation de l'instruction sous forme `dplyr` en requête SQL (un objet `sql_tbl`) stockée dans une table temporaire grâce à la commande `compute`, qui ensuite devient un objet `data.frame` suite à la commande `collect` (qui peut se voir comme un équivalent de la commande `dbGetQuery`, en plus large puisqu'elle déclenche la soumission de la requête SQL).
 
 Le _package_ `dbplyr` présente l'avantage d'offrir une syntaxe très proche de celle de `dplyr`. Cette syntaxe peut néanmoins, comme indiqué dans la documentation, présenter des limites dans l'interprétation des commandes en requêtes SQL. L'utilisateur devra être particulièrement attentif à ce point.
+
+L'enchâssement d'une sous-requête dans une requête SQL est très adapté au _pipe_ de la syntaxe `dplyr`, et se traduit très naturellement ainsi :
+
+```{r, eval = FALSE}
+count_log <- d_logement %>%
+  mutate(logement = ifelse(natloc %in% c('MA', 'ME', 'AP'), 1, 0)) %>%
+  select(csdep, cne, logement) %>%
+  group_by(csdep, cne) %>%
+  summarise(nb_logement = sum(logement)) %>%
+  collect()
+```
+
 
 ::: {.conseil}
 Comme indiqué ci-dessus, le _package_ `dbplyr` convertit automatiquement vos instructions en requête SQL. Il est possible d'afficher cette requête avec la fonction `show_query`. Cela vous permet de vous familiariser avec le langage SQL, et de voir que la requête SQL générée par `dbplyr` est souvent loin d'être optimale.
