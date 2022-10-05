@@ -1,4 +1,4 @@
-FROM rocker/geospatial:4.1.1
+FROM inseefrlab/onyxia-rstudio:latest
 
 # R packages 
 COPY ./DESCRIPTION /tmp/build_image/
