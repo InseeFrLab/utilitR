@@ -23,7 +23,7 @@ then
     echo \
     "
     setHook('rstudio.sessionInit', function(newSession) {
-        if (newSession && identical(getwd(), path.expand(\"/home/onyxia/work\")))
+        if (newSession && identical(getwd(), path.expand(\"$WORKSPACE_DIR\")))
         {
             message('Ouverture du tutoriel')
             rstudioapi::openProject(\"$WORKSPACE_DIR/utilitr\")
