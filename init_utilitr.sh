@@ -8,14 +8,14 @@ then
     echo "Pas de clonage de dépôt"
 elif [ "$FORK" = "TRUE" ]
 then
-    cd /home/onyxia/work
-    runuser -l onyxia -c "git clone https://github.com/$USERNAME/utilitr.git && \
+    runuser -l onyxia -c "cd $WORKSPACE_DIR && \
+    git clone https://github.com/$USERNAME/utilitr.git && \
     cd utilitr && \
     git remote add upstream https://github.com/inseefrlab/utilitr.git && \
     git fetch upstream"
 else
     cd /home/onyxia/work
-    runuser -l onyxia -c "git clone https://github.com/inseefrlab/utilitr.git"
+    runuser -l onyxia -c "cd $WORKSPACE_DIR && git clone https://github.com/inseefrlab/utilitr.git"
 fi
 if [ ! -z "$FORK" ]
 then
@@ -26,7 +26,7 @@ then
         if (newSession && identical(getwd(), path.expand(\"/home/onyxia/work\")))
         {
             message('Ouverture du tutoriel')
-            rstudioapi::openProject('//utilitr')
+            rstudioapi::openProject(\"$WORKSPACE_DIR/utilitr\")
             }
             }, action = 'append')
             " >> /home/onyxia/.Rprofile
