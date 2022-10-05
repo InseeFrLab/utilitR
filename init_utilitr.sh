@@ -1,19 +1,21 @@
 #!/bin/bash
-echo "$PROTOCOL://$USERNAME:$TOKEN@$HOST" > /home/rstudio/git.store
-chown rstudio /home/rstudio/git.store
-chmod o-r,g-r /home/rstudio/git.store
-runuser -l rstudio -c 'git config --global credential.helper "store --file ~/git.store"'
+echo "$PROTOCOL://$USERNAME:$TOKEN@$HOST" > /home/onyxia/git.store
+chown onyxia /home/onyxia/git.store
+chmod o-r,g-r /home/onyxia/git.store
+runuser -l onyxia -c 'git config --global credential.helper "store --file ~/git.store"'
 if [ -z "$FORK" ]
 then
     echo "Pas de clonage de dépôt"
 elif [ "$FORK" = "TRUE" ]
 then
-    runuser -l rstudio -c "git clone https://github.com/$USERNAME/utilitr.git && \
+    runuser -l onyxia -c "cd $WORKSPACE_DIR && \
+    git clone https://github.com/$USERNAME/utilitr.git && \
     cd utilitr && \
     git remote add upstream https://github.com/inseefrlab/utilitr.git && \
     git fetch upstream"
 else
-    runuser -l rstudio -c "git clone https://github.com/inseefrlab/utilitr.git"
+    cd /home/onyxia/work
+    runuser -l onyxia -c "cd $WORKSPACE_DIR && git clone https://github.com/inseefrlab/utilitr.git"
 fi
 if [ ! -z "$FORK" ]
 then
@@ -21,11 +23,11 @@ then
     echo \
     "
     setHook('rstudio.sessionInit', function(newSession) {
-        if (newSession && identical(getwd(), path.expand('~')))
+        if (newSession && identical(getwd(), path.expand(\"$WORKSPACE_DIR\")))
         {
             message('Ouverture du tutoriel')
-            rstudioapi::openProject('~/utilitr')
+            rstudioapi::openProject(\"$WORKSPACE_DIR/utilitr\")
             }
             }, action = 'append')
-            " >> /home/rstudio/.Rprofile
+            " >> /home/onyxia/.Rprofile
 fi
