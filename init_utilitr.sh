@@ -8,13 +8,13 @@ then
     echo "Pas de clonage de dépôt"
 elif [ "$FORK" = "TRUE" ]
 then
-    cd $WORK_DIR
+    cd /home/onyxia/work
     runuser -l onyxia -c "git clone https://github.com/$USERNAME/utilitr.git && \
     cd utilitr && \
     git remote add upstream https://github.com/inseefrlab/utilitr.git && \
     git fetch upstream"
 else
-    cd $WORK_DIR
+    cd /home/onyxia/work
     runuser -l onyxia -c "git clone https://github.com/inseefrlab/utilitr.git"
 fi
 if [ ! -z "$FORK" ]
@@ -23,7 +23,7 @@ then
     echo \
     "
     setHook('rstudio.sessionInit', function(newSession) {
-        if (newSession && identical(getwd(), path.expand(\"'$WORK_DIR'\")))
+        if (newSession && identical(getwd(), path.expand(\"/home/onyxia/work\")))
         {
             message('Ouverture du tutoriel')
             rstudioapi::openProject('//utilitr')
