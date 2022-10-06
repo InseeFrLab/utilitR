@@ -2,8 +2,7 @@ FROM inseefrlab/onyxia-rstudio:latest
 
 # R packages 
 COPY ./DESCRIPTION /tmp/build_image/
-RUN Rscript -e "update.packages(ask = FALSE)"
-RUN Rscript -e "install.packages(c('xfun','knitr', 'insee', 'OECD'))"
+RUN Rscript -e "install.packages(c('xfun','knitr', 'insee', 'OECD', 'htmltools'))"
 RUN Rscript -e "remotes::install_deps('/tmp/build_image', dependencies = TRUE, upgrade = FALSE)"
 RUN Rscript -e "remotes::install_github('kevinushey/rex')"
 RUN Rscript -e "remotes::install_github('rstudio/bookdown')"
