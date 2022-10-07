@@ -91,7 +91,7 @@ remotes::install_github("https://github.com/InseeFrLab/utilitr-template")
 ```
 
 Les éléments présents dans la documentation visent à être cohérents avec
-les recommandations émises par le comité de certification des packages `R` (COPS),
+les recommandations émises par le comité de certification des packages `R` (`COPS`),
 organe interne visant à prescrire ou proscrire certains packages dans le cadre
 de la production statistique. 
 
