@@ -1,22 +1,22 @@
 if (file.exists('~/.Rprofile')) sys.source('~/.Rprofile', envir = environment())
 
-# with_def <- (function() {
-#   
-#   glossary <- yaml::read_yaml("resources/glossary.yml")
-#   glossary <- as.data.frame(do.call(rbind, glossary), stringsAsFactors = FALSE)
-#   
-#   function(term, def) {
-#     if (missing(def)) {
-#       def <- unlist(glossary[glossary$name == tolower(term), "desc"])
-#       # quick and dirty pour aussi matcher les pluriels
-#       if (length(def) == 0) def <- unlist(glossary[paste0(glossary$name, "s") == tolower(term), "desc"])
-#       # quick and dirty pour aussi matcher les infinitif
-#       if (length(def) == 0) def <- unlist(glossary[paste0(glossary$name, "r") == tolower(term), "desc"])
-#     }
-#     sprintf('<abbr title="%s"><b>%s</b></abbr>', def, term)
-#   }
-#   
-# })()
+with_def <- (function() {
+  
+  glossary <- yaml::read_yaml("resources/glossary.yml")
+  glossary <- as.data.frame(do.call(rbind, glossary), stringsAsFactors = FALSE)
+  
+  function(term, def) {
+    if (missing(def)) {
+      def <- unlist(glossary[glossary$name == tolower(term), "desc"])
+      # quick and dirty pour aussi matcher les pluriels
+      if (length(def) == 0) def <- unlist(glossary[paste0(glossary$name, "s") == tolower(term), "desc"])
+      # quick and dirty pour aussi matcher les infinitif
+      if (length(def) == 0) def <- unlist(glossary[paste0(glossary$name, "r") == tolower(term), "desc"])
+    }
+    sprintf('<abbr title="%s"><b>%s</b></abbr>', def, term)
+  }
+  
+})()
 
 
 render_rmd <- function(x) return(cat(htmltools::includeText(x)))
