@@ -18,8 +18,9 @@ if (file.exists('~/.Rprofile')) sys.source('~/.Rprofile', envir = environment())
 #   
 # })()
 
-with_def(x) <- return(x)
-
+with_def <- function(x){
+  return(x)
+}
 
 render_rmd <- function(x) return(cat(htmltools::includeText(x)))
 
