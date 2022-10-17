@@ -8,7 +8,7 @@ Il est possible de contribuer au projet `utilitR` de différentes manières, dé
 des contributeurs actuels, fonctionnement qui est orchestré autour de `Github` et de ses différents outils.
 Il est possible d'en acquérir très rapidement les bases à partir de ce document présentant le [Travail collaboratif avec `R`](https://linogaliana.gitlab.io/collaboratif/git.html#des-bases-de-git), ou à partir d'échanges avec les contributeurs actuels.
 
-Un environnement prêt à l'emploi pour l'exécution des scripts est disponible sur le `SSPCloud`. En cliquant sur le lien suivant, un service `RStudio` avec l'ensemble des dépendances nécessaires pour utiliser la documentation est disponible: [![SSPcloud](https://datalab.sspcloud.fr/launcher/ide/rstudio?autoLaunch=false&init.personalInit=%C2%ABhttps%3A%2F%2Fgithub.com%2FInseeFrLab%2FutilitR%2Fblob%2Fmaster%2Finit_utilitr.sh%C2%BB&service.image.custom.enabled=true&service.image.custom.version=%C2%ABinseefrlab%2Futilitr%3Alatest%C2%BB)
+Un environnement prêt à l'emploi pour l'exécution des scripts est disponible sur le `SSPCloud`. En cliquant sur le lien suivant, un service `RStudio` avec l'ensemble des dépendances nécessaires pour utiliser la documentation est disponible: [![SSPcloud](https://img.shields.io/badge/SSPcloud-Tester%20via%20SSP--cloud-informational?logo=R)](https://datalab.sspcloud.fr/launcher/ide/rstudio?autoLaunch=false&init.personalInit=%C2%ABhttps%3A%2F%2Fgithub.com%2FInseeFrLab%2FutilitR%2Fblob%2Fmaster%2Finit_utilitr.sh%C2%BB&service.image.custom.enabled=true&service.image.custom.version=%C2%ABinseefrlab%2Futilitr%3Alatest%C2%BB)
 
 Pour les relecteurs quelques notions de l'environnement `Github` suffisent
 (ou peuvent s'acquérir facilement) pour apporter sa pierre à l'édifice.

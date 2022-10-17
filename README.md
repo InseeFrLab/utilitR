@@ -30,8 +30,7 @@ encapsulé dans un *package* `R` dédié: https://github.com/InseeFrLab/utilitr-
 
 L'ensemble des ressources du projet `utilitR` sont disponibles sur https://www.utilitr.org
 
-Un environnement prêt à l'emploi est disponible pour les utilisateurs du `SSPCloud` en cliquant
-sur le [lien suivant](https://datalab.sspcloud.fr/launcher/ide/rstudio?autoLaunch=false&init.personalInit=%C2%ABhttps%3A%2F%2Fgithub.com%2FInseeFrLab%2FutilitR%2Fblob%2Fmaster%2Finit_utilitr.sh%C2%BB&service.image.custom.enabled=true&service.image.custom.version=%C2%ABinseefrlab%2Futilitr%3Alatest%C2%BB) [![SSPcloud](https://datalab.sspcloud.fr/launcher/ide/rstudio?autoLaunch=false&init.personalInit=%C2%ABhttps%3A%2F%2Fgithub.com%2FInseeFrLab%2FutilitR%2Fblob%2Fmaster%2Finit_utilitr.sh%C2%BB&service.image.custom.enabled=true&service.image.custom.version=%C2%ABinseefrlab%2Futilitr%3Alatest%C2%BB)
+Un environnement prêt à l'emploi est disponible pour les utilisateurs du `SSPCloud` en cliquant sur le [lien suivant](https://datalab.sspcloud.fr/launcher/ide/rstudio?autoLaunch=false&init.personalInit=%C2%ABhttps%3A%2F%2Fgithub.com%2FInseeFrLab%2FutilitR%2Fblob%2Fmaster%2Finit_utilitr.sh%C2%BB&service.image.custom.enabled=true&service.image.custom.version=%C2%ABinseefrlab%2Futilitr%3Alatest%C2%BB) [![SSPcloud](https://img.shields.io/badge/SSPcloud-Tester%20via%20SSP--cloud-informational?logo=R)](https://datalab.sspcloud.fr/launcher/ide/rstudio?autoLaunch=false&init.personalInit=%C2%ABhttps%3A%2F%2Fgithub.com%2FInseeFrLab%2FutilitR%2Fblob%2Fmaster%2Finit_utilitr.sh%C2%BB&service.image.custom.enabled=true&service.image.custom.version=%C2%ABinseefrlab%2Futilitr%3Alatest%C2%BB)
 
 <br>
 
