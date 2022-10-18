@@ -106,8 +106,9 @@ https_proxy=adresse_du_proxy
 :::
 
 ::: {.remarque}
-Il faut être prudent lorsqu'on modifie des variables internes à `R`, car ces modifications peuvent aboutir à ce que les résultats des scripts ne soient pas reproductibles. Par exemple, `R` a un comportement potentiellement incohérent dans le cas suivant : 
-```{r warning=TRUE}
+Il faut être prudent lorsqu'on modifie des variables internes à `R`, car ces modifications peuvent aboutir à ce que les résultats des scripts ne soient pas reproductibles. Par exemple, les anciennes versions de `R` avaient un comportement potentiellement incohérent dans le cas suivant : 
+
+```{r, eval=FALSE}
 vecteurbooleen <- c(TRUE, FALSE)
 if (vecteurbooleen) {
   message("Je suis vrai !")
@@ -116,8 +117,12 @@ if (vecteurbooleen) {
 }
 ```
 
-Lorsqu'une condition porte sur un vecteur de booléens (`TRUE` ou `FALSE`), `R` utilise uniquement le premier élément du vecteur pour vérifier si condition est remplie, et renvoie un simple avertissement à l'utilisateur. Toutefois, il est possible de modifier ce comportement par défaut en indiquant `_R_CHECK_LENGTH_1_CONDITION_ = "TRUE"` dans le fichier `.Renviron` : `R` renverra alors une erreur et stoppera le code si `R` doit vérifier une condition sur un vecteur au lieu d'un simple scalaire. Dans ce cas, le code précédent ne renverra rien du tout et s’arrêtera avec une erreur. En revanche, chez un autre utilisateur dont le fichier `.Renviron` ne contient pas ce réglage, il n'y aura pas d'erreur. Le même code aboutit donc à des résultats différents en raison de différences dans les variables d'environnement.
+Lorsqu'une condition porte sur un vecteur de booléens (`TRUE` ou `FALSE`), `R` (avant la version `4.2`) utilisait uniquement le premier élément du vecteur pour vérifier si condition était remplie, et renvoyait un simple avertissement à l'utilisateur.
+
+Pour les utilisateurs d'une version antérieure à `R 4.2`, il est possible de modifier ce comportement par défaut en indiquant `_R_CHECK_LENGTH_1_CONDITION_ = "TRUE"` dans le fichier `.Renviron` : `R` renverra alors une erreur et stoppera le code si `R` doit vérifier une condition sur un vecteur au lieu d'un simple scalaire. Dans ce cas, le code précédent ne renverra rien du tout et s’arrêtera avec une erreur. En revanche, chez un autre utilisateur dont le fichier `.Renviron` ne contient pas ce réglage, il n'y aura pas d'erreur. Le même code aboutit donc à des résultats différents en raison de différences dans les variables d'environnement.
 :::
+
+
 
 Il est possible de modifier les paramètres de son environnement ou d'en générer d'autres après l'ouverture de la session `R`, avec la commande `Sys.setenv()`. Vous pouvez par exemple exécuter la commande `Sys.setenv("MON_API_INSEE"="jamais")`. De même, la fonction `Sys.getenv()` permet de lister certaines valeurs présentes dans l'environnement actuel. Toutefois, toutes les procédures d'initialisation de R se seront déjà déroulées alors avec les anciennes valeurs, définies par défaut. Cette subtilité peut être importante !
 
