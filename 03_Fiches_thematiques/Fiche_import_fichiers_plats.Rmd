@@ -5,20 +5,16 @@
 L'utilisateur souhaite importer dans `R` des données stockées sous forme de fichiers plats (formats `.txt`, `.csv`, `.tsv`).
 
 ::: {.recommandation}
-* Pour importer des données de taille réduite (jusqu'à 1 Go), **il est recommandé d'utiliser les fonctions `read_csv()` et `read_delim()` du *package* `readr`** ;
+* Pour importer des données de taille réduite (jusqu'à 1 Go), **il est recommandé d'utiliser la fonction `read_delim()` du *package* `readr`** ;
 * Pour importer des données de taille plus importante (supérieure à 1 Go), **il est recommandé d'utiliser la fonction `fread()` du *package* `data.table`**.
 * **L'usage du *package* `csvread` est déconseillé**, de même que l'utilisation des fonctions natives de `R` `read.csv()` et `read.delim()`.
 :::
 
-## Importer un fichier de taille limitée :  le *package* `readr`
+## Importer un fichier avec le *package* `readr`
 
-Le *package* `readr` propose plusieurs fonctions adaptées pour importer des fichiers plats de taille limitée (moins de 1 Go) :
+Le *package* `readr` propose plusieurs fonctions adaptées pour importer des fichiers plats. Parmi elles, la fonction `read_delim()` permet de lire les fichiers csv et cela quelque soit le délimiteur (virgule ou point-virgule) et le marqueur décimal (point ou virgule).
 
-* `read_csv()` : lecture d'un csv délimité par des virgules, avec un point comme marqueur décimal ;
-* `read_csv2()` : lecture d'un csv séparé par des points-virgules, avec une virgule comme marqueur décimal ;
-* `read_delim()` : fonction plus générale et paramétrable, pour lire des fichiers délimités.
-
-Il faut charger le *package* `readr` pour utiliser ces fonctions :
+Il faut charger le *package* `readr` pour utiliser cette fonction :
 
 ```{r, message = FALSE, warning = FALSE} 
 library(readr)
@@ -52,29 +48,27 @@ Les principales options d'importation comprennent notamment :
 
 Enfin, il est possible de modifier le type des données en cliquant sur la petite flèches à côté de l'en-tête de colonne (flèches noires).
 
-### Utiliser `read_csv()` et `read_csv2()`
+### Utiliser la fonction `read_delim()`
 
+La fonction `read_delim()` est faite pour lire toutes sortes de fichiers plats, et propose de nombreuses options pour l'adapter au fichier considéré. 
 
-Les fonctions `read_csv()` et `read_csv2()` sont des fonctions d'importation spécialement conçues pour les fichiers `.csv`. Ces deux fonctions sont identiques, sauf sur deux points :
-
-* la fonction `read_csv()`  suppose par défaut que le séparateur est une virgule, et que le marqueur décimal est un point. 
-* La fonction `read_csv2()` suppose par défaut que le séparateur est un point-virgule, et que le marqueur décimal est une virgule.
-
-Voici les principales options de `read_csv()` et de `read_csv2()` :
+Voici les principales options de `read_delim()` :
 
 | Argument  | Valeur par défaut | Fonction                                                       |
 |-----------|-------------------|----------------------------------------------------------------|
 | `file`      | Aucune            | Le chemin du fichier à importer                                |
+| `delim`      | Aucune            | Le délimiteur du fichier plat                                 |
+| `escape_backslash`| `FALSE`       | Les caractères spéciaux du fichier plat ont-ils un échappement (`\`) |
 | `col_names` | `TRUE`              | La première ligne contient-elle les noms de colonne ?           |
 | `col_types` | `NULL`              | Définir le type des variables                                  |
 | `col_select` | `NULL`             | Choisir les variables à importer                               |
 | `skip`      | `0`                 | Sauter les n premières lignes (0 par défaut)                   |
 | `n_max`     | `Inf`               | Nombre maximum de lignes à importer (pas de limite par défaut) |
-| `locale`    |                   | Réglages locaux (encodage, marqueur décimal...)                |
+| `locale`    |                     | Réglages locaux (encodage, marqueur décimal...)                |
 
-Quelques remarques sur les options de `read_csv()` :
+Quelques remarques sur les options de `read_delim()` :
 
-* `read_csv()` essaie par défaut de deviner le type des colonnes (*integer* pour les nombres entiers, *character* pour les chaînes de caractères...). L'option `col_types` permet de choisir le type des colonnes, et doit être égale à un vecteur dont chaque élément est de la forme `nom_variable = [type de colonne]`. Les types de colonnes disponibles sont `col_integer()`, `col_logical()`, `col_double()`, `col_character()` (voir `?cols` pour la liste complète).
+* `read_delim()` essaie par défaut de deviner le type des colonnes (*integer* pour les nombres entiers, *character* pour les chaînes de caractères...). L'option `col_types` permet de choisir le type des colonnes, et doit être égale à un vecteur dont chaque élément est de la forme `nom_variable = [type de colonne]`. Les types de colonnes disponibles sont `col_integer()`, `col_logical()`, `col_double()`, `col_character()` (voir `?cols` pour la liste complète).
 Exemple : si on importe une variable comme nombre entier et une variable comme caractère, on écrit : `col_types = cols(var1 = col_integer(), var2 = col_character())`.
 
 **Exemple** : on veut importer le fichier des communes du code officiel géographique (version 2019, [disponible ici](https://www.insee.fr/fr/information/3720946)), en déclarant que le fichier est encodé en UTF-8 et en imposant que le code commune (`com`) soit lu comme une chaîne de caractères et le code région (`reg`) comme un nombre entier. On écrit le code suivant : 
@@ -82,28 +76,19 @@ Exemple : si on importe une variable comme nombre entier et une variable comme c
 ```{r, eval = FALSE}
 # Dans cet exemple, il faut remplacer "mon_IDEP" par votre IDEP
 library(readr)
-communes <- read_csv("Z:/mon_IDEP/communes-01012019.csv", 
-                     locale = locale(encoding ="UTF-8"),
-                     col_types = cols(com = col_character(),
-                                      reg = col_integer())
-                     )
+communes <- read_delim("Z:/mon_IDEP/communes-01012019.csv", 
+                       locale = locale(encoding ="UTF-8"),
+                       col_types = cols(com = col_character(),
+                                        reg = col_integer())
+                      )
 names(communes)
 ```
 
-### Utiliser la fonction `read_delim()`
-
-La fonction `read_delim()` est faite pour lire toutes sortes de fichiers plats, et propose de nombreuses options pour l'adapter au fichier considéré. Elle est puissante et plus générale que les fonctions `read_csv()` et `read_csv2()`, qui sont des versions simplifiées de `read_delim()`. En pratique, ces deux fonctions sont le plus souvent suffisantes, et il est rare d'avoir vraiment besoin d'utiliser `read_delim()`.
-
-La fonction `read_delim()` propose les mêmes options que `read_csv()` et `read_csv2()`, avec deux ajouts principaux :
-
-* `delim` : le délimiteur du fichier plat ;
-* `escape_backslash` (`TRUE`/`FALSE`) : les caractères spéciaux du fichier plat ont-ils un échappement (`\`) ?
+La fonction `read_delim()` contient également l'option `lazy` qui lorsque elle est fixée à `TRUE` permet d'améliorer la vitesse de traitement d'un fichier csv. Cette idée de "lecture paresseuse", explorée pour la première fois dans le paquet [vroom](https://www.tidyverse.org/blog/2019/05/vroom-1-0-0/), consiste à optimiser la quantité du fichier total auquel un utilisateur a besoin d'accéder en fonction de sa requête. [Ce billet de blog](https://www.tidyverse.org/blog/2021/11/readr-2-1-0-lazy/) de RStudio illustre ce concept.
 
 Pour en savoir plus sur `read_delim()`, il suffit de consulter l'aide avec `?read_delim`.
 
-
-
-## Importer un fichier de grande taille : le *package* `data.table`
+## Importer un fichier avec le *package* `data.table`
 
 Le *package* `data.table` permet d'importer des fichiers plats avec la fonction `fread()`. Cette fonction présente trois avantages :
 
@@ -169,7 +154,7 @@ communes <- fread("Z:/mon_IDEP/communes-01012019.csv",
 
 ## Comparaison de performances sur grands fichiers
 
-Afin de comparer la rapidité des fonctions du *package* `readr` avec la fonction fread() de `data.table`, on utilise dans cette partie [le fichier des prénoms de l'Insee](https://www.insee.fr/fr/statistiques/fichier/2540004/dpt2021_csv.zip). Celui-ci contient les données sur les prénoms attribués aux enfants nés en France entre 1900 et 2021 par département de naissance.  
+Afin de comparer la rapidité de la fonction `read_delim()` du *package* `readr` avec la fonction `fread()` de `data.table`, on utilise dans cette partie [le fichier des prénoms de l'Insee](https://www.insee.fr/fr/statistiques/fichier/2540004/dpt2021_csv.zip). Celui-ci contient les données sur les prénoms attribués aux enfants nés en France entre 1900 et 2021 par département de naissance.  
 Ce fichier de 78 Mo contient près de 3,8 millions de lignes et 5 variables.
 
 Le code suivant utilise le *package* `microbenchmark` qui fournit des fonctions pour mesurer et comparer avec précision le temps d'exécution d'instructions R. Pour en savoir plus, consulter [cette page](https://github.com/joshuaulrich/microbenchmark/).  
@@ -191,10 +176,19 @@ mbm <- microbenchmark("readr" = {
     )
 },
 
+"readr_lazy" = {
+  base <-
+    read_delim(
+      file = chemin_fichier,
+      lazy = TRUE
+    )
+},
+
 "arrow" = {
   base <-
     read_delim_arrow(
-      file = chemin_fichier
+      file = chemin_fichier,
+      delim = ";"
     )
 },
   
@@ -207,15 +201,16 @@ mbm <- microbenchmark("readr" = {
 })
 ```
 
-Lorsqu'on affiche le résultat, on se rend compte que la fonction `fread()` est près de 4 fois plus rapide que les fonctions de `readr` et `d'arrow`.
+Lorsqu'on affiche le résultat, on se rend compte que la fonction `fread()` est près la plus rapide. À l'opposé, `read_delim()` est la moins performante même si l'ajout de l'option `lazy=TRUE` permet de diviser le temps d'exécution par près de 3. Enfin, la fonction `read_delim_arrow()` du package `arrow` se rapproche fortement de la rapidité de `fread()`.
 
 ```
 > mbm
 Unit: milliseconds
        expr       min       lq      mean    median        uq      max neval
-      readr 1902.4866 2163.180 2547.7800 2293.1160 2812.7978 4607.517   100
-      arrow 1155.2228 1249.256 1662.7937 1360.5492 1673.2847 3949.214   100
- data.table  430.1341  529.938  705.1759  585.8751  809.9259 1579.505   100
+      readr    1546.9   1630.7    1673.4    1659.1    1685.0   1921.7    20
+ readr_lazy     567.8    591.7     619.8     602.7     639.9    793.7    20
+      arrow     428.1    456.1     478.6     476.5     496.0    573.6    20
+ data.table     284.9    300.5     326.9     311.3     326.4    480.9    20
 ```
 
 ## Quelques bonnes pratiques
@@ -224,8 +219,8 @@ Voici quelques bonnes pratiques à avoir en tête pour importer des données :
 
 * **Vérifier que votre machine peut charger les données** : `R` importe les données dans la mémoire vive de la machine. Si les fichiers que vous voulez importer sont d'une taille supérieure à celle de la mémoire vive, vous ne pourrez pas les importer intégralement.
 * **Tester votre code d'importation avec quelques lignes** : il faut souvent tâtonner pour bien importer des données. Il est donc recommandé de commencer par importer quelques centaines ou quelques milliers de lignes (en utilisant l'option `n_max` des fonctions du *package* `readr` ou `nrows` de `fread()`) pour vérifier que le code est correct.
-* Il est important d'**importer un nombre réduit de colonnes**. Bien sélectionner les colonnes permet souvent de réduire significativement la taille des données et de résoudre le problème mentionné au point précédent. Pour cela, il s'agit d'utiliser l'option `col_select` pour les fonctions du package `readr` ou l'option `select` de la fonction `fread()` de `data.table`.
-* **Vous pouvez choisir le *package* que vous utilisez en fonction des outils que vous voulez utiliser pour manipuler les données** : les fonctions de `readr` renvoient un objet `tibble` tandis que `fread()` renvoie un objet `data.table`. Si vous prévoyez d'utiliser des *packages* du *tidyverse* (notamment `tidyr` et `dplyr`), il est préférable d'utiliser `readr`. Si vous prévoyez d'utiliser `data.table`, il est préférable d'utiliser `fread()`.
+* Il est important d'**importer un nombre réduit de colonnes**. Bien sélectionner les colonnes permet souvent de réduire significativement la taille des données et de résoudre le problème mentionné au point précédent. Pour cela, il s'agit d'utiliser l'option `col_select` pour la fonction `read_delim()` du package `readr` ou l'option `select` de la fonction `fread()` de `data.table`.
+* **Vous pouvez choisir le *package* que vous utilisez en fonction des outils que vous voulez utiliser pour manipuler les données** : les fonction `read_delim()` de `readr` renvoit un objet `tibble` tandis que `fread()` renvoie un objet `data.table`. Si vous prévoyez d'utiliser des *packages* du *tidyverse* (notamment `tidyr` et `dplyr`), il est préférable d'utiliser `readr`. Si vous prévoyez d'utiliser `data.table`, il est préférable d'utiliser `fread()`.
 
 ## Pour en savoir plus {#RessourcesImportCSV}
 
