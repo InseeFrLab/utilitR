@@ -592,13 +592,21 @@ bpe_ens_2018 %>%
   )
 ```
 
-et le code équivalent en `data.table`, nécessitant beaucoup moins de mémoire vive :
+Deux alternatives existent en `data.table` nécessitant toutes deux beaucoup moins de mémoire vive :
 
 ```{r}
 bpe_ens_2018_dt[ , NB_EQUIP_HORS_CHAUSS := NB_EQUIP
                  ][TYPEQU == "B304", NB_EQUIP_HORS_CHAUSS := NA_real_]
 ```
 
+ou bien en utilisant la fonction `data.table::fcase` :
+  
+```{r}
+bpe_ens_2018_dt[ , NB_EQUIP_HORS_CHAUSS := .(data.table::fcase(TYPEQU == "B304", NA_real_,
+                                                   TYPEQU != "B304", NB_EQUIP)
+                                                   )]
+```
+ 
 ### Attention en utilisant `:=`
 
 L'utilisation de la fonction `:=` est déroutante lorsqu'on découvre `data.table`. Voici trois remarques qui vous feront gagner du temps :
