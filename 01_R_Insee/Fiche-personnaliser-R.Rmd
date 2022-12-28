@@ -22,7 +22,7 @@ L'agent souhaite personnaliser sa configuration de `R`. Cette personnalisation c
 Dès ses origines, `R` a été conçu pour offrir une grande souplesse d'utilisation. Cette souplesse engendre toutefois une complexité dans les procédures d'initialisation de `R`. La [documentation](https://cran.r-project.org/web/packages/startup/vignettes/startup-intro.html) sur le lancement de `R` montre d'ailleurs toute la complexité de la chose :
 
 
-```{r, eval = FALSE}
+```{r entree_fiche_personnaliser_R, eval = FALSE}
 help("Startup")
 ```
 
@@ -94,7 +94,7 @@ La méthode la plus simple pour modifier le fichier `.Renviron` est la suivante 
 
 ::: {.specificite}
 Comme dans de nombreuses institutions, la navigation sur Internet depuis un poste de l'Insee est contrôlée par un *proxy* (intermédiaire entre le *web* et un ordinateur). Il est indispensable de paramétrer l'adresse du _proxy_ pour que `R` puisse accéder à Internet (par exemple pour télécharger un _package_). Pour ce faire, vous pouvez récupérer l'adresse du _proxy_ de l'Insee en exécutant la commande suivante :
-```{r, eval=FALSE}
+```{r ie_get_proxy_for_url, eval=FALSE}
 curl::ie_get_proxy_for_url()
 ```
 
@@ -103,20 +103,6 @@ Puis vous pouvez ajouter l'adresse du _proxy_ dans votre fichier `.Renviron`. Il
 http_proxy=adresse_du_proxy
 https_proxy=adresse_du_proxy
 ```
-:::
-
-::: {.remarque}
-Il faut être prudent lorsqu'on modifie des variables internes à `R`, car ces modifications peuvent aboutir à ce que les résultats des scripts ne soient pas reproductibles. Par exemple, `R` a un comportement potentiellement incohérent dans le cas suivant : 
-```{r warning=TRUE}
-vecteurbooleen <- c(TRUE, FALSE)
-if (vecteurbooleen) {
-  message("Je suis vrai !")
-} else {
-  message("Je suis faux !")
-}
-```
-
-Lorsqu'une condition porte sur un vecteur de booléens (`TRUE` ou `FALSE`), `R` utilise uniquement le premier élément du vecteur pour vérifier si condition est remplie, et renvoie un simple avertissement à l'utilisateur. Toutefois, il est possible de modifier ce comportement par défaut en indiquant `_R_CHECK_LENGTH_1_CONDITION_ = "TRUE"` dans le fichier `.Renviron` : `R` renverra alors une erreur et stoppera le code si `R` doit vérifier une condition sur un vecteur au lieu d'un simple scalaire. Dans ce cas, le code précédent ne renverra rien du tout et s’arrêtera avec une erreur. En revanche, chez un autre utilisateur dont le fichier `.Renviron` ne contient pas ce réglage, il n'y aura pas d'erreur. Le même code aboutit donc à des résultats différents en raison de différences dans les variables d'environnement.
 :::
 
 Il est possible de modifier les paramètres de son environnement ou d'en générer d'autres après l'ouverture de la session `R`, avec la commande `Sys.setenv()`. Vous pouvez par exemple exécuter la commande `Sys.setenv("MON_API_INSEE"="jamais")`. De même, la fonction `Sys.getenv()` permet de lister certaines valeurs présentes dans l'environnement actuel. Toutefois, toutes les procédures d'initialisation de R se seront déjà déroulées alors avec les anciennes valeurs, définies par défaut. Cette subtilité peut être importante !
