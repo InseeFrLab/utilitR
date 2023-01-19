@@ -6,7 +6,7 @@ L'utilisateur souhaite importer dans `R` des données issues de tableurs (extens
 
 ::: {.recommandation}
 - **Il est recommandé d'utiliser la fonction `read.xlsx()` du _package_ `openxlsx` pour importer des fichiers `xlsx`.**
-- **Il est recommandé d'utiliser la fonction `read_excel()` du _package_ `readxl` pour importer des fichiers `xls`.** Cette fonction peut également importer des fichiers `xlsx`, mais elle est moins rapide que la fonction `read.xlsx()` du _package_ `openxlsx`.
+- **Il est recommandé d'utiliser la fonction `read_excel()` du _package_ `readxl` pour importer des fichiers `xlsx` ou `xls`.** Pour les fichiers `xlsx`, la fonction `read.xlsx()` du _package_ `openxlsx` peut également être utilisée même s'il est un peu moins performante que `read_excel()` sur les gros fichiers (voir [ici](https://stackoverflow.com/questions/44538199/fast-way-to-read-xlsx-files-into-r)).
 - **Il est recommandé d'utiliser la fonction `read_ods` du _package_ `readODS` pour importer des fichiers `ods`.**
 
 Il est déconseillé d'utiliser le _package_ `xlsx`.
@@ -51,7 +51,7 @@ Dans l'exemple suivant, on n'importe qu'une plage de données (`A1:D5`) de l'ong
 
 ### Importer un fichier `xlsx` avec le _package_ `openxlsx`
 
-Pour importer un fichier au format `xlsx`, il est recommandé d'utiliser la fonction `read.xlsx()` du *package* `openxlsx`, en particulier si le fichier est volumineux. Cette fonction permet de charger les données du tableur dans un `data.frame`. Il ne faut pas oublier de charger le _package_ avec `library`.
+Pour importer un fichier au format `xlsx`, la fonction `read.xlsx()` du *package* `openxlsx` peut être utilisée pour des fichiers de tailles raisonnables. Cette fonction permet de charger les données du tableur dans un `data.frame`. Il ne faut pas oublier de charger le _package_ avec `library`.
 ```{r}
 library(openxlsx)
 ```
@@ -119,16 +119,20 @@ head(mesDonnees, 4)
 `nom-de-variable` dans Excel devient `nom.de.variable` dans `R`. 
     - Le paramètre `sep.names` permet de définir le caractère par lequel remplacer les espaces.
 
+::: {.remarque}
+Pour l'exportation de données au format `xlsx`, le _package_ `openxlsx` est à privilégier car il présente de multiples options très pratiques pour personnaliser les exports. Les deux vignettes du package sur ce sujet apportent quelques exemples des potentialités d'écriture de classeurs `xlsx`. [La première](https://ycphs.github.io/openxlsx/articles/Introduction.html) présente notamment l'utilisation de la fonction `write.xlsx()` et la seconde illustre quelques possibilités autour de la fonction `writeData()`.
+:::
+
 ### Importer un fichier `xls` avec le _package_ `readxl`
 
-Pour importer un fichier au format `xls`, vous pouvez utiliser la *fonction* `read_excel()` du *package* `readxl`. Cette fonction permet également d'importer un fichier au format `xlsx` peu volumineux. Si vous voulez importer un fichier `xlsx` volumineux, il est préférable d'utiliser `openxlsx`. Il ne faut pas oublier de charger le _package_ avec `library`.
+Pour importer un fichier au format `xls` ou `xlsx`, il est recommandé d'utiliser la *fonction* `read_excel()` du *package* `readxl`. Cette fonction permet en effet d'importer des fichiers volumineux de manière plus rapide que le package `openxlsx`. Les données du tableur sont alors chargées dans un `tibble` (voir la fiche [Manipuler des données avec le `tidyverse`] pour en apprendre davantage sur le `tibble`). Il ne faut pas oublier de charger le _package_ avec `library`.
 ```{r}
 library(readxl)
 ```
 
 #### Comment utiliser la fonction `read_excel()`
 
-La fonction `read_excel()` du _package_ `readxl` permet d’importer des données directement depuis un fichier au format `xls` ou `xlsx`. Voici les principaux arguments et options de `read_excel()` :
+Voici les principaux arguments et options de `read_excel()` :
 
 | Argument         | Valeur par défaut     | Fonction                                                                                   |
 |------------------|-----------------------|--------------------------------------------------------------------------------------------|
@@ -146,7 +150,7 @@ La fonction `read_excel()` du _package_ `readxl` permet d’importer des donnée
 
 Les exemples qui suivent vous présentent l'utilisation de la fonction `read_excel` dans quelques cas courants.
 
-* **Utilisation la plus simple** : on importe toutes les données du premier onglet, en supposant que la première ligne contient les noms de variables. On obtient alors un `tibble`(voir la fiche [Manipuler des données avec le `tidyverse`] pour en apprendre davantage sur le `tibble`).
+* **Utilisation la plus simple** : on importe toutes les données du premier onglet, en supposant que la première ligne contient les noms de variables. 
 
 ```{r}
 mesDonnees <- readxl::read_excel(path = chemin_xls)
