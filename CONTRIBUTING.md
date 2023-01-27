@@ -54,7 +54,7 @@ permet de proposer, automatiquement, des modifications via l'interface de
 Dans le menu du document, il faut d'abord se placer dans la fiche à
 relire et ensuite cliquer sur le bouton `Edit`, en haut à gauche :
 
-![](./pics/contributing/edit_bs4.png)
+![](../pics/contributing/edit_bs4.png)
 
 Un lien s'ouvre automatiquement sur la fiche `.Rmd` et permet d'éditer le
 contenu depuis `Github`. Cette fonctionnalité est utilisable même
@@ -66,7 +66,7 @@ A l'ouverture du lien, s'il n'existe pas de fork du projet sur son compte, un po
 On se retrouve alors sur une interface permettant d'éditer,
 de visualiser et de proposer des modifications du fichier source. 
 
-![](./pics/contributing/edit2.png)
+![](../pics/contributing/edit2.png)
 
 La documentation officielle de Github sur cette manière de procéder est
 disponible
@@ -79,7 +79,7 @@ En cliquant sur `Preview` vous ne verrez pas la fiche mise en forme mais
 les modifications seront identifiées (rouge pour suppression, vert pour
 insertion) par le système de contrôle de version `Git`
 
-![](./pics/contributing/Relecture_preview.png)
+![](../pics/contributing/Relecture_preview.png)
 
 Enfin, une fois la modification écrite, il convient de la valider.
 Cette opération, nommée `commit` dans la terminologie `Git`,
@@ -88,7 +88,7 @@ peut être effectuée en:
 * écrivant un message signifiant dans la fenêtre `Commit message`. Les messages cryptiques du type `modification` sont proscrits. 
 * sélectionnant la branche dans laquelle la modification s'applique. Si la modification est à appliquer aux supports déployés, il est nécessaire de sélectionner `master`. Les modifications proposées dans `master` ne sont intégrées qu'après validation des mainteneurs du projets, seuls utilisateurs à avoir les droits en écriture sur la version maître. 
 
-![](./pics/contributing/edit3.png)
+![](../pics/contributing/edit3.png)
 
 :exclamation: **Pour faciliter le suivi et l'intégration des modifications, 
 choisir l'option ` Create a new branch for this commit and start a pull request`.
@@ -99,7 +99,7 @@ substantielles que des coquilles, le nom de la branche est libre.
 Cliquer sur `Propose changes`. Automatiquement, une page pour soumettre cette
 modification au dépôt `utilitR` s'ouvre:
 
-![](./pics/contributing/edit4.png)
+![](../pics/contributing/edit4.png)
 
 Après avoir
 éventuellement révisé le titre de la `Pull Request` et la description associée,
@@ -108,7 +108,7 @@ cliquer sur `Create pull request`. Cela permettra aux mainteneurs du projet
 discussion sur les propositions de modifications. Celles-ci sont visibles
 en cliquant sur l'onglet `Files changed`:
 
-![](./pics/contributing/edit5.png)
+![](../pics/contributing/edit5.png)
 
 
 ## :three: Comment participer aux discussions collectives?
@@ -172,13 +172,13 @@ Dans le menu du site web www.book.utilitr.org,
 il faut d'abord se placer dans la fiche à
 relire et ensuite cliquer sur le bouton `View source`, dans le menu à droite.
 
-![](./pics/contributing/view_bs4.png)
+![](../pics/contributing/view_bs4.png)
 
 Cela ouvre l'état actuel d'une fiche. CLiquer sur le bouton `blame` en haut à droite. 
 Sur la marge de gauche sera alors affichée, pour chaque bloc, la
 modification (`commit`) ayant amené à l'état actuel du bloc.
 
-![](./pics/contributing/view2.png)
+![](../pics/contributing/view2.png)
 
 Cliquer sur le titre de la modification dans le bloc d'intérêt, par exemple
 comme ci-dessus `Quelques reformulations`.
@@ -186,7 +186,7 @@ comme ci-dessus `Quelques reformulations`.
 Cela ouvre le `commit` en question. Dans la marge, cliquer sur le bouton qui 
 s'affiche (croix bleue):
 
-![](./pics/contributing/view3.png)
+![](../pics/contributing/view3.png)
 
 Rédiger le commentaire et cliquer sur `Add single comment`
 
@@ -232,7 +232,7 @@ Pour contribuer à `utilitR`, il est possible de créer un service RStudio enti�
 * dans le catalogue de service, choisir un service RStudio
 * sous l'onglet `R`, sélectionner l'image utilitR
 
-![](./pics/contributing/creation_service_utilitr.png)
+![](../pics/contributing/creation_service_utilitr.png)
 
 Une autre solution consiste à lancer le service directement via [ce lien](https://datalab.sspcloud.fr/launcher/inseefrlab-helm-charts-datascience/rstudio?onyxia.friendlyName=%C2%AButilitr%C2%BB&service.image.version=%C2%ABinseefrlab%2Futilitr%3A0.8.0%C2%BB).
 
@@ -249,7 +249,7 @@ Il est également possible, pour les utilisateurs avancés, d'incorporer cette c
 
 Enfin, comme montré dans la capture d'écran ci-dessous, il est possible de configurer le mot de passe associé au compte Github de manière à ce qu'il soit conservé dans le cache du service pendant une durée limitée (dans l'exemple ci-dessous, une heure). Une fois le temps écoulé, l'utilisateur devra de nouveau entrer son mot de passe.
 
-![](./pics/contributing/configurer_git_cache.png)
+![](../pics/contributing/configurer_git_cache.png)
 
 #### Configurer l'accès au dépôt distant Github : la méthode à vos risques et périls
 
@@ -267,7 +267,7 @@ Ainsi, il est possible de récupérer, de manière systématique, son mot de pas
 
 de la manière suivante :
 
-![](./pics/contributing/mes_secrets_utilitr.png)
+![](../pics/contributing/mes_secrets_utilitr.png)
 
 On peut ensuite lancer le [service configuré dans ce lien](https://datalab.sspcloud.fr/launcher/ide/rstudio?autoLaunch=false&init.personalInit=%C2%ABhttps%3A%2F%2Fgithub.com%2FInseeFrLab%2FutilitR%2Fblob%2Fmaster%2Finit_utilitr.sh%C2%BB&service.image.custom.enabled=true&service.image.custom.version=%C2%ABinseefrlab%2Futilitr%3Alatest%C2%BB&vault.secret=%C2%AButilitr%2Futilitr%C2%BB) pour obtenir un service avec une identification persistante.
 
@@ -291,7 +291,7 @@ il faudra mettre à jour sa copie personnelle. C'est expliqué dans la
 Pour forker le dépôt, il est nécessaire d'avoir un compte `Github`. Une fois
 connecté sur ce compte, on fork le dépôt en cliquant à droite de la page:
 
-![](./pics/contributing/fork1.png)
+![](../pics/contributing/fork1.png)
 
 Pour travailler dessus, il est recommandé de suivre la démarche habituelle
 quand on travaille sur un projet associé à `Git`, c'est-à-dire faire une
@@ -465,7 +465,7 @@ fichiers `R Markdown` en un site HTML et un fichier PDF.
 
 Si tout va bien, `Github` nous indique le succès
 
-![](./pics/contributing/fork3.png)
+![](../pics/contributing/fork3.png)
 
 
 Cliquer, pour dérouler les tests sur `Show all checks`.
@@ -473,7 +473,7 @@ En cliquant sur `Details`, on peut accéder au document compilé.
 En bas, on peut télécharger résultat de la
 compilation.
 
-![](./pics/contributing/fork4.png)
+![](../pics/contributing/fork4.png)
 
 Et vérifier, après avoir dézippé et ouvert le fichier `index.html`,
 que le résultat mis en forme correspond
@@ -509,7 +509,7 @@ contributeur corrige sa proposition.
 ou plusieurs fichiers `.PNG` ont été générés,
 `Github` vous enverra une informera d'une erreur de la manière suivante:
 
-![](./pics/contributing/PR1.png)
+![](../pics/contributing/PR1.png)
 
 vous pouvez naviguer dans le fichier `_tools/nouppercase.R`, tout sélectionner
 et appuyer sur `CTRL`+ `Entrée` pour exécuter le code. Cela vous donnera la
