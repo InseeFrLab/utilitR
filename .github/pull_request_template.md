@@ -1,3 +1,5 @@
+<!-----------
+
 **Compléter une description indicative ici.**
 
 Si la modification est associée à une *issue*, elle peut être identifiée par son numéro, par exemple `#10`.
@@ -21,3 +23,4 @@ En faisant cette *pull request*, je confirme que :
 produit un résultat
 - [ ] Si j'y suis invité (cela ne fonctionne pas pour toutes les `pull requests`), je consulte le site de prévisualisation `https://www.${BRANCH_NAME}--preview-docr.netlify.app/`
 
+-------------->
