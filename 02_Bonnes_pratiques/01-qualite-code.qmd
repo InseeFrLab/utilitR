@@ -5,7 +5,10 @@
 Blabla
 
 ::: {.callout-recommandation .icon}
-Blabla
+- lintr & styler
+- Il faut utiliser une [**fonction**]{.red2} dès qu'on utilise une même
+portion de code plus de deux fois ([**_don't repeat yourself_ (DRY)**])
+
 :::
 
 Cette partie détaille de manière plus étendue les éléments enseignés
@@ -64,7 +67,6 @@ d'un code de qualité.
 ### Enjeux
 
 > *"Good coding style is like correct punctuation: you can manage without it, butitsuremakesthingseasiertoread"*
-
 >
 > [Tidyverse Style Guide](https://style.tidyverse.org/)
 
@@ -78,32 +80,57 @@ Il existe deux guides de référence qui exposent les conventions de la communau
 `R` concernant la qualité du code :
 le [_`Tidyverse` style guide_](https://style.tidyverse.org/) et
 le [_`Google` style guide_](https://google.github.io/styleguide/Rguide.html).
-Ce guide propose des conseils sur la façon d'écrire du code clair et structuré en utilisant les bonnes pratiques recommandées pour le langage R. Il peut être utile de se référer à ce guide pour s'assurer d'adopter des bonnes pratiques en matière de codage en R.
+Ces guides proposent des conseils sur la façon d'écrire du code
+clair et structuré en utilisant les bonnes pratiques recommandées pour le langage `R`.
+Il est utile de lire les introductions et de se référer ponctuellement à ceux-ci
+pour s'assurer d'adopter des bonnes pratiques en matière de codage en `R`.
 
-. . .
+::: {.callout-remarque .icon}
 
-- Respecter les [conventions]{.orange} du langage dans lequel il est rédigé
+Ces deux guides diffèrent sur certaines règles syntaxiques. 
 
-. . .
+Par exemple,
+le  [_`Tidyverse` style guide_](https://style.tidyverse.org/functions.html#return) recommande de
+ne pas introduire de `return` en fin de fonction alors que 
+le [_`Google` style guide_](https://google.github.io/styleguide/Rguide.html#use-explicit-returns)
+préconise de le faire. Les deux conventions peuvent se défendre 
+et le choix entre les deux revêt une forme d'arbitraire. Par exemple, si on 
+privilégie la lisibilité, il est conseillé de toujours avoir un `return` alors
+que quelqu'un favorisant la concision n'utilisera pas de `return`. De même,
+le choix entre _camel case_ (objets dont les mots sont délimités avec des majuscules comme
+`addValues`) dans le [_`Google` style guide_](https://google.github.io/styleguide/Rguide.html#naming-conventions)
+et _snake case_ (séparation avec des `_` comme `add_values`) proposé par
+ [_`Tidyverse` style guide_](https://style.tidyverse.org/syntax.html#object-names)
+ est arbitraire. 
+ 
+ Comme il est difficile de donner des arguments objectifs pour privilégier une règle
+ plutôt qu'une autre, il n'est pas impossible de parfois suivre celles du 
+[_`Tidyverse` style guide_](https://style.tidyverse.org/) et
+d'autre fois celles du [_`Google` style guide_](https://google.github.io/styleguide/Rguide.html). 
+L'important est plutôt d'être cohérent dans le cadre d'un projet en suivant les
+mêmes conventions dans l'ensemble des scripts qui le constituent. 
 
-- Il existe un **guide de référence** pour bien coder en `R` : le [Tidyverse style guide](https://style.tidyverse.org/index.html).
+:::
 
 
-## :one: Adopter les standards communautaires {.smaller}
 
-Deux outils pratiques aident à respecter les standards :
+### Outils
 
-1. [**_linter_**]{.orange} : programme qui vérifie que le code est __formellement__ conforme à un certain _guidestyle_
-    + signale problèmes formels, sans corriger 
+Pour mettre de manière automatisée certaines des règles syntaxiques
+présentes dans les guides, il existe plusieurs types d'outils.
 
-. . .
+* Un [**_linter_**]{.orange} est un programme qui vérifie que le code est __formellement__ conforme à un certain _guidestyle_, et signale les erreurs. En revanche, un _linter_ ne modifie pas directement le code et ne repère pas les erreurs de fond.
+* Un [**_formatter_**]{.orange} est un programme qui reformate un code source pour le rendre conforme à un certain _guidestyle_. Par définition, un _formatter_ modifie directement le code.
 
-2. [**_formatter_**]{.orange} : programme qui reformate un code pour le rendre conforme à un certain _guidestyle_
-    + modifie directement le code
+Un **linter** se comporte un peu comme un correcteur d'un traitement de texte 
+dont on aurait désactivé la fonction de remplacement automatique. Le
+formatter correspond plutôt au correcteur automatique du téléphone portable
+qui va corriger automatiquement ce qu'il juge être des erreurs. 
 
-. . .
 
-::: {.callout-tip}
+
+
+::: {.callout-remarque .icon}
 
 - [Exemples d’erreurs repérées]{.blue2} par un _linter_ : 
     + lignes de code trop longues ou mal indentées, parenthèses non équilibrées, noms de fonctions mal construits…
@@ -111,62 +138,74 @@ Deux outils pratiques aident à respecter les standards :
     + fonctions mal utilisées, arguments mal spécifiés, structure du code incohérente, code insuffisamment documenté…
 :::
 
-
-<!--------- VERSION SITE WEB 
-1. Un [**_linter_**]{.orange} est un programme qui vérifie que le code est __formellement__ conforme à un certain _guidestyle_, et signale les erreurs. En revanche, un _linter_ ne modifie pas directement le code et ne repère pas les erreurs de fond.
-
-  &#8627; Exemples d’erreurs repérées par un _linter_ : lignes de code trop longues ou mal indentées, parenthèses non équilibrées, noms de fonctions mal construits…
-  &#8627; Exemples d’erreurs __non__ repérées par un _linter_ : fonctions mal utilisées, arguments mal spécifiés, structure du code incohérente, code insuffisamment documenté…
-. . .
-
-2. Un [**_formatter_**]{.orange} est un programme qui reformate un code source pour le rendre conforme à un certain _guidestyle_. Par définition, un _formatter_ modifie directement le code.
--------->
-
-## :one: Adopter les standards communautaires {.smaller}
-
-<br>
-
 Dans le cas de {{< fa brands r-project >}} : 
 
 - le [_linter_]{.orange} à utiliser est le _package_ [`lintr`](https://github.com/r-lib/lintr);
 - le [_formatter_]{.orange} à utiliser est le _package_ [`styler`](https://github.com/r-lib/styler).
-    + Existe également le _package_ [`formatR`](https://github.com/yihui/formatR).
 
-## :two: Utiliser des fonctions {.smaller}
+::: {.callout-conseil .icon}
 
-::: {.callout-important}
-## Règle d'or
+Pour que `lintr` utilise le guide de style `tidyverse`, il suffit
 
-Il faut utiliser une [**fonction**]{.red2} dès qu'on utilise une même
-portion de code plus de deux fois ([**_don't repeat yourself_ (DRY)**]{.red2})
-:::
-
-- [Limite les risques d'erreurs]{.orange} liés aux copier/coller
-- Rend le code [plus lisible]{.orange} et [plus compact]{.orange}
-- [Un seul endroit]{.orange} du code à modifier lorsqu'on souhaite modifier le traitement
-- Facilite la [réutilisation]{.orange} et la [documentation]{.orange} du code !
-
-. . .
-
-::: {.callout-tip}
-## Règles pour écrire des fonctions **pertinentes**
-
-- Une tâche = une fonction ;
-- Une tâche complexe = un enchaînement de fonctions réalisant chacune une tâche simple ;
-- Limiter l'utilisation de variables globales.
+```{r}
+#| eval: false
+lintr::use_lintr(type = "tidyverse")
+```
 
 :::
 
-## :three: Documenter son code
 
-- Grands principes :
-  - Documenter le [__pourquoi__]{.orange} plutôt que le [__comment__]{.orange} ;
-  - Privilégier l'auto-documentation via des [**nommages pertinents**]{.orange}.
+## Utiliser des fonctions
+
+L'utilisation de fonctions est l'une des bonnes pratiques en matière
+de programmation qui s'applique à tous les langages de programmation,
+y compris `R`.
+
+La règle _DRY_ pour _do not repeat yourself_ (ne pas se répéter)
+indique qu'il faut éviter de copier-coller du code lorsqu'il est utilisé plus de deux fois.
+Au lieu de cela, on devrait encapsuler ce code dans une fonction et utiliser
+cette fonction aux endroits où cela est nécessaire.
+
+
+En premier lieu, cela limiter les risques d'erreurs liées au copier-coller de code.
+Si une modification est nécessaire, elle peut être apportée dans la fonction, ce qui garantit que toutes les utilisations de la fonction seront automatiquement mises à jour.
+
+Ne pas se répéter rend également le code plus lisible et plus compact en encapsulant un traitement spécifique dans une section distincte du code.
+Ceci présente également l'avantage de n'avoir qu'un 
+seul endroit du code à modifier
+lorsqu'on souhaite apporter une modification au traitement.
+Cela peut représente une économie de temps substantielle
+et minimiser les erreurs.
+
+Enfin, utiliser des fonctions facilite la réutilisation et la documentation
+du code. D'abord parce qu'en encapsulant un traitement dans une fonction, on peut facilement le réutiliser dans d'autres parties du code. Ensuite, parce que cela peut
+également faciliter la documentation du code en permettant de décrire clairement ce que fait chaque fonction.
+
+Un biais à éviter est le [code spaghetti](https://fr.wikipedia.org/wiki/Programmation_spaghetti)
+Il s'agit d'un code qui est difficile à comprendre et à maintenir en raison de sa complexité et de sa structure désorganisée. 
+Pour éviter le code spaghetti, il est important de suivre certaines règles pour écrire des fonctions pertinentes. Voici les trois principales règles à retenir :
+
+* _Une tâche = une fonction_ : chaque fonction devrait effectuer une seule tâche spécifique. Cela permet de rendre le code plus clair et plus facile à comprendre.
+
+* _Une tâche complexe = un enchaînement de fonctions réalisant chacune une tâche simple_ : si une tâche est complexe, elle peut être divisée en plusieurs tâches plus simples et encapsulées dans des fonctions distinctes. Cela permet de rendre le code plus facile à comprendre et à maintenir.
+
+* _Limiter l'utilisation de variables globales_ : les variables globales sont accessibles depuis n'importe quel endroit du code, ce qui peut rendre le code difficile à comprendre et à maintenir. Il est donc recommandé de limiter l'utilisation de variables globales et d'utiliser des variables locales au lieu de cela. Cela permet de rendre le code plus clair et plus facile à comprendre.
+
+## Documenter son code
+
+Les grands principes de la documentation de code consistent à :
+
+* Documenter le pourquoi plutôt que le comment : il est plus important de comprendre pourquoi le code a été écrit de la manière dont il l'a été, plutôt que de connaître les détails techniques de son fonctionnement. En documentant le pourquoi, on peut mieux comprendre le but du code et comment il s'intègre dans le projet plus global.
+
+* Privilégier l'auto-documentation via des nommages pertinents : le code peut être plus clair et plus facile à comprendre si les variables, les fonctions et les autres éléments ont des noms pertinents et explicites. Cela permet de documenter le code de manière implicite et de rendre la lecture du code plus intuitive.
+
+En gardant ces grands principes à l'esprit, on peut écrire du code qui est plus facile à comprendre et à maintenir, ce qui peut économiser du temps et des ressources dans le long terme.
 
 . . .
 
-::: {.callout-tip}
-## Comment bien documenter un script ?
+::: {.callout-conseil .icon}
+
+Comment bien documenter un script ?
 
 - [**Minimum**]{.orange} 🚦 : commentaire au début du script pour décrire ce qu'il fait ;
 - [**Bien**]{.orange} 👍 : commenter les parties "délicates" du code ;
@@ -175,46 +214,44 @@ portion de code plus de deux fois ([**_don't repeat yourself_ (DRY)**]{.red2})
 :::
 
 
-## :four: Pas d'ambiguïté sur les _packages_ utilisés {.smaller}
+## Pas d'ambiguïté sur les _packages_ utilisés
 
-- Deux fonctions peuvent avoir le [__même nom__]{.orange} dans des [__packages différents__]{.orange}
+Deux fonctions peuvent avoir le même nom dans des packages différents. Par
+exemple, la fonction `select` existe dans les packages `dplyr` et `MASS`.
+En utilisant `R`, le package chargé la plus récemment via `library`
+sera utilisée par défaut.
 
-. . .
+Cela peut causer des erreurs difficiles à repérer,
+car il est nécessaire d'exécuter le code pour les détecter. Par exemple, le code suivant 
 
-- `R` utilise par défaut la librairie chargée le plus récemment
+```{r}
+#| error: true
+library(dplyr)
+library(MASS)
+bpe_ens_2018 <- doremifasolData::bpe_ens_2018
 
-. . .
+nombre <- bpe_ens_2018 %>%
+  as_tibble() %>%
+  select(TYPEQU, NB_EQUIP) 
+```
 
-- Erreurs difficiles à repérer car il est nécessaire d'exécuter le code
+renvoie une erreur difficile à comprendre si on ne l'a pas déjà rencontrée. 
+Cela provient du fait que `MASS` étant le dernier _package_ chargé, `R`
+utilise sa fonction `select` plutôt que celle de `dplyr`.
 
-. . .
-
-- Recommandation : indiquer explicitement le _package_ : notation `package::fonction()`
-    + Exemple : `dplyr::filter()`
-
-:::{.callout-tip}
-## Exemple
-- `package1` et `package2` contiennent chacun une fonction appelée `superFonction`.
-- Si `package2` est chargé après `package1`, alors `superFonction` désigne par défaut la fonction de `package2`.
-- Mieux vaut noter `package1::superFonction` et `package2::superFonction`
-:::
+Afin d'éviter ces erreurs, il est recommandé de réserver
+`library(pkg)` aux packages dont on utilise des fonctions à de
+nombreuses reprises dans un code. Il est recommandé, pour les autres,
+d'indiquer explicitement le package en utilisant la notation `package::fonction()`.
+De même, si une fonction présente le même nom dans deux packages, il est recommandé
+d'utiliser cette notation. Cela permet de garantir que la bonne fonction est appelée et d'éviter les erreurs potentielles.
 
 
-<!------ Pour la version blog
-
-Des packages contenant des fonctions homonymes peuvent être à l’origine de conflits. Ceci est dû au fait que R utilise par défaut la fonction du package chargé le plus récemment.
-
-    Exemple: si les packages package1 et package2 contiennent chacun une fonction appelée superFonction, et si package2 est chargé après package1, alors superFonction désigne par défaut la fonction de package2.
-
-Cette ambiguïté peut entraîner des erreurs difficiles à repérer, car le code donne l’impression d’appeler la bonne fonction. C’est pourquoi il est recommandé d’indiquer explicitement le package utilisé en utilisant la notation package::fonction() (par exemple dplyr::filter()).
-
-:::{.callout-tip}
+:::{.callout-conseil}
 ## Le_package_[`conflicted`](https://github.com/r-lib/conflicted#conflicted)
 
 Le_package_`conflicted` aide à gérer les conflits de_packages_de manière fluide.
 :::
------->
-
 
 ## Ressources supplémentaires
 
@@ -227,3 +264,5 @@ Le_package_`conflicted` aide à gérer les conflits de_packages_de manière flui
 
 
 ## Exercices
+
+TO BE COMPLETED
