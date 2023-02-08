@@ -15,7 +15,9 @@ then
     git fetch upstream"
 else
     cd /home/onyxia/work
-    runuser -l onyxia -c "cd $WORKSPACE_DIR && git clone https://github.com/inseefrlab/utilitr.git"
+    runuser -l onyxia -c "cd $WORKSPACE_DIR && \
+    git clone https://github.com/inseefrlab/utilitr.git && \
+    cd utilitr"
 fi
 if [ ! -z "$FORK" ]
 then
