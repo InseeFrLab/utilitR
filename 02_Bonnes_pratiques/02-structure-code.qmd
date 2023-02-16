@@ -1,0 +1,242 @@
+# Structure des projets {#code-structure}
+
+## Tâches concernées et recommandations
+
+L'utilisateur souhaite améliorer la structuration de ses projets `R` afin de favoriser leur maintenabilité et leur réutilisation.
+
+::: {.callout-recommandation .icon}
+- Il est recommandé d'utiliser systématiquement les projets `RStudio` dans
+des projets impliquant des programmes {{< fa brands r-project >}}.
+- Il est recommandé de structurer les projets en dossiers thématiques
+(données, code, sorties, documentation) et d'organiser ces dossiers
+afin de séparer les entrées d'une chaîne de traitement, les objets intermédiaires et les sorties.
+- Il est recommandé d'adopter des noms signifiants pour les fichiers et de ne
+jamais utiliser des espaces dans les noms de dossiers et fichiers.
+- Il est recommandé d'accorder une attention particulière au fichier `README.md`.
+:::
+
+Cette partie détaille de manière plus étendue les éléments enseignés
+dans le cadre d'une formation aux bonnes pratiques 
+construite par l'Insee et dont les supports ont été ouverts à 
+[cette adresse](https://inseefrlab.github.io/formation-bonnes-pratiques-R/#/title-slide).
+
+
+## Enjeux
+
+On peut comparer la structure d'un projet à l'organisation d'un bureau. 
+Si ce dernier est désordonné, il est très difficile de dissocier les dossiers
+et de ne pas prendre beaucoup de temps, voire abandonner toute recherche, 
+lorsqu'il est nécessaire d'en retrouver un. A l'inverse, un bureau bien
+organisé, et au sein de ce bureau des dossiers bien rangés, faciliteront
+la recherche d'information. Le bon fonctionnement d'un projet informatique
+est identique. Un projet bien structuré, avec une organisation sensée, 
+améliorera la lisibilité du projet ainsi que sa maintenabilité. 
+
+Prenons l'organisation suivante, à ne pas reproduire: 
+
+```
+├── report.Rmd
+├── correlation.png
+├── data.csv
+├── data2.csv
+├── fig1.png
+├── figure 2 (copy).png
+├── report.pdf
+├── partial data.csv
+├── script.R
+└── script_final.R
+```
+
+Source : [eliocamp.github.io](https://eliocamp.github.io/reproducibility-with-r/materials/day1/02-projects/)
+
+Sans une documentation claire sur l'organisation du projet, il est très difficile de comprendre la hiérarchie et l'ordre d'exécution des scripts, 
+de séparer les bases qui sont en entrée du traitement de celles produites par le traitement, 
+d'être certain que toutes les productions sont issues du traitement et non de copier-coller manuels
+et d'être certain que toutes les productions ont été faites à partir de la 
+dernière version du code. 
+
+
+Comme pour le rangement d'un bureau, la méthode
+la plus efficace n'est pas d'attendre que la situation devienne ingérable
+mais d'organiser en continu le projet. `Git` est un outil qui favorise
+cette bonne pratique, puisqu'il évite la duplication des fichiers, mais
+il ne s'agit pas d'un outil miraculeux. 
+Il est donc recommandé d'adopter des conventions, assez similaires à celles
+proposées dans la fiche [Qualité du code](#code-quality). 
+par exemple l'autodocumentation par 
+des conventions de nommage cohérentes et l'organisation du projet dans des noms
+de dossiers logiques
+pour permettre à d'autres de comprendre l'objectif d'un projet, 
+sa structure et ses productions. 
+
+Les principes généraux sont les suivants, détaillés dans les parties qui 
+suivent:
+
+1. Utiliser les projets RStudio ;
+2. Organiser son projet en sous-dossiers numérotés ;
+3. Donner des noms pertinents aux fichiers et dossiers ;
+4. Documenter son projet.
+
+
+Il est important d'être vigilant sur la bonne structuration
+d'un projet car un code mal structuré limite la lisibilité du projet
+et est très coûteux à maintenir (concept de la dette technique).
+
+
+::: {layout="[80,30]"}
+
+![](https://www.earthdatascience.org/images/earth-analytics/clean-code/reproducible-science-is-about-being-lazy-hadley-wickham.png)
+
+:::
+
+## Utiliser les projets RStudio
+
+Une [fiche détaillée](#rproject) est consacrée aux projets `RStudio`.
+Les principaux avantages des projets `RStudio` sont les suivants:
+
+  - Tous les fichiers nécessaires au projet sont dans un même dossier ;
+  - Le dossier contenant le projet RStudio est automatiquement utilisé comme ***working directory*** ;
+  - Ils utilisent des [**chemins relatifs**]{.blue2} plutôt qu'absolus.
+
+Cela peut aider à éviter les problèmes de chemin lors de la reprise du projet sur un autre ordinateur ou avec une autre personne. 
+
+Si vous suivez le mode opératoire pour l'utilisation de `Git` dans `RStudio`
+détaillé dans la [fiche dédiée](#Fiche_git_utilisation), vous êtes assuré
+de travailler dans un projet `RStudio`.
+
+## Organiser son projet en sous-dossiers
+
+Comme toute convention, toute structure de dossier comporte une certaine
+forme d'arbitraire et il n'apparaît pas toujours évident de considérer
+qu'une règle d'organisation est plus légitime qu'une autre. Il est plus important
+de chercher des structures lisibles et cohérentes, admises par une communauté
+large de praticiens d'un langage. 
+
+Pour reprendre l'exemple précédent, une structure déjà plus lisible
+est la suivante:
+
+```
+├── data
+│   ├── raw
+│   │   ├── data.csv
+│   │   └── data2.csv
+│   └── derived
+│       └── partial data.csv
+├── scripts
+│   └── script.R
+├── analysis
+│   ├── script_final.R
+│   └── report.Rmd
+└── output
+    ├── fig1.png
+    ├── figure 2 (copy).png
+    ├── figure10.png
+    ├── correlation.png
+    └── report.pdf
+```
+Dans cette organisation : 
+
+- le dossier `data` vise à stocker les données locales utilisées par le projet. Le dossier `raw` contient les données de base, qui doivent rester immuables. Le dossier `derived` peut contenir des tables intermédiaires produites à partir des données de base ;
+- la dossier `scripts` contient les scripts qui réalisent des traitements de données : téléchargement, import, nettoyage, etc. ;
+- le dossier `analysis` contient les scripts qui réalisent une analyse statistique et/ou une mise en forme sous forme de rapport ;
+- le dossier `output` contient les fichiers générés par le projet : rapports, figures, etc. Ces fichiers doivent toujours pouvoir être re-générés par le code présent dans le projet, par souci de reproductibilité.
+
+## Donner des noms pertinents aux fichiers
+
+La structure précédente est déjà plus claire. Néanmoins, 
+au sein de chaque dossier, l'organisation est encore perfectible. 
+En donnant des noms clairs aux fichiers et en séparant au sein de chaque dossier
+les différents niveaux, on comprend beaucoup mieux l'organisation du projet
+et ainsi la chaine de production. 
+
+```
+├── data
+│   ├── raw
+│   │   ├── dpe_logement_202103.csv
+│   │   └── dpe_logement_202003.csv
+│   └── derived
+│       └── dpe_logement_merged_preprocessed.csv
+├── scripts
+│   └── preprocessing.R
+├── analysis
+│   ├── generate_plots.R
+│   └── report.Rmd
+└── output
+    ├── histogram_energy_diagnostic.png
+    ├── barplot_consumption_pcs.png
+    ├── correlation_matrix.png
+    └── report.pdf
+```
+
+::: {.callout-remarque .icon}
+
+Les noms de dossiers sont ici en Anglais, par souci
+de cohérence avec les noms de fichiers. Cette règle
+n'est pas obligatoire, il est tout à fait possible 
+d'adopter la convention de nommer les dossiers et 
+fichiers en Français.
+
+Dans ce cas, il est néanmoins
+important de ne pas utiliser d'accent dans les
+noms, car ceux-ci peuvent provoquer des erreurs, au
+même titre que les espaces ou autres caractères spéciaux.
+
+:::
+
+
+
+Les données initiales sont isolées des 
+données retraitées dans le cadre de l'analyse. 
+Le code est décomposé entre 
+la principale chaine de traitement - sans doute à
+l'origine du 📁 `derived/dpe_logement_merged_preprocessed.csv`
+et celle qui génère des valorisations
+ultérieures. 
+En observant exclusivement l'aborescence, grâce aux noms signifiants,
+on comprend que le code traite des données de diagnostics énergétiques (DPE)
+pour une problématique d'analyse de consommation énergétique, sans doute
+en lien avec une problématique d'inégale répartition selon les PCS.
+
+
+
+::: {.callout-conseil .icon}
+
+Il est recommandé de ne jamais utiliser d'espaces dans les noms de fichiers
+ou de dossiers. Ceci peut amener à des erreurs difficiles à 
+détecter lors de l'exécution de scripts `R`.
+:::
+
+## Documenter son projet
+
+Le fichier `README.md`, situé à la racine du projet,
+est à la fois la carte d'identité et la vitrine du projet. En effet, comme
+il s'agit du fichier qui fait office de point d'entrée
+d'un projet sur `Github` ou `Gitlab`, il s'agit de la première source
+d'information pour comprendre l'objet du projet. 
+
+Idéalement, ce fichier contient :
+
+- Une présentation du contexte et des objectifs du projet;
+- Une description du fonctionnement du projet (modalités d'installation d'un package, scripts principaux...).
+
+Dans le cadre d'un projet collaboratif, il peut être utile d'intégrer une petite
+section expliquant la démarche de contribution ou renvoyer 
+vers un guide de contribution plus complet si le projet est conséquent. 
+Pour favoriser des contributions multiples,
+la documentation `utilitR`, par exemple, propose un
+[guide des contributeurs](https://github.com/InseeFrLab/utilitR/blob/master/CONTRIBUTING.md)
+assez détaillé. 
+
+
+Voici quelques modèles de `README.md` complets :
+
+- [utilitR](https://github.com/InseeFrLab/utilitR/blob/master/README.md);
+- [DoReMIFaSol](https://github.com/InseeFrLab/DoReMIFaSol).
+
+## Ressources supplémentaires
+
+- [eliocamp.github.io](https://eliocamp.github.io/reproducibility-with-r/materials/day1/02-projects/)
+
+## Exercices
+
+TO BE COMPLETED
