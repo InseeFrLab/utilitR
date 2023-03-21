@@ -1,0 +1,253 @@
+# Importer des fichiers au format Parquet {#importparquet}
+
+## Tâches concernées et recommandations
+
+- L'utilisateur souhaite importer et exploiter dans `R` des données stockées au format **Parquet**.
+- L'utilisateur souhaite convertir des données au format **Parquet**.
+
+::: {.callout-recommandation .icon}
+
+- Pour un même fichier, il est recommandé d'utiliser le format **Parquet** qui est moins gourmand en terme de stockage que la version csv.  
+- Le **package** `arrow` permet de manipuler simplement les fichiers au format **Parquet** avec R.  
+- Partitionner un fichier **Parquet** est très utile pour les fichiers volumineux.  
+- Le format **Parquet** permet de travailler avec des données plus volumineuses que la mémoire disponible sur son espace de travail.  
+
+:::
+
+## Parquet, c'est quoi ?
+
+Le monde de la data-science a été bouleversé ces derniers mois par l'arrivée d'un nouveau format de données : **Parquet**. 
+Il s'agit d'un format de fichier conçu pour stocker de très gros volumes de données et qui vient concurrencer le format **csv**.
+Même si Parquet n'est pas nouveau (2013), son utilisation s'est démocratisée grâce au projet open-source [Apache](https://apache.org/) et 
+plus particulièrement le projet [Apache arrow](https://arrow.apache.org/).  
+
+Cette fiche n'a pas vocation a être exhaustive sur le format Parquet. Elle liste ci-dessous les points saillants à retenir lorsqu'un statisticien souhaite travailler avec ce format de fichier.  
+
+Tout d'abord, il faut noter que Parquet encode les données en un format binaire. 
+Un fichier Parquet n'est ainsi pas lisible par un humain - contrairement au format csv.  
+C'est une des raisons pour lesquelles la recommandation suivante est faite à l'Insee :
+
+::: {.callout-recommandation .icon}
+
+- Pour les **non statisticiens**, il est recommandé d'utiliser **le format csv** ;
+- Pour les **statisticiens**, il est recommandé d'utiliser **le format Parquet**.
+
+:::
+
+La suite de cette fiche s'adresse donc aux statisticiens.
+
+## Caractéristiques de Parquet 
+
+**Parquet présente quelques propriétés qui le distinge des formats de fichiers plus populaires :**
+
+- Parquet repose sur un **stockage en mode colonne**. Ainsi seront stockées dans un premier temps toutes les données du premier attribut, puis seulement dans un second temps les données du deuxième attribut et ainsi de suite...  
+Dans un contexte analytique, cette organisation des données génère plusieurs avantages dont les principaux sont : 
+- **Un gain de rapidité lors de la lecture des données** ;
+- **La possibilité d'avoir un haut niveau de compression**.
+
+**Un fichier Parquet contient à la fois les données et les métadonnées**. Ces métadonnées écrites en bas de page d'un fichier enregistrent le schéma de ce fichier selon 3 niveaux : fichier, bloc et en-tête de page (voir [ici](https://parquet.apache.org/docs/file-format/metadata/) pour en savoir plus). Ce sont ces métadonnées qui font en sorte que la lecture des données Parquet soit optimisée et sans risque d’altération.
+
+Enfin, Parquet dispose d'un autre avantage important : **il sait modéliser des types complexes**. Il s'agit par exemple d'une colonne qui contient une structure hiérarchique ou du champ géométrique d'une couche SIG.
+
+Pour en savoir plus notamment sur la comparaison entre les formats Parquet et csv, consultez 
+[l'excellent chapitre sur le sujet](https://pythonds.linogaliana.fr/reads3/#le-format-parquet) écrit 
+par Lino Galiana dans son cours `Python pour la data-science`.  
+
+Grâce aux travaux d'Apache, **les fichiers aux format Parquet sont inter-opérables** c'est-à-dire qu'ils peuvent être lus par plusieurs langages informatiques : [C](https://arrow.apache.org/docs/c_glib/), [C++](https://arrow.apache.org/docs/cpp/), [C#](https://github.com/apache/arrow/blob/main/csharp/README.md), [Go](https://godoc.org/github.com/apache/arrow/go/arrow), [Java](https://arrow.apache.org/docs/java/), [JavaScript](https://arrow.apache.org/docs/js/), [Julia](https://arrow.juliadata.org/stable/), [MATLAB](https://github.com/apache/arrow/blob/main/matlab/README.md), [Python](https://arrow.apache.org/docs/python/), [Ruby](https://github.com/apache/arrow/blob/main/ruby/README.md), [Rust](https://docs.rs/crate/arrow/) et bien entendu [R](https://arrow.apache.org/docs/r/).
+
+S'il est très efficace pour l'analyse de données, **Parquet est en revanche peu adapté à l'ajout de données en continu ou à la modification fréquente de données existantes**.  
+Pour cette utilisation, le statisticien privilégiera un système de gestion de base de données comme par exemple [PostgreSQL](https://www.postgresql.org/).
+
+
+## Lire un fichier Parquet avec R
+
+Pour les exemples qui suivent, téléchargez la table **Parquet** directement accessible [ici](https://www.kaggle.com/datasets/robikscube/ubiquant-parquet?select=example_test.parquet). La documentation de ce fichier est consultable [ici](https://www.kaggle.com/competitions/ubiquant-market-prediction/data).  
+
+Vous pouvez télécharger ce fichier avec l'instruction suivante :
+
+```{r, eval=FALSE}
+download.file("https://www.kaggle.com/datasets/robikscube/ubiquant-parquet?select=example_test.parquet",
+              destfile = "Data/example_test.parquet")
+```
+
+La fonction [`read_parquet()`](https://arrow.apache.org/docs/r/reference/read_parquet.html) permet d'importer des fichiers Parquet dans `R`. Elle possède un argument très utile `col_select` qui permet de sélectionner les variables à importer (par défaut toutes). Cet argument accepte soit une liste de noms de variables soit [une expression dite de `tidy selection` issue du *tidyverse*](https://dplyr.tidyverse.org/reference/dplyr_tidy_select.html).
+
+Pour utiliser `read_parquet()`, il faut charger le *package* `arrow` :
+
+```{r, eval=FALSE}
+library(arrow)
+```
+
+- Exemple en sélectionnant toutes les variables :
+
+```{r, eval = FALSE}
+donnees <- arrow::read_parquet("Data/example_test.parquet")
+```
+
+- Exemple en ne sélectionnant que quelques variables à l'aide d'un vecteur de caractères :
+
+```{r, eval = FALSE}
+donnees <- arrow::read_parquet("Data/example_test.parquet",
+                               col_select = c('time_id','investment_id','f_1','f_2','f_3')) 
+```
+
+- Exemple en ne sélectionnant que quelques variables à l'aide d'une `tidy selection` :
+
+```{r, eval = FALSE}
+donnees <- arrow::read_parquet("Data/example_test.parquet",
+                               col_select = starts_with("f_")) 
+```
+
+Dans les trois cas, le résultat obtenu est un objet directement utilisable dans R. :tada:  
+
+La méthode présentée dans cette section est valable pour les fichiers peu volumineux. Elle implique en effet d'importer l'intégralité d'un fichier Parquet dans la mémoire vive de votre espace de travail avant de pouvoir travailler dessus. Il est possible d'effectuer des requêtes plus efficacement sur des fichiers Parquet, c'est ce que nous allons voir dans les sections suivantes.
+
+## Exploiter un fichier Parquet avec le package dplyr
+
+Si le statisticien souhaite travailler sur des fichiers plus volumineux (par exemple [celui des données du recensement de la population 1968-2019](https://www.insee.fr/fr/statistiques/6671801) de 3,2 Go et qui contient plus de 51,5 millions de lignes et 18 colonnes), il peut se heurter à **un manque de mémoire vive** s'il souhaite importer dans `R` l'intégralité de la table avant de pouvoir l'exploiter.  
+
+Heureusement, si le statisticien est coutumier de la syntaxe de la suite de packages du [`tidyverse`](https://www.book.utilitr.org/03_fiches_thematiques/fiche_tidyverse), le projet `arrow` a fait en sorte que plusieurs fonctions du tidyverse soient compatibles et directement utilisables sur des fichiers **Parquet** ! [Cette liste](https://arrow.apache.org/docs/dev/r/reference/acero.html) permet **d'effectuer des requêtes de manière très intelligente et efficace.** En effet, au lieu de lire directement le contenu d'un fichier **Parquet**, la fonction [`open_dataset()`](https://arrow.apache.org/docs/dev/r/reference/open_dataset.html) va **ouvrir une connexion vers le fichier** puis à l'issue de la chaîne d'instructions (écrite avec le tidyverse), la fonction [collect()](https://dplyr.tidyverse.org/reference/compute.html) va **compiler et exécuter le code**.  
+
+- Exemple avec une table peu volumineuse :  
+
+```{r, eval=FALSE}
+library(dplyr)
+
+open_dataset("Data/example_test.parquet") |>
+  filter(substr(row_id,1,4) == "1221") |>
+  group_by(investment_id) |>
+  summarise(somme = sum(f_0)) |>
+  collect()
+```
+
+Avec cette syntaxe, la requête va utiliser seulement les variables du fichier **Parquet** dont elle a besoin (en l'occurence `row_id`, `investment_id` et `f_0`).
+
+- Exemple avec une table volumineuse (Recensements 1968-2019, suivre ce [lien](https://gist.github.com/ddotta/acf6add0f2328f077791461ef4f37b84) pour obtenir le code qui permet de générer "Ficdep19.parquet" de façon reproductible) :  
+
+```{r, eval=FALSE}
+library(dplyr)
+
+open_dataset("Data/Ficdep19.parquet") |>
+  filter(DEP_RES_21 == "11") |>
+  group_by(SEXE) |>
+  summarise(total = sum(pond)) |>
+  as.data.frame() |>
+  collect()
+```
+
+Cette instruction s'exécute sur mon espace de travail en un peu plus de 2 secondes.
+
+## Exploiter un fichier Parquet avec le package duckdb
+
+Dans le cas de fichiers volumineux, il est également possible de les requêter avec le langage `SQL` grâce au package [`duckdb`](https://duckdb.org/docs/api/r.html). Cette méthode est basé sur le moteur portable `Duckdb` qui permet à n'importe quel ordinateur d'accéder à des performances d'un moteur de base de données classique qui utilise un serveur. Il faut noter que la méthode présentée ici est encore un peu plus efficace que celle présentée avec dans la section précédente avec les fonctions de `dplyr`. 
+
+En `R`, il faut charger le package `duckdb` :
+```{r, eval = FALSE}
+library(duckdb)
+```
+
+- Exemple avec une table peu volumineuse : 
+
+```{r, eval = FALSE}
+con <- dbConnect(duckdb::duckdb())
+ 
+dbGetQuery(con, "SELECT SUM(F_0) FROM 'Data/example_test.parquet'
+                 WHERE SUBSTR(ROW_ID,1,4)='1221'
+                 GROUP BY INVESTMENT_ID")
+```
+                
+- Exemple avec une table volumineuse (RP 1968-2019) : 
+
+```{r, eval = FALSE}
+con <- dbConnect(duckdb::duckdb())
+ 
+dbGetQuery(con, "SELECT SUM(POND) FROM 'Data/Ficdep19.parquet'
+                 WHERE DEP_RES_21='11'
+                 GROUP BY SEXE")
+```
+Cette instruction s'exécute sur mon espace de travail en environ 0.5 secondes !
+
+## Exploiter un fichier Parquet partitionné
+
+Le package `arrow` présente une fonctionnalité supplémentaire qui consiste à créer un fichier **Parquet partitionné**. Partitionner un fichier revient à le "découper" selon une clé de partitionnement (qui peut prendre la forme par exemple d'une ou de plusieurs variables). Cela permet de pouvoir exécuter du code sur une table volumineuse qui dépasse la mémoire de son espace de travail dans la mesure où les requêtes seront alors exécutées selon **un plan d'exécution optimal**.
+  
+::: {.callout-recommandation .icon}
+- Prendre le temps d'identifier les variables de partitionnement d'un fichier **Parquet** n'est pas du temps perdu dans la mesure où il permet par la suite des gains d'efficacité sur les traitements et facilite la maintenance du fichier sur le long terme.
+:::
+
+Pour créer des fichiers **Parquet** partitionnés, il existe la fonction [`write_dataset()`](https://arrow.apache.org/docs/r/reference/write_dataset.html). Voici ce que ça donne sur notre fichier exemple :  
+
+```{r, eval = FALSE}
+write_dataset(
+  dataset = read_parquet("Data/example_test.parquet"), 
+  path = "Data/", 
+  partitioning = c("investment_id"), # la variable de partitionnement
+  format="parquet"
+)
+```
+
+Avec cette instruction, on a créé autant de répertoires que de modalités différentes de la variable `investment_id`.
+
+```{r, echo = FALSE, fig.cap = "Arborescence d'un fichier Parquet partitionné"}
+knitr::include_graphics("../pics/parquet/fichier_partition.png")
+```
+
+Le statisticien peut désormais requêter les fichiers partitionnés à l'aide de la fonction [`open_dataset()](https://arrow.apache.org/docs/r/reference/open_dataset.html) qui permet d’ouvrir une connexion vers un ensemble partitionné de fichiers **Parquet** qui décrivent la même table de données.
+
+```{r, eval = FALSE}
+open_dataset("Data",hive_style = FALSE) |>
+  filter(investment_id==1L) |> # Ici, on filtre selon la clé de partitionnement
+  summarise(total = sum(f_0)) |>
+  collect()
+```
+
+Cette méthode de partitionnement est très pratique car elle :  
+- Permet de travailler sur des fichiers **Parquet** de plus petites tailles ;
+- Facilite la maintenance des fichiers : seuls les fichiers concernés seront affectés si une mise à jour des données devaient avoir lieu (par exemple sur `investment_id==2`)
+- Fait gagner du temps dans l'exécution des requêtes sur les fichiers volumineux (par rapport à un fichier **Parquet** unique).
+
+
+## Convertir des données au format Parquet
+
+Les tables Parquet sont encore loin d'être majoritaires dans les liens de téléchargement notamment face au format csv. C'est la raison pour laquelle, nous allons dans cette section dérouler **le processus pour obtenir un fichier Parquet à partir d'un fichier csv.**  
+
+Conformément aux recommandations de [la fiche sur les imports de fichiers plats](https://www.book.utilitr.org/03_fiches_thematiques/fiche_import_fichiers_plats), la fonction **fread()** du package **data.table** peut être utilisée pour importer des données volumineuses au format csv :
+
+```{r, eval = FALSE}
+library(data.table)
+# Création du dossier "data"
+dir.create("Data")
+# Téléchargement du fichier zip
+download.file("https://www.insee.fr/fr/statistiques/fichier/2540004/dpt2021_csv.zip",
+              destfile = "Data/dpt2021_csv.zip")
+# Décompression du fichier zip
+unzip("Data/dpt2021_csv.zip", exdir = "Data")
+
+# Conversion du fichier csv au format parquet
+write_parquet(
+  x = fread("Data/dpt2021.csv"), # Utilisation de la fonction fread()
+  sink = "Data/dpt2021.parquet"
+)
+```
+
+**Bonus :** avec le package [`parquetize`](https://cran.r-project.org/web/packages/parquetize/index.html), il est possible d'exécuter l'équivalent du code précédent à l'aide de la fonction [csv_to_parquet()](https://ddotta.github.io/parquetize/reference/csv_to_parquet.html).
+
+```{r, eval = FALSE}
+# install.packages("parquetize")
+library(parquetize)
+csv_to_parquet(
+  url_to_csv = "https://www.insee.fr/fr/statistiques/fichier/2540004/dpt2021_csv.zip",
+  csv_as_a_zip = TRUE,
+  filename_in_zip = "dpt2021.csv",
+  path_to_parquet = "Data"
+)
+```
+
+A l'issue de cette conversion, on peut noter que **le fichier Parquet créé occupe un espace de stockage 10 fois moins important que le fichier csv initial (7,4 Mo contre 76,3 Mo) !**
+
+## Pour en savoir plus
+
+* [Page officielle du projet Parquet](https://parquet.apache.org/)
+* [Page officielle du projet Arrow](https://arrow.apache.org/)
+* [Page officielle de duckdb](https://duckdb.org/)
+* [Apache Parquet pour le stockage de données volumineuses](https://www.cetic.be/Apache-Parquet-pour-le-stockage-de-donnees-volumineuses)
