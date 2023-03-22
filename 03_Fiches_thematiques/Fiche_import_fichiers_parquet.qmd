@@ -57,17 +57,52 @@ Grâce aux travaux du projet Arrow, **les fichiers aux format Parquet sont inter
 S'il est très efficace pour l'analyse de données, **Parquet est en revanche peu adapté à l'ajout de données en continu ou à la modification fréquente de données existantes**.  
 Pour cette utilisation, le statisticien privilégiera un système de gestion de base de données comme par exemple [`PostgreSQL`](https://www.postgresql.org/).
 
+## Convertir des données au format Parquet
 
-## Lire un fichier Parquet avec R
+Les tables Parquet sont encore loin d'être majoritaires dans les liens de téléchargement notamment face au format csv. C'est la raison pour laquelle, nous allons dans cette section dérouler **le processus pour obtenir un fichier Parquet à partir d'un fichier csv.**  
 
-Pour les exemples qui suivent, téléchargez la table **Parquet** directement accessible [ici](https://www.kaggle.com/datasets/robikscube/ubiquant-parquet?select=example_test.parquet). La documentation de ce fichier est consultable [ici](https://www.kaggle.com/competitions/ubiquant-market-prediction/data).  
+Conformément aux recommandations de [la fiche sur les imports de fichiers plats](https://www.book.utilitr.org/03_fiches_thematiques/fiche_import_fichiers_plats), la fonction **fread()** du package **data.table** peut être utilisée pour importer des données volumineuses au format csv :
 
-Vous pouvez télécharger ce fichier avec l'instruction suivante :
+```{r, eval = FALSE}
+library(data.table)
+# Création du dossier "Data"
+dir.create("Data")
+# Téléchargement du fichier zip
+download.file("https://www.insee.fr/fr/statistiques/fichier/2540004/dpt2021_csv.zip",
+              destfile = "Data/dpt2021_csv.zip")
+# Décompression du fichier zip
+unzip("Data/dpt2021_csv.zip", exdir = "Data")
+
+# Conversion du fichier csv au format parquet
+write_parquet(
+  x = fread("Data/dpt2021.csv"), # Utilisation de la fonction fread()
+  sink = "Data/dpt2021.parquet"
+)
+```
+
+À l'issue de cette conversion, on peut noter que **le fichier Parquet créé occupe un espace de stockage 10 fois moins important que le fichier csv initial (7,4 Mo contre 76,3 Mo) !**
+
+Pour les exemples qui suivent dans cette fiche, on utilise un fichier de [la Base Permanente des Équipements de l'Insee](https://www.insee.fr/fr/statistiques/3568629) que l'on va convertir au format **Parquet**.  
+Vous pouvez télécharger ce fichier avec le package [`doremifasol`](https://inseefrlab.github.io/DoReMIFaSol/index.html) et plus particulièrement la fonction [`telechargerDonnees()`](https://inseefrlab.github.io/DoReMIFaSol/reference/telechargerDonnees.html) :
 
 ```{r, eval=FALSE}
-download.file("https://www.kaggle.com/datasets/robikscube/ubiquant-parquet?select=example_test.parquet",
-              destfile = "Data/example_test.parquet")
+# remotes::install_github("InseeFrLab/doremifasol", build_vignettes = TRUE)
+library(doremifasol)
+
+# Création du dossier "Data"
+dir.create("Data")
+
+# Téléchargement des données de la BPE
+donnees_BPE <- telechargerDonnees("BPE_ENS", date = 2021)
+
+# Écriture du fichier Parquet
+write_parquet(
+  x = donnees_BPE,
+  sink = "Data/BPE_ENS.parquet"
+)
 ```
+
+## Lire un fichier Parquet avec R
 
 La fonction [`read_parquet()`](https://arrow.apache.org/docs/r/reference/read_parquet.html) permet d'importer des fichiers Parquet dans `R`. Elle possède un argument très utile `col_select` qui permet de sélectionner les variables à importer (par défaut toutes). Cet argument accepte soit une liste de noms de variables soit [une expression dite de `tidy selection` issue du *tidyverse*](https://dplyr.tidyverse.org/reference/dplyr_tidy_select.html).
 
@@ -80,21 +115,21 @@ library(arrow)
 - Exemple en sélectionnant toutes les variables :
 
 ```{r, eval = FALSE}
-donnees <- arrow::read_parquet("Data/example_test.parquet")
+donnees <- arrow::read_parquet("Data/BPE_ENS.parquet")
 ```
 
 - Exemple en ne sélectionnant que quelques variables à l'aide d'un vecteur de caractères :
 
 ```{r, eval = FALSE}
-donnees <- arrow::read_parquet("Data/example_test.parquet",
-                               col_select = c('time_id','investment_id','f_1','f_2','f_3')) 
+donnees <- arrow::read_parquet("Data/BPE_ENS.parquet",
+                               col_select = c('AN','REG','DEP','SDOM','TYPEQU','NB_EQUIP')) 
 ```
 
 - Exemple en ne sélectionnant que quelques variables à l'aide d'une `tidy selection` :
 
 ```{r, eval = FALSE}
-donnees <- arrow::read_parquet("Data/example_test.parquet",
-                               col_select = starts_with("f_")) 
+donnees <- arrow::read_parquet("Data/BPE_ENS.parquet",
+                               col_select = starts_with("DEP")) 
 ```
 
 Dans les trois cas, le résultat obtenu est un objet directement utilisable dans R. :tada:  
@@ -112,14 +147,14 @@ Heureusement, si le statisticien est coutumier de la syntaxe de la suite de pack
 ```{r, eval=FALSE}
 library(dplyr)
 
-open_dataset("Data/example_test.parquet") |>
-  filter(substr(row_id,1,4) == "1221") |>
-  group_by(investment_id) |>
-  summarise(somme = sum(f_0)) |>
+open_dataset("Data/BPE_ENS.parquet") |>
+  filter(REG == "76") |>
+  group_by(DEP) |>
+  summarise(total = sum(NB_EQUIP)) |>
   collect()
 ```
 
-Avec cette syntaxe, la requête va utiliser seulement les variables du fichier **Parquet** dont elle a besoin (en l'occurence `row_id`, `investment_id` et `f_0`).
+Avec cette syntaxe, la requête va utiliser seulement les variables du fichier **Parquet** dont elle a besoin (en l'occurence `REG`, `DEP` et `NB_EQUIP`).
 
 - Exemple avec une table volumineuse (Recensements 1968-2019, suivre ce [lien](https://gist.github.com/ddotta/acf6add0f2328f077791461ef4f37b84) pour obtenir le code qui permet de générer "Ficdep19.parquet" de façon reproductible) :  
 
@@ -138,9 +173,10 @@ Cette instruction s'exécute sur mon espace de travail en un peu plus de 2 secon
 
 ## Exploiter un fichier Parquet avec le package duckdb
 
-Dans le cas de fichiers volumineux, il est également possible de les requêter avec le langage `SQL` grâce au package [`duckdb`](https://duckdb.org/docs/api/r.html). Cette méthode est basé sur le moteur portable `DuckDB` qui permet à n'importe quel ordinateur d'accéder à des performances d'un moteur de base de données classique qui utilise un serveur. Pour plus d'informations sur la façon d'exécuter des requêtes sur des bases de données, consultez [cette fiche](https://www.book.utilitr.org/03_fiches_thematiques/fiche_connexion_bdd#ex%C3%A9cuter-des-requ%C3%AAtes). Il faut noter que la méthode présentée ici est encore un peu plus efficace que celle présentée avec dans la section précédente avec les fonctions de `dplyr`. 
+Dans le cas de fichiers volumineux, il est également possible de les requêter avec le langage `SQL` grâce au package [`duckdb`](https://duckdb.org/docs/api/r.html). Cette méthode est basée sur le moteur portable `DuckDB` qui permet à n'importe quel ordinateur d'accéder à des performances d'un moteur de base de données classique qui utilise un serveur. Pour plus d'informations sur la façon d'exécuter des requêtes sur des bases de données, consultez [cette fiche](https://www.book.utilitr.org/03_fiches_thematiques/fiche_connexion_bdd#ex%C3%A9cuter-des-requ%C3%AAtes). Il faut noter que la méthode présentée ici est encore un peu plus efficace que celle présentée avec dans la section précédente avec les fonctions de `dplyr`. 
 
 En `R`, il faut charger le package `duckdb` :
+
 ```{r, eval = FALSE}
 library(duckdb)
 ```
@@ -150,9 +186,9 @@ library(duckdb)
 ```{r, eval = FALSE}
 con <- dbConnect(duckdb::duckdb())
  
-dbGetQuery(con, "SELECT SUM(F_0) FROM 'Data/example_test.parquet'
-                 WHERE SUBSTR(ROW_ID,1,4)='1221'
-                 GROUP BY INVESTMENT_ID")
+dbGetQuery(con, "SELECT SUM(NB_EQUIP) FROM 'Data/BPE_ENS.parquet'
+                 WHERE REG='76'
+                 GROUP BY DEP")
 ```
                 
 - Exemple avec une table volumineuse (RP 1968-2019) : 
@@ -170,22 +206,22 @@ Cette instruction s'exécute sur mon espace de travail en environ 0.5 secondes !
 
 Le package `arrow` présente une fonctionnalité supplémentaire qui consiste à créer et lire un fichier **Parquet partitionné**. Partitionner un fichier revient à le "découper" selon une clé de partitionnement (qui peut prendre la forme par exemple d'une ou de plusieurs variables). Cela permet de pouvoir exécuter du code sur une table volumineuse qui dépasse la mémoire de son espace de travail dans la mesure où les requêtes seront alors exécutées selon **un plan d'exécution optimal**.
   
-::: {.callout-recommandation .icon}
+::: {.callout-conseil .icon}
 - Prendre le temps d'identifier les variables de partitionnement d'un fichier **Parquet** n'est pas du temps perdu dans la mesure où il permet par la suite des gains d'efficacité sur les traitements et facilite la maintenance du fichier sur le long terme.
 :::
 
-Pour créer des fichiers **Parquet** partitionnés, il existe la fonction [`write_dataset()`](https://arrow.apache.org/docs/r/reference/write_dataset.html). Voici ce que ça donne sur notre fichier exemple :  
+Pour créer des fichiers **Parquet** partitionnés, il existe la fonction [`write_dataset()`](https://arrow.apache.org/docs/r/reference/write_dataset.html). Voici ce que ça donne sur le fichier de la BPE :  
 
 ```{r, eval = FALSE}
 write_dataset(
-  dataset = read_parquet("Data/example_test.parquet"), 
+  dataset = read_parquet("Data/BPE_ENS.parquet"), 
   path = "Data/", 
-  partitioning = c("investment_id"), # la variable de partitionnement
+  partitioning = c("REG"), # la variable de partitionnement
   format="parquet"
 )
 ```
 
-Avec cette instruction, on a créé autant de répertoires que de modalités différentes de la variable `investment_id`.
+Avec cette instruction, on a créé autant de répertoires que de modalités différentes de la variable `REG`.
 
 ```{r, echo = FALSE, fig.cap = "Arborescence d'un fichier Parquet partitionné"}
 knitr::include_graphics("../pics/parquet/fichier_partition.png")
@@ -195,43 +231,17 @@ Le statisticien peut désormais requêter les fichiers partitionnés à l'aide d
 
 ```{r, eval = FALSE}
 open_dataset("Data",hive_style = FALSE) |>
-  filter(investment_id==1L) |> # Ici, on filtre selon la clé de partitionnement
-  summarise(total = sum(f_0)) |>
+  filter(REG == "76") |> # Ici, on filtre selon la clé de partitionnement
+  group_by(DEP) |>
+  summarise(total = sum(NB_EQUIP)) |>
   collect()
 ```
 
 Cette méthode de partitionnement est très pratique car elle :  
 - Permet de travailler sur des fichiers **Parquet** de plus petites tailles ;
-- Facilite la maintenance des fichiers : seuls les fichiers concernés seront affectés si une mise à jour des données devaient avoir lieu (par exemple sur `investment_id==2`)
+- Facilite la maintenance des fichiers : seuls les fichiers concernés seront affectés si une mise à jour des données devaient avoir lieu (par exemple sur la région "76")
 - Fait gagner du temps dans l'exécution des requêtes sur les fichiers volumineux (par rapport à un fichier **Parquet** unique).
 
-
-## Convertir des données au format Parquet
-
-Les tables Parquet sont encore loin d'être majoritaires dans les liens de téléchargement notamment face au format csv. C'est la raison pour laquelle, nous allons dans cette section dérouler **le processus pour obtenir un fichier Parquet à partir d'un fichier csv.**  
-
-Conformément aux recommandations de [la fiche sur les imports de fichiers plats](https://www.book.utilitr.org/03_fiches_thematiques/fiche_import_fichiers_plats), la fonction **fread()** du package **data.table** peut être utilisée pour importer des données volumineuses au format csv :
-
-```{r, eval = FALSE}
-library(data.table)
-# Création du dossier "data"
-dir.create("Data")
-# Téléchargement du fichier zip
-download.file("https://www.insee.fr/fr/statistiques/fichier/2540004/dpt2021_csv.zip",
-              destfile = "Data/dpt2021_csv.zip")
-# Décompression du fichier zip
-unzip("Data/dpt2021_csv.zip", exdir = "Data")
-
-# Conversion du fichier csv au format parquet
-write_parquet(
-  x = fread("Data/dpt2021.csv"), # Utilisation de la fonction fread()
-  sink = "Data/dpt2021.parquet"
-)
-```
-
-
-
-A l'issue de cette conversion, on peut noter que **le fichier Parquet créé occupe un espace de stockage 10 fois moins important que le fichier csv initial (7,4 Mo contre 76,3 Mo) !**
 
 ## Pour en savoir plus
 
