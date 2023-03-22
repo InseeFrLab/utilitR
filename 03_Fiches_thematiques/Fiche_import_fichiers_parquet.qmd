@@ -7,9 +7,11 @@
 
 ::: {.callout-recommandation .icon}
 
-- Pour un même fichier, il est recommandé d'utiliser le format **Parquet** qui est moins gourmand en terme de stockage que la version csv.  
-- Le **package** `arrow` permet de manipuler simplement les fichiers au format **Parquet** avec R.  
-- Partitionner un fichier **Parquet** est très utile pour les fichiers volumineux.  
+- Pour les **non statisticiens**, il est recommandé d'utiliser **le format csv** ;
+- Pour les **statisticiens**, il est recommandé d'utiliser **le format Parquet**.
+- Pour un même fichier, il est recommandé d'utiliser le format **Parquet** qui est moins gourmand en termes de stockage que la version csv.  
+- Le **package** [`arrow`](https://arrow.apache.org/docs/r/) permet de manipuler simplement les fichiers au format **Parquet** avec R.  
+- Lorsque les données peuvent être séparées en fonction de catégorie(s) qui font sens, partitionner un fichier **Parquet**  peut être utile pour les fichiers volumineux.  
 - Le format **Parquet** permet de travailler avec des données plus volumineuses que la mémoire disponible sur son espace de travail.  
 
 :::
@@ -20,42 +22,40 @@ Le format de données **Parquet** a gagné en popularité dans le monde de la da
 Il s'agit d'un format de fichier conçu pour stocker de très gros volumes de données et qui vient concurrencer le format **csv**.
 Même si Parquet n'est pas nouveau (2013), son utilisation s'est démocratisée grâce au projet open-source [Apache arrow](https://arrow.apache.org/). 
 
-Cette fiche n'a pas vocation a être exhaustive sur le format Parquet. Elle liste ci-dessous les points saillants à retenir lorsqu'un statisticien souhaite travailler avec ce format de fichier.  
+Cette fiche n'a pas vocation à être exhaustive sur le format Parquet. Elle liste ci-dessous les points saillants à retenir lorsqu'un statisticien souhaite travailler avec ce format de fichier.  
 
 Tout d'abord, il faut noter que Parquet encode les données en un format binaire. 
 Un fichier Parquet n'est ainsi pas lisible par un humain - contrairement au format `csv`. 
 C'est une des raisons pour lesquelles la recommandation suivante est faite à l'Insee :
 
-::: {.callout-recommandation .icon}
-
-- Pour les **non statisticiens**, il est recommandé d'utiliser **le format csv** ;
-- Pour les **statisticiens**, il est recommandé d'utiliser **le format Parquet**.
-
-:::
-
-La suite de cette fiche s'adresse donc aux statisticiens.
-
 ## Caractéristiques de Parquet 
 
 **Parquet présente quelques propriétés qui le distingue des formats de fichiers plus populaires :**
 
-- Parquet repose sur un **stockage en mode colonne**. Ainsi seront stockées dans un premier temps toutes les données du premier attribut, puis seulement dans un second temps les données du deuxième attribut et ainsi de suite...  
+- Parquet repose sur un **stockage orienté colonne**. Ainsi seront stockées dans un premier temps toutes les données du premier attribut, puis seulement dans un second temps les données du deuxième attribut et ainsi de suite... [Le blog d'upsolver](https://www.upsolver.com/blog/apache-parquet-why-use) fournit une illustration pour bien visualiser la différence :  
+
+```{r, echo = FALSE, fig.cap = "Différence entre le stockage orienté ligne et colonne"}
+knitr::include_graphics("../pics/parquet/stockage_colonne.png")
+```
+
 Dans un contexte analytique, cette organisation des données génère plusieurs avantages dont les principaux sont : 
 - **Un gain de rapidité lors de la lecture des données pour un usage statistique** ;
-- **La possibilité d'avoir un haut niveau de compression**.
+- **La possibilité d'avoir un haut niveau de compression**. Le taux de compression moyen par rapport au `csv` est entre 5 et 10. Pour des fichiers volumineux il est possible d'avoir des taux de compression bien supérieurs. 
 
 **Un fichier Parquet contient à la fois les données et des métadonnées**. Ces métadonnées écrites en bas de page d'un fichier enregistrent le schéma de ce fichier selon 3 niveaux : fichier, bloc et en-tête de page (voir [ici](https://parquet.apache.org/docs/file-format/metadata/) pour en savoir plus). Ce sont ces métadonnées qui font en sorte que la lecture des données Parquet soit optimisée et sans risque d’altération.
 
+::: {.callout-remarque .icon}
+L'un des **avantages de stocker des métadonnées** est que cela permet au producteur d'un fichier **Parquet** de fixer le type de certaines variables dont la nature peut être ambiguë. C'est notamment le cas du numéro de département dans la nomenclature française. Comme cette variable ressemble à une valeur numérique, inférer la nature de la variable à partir des premières observations comme c'est nécessaire lors de la lecture d'un CSV peut amener à des erreurs. En effet, comment tenir compte des 0 avant certains numéros de département ou codes communes ou encore comment tenir compte des départements "2A" ou "2B" dans une variable numérique ? Avec le format Parquet, c'est le producteur du fichier, qui est généralement plus expert que l'utilisateur, qui gère ce type de cas problématiques.
+:::
 Enfin, Parquet dispose d'un autre avantage important : **il sait modéliser des types complexes**. Il s'agit par exemple d'une colonne qui contient une structure hiérarchique ou du champ géométrique d'une couche SIG.
 
 Pour en savoir plus notamment sur la comparaison entre les formats Parquet et csv, consultez 
-[l'excellent chapitre sur le sujet](https://pythonds.linogaliana.fr/reads3/#le-format-parquet) écrit 
-par Lino Galiana dans son cours `Python pour la data-science`.  
+[le chapitre sur le sujet](https://pythonds.linogaliana.fr/reads3/#le-format-parquet) dans le cours de l'ENSAE _"Python pour la data science"_. 
 
 Grâce aux travaux du projet Arrow, **les fichiers aux format Parquet sont inter-opérables** c'est-à-dire qu'ils peuvent être lus par plusieurs langages informatiques : [C](https://arrow.apache.org/docs/c_glib/), [C++](https://arrow.apache.org/docs/cpp/), [C#](https://github.com/apache/arrow/blob/main/csharp/README.md), [Go](https://godoc.org/github.com/apache/arrow/go/arrow), [Java](https://arrow.apache.org/docs/java/), [JavaScript](https://arrow.apache.org/docs/js/), [Julia](https://arrow.juliadata.org/stable/), [MATLAB](https://github.com/apache/arrow/blob/main/matlab/README.md), [Python](https://arrow.apache.org/docs/python/), [Ruby](https://github.com/apache/arrow/blob/main/ruby/README.md), [Rust](https://docs.rs/crate/arrow/) et bien entendu [R](https://arrow.apache.org/docs/r/).
 
 S'il est très efficace pour l'analyse de données, **Parquet est en revanche peu adapté à l'ajout de données en continu ou à la modification fréquente de données existantes**.  
-Pour cette utilisation, le statisticien privilégiera un système de gestion de base de données comme par exemple [PostgreSQL](https://www.postgresql.org/).
+Pour cette utilisation, le statisticien privilégiera un système de gestion de base de données comme par exemple [`PostgreSQL`](https://www.postgresql.org/).
 
 
 ## Lire un fichier Parquet avec R
