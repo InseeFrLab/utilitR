@@ -16,15 +16,14 @@
 
 ## Parquet, c'est quoi ?
 
-Le monde de la data-science a été bouleversé ces derniers mois par l'arrivée d'un nouveau format de données : **Parquet**. 
+Le format de données **Parquet** a gagné en popularité dans le monde de la data science ces derniers mois.   
 Il s'agit d'un format de fichier conçu pour stocker de très gros volumes de données et qui vient concurrencer le format **csv**.
-Même si Parquet n'est pas nouveau (2013), son utilisation s'est démocratisée grâce au projet open-source [Apache](https://apache.org/) et 
-plus particulièrement le projet [Apache arrow](https://arrow.apache.org/).  
+Même si Parquet n'est pas nouveau (2013), son utilisation s'est démocratisée grâce au projet open-source [Apache arrow](https://arrow.apache.org/). 
 
 Cette fiche n'a pas vocation a être exhaustive sur le format Parquet. Elle liste ci-dessous les points saillants à retenir lorsqu'un statisticien souhaite travailler avec ce format de fichier.  
 
 Tout d'abord, il faut noter que Parquet encode les données en un format binaire. 
-Un fichier Parquet n'est ainsi pas lisible par un humain - contrairement au format csv.  
+Un fichier Parquet n'est ainsi pas lisible par un humain - contrairement au format `csv`. 
 C'est une des raisons pour lesquelles la recommandation suivante est faite à l'Insee :
 
 ::: {.callout-recommandation .icon}
@@ -38,14 +37,14 @@ La suite de cette fiche s'adresse donc aux statisticiens.
 
 ## Caractéristiques de Parquet 
 
-**Parquet présente quelques propriétés qui le distinge des formats de fichiers plus populaires :**
+**Parquet présente quelques propriétés qui le distingue des formats de fichiers plus populaires :**
 
 - Parquet repose sur un **stockage en mode colonne**. Ainsi seront stockées dans un premier temps toutes les données du premier attribut, puis seulement dans un second temps les données du deuxième attribut et ainsi de suite...  
 Dans un contexte analytique, cette organisation des données génère plusieurs avantages dont les principaux sont : 
-- **Un gain de rapidité lors de la lecture des données** ;
+- **Un gain de rapidité lors de la lecture des données pour un usage statistique** ;
 - **La possibilité d'avoir un haut niveau de compression**.
 
-**Un fichier Parquet contient à la fois les données et les métadonnées**. Ces métadonnées écrites en bas de page d'un fichier enregistrent le schéma de ce fichier selon 3 niveaux : fichier, bloc et en-tête de page (voir [ici](https://parquet.apache.org/docs/file-format/metadata/) pour en savoir plus). Ce sont ces métadonnées qui font en sorte que la lecture des données Parquet soit optimisée et sans risque d’altération.
+**Un fichier Parquet contient à la fois les données et des métadonnées**. Ces métadonnées écrites en bas de page d'un fichier enregistrent le schéma de ce fichier selon 3 niveaux : fichier, bloc et en-tête de page (voir [ici](https://parquet.apache.org/docs/file-format/metadata/) pour en savoir plus). Ce sont ces métadonnées qui font en sorte que la lecture des données Parquet soit optimisée et sans risque d’altération.
 
 Enfin, Parquet dispose d'un autre avantage important : **il sait modéliser des types complexes**. Il s'agit par exemple d'une colonne qui contient une structure hiérarchique ou du champ géométrique d'une couche SIG.
 
@@ -53,7 +52,7 @@ Pour en savoir plus notamment sur la comparaison entre les formats Parquet et cs
 [l'excellent chapitre sur le sujet](https://pythonds.linogaliana.fr/reads3/#le-format-parquet) écrit 
 par Lino Galiana dans son cours `Python pour la data-science`.  
 
-Grâce aux travaux d'Apache, **les fichiers aux format Parquet sont inter-opérables** c'est-à-dire qu'ils peuvent être lus par plusieurs langages informatiques : [C](https://arrow.apache.org/docs/c_glib/), [C++](https://arrow.apache.org/docs/cpp/), [C#](https://github.com/apache/arrow/blob/main/csharp/README.md), [Go](https://godoc.org/github.com/apache/arrow/go/arrow), [Java](https://arrow.apache.org/docs/java/), [JavaScript](https://arrow.apache.org/docs/js/), [Julia](https://arrow.juliadata.org/stable/), [MATLAB](https://github.com/apache/arrow/blob/main/matlab/README.md), [Python](https://arrow.apache.org/docs/python/), [Ruby](https://github.com/apache/arrow/blob/main/ruby/README.md), [Rust](https://docs.rs/crate/arrow/) et bien entendu [R](https://arrow.apache.org/docs/r/).
+Grâce aux travaux du projet Arrow, **les fichiers aux format Parquet sont inter-opérables** c'est-à-dire qu'ils peuvent être lus par plusieurs langages informatiques : [C](https://arrow.apache.org/docs/c_glib/), [C++](https://arrow.apache.org/docs/cpp/), [C#](https://github.com/apache/arrow/blob/main/csharp/README.md), [Go](https://godoc.org/github.com/apache/arrow/go/arrow), [Java](https://arrow.apache.org/docs/java/), [JavaScript](https://arrow.apache.org/docs/js/), [Julia](https://arrow.juliadata.org/stable/), [MATLAB](https://github.com/apache/arrow/blob/main/matlab/README.md), [Python](https://arrow.apache.org/docs/python/), [Ruby](https://github.com/apache/arrow/blob/main/ruby/README.md), [Rust](https://docs.rs/crate/arrow/) et bien entendu [R](https://arrow.apache.org/docs/r/).
 
 S'il est très efficace pour l'analyse de données, **Parquet est en revanche peu adapté à l'ajout de données en continu ou à la modification fréquente de données existantes**.  
 Pour cette utilisation, le statisticien privilégiera un système de gestion de base de données comme par exemple [PostgreSQL](https://www.postgresql.org/).
@@ -139,7 +138,7 @@ Cette instruction s'exécute sur mon espace de travail en un peu plus de 2 secon
 
 ## Exploiter un fichier Parquet avec le package duckdb
 
-Dans le cas de fichiers volumineux, il est également possible de les requêter avec le langage `SQL` grâce au package [`duckdb`](https://duckdb.org/docs/api/r.html). Cette méthode est basé sur le moteur portable `Duckdb` qui permet à n'importe quel ordinateur d'accéder à des performances d'un moteur de base de données classique qui utilise un serveur. Il faut noter que la méthode présentée ici est encore un peu plus efficace que celle présentée avec dans la section précédente avec les fonctions de `dplyr`. 
+Dans le cas de fichiers volumineux, il est également possible de les requêter avec le langage `SQL` grâce au package [`duckdb`](https://duckdb.org/docs/api/r.html). Cette méthode est basé sur le moteur portable `DuckDB` qui permet à n'importe quel ordinateur d'accéder à des performances d'un moteur de base de données classique qui utilise un serveur. Pour plus d'informations sur la façon d'exécuter des requêtes sur des bases de données, consultez [cette fiche](https://www.book.utilitr.org/03_fiches_thematiques/fiche_connexion_bdd#ex%C3%A9cuter-des-requ%C3%AAtes). Il faut noter que la méthode présentée ici est encore un peu plus efficace que celle présentée avec dans la section précédente avec les fonctions de `dplyr`. 
 
 En `R`, il faut charger le package `duckdb` :
 ```{r, eval = FALSE}
@@ -169,7 +168,7 @@ Cette instruction s'exécute sur mon espace de travail en environ 0.5 secondes !
 
 ## Exploiter un fichier Parquet partitionné
 
-Le package `arrow` présente une fonctionnalité supplémentaire qui consiste à créer un fichier **Parquet partitionné**. Partitionner un fichier revient à le "découper" selon une clé de partitionnement (qui peut prendre la forme par exemple d'une ou de plusieurs variables). Cela permet de pouvoir exécuter du code sur une table volumineuse qui dépasse la mémoire de son espace de travail dans la mesure où les requêtes seront alors exécutées selon **un plan d'exécution optimal**.
+Le package `arrow` présente une fonctionnalité supplémentaire qui consiste à créer et lire un fichier **Parquet partitionné**. Partitionner un fichier revient à le "découper" selon une clé de partitionnement (qui peut prendre la forme par exemple d'une ou de plusieurs variables). Cela permet de pouvoir exécuter du code sur une table volumineuse qui dépasse la mémoire de son espace de travail dans la mesure où les requêtes seront alors exécutées selon **un plan d'exécution optimal**.
   
 ::: {.callout-recommandation .icon}
 - Prendre le temps d'identifier les variables de partitionnement d'un fichier **Parquet** n'est pas du temps perdu dans la mesure où il permet par la suite des gains d'efficacité sur les traitements et facilite la maintenance du fichier sur le long terme.
@@ -230,18 +229,7 @@ write_parquet(
 )
 ```
 
-**Bonus :** avec le package [`parquetize`](https://cran.r-project.org/web/packages/parquetize/index.html), il est possible d'exécuter l'équivalent du code précédent à l'aide de la fonction [csv_to_parquet()](https://ddotta.github.io/parquetize/reference/csv_to_parquet.html).
 
-```{r, eval = FALSE}
-# install.packages("parquetize")
-library(parquetize)
-csv_to_parquet(
-  url_to_csv = "https://www.insee.fr/fr/statistiques/fichier/2540004/dpt2021_csv.zip",
-  csv_as_a_zip = TRUE,
-  filename_in_zip = "dpt2021.csv",
-  path_to_parquet = "Data"
-)
-```
 
 A l'issue de cette conversion, on peut noter que **le fichier Parquet créé occupe un espace de stockage 10 fois moins important que le fichier csv initial (7,4 Mo contre 76,3 Mo) !**
 
