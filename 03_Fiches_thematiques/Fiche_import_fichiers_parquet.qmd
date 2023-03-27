@@ -28,27 +28,30 @@ Le format Parquet présente plusieurs avantages cruciaux qui en font un concurre
 - il est conçu pour être indépendant d'un logiciel: on peut lire des fichiers Parquet avec `R`, Python, C++, Java...
 - il est conçu pour que les données puissent être chargées très rapidement en mémoire.
 
-Un point important à noter est que __Parquet encode les données en un format binaire__. Cela signifie qu'un fichier Parquet n'est pas lisible par un humain: contrairement au format `csv`, on ne peut pas ouvrir un fichier Parquet avec Excel, LibreOffice ou Notepad pour jeter un coup d'oeil au contenu. 
-C'est une des raisons pour lesquelles la recommandation suivante est faite à l'Insee :**Parquet présente quelques propriétés qui le distingue des formats de fichiers plus populaires :**
 
 ### Caractéristiques du format Parquet 
 
-- Parquet repose sur un **stockage orienté colonne**. Ainsi seront stockées dans un premier temps toutes les données du premier attribut, puis seulement dans un second temps les données du deuxième attribut et ainsi de suite... [Le blog d'upsolver](https://www.upsolver.com/blog/apache-parquet-why-use) fournit une illustration pour bien visualiser la différence :  
+Le format Parquet présente trois caractéristiques importantes du point de l'utilisateur:
+
+- __Parquet encode les données en un format binaire__. Cela signifie qu'un fichier Parquet n'est pas lisible par un humain: contrairement au format `csv`, on ne peut pas ouvrir un fichier Parquet avec Excel, LibreOffice ou Notepad pour jeter un coup d'oeil au contenu.
+
+- Parquet repose sur un **stockage orienté colonne**. Ainsi seront stockées dans un premier temps toutes les données de la première colonne de la table, puis seulement dans un second temps les données de la deuxième colonne et ainsi de suite... [Le blog d'upsolver](https://www.upsolver.com/blog/apache-parquet-why-use) fournit une illustration pour bien visualiser la différence :  
 
 ```{r, echo = FALSE, fig.cap = "Différence entre le stockage orienté ligne et colonne"}
 knitr::include_graphics("../pics/parquet/stockage_colonne.png")
 ```
 
-Dans un contexte analytique, cette organisation des données génère plusieurs avantages dont les principaux sont : 
-- **Un gain de rapidité lors de la lecture des données pour un usage statistique**.  Il n'est en effet pas nécessaire de scanner toutes les lignes pour ne lire que certaines colonnes comme ce serait le cas avec le `csv` ;
-- **La possibilité d'avoir un haut niveau de compression**. Le taux de compression moyen par rapport au `csv` est entre 5 et 10. Pour des fichiers volumineux il est possible d'avoir des taux de compression bien supérieurs. 
+- **Un fichier Parquet contient à la fois les données et des métadonnées**. Ces métadonnées écrites à la fin du fichier enregistrent une description du fichier (appelé **schéma**). Ces métadonnées contiennent notamment le type de chaque colonne (entier/réel/caractère). Ce sont ces métadonnées qui font en sorte que la lecture des données Parquet soit optimisée et sans risque d’altération (voir [ici](https://parquet.apache.org/docs/file-format/metadata/) pour en savoir plus).
 
-Dans un contexte analytique, cette organisation des données génère plusieurs avantages dont les principaux sont : 
+Dans un contexte analytique, cette organisation des données génère plusieurs avantages dont les principaux sont: 
 
 - **Un gain de vitesse lors de la lecture des données pour un usage statistique**: `R` peut extraire directement les colonnes demandées sans avoir à scanner toutes les lignes comme ce serait le cas avec un fichier `csv` ;
-- **La possibilité d'avoir un haut niveau de compression**. Le taux de compression moyen par rapport au format `csv` est souvent compris entre 5 et 10. Pour des fichiers volumineux il est même possible d'avoir des taux de compression bien supérieurs. 
+- **La possibilité d'avoir un haut niveau de compression**. Le taux de compression moyen par rapport au format `csv` est souvent compris entre 5 et 10. Pour des fichiers volumineux il est même possible d'avoir des taux de compression bien supérieurs.
 
-**Un fichier Parquet contient à la fois les données et des métadonnées**. Ces métadonnées écrites à la fin du fichier enregistrent le schéma de ce fichier selon 3 niveaux : fichier, bloc et en-tête de page (voir [ici](https://parquet.apache.org/docs/file-format/metadata/) pour en savoir plus). Ce sont ces métadonnées qui font en sorte que la lecture des données Parquet soit optimisée et sans risque d’altération.
+Inversement, le format Parquet présente deux contraintes inhabituelles pour les utilisateurs des autres formats (CSV, SAS, FST...):
+
+- Il n'est pas possible de charger seulement quelques lignes d'un fichier Parquet: on importe nécessairement des colonnes entières;
+- Il n'est pas possible d'ouvrir un fichier Parquet avec Excel, LibreOffice ou Notepad.
 
 Pour en savoir plus notamment sur la comparaison entre les formats Parquet et csv, consultez 
 [le chapitre sur le sujet](https://pythonds.linogaliana.fr/reads3/#le-format-parquet) dans le cours de l'ENSAE _"Python pour la data science"_. 
@@ -69,6 +72,7 @@ Dans un premier temps, on importe le fichier plat avec la fonction **fread()** d
 
 ```{r, eval=FALSE}
 library(data.table)
+library(magrittr)
 library(arrow)
 
 # Décompression du fichier zip
@@ -133,10 +137,6 @@ Avec cette instruction, on a créé autant de répertoires que de modalités dif
 ```{r, echo = FALSE, fig.cap = "Arborescence d'un fichier Parquet partitionné"}
 knitr::include_graphics("../pics/parquet/fichier_partition.png")
 ```
-
-
-
-
 
 ## Lire un fichier Parquet avec `R`
 
