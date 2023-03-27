@@ -103,6 +103,36 @@ library(arrow)  x = donnees_BPE,
 )
 ```
 
+### Cas complexe: écrire un fichier Parquet partitionné
+
+
+Le package `arrow` présente une fonctionnalité supplémentaire qui consiste à créer et lire un fichier **Parquet partitionné**. Partitionner un fichier revient à le "découper" selon une clé de partitionnement (qui peut prendre la forme par exemple d'une ou de plusieurs variables). Cela permet de pouvoir exécuter du code sur une table volumineuse qui dépasse la mémoire de son espace de travail dans la mesure où les requêtes seront alors exécutées selon **un plan d'exécution optimal**.
+  
+::: {.callout-conseil .icon}
+- Prendre le temps d'identifier les variables de partitionnement d'un fichier **Parquet** n'est pas du temps perdu dans la mesure où il permet par la suite des gains d'efficacité sur les traitements et facilite la maintenance du fichier sur le long terme.
+:::
+
+Pour créer des fichiers **Parquet** partitionnés, il existe la fonction [`write_dataset()`](https://arrow.apache.org/docs/r/reference/write_dataset.html). Voici ce que ça donne sur le fichier de la BPE :  
+
+```{r, eval = FALSE}
+write_dataset(
+  dataset = read_parquet("Data/BPE_ENS.parquet"), 
+  path = "Data/", 
+  partitioning = c("REG"), # la variable de partitionnement
+  format="parquet"
+)
+```
+
+Avec cette instruction, on a créé autant de répertoires que de modalités différentes de la variable `REG`.
+
+```{r, echo = FALSE, fig.cap = "Arborescence d'un fichier Parquet partitionné"}
+knitr::include_graphics("../pics/parquet/fichier_partition.png")
+```
+
+
+
+
+
 ## Lire un fichier Parquet avec `R`
 
 La fonction [`read_parquet()`](https://arrow.apache.org/docs/r/reference/read_parquet.html) permet d'importer des fichiers Parquet dans `R`. Elle possède un argument très utile `col_select` qui permet de sélectionner les variables à importer (par défaut toutes). Cet argument accepte soit une liste de noms de variables soit [une expression dite de `tidy selection` issue du *tidyverse*](https://dplyr.tidyverse.org/reference/dplyr_tidy_select.html).
@@ -203,29 +233,6 @@ dbGetQuery(con, "SELECT SUM(POND) FROM 'Data/Ficdep19.parquet'
 Cette instruction s'exécute sur mon espace de travail en environ 0.5 secondes !
 
 ## Exploiter un fichier Parquet partitionné
-
-Le package `arrow` présente une fonctionnalité supplémentaire qui consiste à créer et lire un fichier **Parquet partitionné**. Partitionner un fichier revient à le "découper" selon une clé de partitionnement (qui peut prendre la forme par exemple d'une ou de plusieurs variables). Cela permet de pouvoir exécuter du code sur une table volumineuse qui dépasse la mémoire de son espace de travail dans la mesure où les requêtes seront alors exécutées selon **un plan d'exécution optimal**.
-  
-::: {.callout-conseil .icon}
-- Prendre le temps d'identifier les variables de partitionnement d'un fichier **Parquet** n'est pas du temps perdu dans la mesure où il permet par la suite des gains d'efficacité sur les traitements et facilite la maintenance du fichier sur le long terme.
-:::
-
-Pour créer des fichiers **Parquet** partitionnés, il existe la fonction [`write_dataset()`](https://arrow.apache.org/docs/r/reference/write_dataset.html). Voici ce que ça donne sur le fichier de la BPE :  
-
-```{r, eval = FALSE}
-write_dataset(
-  dataset = read_parquet("Data/BPE_ENS.parquet"), 
-  path = "Data/", 
-  partitioning = c("REG"), # la variable de partitionnement
-  format="parquet"
-)
-```
-
-Avec cette instruction, on a créé autant de répertoires que de modalités différentes de la variable `REG`.
-
-```{r, echo = FALSE, fig.cap = "Arborescence d'un fichier Parquet partitionné"}
-knitr::include_graphics("../pics/parquet/fichier_partition.png")
-```
 
 Le statisticien peut désormais requêter les fichiers partitionnés à l'aide de la fonction [`open_dataset()](https://arrow.apache.org/docs/r/reference/open_dataset.html) qui permet d’ouvrir une connexion vers un ensemble partitionné de fichiers **Parquet** qui décrivent la même table de données.
 
