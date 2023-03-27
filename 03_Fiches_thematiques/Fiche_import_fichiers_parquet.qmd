@@ -355,23 +355,23 @@ Pour bien utiliser un fichier Parquet partitionné, il est recommandé de suivre
 - Afin de tirer au mieux profit du partitionnement, il est conseillé de **filtrer les données** de préférence **selon les variables de partitionnement** définies (dans notre exemple, la région);
 - Il est fortement recommandé de spécifier le type des variables de partitionnement avec l'argument `partitioning`. Cela évite des erreurs typiques: le code du département est interprété à tort comme un nombre et aboutit à une erreur à cause de la Corse... L'argument `partitioning` s'utilise en construisant un schéma qui précise le type de chacune des variables de partitionnement:
 
-    ```{r, eval = FALSE}
-    open_dataset(
-      "Data/",
-      partitioning = arrow::schema(variable1 = arrow::utf8(), variable2 = arrow::int16())
-    )
-    ```
+```{r, eval = FALSE}
+open_dataset(
+  "Data/",
+  partitioning = arrow::schema(variable1 = arrow::utf8(), variable2 = arrow::int16())
+)
+```
 
     Les types les plus fréquents sont: nombre entier (`int8()`, `int16()`, `int32()`, `int64()`), nombre réel (`float()`, `float32()`, `float64()`), et chaîne de caractère (`utf8()`, `large_utf8()`). Il existe beaucoup d'autres types, ous pouvez en consulter la liste en exécutant `?arrow::float`.
 - Il est recommandé de définir les deux options suivantes au début de votre script. Cela autorise `arrow` à utiliser plusieurs processeurs à la fois, ce qui accélère les traitements:
 
-    ```{r, eval = FALSE}
-    # Autoriser arrow à utiliser plusieurs processeurs en même temps
-  options(arrow.use_threads = TRUE)
-    # Définir le nombre de processeurs utilisés par arrow
-    # 10 processeurs sont suffisants dans la plupart des cas
-    arrow:::set_cpu_count(10)
-    ```
+```{r, eval = FALSE}
+# Autoriser arrow à utiliser plusieurs processeurs en même temps
+options(arrow.use_threads = TRUE)
+# Définir le nombre de processeurs utilisés par arrow
+# 10 processeurs sont suffisants dans la plupart des cas
+arrow:::set_cpu_count(10)
+```
 
 ## Pour en savoir plus
 
