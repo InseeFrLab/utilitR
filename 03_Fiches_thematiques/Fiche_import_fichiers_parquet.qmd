@@ -263,7 +263,12 @@ open_dataset(
   collect()
 ```
 
-Au moment d'exécuter cette requête, `arrow` va utiliser la variable de partitionnement pour ne lire que la partie `REG == "32"` du fichier partitionné (donc seulement une partie des observations). Autrement dit, le fait que le fichier Parquet soit partitionné accélère la lecture des données, en particulier lorsque celles-ci sont volumineuses.
+Au moment d'exécuter cette requête, `arrow` va utiliser la variable de partitionnement pour ne lire que la partie `REG == "32"` du fichier partitionné (donc seulement une partie des observations). Autrement dit, le fait que le fichier Parquet soit partitionné accélère la lecture des données.
+
+En conclusion, l'utilisation des fichiers Parquet partitionné présente trois avantages :  
+- Elle permet de travailler sur des fichiers **Parquet** de plus petite taille et de consommer moins de mémoire vive;
+- Elle facilite la maintenance des fichiers : seuls les fichiers concernés seront affectés si une mise à jour des données devaient avoir lieu (par exemple sur la région "76");
+- Elle fait gagner du temps dans l'exécution des requêtes sur les fichiers volumineux (par rapport à un fichier **Parquet** unique).* [Page officielle du projet Arrow](https://arrow.apache.org/)
 
 ### Comment bien utiliser les fichiers Parquet partitionnés?
 
@@ -283,27 +288,9 @@ open_dataset(
   collect()
 ```
 
-Pour 
+Pour bien utiliser un fichier Parquet partitionné, il est recommandé de suivre les trois conseils suivants:
 
-
-
-
-
-
-
-::: {.callout-conseil .icon}
-Deux conseils importants:
-
-- Il est recommandé de définir les deux options suivantes au début de votre script. Cela autorise `arrow` à utiliser plusieurs processeurs à la fois, ce qui accélère les traitements:
-
-    ```{r, eval = FALSE}
-    # Autoriser arrow à utiliser plusieurs processeurs en même temps
-  options(arrow.use_threads = TRUE)
-    # Définir le nombre de processeurs utilisés par arrow
-    # 10 processeurs sont suffisants dans la plupart des cas
-    arrow:::set_cpu_count(10)
-    ```
-
+- Afin de tirer au mieux profit du partitionnement, il est conseillé de **filtrer les données** de préférence **selon les variables de partitionnement** définies (dans notre exemple, la région);
 - Il est fortement recommandé de spécifier le type des variables de partitionnement avec l'argument `partitioning`. Cela évite des erreurs typiques: le code du département est interprété à tort comme un nombre et aboutit à une erreur à cause de la Corse... Cet argument s'utilise en construisant un schéma qui précise le type de chacune des variables de partitionnement:
 
     ```{r, eval = FALSE}
@@ -314,17 +301,15 @@ Deux conseils importants:
     ```
 
     Les types les plus fréquents sont: nombre entier (`int8()`, `int16()`, `int32()`, `int64()`), nombre réel (`float()`, `float32()`, `float64()`), et chaîne de caractère (`utf8()`, `large_utf8()`). Il existe beaucoup d'autres types, ous pouvez en consulter la liste en exécutant `?arrow::float`.
+- Il est recommandé de définir les deux options suivantes au début de votre script. Cela autorise `arrow` à utiliser plusieurs processeurs à la fois, ce qui accélère les traitements:
 
-:::
-
-::: {.callout-conseil .icon}
-- Afin de tirer au mieux profit du partitionnement, il est conseillé de **filtrer les données** de préférence **selon les variables de partitionnement** définies (dans notre exemple, la région).
-:::
-
-Cette méthode de partitionnement est très pratique car elle :  
-- Permet de travailler sur des fichiers **Parquet** de plus petite taille et de consommer moins de mémoire vive;
-- Facilite la maintenance des fichiers : seuls les fichiers concernés seront affectés si une mise à jour des données devaient avoir lieu (par exemple sur la région "76");
-- Fait gagner du temps dans l'exécution des requêtes sur les fichiers volumineux (par rapport à un fichier **Parquet** unique).* [Page officielle du projet Arrow](https://arrow.apache.org/)
+    ```{r, eval = FALSE}
+    # Autoriser arrow à utiliser plusieurs processeurs en même temps
+  options(arrow.use_threads = TRUE)
+    # Définir le nombre de processeurs utilisés par arrow
+    # 10 processeurs sont suffisants dans la plupart des cas
+    arrow:::set_cpu_count(10)
+    ```
 
 ## Pour en savoir plus
 
