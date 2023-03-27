@@ -90,15 +90,16 @@ Vous pouvez télécharger ce fichier avec le package [`doremifasol`](https://ins
 ```{r, eval=FALSE}
 # remotes::install_github("InseeFrLab/doremifasol", build_vignettes = TRUE)
 library(doremifasol)
+library(arrow)  
 
 # Création du dossier "Data"
 dir.create("Data")
 
 # Téléchargement des données de la BPE
 donnees_BPE <- telechargerDonnees("BPE_ENS", date = 2021)
-# remotes::install_github("InseeFrLab/doremifasol", build_vignettes = TRUE)
-library(doremifasol)
-library(arrow)  x = donnees_BPE,
+
+write_parquet(
+  x = donnees_BPE,
   sink = "Data/BPE_ENS.parquet"
 )
 ```
@@ -111,10 +112,12 @@ Le package `arrow` présente une fonctionnalité supplémentaire qui consiste à
 Partitionner un fichier revient à le "découper" selon une clé de partitionnement, qui prend la forme d'une ou de plusieurs variables. Cela signifie en pratique que l'ensemble des données sera stockée sous forme d'un grand nombre de fichiers Parquet (un fichier par valeur des variable de partitionnement). Par exemple, il est possible de partitionner un fichier national par département: on obtient alors un fichier Parquet par département.
 
 ::: {.callout-conseil .icon}
-Il est important de bien choisir les variables de partitionnement d'un fichier **Parquet**. En effet, un partitionnement bien construit induit par la suite des gains d'efficacité sur les traitements et facilite la maintenance du fichier sur le long terme.
+- **Il est important de bien choisir les variables de partitionnement** d'un fichier **Parquet**. Il faut choisir des variables faciles à comprendre et qui soient cohérentes avec l'usage des données (année, département, secteur...). En effet, un partitionnement bien construit induit par la suite des gains d'efficacité sur les traitements et facilite la maintenance du fichier sur le long terme.
+- **Il est inutile de partitionner des données de petite taille**. Si les données dépassent quelques millions d'observations et/ou si leur taille en CSV dépasse quelques giga-octets, il est utile de partitionner.
+- **Il ne faut pas partitionner les données en trop de fichiers**. En pratique, il est rare d'avoir besoin de plus qu'une ou deux variables de partitionnement.
 :::
 
-Pour créer des fichiers **Parquet** partitionnés, il existe la fonction [`write_dataset()`](https://arrow.apache.org/docs/r/reference/write_dataset.html). Voici ce que ça donne sur le fichier de la BPE :  
+Pour créer des fichiers **Parquet** partitionnés, il faut utiliser la fonction [`write_dataset()`](https://arrow.apache.org/docs/r/reference/write_dataset.html) du _package_ `arrow`. Voici ce que ça donne sur le fichier de la BPE :
 
 ```{r, eval = FALSE}
 write_dataset(
@@ -125,7 +128,7 @@ write_dataset(
 )
 ```
 
-Avec cette instruction, on a créé autant de répertoires que de modalités différentes de la variable `REG`.
+Avec cette instruction, on a créé autant de répertoires que de modalités différentes de la variable `REG`. Vous pouvez noter la structure des dossiers nommés `REG==[valeur]`.
 
 ```{r, echo = FALSE, fig.cap = "Arborescence d'un fichier Parquet partitionné"}
 knitr::include_graphics("../pics/parquet/fichier_partition.png")
