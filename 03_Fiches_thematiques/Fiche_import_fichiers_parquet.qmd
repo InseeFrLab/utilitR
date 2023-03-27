@@ -106,10 +106,12 @@ library(arrow)  x = donnees_BPE,
 ### Cas complexe: écrire un fichier Parquet partitionné
 
 
-Le package `arrow` présente une fonctionnalité supplémentaire qui consiste à créer et lire un fichier **Parquet partitionné**. Partitionner un fichier revient à le "découper" selon une clé de partitionnement (qui peut prendre la forme par exemple d'une ou de plusieurs variables). Cela permet de pouvoir exécuter du code sur une table volumineuse qui dépasse la mémoire de son espace de travail dans la mesure où les requêtes seront alors exécutées selon **un plan d'exécution optimal**.
-  
+Le package `arrow` présente une fonctionnalité supplémentaire qui consiste à créer et lire un fichier **Parquet partitionné**. Le partitionnement des fichiers Parquet présente des avantages pratiques qui sont expliqués dans la suite de cette fiche (voir partie [Lire un fichier Parquet avec `R`]).
+
+Partitionner un fichier revient à le "découper" selon une clé de partitionnement, qui prend la forme d'une ou de plusieurs variables. Cela signifie en pratique que l'ensemble des données sera stockée sous forme d'un grand nombre de fichiers Parquet (un fichier par valeur des variable de partitionnement). Par exemple, il est possible de partitionner un fichier national par département: on obtient alors un fichier Parquet par département.
+
 ::: {.callout-conseil .icon}
-- Prendre le temps d'identifier les variables de partitionnement d'un fichier **Parquet** n'est pas du temps perdu dans la mesure où il permet par la suite des gains d'efficacité sur les traitements et facilite la maintenance du fichier sur le long terme.
+Il est important de bien choisir les variables de partitionnement d'un fichier **Parquet**. En effet, un partitionnement bien construit induit par la suite des gains d'efficacité sur les traitements et facilite la maintenance du fichier sur le long terme.
 :::
 
 Pour créer des fichiers **Parquet** partitionnés, il existe la fonction [`write_dataset()`](https://arrow.apache.org/docs/r/reference/write_dataset.html). Voici ce que ça donne sur le fichier de la BPE :  
@@ -152,15 +154,19 @@ donnees <- arrow::read_parquet("Data/BPE_ENS.parquet")
 - Exemple en ne sélectionnant que quelques variables à l'aide d'un vecteur de caractères :
 
 ```{r, eval = FALSE}
-donnees <- arrow::read_parquet("Data/BPE_ENS.parquet",
-                               col_select = c('AN','REG','DEP','SDOM','TYPEQU','NB_EQUIP')) 
+donnees <- arrow::read_parquet(
+  "Data/BPE_ENS.parquet",
+  col_select = c('AN','REG','DEP','SDOM','TYPEQU','NB_EQUIP')
+) 
 ```
 
 - Exemple en ne sélectionnant que quelques variables à l'aide d'une `tidy selection` :
 
 ```{r, eval = FALSE}
-donnees <- arrow::read_parquet("Data/BPE_ENS.parquet",
-                               col_select = starts_with("DEP")) 
+donnees <- arrow::read_parquet(
+  "Data/BPE_ENS.parquet",
+  col_select = starts_with("DEP")
+) 
 ```
 
 Dans les trois cas, le résultat obtenu est un objet directement utilisable dans R. :tada:  
@@ -233,6 +239,9 @@ dbGetQuery(con, "SELECT SUM(POND) FROM 'Data/Ficdep19.parquet'
 Cette instruction s'exécute sur mon espace de travail en environ 0.5 secondes !
 
 ## Exploiter un fichier Parquet partitionné
+
+Cela permet de pouvoir exécuter du code sur une table volumineuse qui dépasse la mémoire de son espace de travail dans la mesure où les requêtes seront alors exécutées selon **un plan d'exécution optimal**.
+
 
 Le statisticien peut désormais requêter les fichiers partitionnés à l'aide de la fonction [`open_dataset()](https://arrow.apache.org/docs/r/reference/open_dataset.html) qui permet d’ouvrir une connexion vers un ensemble partitionné de fichiers **Parquet** qui décrivent la même table de données.
 
