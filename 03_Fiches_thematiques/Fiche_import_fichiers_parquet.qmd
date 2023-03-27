@@ -234,10 +234,16 @@ open_dataset("Data",hive_style = FALSE) |>
   collect()
 ```
 
+::: {.callout-conseil .icon}
+- Afin de tirer au mieux profit du partitionnement, il est conseillé de **filtrer les données** de préférence **selon les variables de partitionnement** définies (dans notre exemple, la région).
+:::
+
 Cette méthode de partitionnement est très pratique car elle :  
 - Permet de travailler sur des fichiers **Parquet** de plus petite taille et de consommer moins de mémoire vive ;
 - Facilite la maintenance des fichiers : seuls les fichiers concernés seront affectés si une mise à jour des données devaient avoir lieu (par exemple sur la région "76")
 - Fait gagner du temps dans l'exécution des requêtes sur les fichiers volumineux (par rapport à un fichier **Parquet** unique).* [Page officielle du projet Arrow](https://arrow.apache.org/)
+
+Enfin, quelques précisions concernant le plan d'exécution d'`arrow`. Celui-ci fonctionne selon un `predicate push-down` ce qui signifie que les données sont lues uniquement aux endroits où elles sont utiles pour exécuter la requête. Le terme `predicate push-down` vient du fait que l'utilisateur indique à l'opérateur de balayage de la requête le prédicat qui sera ensuite utilisé pour filtrer les lignes d'intérêt. Ce mode de fonctionnement moderne se traduite par des **gains de temps importants** lors de l'exécution des requêtes.
 
 ## Pour en savoir plus
 
