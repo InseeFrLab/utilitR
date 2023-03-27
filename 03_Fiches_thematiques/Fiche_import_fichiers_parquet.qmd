@@ -178,6 +178,77 @@ donnees <- arrow::read_parquet(
 
 Dans les trois cas, le résultat obtenu est un objet directement utilisable dans R. :tada:
 
+### Cas des données volumineuses: utiliser des requêtes `dplyr`
+
+Il arrive fréquemment que la méthode proposée dans la section précédente ne puisse pas être appliquée, car les données que l'on souhaite exploiter sont trop volumineuses pour être importées dans la mémoire vive dont on dispose. Par exemple, le fichier des données du [recensement de la population 1968-2019](https://www.insee.fr/fr/statistiques/6671801) fait 3,2 Go et contient plus de 51,5 millions de lignes et 18 colonnes), ce qui est difficile à importer sur un ordinateur portable standard.
+
+**Les _packages_ `arrow` et `dplyr` proposent une approche qui permet de traiter ces données très volumineuses sans les charger dans la mémoire vive**. Cette approche comprend trois étapes:
+
+- On crée une connexion au fichier Parquet avec la fonction `open_dataset()`;
+- On définit une chaîne de traitement (ou __requête__) avec la syntaxe du _tidyverse_ (voir la fiche [Manipuler des données avec le `tidyverse`](##tidyverse));
+- On termine la equête avec la fonction `collect()`, qui indique à `R` que l'on souhaite récupérer le résultat du traitement sous forme d'un `data.frame`.
+
+Voici un exemple avec une table peu volumineuse :  
+
+```{r, eval=FALSE}
+library(dplyr)
+library(arrow)
+
+open_dataset("Data/BPE_ENS.parquet") |>
+  filter(REG == "76") |>
+  group_by(DEP) |>
+  collect()
+```
+
+Avec cette syntaxe, la requête va automatiquement utiliser les variables du fichier **Parquet** dont elle a besoin (en l'occurence `REG`, `DEP` et `NB_EQUIP`) et minimiser l'occupation de la mémoire vive.
+
+- Exemple avec une table volumineuse (Recensements 1968-2019, suivre ce [lien](https://gist.github.com/ddotta/acf6add0f2328f077791461ef4f37b84) pour obtenir le code qui permet de générer "Ficdep19.parquet" de façon reproductible) :  
+
+```{r, eval=FALSE}
+library(dplyr)
+
+open_dataset("Data/Ficdep19.parquet") |>
+  filter(DEP_RES_21 == "11") |>
+  group_by(SEXE) |>
+  summarise(total = sum(pond)) |>
+  as.data.frame() |>
+  collect()
+```
+
+Cette instruction s'exécute sur un ordinateur standard en quelques secondes.
+
+## Exploiter un fichier Parquet avec le _package_ `duckdb`
+
+Dans le cas de fichiers volumineux, il est également possible de les requêter avec le langage `SQL` grâce au package [`duckdb`](https://duckdb.org/docs/api/r.html). Cette méthode est basée sur le moteur portable `DuckDB` qui permet à n'importe quel ordinateur d'accéder à des performances d'un moteur de base de données classique qui utilise un serveur. Pour plus d'informations sur la façon d'exécuter des requêtes sur des bases de données, consultez [cette fiche](https://www.book.utilitr.org/03_fiches_thematiques/fiche_connexion_bdd#ex%C3%A9cuter-des-requ%C3%AAtes). Il faut noter que la méthode présentée ici est encore un peu plus efficace que celle présentée avec dans la section précédente avec les fonctions de `dplyr`. 
+
+En `R`, il faut charger le package `duckdb` :
+
+```{r, eval = FALSE}
+library(duckdb)
+```
+
+- Exemple avec une table peu volumineuse : 
+
+```{r, eval = FALSE}
+con <- dbConnect(duckdb::duckdb())
+ 
+dbGetQuery(con, "SELECT SUM(NB_EQUIP) FROM 'Data/BPE_ENS.parquet'
+                 WHERE REG='76'
+                 GROUP BY DEP")
+```
+                
+- Exemple avec une table volumineuse (RP 1968-2019) : 
+
+```{r, eval = FALSE}
+con <- dbConnect(duckdb::duckdb())
+ 
+dbGetQuery(con, "SELECT SUM(POND) FROM 'Data/Ficdep19.parquet'
+                 WHERE DEP_RES_21='11'
+                 GROUP BY SEXE")
+```
+Cette instruction s'exécute sur mon espace de travail en environ 0.5 secondes !
+
+
 
 ## Lire un fichier Parquet partitionné
 
@@ -249,72 +320,6 @@ Pour bien utiliser un fichier Parquet partitionné, il est recommandé de suivre
     # 10 processeurs sont suffisants dans la plupart des cas
     arrow:::set_cpu_count(10)
     ```
-
-## Exploiter un fichier Parquet avec le package `dplyr`
-
-Si le statisticien souhaite travailler sur des fichiers plus volumineux (par exemple [celui des données du recensement de la population 1968-2019](https://www.insee.fr/fr/statistiques/6671801) de 3,2 Go et qui contient plus de 51,5 millions de lignes et 18 colonnes), il peut se heurter à **un manque de mémoire vive** s'il souhaite importer dans `R` l'intégralité de la table avant de pouvoir l'exploiter.  
-
-## Exploiter un fichier Parquet avec le _package_ `dplyr`
-- Exemple avec une table peu volumineuse :  
-
-```{r, eval=FALSE}
-library(dplyr)
-library(arrow)
-
-open_dataset("Data/BPE_ENS.parquet") |>
-  filter(REG == "76") |>
-  group_by(DEP) |>
-  collect()
-```
-
-Avec cette syntaxe, la requête va utiliser seulement les variables du fichier **Parquet** dont elle a besoin (en l'occurence `REG`, `DEP` et `NB_EQUIP`).
-
-- Exemple avec une table volumineuse (Recensements 1968-2019, suivre ce [lien](https://gist.github.com/ddotta/acf6add0f2328f077791461ef4f37b84) pour obtenir le code qui permet de générer "Ficdep19.parquet" de façon reproductible) :  
-
-```{r, eval=FALSE}
-library(dplyr)
-
-open_dataset("Data/Ficdep19.parquet") |>
-  filter(DEP_RES_21 == "11") |>
-  group_by(SEXE) |>
-  summarise(total = sum(pond)) |>
-  as.data.frame() |>
-  collect()
-```
-
-Cette instruction s'exécute sur mon espace de travail en un peu plus de 2 secondes.
-
-## Exploiter un fichier Parquet avec le _package_ `duckdb`
-
-Dans le cas de fichiers volumineux, il est également possible de les requêter avec le langage `SQL` grâce au package [`duckdb`](https://duckdb.org/docs/api/r.html). Cette méthode est basée sur le moteur portable `DuckDB` qui permet à n'importe quel ordinateur d'accéder à des performances d'un moteur de base de données classique qui utilise un serveur. Pour plus d'informations sur la façon d'exécuter des requêtes sur des bases de données, consultez [cette fiche](https://www.book.utilitr.org/03_fiches_thematiques/fiche_connexion_bdd#ex%C3%A9cuter-des-requ%C3%AAtes). Il faut noter que la méthode présentée ici est encore un peu plus efficace que celle présentée avec dans la section précédente avec les fonctions de `dplyr`. 
-
-En `R`, il faut charger le package `duckdb` :
-
-```{r, eval = FALSE}
-library(duckdb)
-```
-
-- Exemple avec une table peu volumineuse : 
-
-```{r, eval = FALSE}
-con <- dbConnect(duckdb::duckdb())
- 
-dbGetQuery(con, "SELECT SUM(NB_EQUIP) FROM 'Data/BPE_ENS.parquet'
-                 WHERE REG='76'
-                 GROUP BY DEP")
-```
-                
-- Exemple avec une table volumineuse (RP 1968-2019) : 
-
-```{r, eval = FALSE}
-con <- dbConnect(duckdb::duckdb())
- 
-dbGetQuery(con, "SELECT SUM(POND) FROM 'Data/Ficdep19.parquet'
-                 WHERE DEP_RES_21='11'
-                 GROUP BY SEXE")
-```
-Cette instruction s'exécute sur mon espace de travail en environ 0.5 secondes !
-
 
 ## Pour en savoir plus
 
