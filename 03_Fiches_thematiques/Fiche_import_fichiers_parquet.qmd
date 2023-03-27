@@ -243,29 +243,88 @@ Cette instruction s'exécute sur mon espace de travail en environ 0.5 secondes !
 
 ## Exploiter un fichier Parquet partitionné
 
-Cela permet de pouvoir exécuter du code sur une table volumineuse qui dépasse la mémoire de son espace de travail dans la mesure où les requêtes seront alors exécutées selon **un plan d'exécution optimal**.
+### Quel est l'intérêt d'utiliser des fichiers Parquet partitionnés?
 
+Les _packages_ `arrow` et `duckdb` présentent une grande différence avec les _packages_ standard de manipulation de données comme `dplyr` ou `data.table`: lorsqu'on exécute une requête sur une table de données, ces _packages_ ne se contentent pas d'exécuter les commandes une à une, dans l'ordre du code, mais analysent la requête pour **optimiser le plan d'exécution de la requête**. En pratique, cela signifie qu'`arrow` et `duckdb` essaient de n'importer que les observations nécessaires à la requête, de ne conserver que les colonnes nécessaires au calcul, etc. Cette optimisation du plan d'exécution (appelée _predicate push-down_) permet d'accélérer les traitements et de réduire la consommation de ressources informatiques.
 
-Le statisticien peut désormais requêter les fichiers partitionnés à l'aide de la fonction [`open_dataset()](https://arrow.apache.org/docs/r/reference/open_dataset.html) qui permet d’ouvrir une connexion vers un ensemble partitionné de fichiers **Parquet** qui décrivent la même table de données.
+**Utiliser un fichier Parquet partitionné facilite ce travail d'optimisation.** Comme mentionné plus haut, il n'est pas possible de charger seulement quelques lignes d'un fichier Parquet: on importe nécessairement des colonnes entières. Toutefois, lorsque le fichier Parquet est partitionné, `arrow` est capable de filtrer les lignes à importer à l'aide des clés de partitionnement, ce qui permet d'accélérer l'importation des données.
+
+Exemple: imaginons que la Base Permanente des Équipements soit stockée sous la forme d'un fichier Parquet partitionné par région (`REG`), et qu'on veuille compter le nombre d'équipements de chaque type dans chaque département de la région Hauts-de-France (`REG == "32"`). On utilisera le code suivant:
 
 ```{r, eval = FALSE}
-open_dataset("Data",hive_style = FALSE) |>
-  filter(REG == "76") |> # Ici, on filtre selon la clé de partitionnement
-  group_by(DEP) |>
-  summarise(total = sum(NB_EQUIP)) |>
+open_dataset(
+  "Data/",
+  partitioning = arrow::schema(REG = arrow::utf8())
+) %>% 
+  filter(REG == "32") %>%
+  select(DEP, TYPEQU, NB_EQUIP) %>%
+  group_by(DEP, TYPEQU) %>%
+  summarise(nb_equipements = sum(NB_EQUIP)) %>%
   collect()
 ```
+
+Au moment d'exécuter cette requête, `arrow` va utiliser la variable de partitionnement pour ne lire que la partie `REG == "32"` du fichier partitionné (donc seulement une partie des observations). Autrement dit, le fait que le fichier Parquet soit partitionné accélère la lecture des données, en particulier lorsque celles-ci sont volumineuses.
+
+### Comment bien utiliser les fichiers Parquet partitionnés?
+
+La fonction [`open_dataset()`](https://arrow.apache.org/docs/r/reference/open_dataset.html) permet d’ouvrir une connexion vers un fichier Parquet partitionné. Une fois que la connexion est établie avec le fichier partitionné, il est possible de l'utiliser exactement comme une table de données chargée en mémoire. Voici un exemple de code:
+
+
+```{r, eval = FALSE}
+open_dataset(
+  "Data/",
+  hive_style = TRUE,
+  partitioning = arrow::schema(REG = arrow::utf8())
+) |>
+  filter(REG == "32") |> # Ici, on filtre selon la clé de partitionnement
+  select(DEP, TYPEQU, NB_EQUIP) %>%
+  group_by(DEP) |>
+  summarise(nb_total = sum(NB_EQUIP)) |>
+  collect()
+```
+
+Pour 
+
+
+
+
+
+
+
+::: {.callout-conseil .icon}
+Deux conseils importants:
+
+- Il est recommandé de définir les deux options suivantes au début de votre script. Cela autorise `arrow` à utiliser plusieurs processeurs à la fois, ce qui accélère les traitements:
+
+    ```{r, eval = FALSE}
+    # Autoriser arrow à utiliser plusieurs processeurs en même temps
+  options(arrow.use_threads = TRUE)
+    # Définir le nombre de processeurs utilisés par arrow
+    # 10 processeurs sont suffisants dans la plupart des cas
+    arrow:::set_cpu_count(10)
+    ```
+
+- Il est fortement recommandé de spécifier le type des variables de partitionnement avec l'argument `partitioning`. Cela évite des erreurs typiques: le code du département est interprété à tort comme un nombre et aboutit à une erreur à cause de la Corse... Cet argument s'utilise en construisant un schéma qui précise le type de chacune des variables de partitionnement:
+
+    ```{r, eval = FALSE}
+    open_dataset(
+      "Data/",
+      partitioning = arrow::schema(variable1 = arrow::utf8(), variable2 = arrow::int16())
+    )
+    ```
+
+    Les types les plus fréquents sont: nombre entier (`int8()`, `int16()`, `int32()`, `int64()`), nombre réel (`float()`, `float32()`, `float64()`), et chaîne de caractère (`utf8()`, `large_utf8()`). Il existe beaucoup d'autres types, ous pouvez en consulter la liste en exécutant `?arrow::float`.
+
+:::
 
 ::: {.callout-conseil .icon}
 - Afin de tirer au mieux profit du partitionnement, il est conseillé de **filtrer les données** de préférence **selon les variables de partitionnement** définies (dans notre exemple, la région).
 :::
 
 Cette méthode de partitionnement est très pratique car elle :  
-- Permet de travailler sur des fichiers **Parquet** de plus petite taille et de consommer moins de mémoire vive ;
-- Facilite la maintenance des fichiers : seuls les fichiers concernés seront affectés si une mise à jour des données devaient avoir lieu (par exemple sur la région "76")
+- Permet de travailler sur des fichiers **Parquet** de plus petite taille et de consommer moins de mémoire vive;
+- Facilite la maintenance des fichiers : seuls les fichiers concernés seront affectés si une mise à jour des données devaient avoir lieu (par exemple sur la région "76");
 - Fait gagner du temps dans l'exécution des requêtes sur les fichiers volumineux (par rapport à un fichier **Parquet** unique).* [Page officielle du projet Arrow](https://arrow.apache.org/)
-
-Enfin, quelques précisions concernant le plan d'exécution d'`arrow`. Celui-ci fonctionne selon un `predicate push-down` ce qui signifie que les données sont lues uniquement aux endroits où elles sont utiles pour exécuter la requête. Le terme `predicate push-down` vient du fait que l'utilisateur indique à l'opérateur de balayage de la requête le prédicat qui sera ensuite utilisé pour filtrer les lignes d'intérêt. Ce mode de fonctionnement moderne se traduite par des **gains de temps importants** lors de l'exécution des requêtes.
 
 ## Pour en savoir plus
 
