@@ -71,21 +71,30 @@ Pour cette utilisation, le statisticien privilégiera un système de gestion de 
 
 Les tables Parquet sont encore loin d'être majoritaires dans les liens de téléchargement notamment face au format csv. C'est la raison pour laquelle, nous allons dans cette section dérouler **le processus pour obtenir un fichier Parquet à partir d'un fichier csv.**  
 
-Dans un premier temps, on importe le fichier plat avec la fonction **fread()** du _package_ **data.table**, conformément aux recommandations de [la fiche sur les imports de fichiers plats](https://www.book.utilitr.org/03_fiches_thematiques/fiche_import_fichiers_plats). On obtient un objet `data.table` en mémoire. Dans un second temps, on exporte ces données en format Parquet avec la fonction `write_parquet()` du _package_ `arrow`. Comme vous pouvez le voir ci-dessous, ces deux étapes sont réalisées en un seul temps, ce qui réduit l'utilisation de ressources informatiques. 
+Dans un premier temps, on importe le fichier plat avec la fonction **fread()** du _package_ **data.table**, conformément aux recommandations de [la fiche sur les imports de fichiers plats](https://www.book.utilitr.org/03_fiches_thematiques/fiche_import_fichiers_plats). On obtient un objet `data.table` en mémoire. Dans un second temps, on exporte ces données en format Parquet avec la fonction `write_parquet()` du _package_ `arrow`.
 
 ```{r, eval=FALSE}
 library(data.table)
 library(magrittr)
 library(arrow)
 
+# Création du dossier "Data_parquet"
+dir.create("Data_parquet")
+
+# Téléchargement du fichier zip
+download.file("https://www.insee.fr/fr/statistiques/fichier/2540004/dpt2021_csv.zip",
+              destfile = "Data_parquet/dpt2021_csv.zip")
+
 # Décompression du fichier zip
-unzip("Data/dpt2021_csv.zip", exdir = "Data")
-# Création du dossier "Data"
-dir.create("Data")
-# Conversion du fichier csv au format parquet
+unzip("Data_parquet/dpt2021_csv.zip", exdir = "Data_parquet")
+
+# Lecture du fichier CSV
+dpt2021 <- fread("Data_parquet/dpt2021.csv")
+
+# Écriture des données en format Parquet
 write_parquet(
-  x = fread("Data/dpt2021.csv"), # Utilisation de la fonction fread()
-  sink = "Data/dpt2021.parquet"
+  x = dpt2021,
+  sink = "Data_parquet/dpt2021.parquet"
 )
 ```
 
