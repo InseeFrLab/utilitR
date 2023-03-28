@@ -9,7 +9,7 @@
 
 - Il est recommandé d'utiliser le format **Parquet** pour stocker des données volumineuses, car il est plus compact que le format csv. Le **package** [`arrow`](https://arrow.apache.org/docs/r/) permet de lire, d'écrire et de manipuler simplement les fichiers au format **Parquet** avec `R`;
 - Il est essentiel de travailler avec la dernière version d'`arrow` et de `R` car le _package_ `arrow` est en cours de développement;
-- Il est recommandé de partitionner les fichiers **Parquet** lorsque les données sont volumineuses et lorsque les données peuvent être partitionnées selon une variable logique (département, secteur, année...);
+- Il est recommandé de partitionner les fichiers **Parquet** lorsque les données sont volumineuses et lorsque les données peuvent être partitionnées selon une variable cohérentes avec l’usage des données (département, secteur, année...);
 - Lorsqu'on importe des données volumineuses, il est recommandé de sélectionner les observations (avec `filter`) et les variables (avec `select`) pour limiter la consommation de mémoire vive.
 
 :::
@@ -62,11 +62,9 @@ Pour cette utilisation, le statisticien privilégiera un système de gestion de 
 
 ## Écrire des fichiers Parquet
 
-### Cas simple: écrire un seul fichier Parquet
+### Données peu volumineuses: écrire un seul fichier Parquet
 
 Les tables Parquet sont encore loin d'être majoritaires dans les liens de téléchargement notamment face au format csv. C'est la raison pour laquelle, nous allons dans cette section dérouler **le processus pour obtenir un fichier Parquet à partir d'un fichier csv.**  
-
-Les tables Parquet sont encore loin d'être majoritaires dans les liens de téléchargement notamment face au format csv. C'est la raison pour laquelle, nous allons dans cette section dérouler **le processus pour obtenir un fichier Parquet à partir d'un fichier csv.** Cet exemple repose sur un fichier volumineux disponible sur le site de l'Insee.  
 
 Dans un premier temps, on importe le fichier plat avec la fonction **fread()** du _package_ **data.table**, conformément aux recommandations de [la fiche sur les imports de fichiers plats](https://www.book.utilitr.org/03_fiches_thematiques/fiche_import_fichiers_plats). On obtient un objet `data.table` en mémoire. Dans un second temps, on exporte ces données en format Parquet avec la fonction `write_parquet()` du _package_ `arrow`. Comme vous pouvez le voir ci-dessous, ces deux étapes sont réalisées en un seul temps, ce qui réduit l'utilisation de ressources informatiques. 
 
@@ -108,10 +106,10 @@ write_parquet(
 )
 ```
 
-### Cas complexe: écrire un fichier Parquet partitionné
+### Données volumineuses: écrire un fichier Parquet partitionné
 
 
-Le package `arrow` présente une fonctionnalité supplémentaire qui consiste à créer et lire un fichier **Parquet partitionné**. Le partitionnement des fichiers Parquet présente des avantages pratiques qui sont expliqués dans la suite de cette fiche (voir partie [Lire un fichier Parquet avec `R`]).
+Le package `arrow` présente une fonctionnalité supplémentaire qui consiste à créer et lire un fichier **Parquet partitionné**. Le partitionnement des fichiers Parquet présente des avantages pratiques qui sont expliqués dans la suite de cette fiche (voir partie [Lire et exploiter un fichier Parquet avec `R`]{#readparquet}).
 
 Partitionner un fichier revient à le "découper" selon une clé de partitionnement, qui prend la forme d'une ou de plusieurs variables. Cela signifie en pratique que l'ensemble des données sera stockée sous forme d'un grand nombre de fichiers Parquet (un fichier par valeur des variable de partitionnement). Par exemple, il est possible de partitionner un fichier national par département: on obtient alors un fichier Parquet par département.
 
@@ -138,7 +136,7 @@ Avec cette instruction, on a créé autant de répertoires que de modalités dif
 knitr::include_graphics("../pics/parquet/fichier_partition.png")
 ```
 
-## Lire et exploiter un fichier Parquet avec `R`
+## Lire et exploiter un fichier Parquet avec `R` {#readparquet}
 
 ### Cas des données peu volumineuses: importer les données en mémoire
 
@@ -296,7 +294,7 @@ Comme indiqué précédemment, les _packages_ `arrow` et `duckdb` ne se contente
 Exemple: imaginons que la Base Permanente des Équipements soit stockée sous la forme d'un fichier Parquet partitionné par région (`REG`), et qu'on veuille compter le nombre d'équipements de chaque type dans chaque département de la région Hauts-de-France (`REG == "32"`). On utilisera le code suivant:
 
 ```{r, eval = FALSE}
-)# Établir la connexion au fichier Parquet partitionné
+# Établir la connexion au fichier Parquet partitionné
 donnees_BPE_part <- open_dataset(
   "Data/",
   partitioning = arrow::schema(REG = arrow::utf8())
@@ -316,10 +314,11 @@ resultat_BPE <- requete_BPE |> collect()
 
 Au moment d'exécuter cette requête, `arrow` va utiliser la variable de partitionnement pour ne lire que la partie `REG == "32"` du fichier partitionné (donc seulement une partie des observations). Autrement dit, le fait que le fichier Parquet soit partitionné accélère la lecture des données.
 
-En conclusion, l'utilisation des fichiers Parquet partitionné présente trois avantages :  
+En conclusion, l'utilisation des fichiers Parquet partitionné présente trois avantages :
+
 - Elle permet de travailler sur des fichiers **Parquet** de plus petite taille et de consommer moins de mémoire vive;
 - Elle facilite la maintenance des fichiers : seuls les fichiers concernés seront affectés si une mise à jour des données devaient avoir lieu (par exemple sur la région "76");
-- Elle fait gagner du temps dans l'exécution des requêtes sur les fichiers volumineux (par rapport à un fichier **Parquet** unique).* [Page officielle du projet Arrow](https://arrow.apache.org/)
+- Elle fait gagner du temps dans l'exécution des requêtes sur les fichiers volumineux (par rapport à un fichier **Parquet** unique).
 
 ### Comment bien utiliser les fichiers Parquet partitionnés?
 
