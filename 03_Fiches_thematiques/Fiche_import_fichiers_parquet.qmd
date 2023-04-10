@@ -14,7 +14,7 @@
     - les _packages_ `DBI` et `duckdb` si vous maîtrisez le langage SQL;
     
 - Il est essentiel de travailler avec la dernière version d'`arrow`, de `duckdb` et de `R` car les _packages_ `arrow` et `duckdb` sont en cours de développement;
-- Il est recommandé de partitionner les fichiers **Parquet** lorsque les données sont volumineuses et lorsque les données peuvent être partitionnées selon une variable cohérentes avec l’usage des données (département, secteur, année...);
+- Il est recommandé de partitionner les fichiers **Parquet** lorsque les données sont volumineuses et lorsque les données peuvent être partitionnées selon une variable cohérente avec l’usage des données (département, secteur, année...);
 - Lorsqu'on importe des données volumineuses, il est recommandé de sélectionner les observations (avec `filter`) et les variables (avec `select`) pour limiter la consommation de mémoire vive.
 
 :::
@@ -186,11 +186,11 @@ donnees <- arrow::read_parquet(
 ) 
 ```
 
-Dans les trois cas, le résultat obtenu est un objet directement utilisable dans R. :tada:
+Dans les trois cas, le résultat obtenu est un objet directement utilisable dans R.
 
 ### Cas des données volumineuses: utiliser des requêtes `dplyr`
 
-Il arrive fréquemment que la méthode proposée dans la section précédente ne puisse pas être appliquée, car les données que l'on souhaite exploiter sont trop volumineuses pour être importées dans la mémoire vive dont on dispose. Par exemple, le fichier des données du [recensement de la population 1968-2019](https://www.insee.fr/fr/statistiques/6671801) fait 3,2 Go et contient plus de 51,5 millions de lignes et 18 colonnes), ce qui est difficile à importer sur un ordinateur portable standard.
+Il arrive fréquemment que la méthode proposée dans la section précédente ne puisse pas être appliquée, car les données que l'on souhaite exploiter sont trop volumineuses pour être importées dans la mémoire vive dont on dispose. Par exemple, le fichier des données du [recensement de la population 1968-2019](https://www.insee.fr/fr/statistiques/6671801) fait 3,2 Go et contient plus de 51,5 millions de lignes et 18 colonnes, ce qui est difficile à importer sur un ordinateur standard.
 
 **Les _packages_ `arrow` et `dplyr` proposent une approche qui permet de traiter ces données très volumineuses sans les charger dans la mémoire vive**. Cette approche nécessite de charger les _packages_ `arrow` et `dplyr` et comprend trois étapes:
 
@@ -304,7 +304,7 @@ Cette instruction s'exécute également en quelques secondes sur un ordinateur s
 
 Comme indiqué précédemment, les _packages_ `arrow` et `duckdb` ne se contentent pas d'exécuter les instructions de la requête une à une, dans l'ordre du code, mais analysent la requête dans son ensemble pour **optimiser le plan d'exécution de la requête**. Toutefois, il n'est pas possible de charger seulement quelques lignes d'un fichier Parquet: on importe nécessairement des colonnes entières. C'est principalement sur ce point qu'**utiliser un fichier Parquet partitionné facilite ce travail d'optimisation du plan d'exécution.** En effet, lorsque le fichier Parquet est partitionné, `arrow` est capable de filtrer les lignes à importer à l'aide des clés de partitionnement, ce qui permet d'accélérer l'importation des données.
 
-Exemple: imaginons que la Base Permanente des Équipements soit stockée sous la forme d'un fichier Parquet partitionné par région (`REG`), et qu'on veuille compter le nombre d'équipements de chaque type dans chaque département de la région Hauts-de-France (`REG == "32"`). On utilisera le code suivant:
+**Exemple :** imaginons que la Base Permanente des Équipements soit stockée sous la forme d'un fichier Parquet partitionné par région (`REG`), et qu'on veuille compter le nombre d'équipements de chaque type dans chaque département de la région Hauts-de-France (`REG == "32"`). On utilisera le code suivant:
 
 ```{r, eval = FALSE}
 # Établir la connexion au fichier Parquet partitionné
@@ -363,7 +363,7 @@ requete5 <- donnees_part |>
 resultat5 <- requete5 |> collect()
 ```
 
-Pour bien utiliser un fichier Parquet partitionné, il est recommandé de suivre les trois conseils suivants:
+Pour bien utiliser un fichier Parquet partitionné, il est recommandé de suivre les deux conseils suivants:
 
 - Afin de tirer au mieux profit du partitionnement, il est conseillé de **filtrer les données** de préférence **selon les variables de partitionnement** (dans notre exemple, la région);
 - Il est fortement recommandé de spécifier le type des variables de partitionnement avec l'argument `partitioning`. Cela évite des erreurs typiques: le code du département est interprété à tort comme un nombre et aboutit à une erreur à cause de la Corse... L'argument `partitioning` s'utilise en construisant un schéma qui précise le type de chacune des variables de partitionnement:
@@ -375,7 +375,8 @@ open_dataset(
 )
 ```
 
-    Les types les plus fréquents sont: nombre entier (`int8()`, `int16()`, `int32()`, `int64()`), nombre réel (`float()`, `float32()`, `float64()`), et chaîne de caractère (`utf8()`, `large_utf8()`). Il existe beaucoup d'autres types, ous pouvez en consulter la liste en exécutant `?arrow::float`.
+Les types les plus fréquents sont: nombre entier (`int8()`, `int16()`, `int32()`, `int64()`), nombre réel (`float()`, `float32()`, `float64()`), et chaîne de caractère (`utf8()`, `large_utf8()`). Il existe beaucoup d'autres types, vous pouvez en consulter la liste en exécutant `?arrow::float` ou en consultant [cette page](https://arrow.apache.org/docs/r/reference/data-type.html).  
+
 - Il est recommandé de définir les deux options suivantes au début de votre script. Cela autorise `arrow` à utiliser plusieurs processeurs à la fois, ce qui accélère les traitements:
 
 ```{r, eval = FALSE}
