@@ -369,7 +369,7 @@ Pour bien utiliser un fichier Parquet partitionné, il est recommandé de suivre
 - Il est fortement recommandé de spécifier le type des variables de partitionnement avec l'argument `partitioning`. Cela évite des erreurs typiques: le code du département est interprété à tort comme un nombre et aboutit à une erreur à cause de la Corse... L'argument `partitioning` s'utilise en construisant un schéma qui précise le type de chacune des variables de partitionnement:
 
 ```{r, eval = FALSE}
-open_dataset(
+donnees_part <- open_dataset(
   "Data/",
   partitioning = arrow::schema(variable1 = arrow::utf8(), variable2 = arrow::int16())
 )
@@ -389,13 +389,12 @@ arrow:::set_cpu_count(10)
 
 #### Avec le _package_ `duckdb`
 
-Il est tout à fait possible d'exploiter un fichier Parquet partitionné avec `duckdb`: il suffit d'établir une connexion entre le moteur `duckdb` et le fichier Parquet partitionné avec la fonction `duckdb_register_arrow`. Voici un exemple:
+Il est tout à fait possible d'exploiter un fichier Parquet partitionné avec `duckdb`: il suffit d'utiliser la fonction `duckdb_register_arrow` pour indiquer au moteur `duckdb` qu'il existe une connexion au fichier Parquet partitionné. Voici un exemple:
 
 ```{r, eval = FALSE}
 library(arrow)
 library(DBI)
 library(duckdb)
-
 
 # Établir la connexion au moteur duckdb
 con <- dbConnect(duckdb::duckdb())
@@ -407,10 +406,11 @@ donnees_part <- open_dataset(
   partitioning = arrow::schema(REG = arrow::utf8()) # La variable de partitionnement
 )
 
-# Établir un lien logique entre le moteur duckdb
+# Indiquer au moteur duckdb qu'il existe une connexion au fichier Parquet 
 duckdb::duckdb_register_arrow(con_ddb, "donnees_part", donnees_part)
 
-
+# Exemple de requête: récupérer le nombre de lignes du fichier
+dbGetQuery(con_ddb, "SELECT count(1) as nb_lignes FROM donnees_part")
 ```
 
 
