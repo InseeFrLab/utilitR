@@ -243,55 +243,55 @@ Cette instruction s'exécute sur un ordinateur standard en quelques secondes.
 Les _packages_ `arrow` et `duckdb` présentent une grande différence avec les _packages_ standard de manipulation de données comme `dplyr` ou `data.table`: lorsqu'on exécute une requête sur une table de données, ces _packages_ ne se contentent pas d'exécuter les commandes une à une, dans l'ordre du code, mais analysent le code pour **optimiser le plan d'exécution de la requête**. En pratique, cela signifie qu'`arrow` et `duckdb` essaient de n'importer que les observations nécessaires à la requête, de ne conserver que les colonnes nécessaires au calcul, etc. C'est cette optimisation du plan d'exécution (appelée _predicate push-down_) qui permet d'accélérer les traitements et de réduire la consommation de ressources informatiques.
 :::
 
-## Exploiter un fichier Parquet avec le _package_ `duckdb`
+<!-- ## Exploiter un fichier Parquet avec le _package_ `duckdb` -->
 
-Dans le cas de fichiers volumineux, il est également possible de les requêter avec le langage `SQL` grâce au _package_ [`duckdb`](https://duckdb.org/docs/api/r.html). Cette méthode est basée sur le moteur portable `DuckDB` qui permet à n'importe quel ordinateur d'accéder à des performances d'un moteur de base de données classique qui utilise un serveur. Pour plus d'informations sur la façon d'exécuter des requêtes sur des bases de données, consultez [cette fiche](https://www.book.utilitr.org/03_fiches_thematiques/fiche_connexion_bdd#ex%C3%A9cuter-des-requ%C3%AAtes). En fonction des cas d'usage, la méthode présentée ici peut être encore plus efficace que celle avec `arrow` et `dplyr`, mais elle implique de savoir exprimer les requêtes en langage SQL.
+<!-- Dans le cas de fichiers volumineux, il est également possible de les requêter avec le langage `SQL` grâce au _package_ [`duckdb`](https://duckdb.org/docs/api/r.html). Cette méthode est basée sur le moteur portable `DuckDB` qui permet à n'importe quel ordinateur d'accéder à des performances d'un moteur de base de données classique qui utilise un serveur. Pour plus d'informations sur la façon d'exécuter des requêtes sur des bases de données, consultez [cette fiche](https://www.book.utilitr.org/03_fiches_thematiques/fiche_connexion_bdd#ex%C3%A9cuter-des-requ%C3%AAtes). En fonction des cas d'usage, la méthode présentée ici peut être encore plus efficace que celle avec `arrow` et `dplyr`, mais elle implique de savoir exprimer les requêtes en langage SQL. -->
 
-L'approche avec `duckdb` comprend trois étapes similaires à celle de l'approche avec `arrow` et `dplyr`: 
+<!-- L'approche avec `duckdb` comprend trois étapes similaires à celle de l'approche avec `arrow` et `dplyr`:  -->
 
-- On crée une connexion au moteur `DuckDB` avec la fonction `DBI::dbConnect()`; cela nécessite de charger les _package_ `DBI` et `duckdb`;
-- On définit une requête avec le langage SQL;
-- On exécute la requête avec la fonction `DBI::dbGetQuery()`, qui indique à `R` que l'on souhaite récupérer le résultat de la requête sous forme d'un `data.frame`.
-
-
-Voici un exemple avec une table peu volumineuse : 
-
-```{r, eval = FALSE}
-library(DBI)
-library(duckdb)
+<!-- - On crée une connexion au moteur `DuckDB` avec la fonction `DBI::dbConnect()`; cela nécessite de charger les _package_ `DBI` et `duckdb`; -->
+<!-- - On définit une requête avec le langage SQL; -->
+<!-- - On exécute la requête avec la fonction `DBI::dbGetQuery()`, qui indique à `R` que l'on souhaite récupérer le résultat de la requête sous forme d'un `data.frame`. -->
 
 
-# Établir la connexion au moteur duckdb
-con <- dbConnect(duckdb::duckdb())
- 
-donnees_Ficdep19 <- open_dataset("Data/Ficdep19.parquet")
+<!-- Voici un exemple avec une table peu volumineuse :  -->
 
-# Définir la requête (en SQL)
-requete3 < - "SELECT SUM(NB_EQUIP) FROM 'Data/BPE_ENS.parquet'
-                 WHERE REG='76'
-                 GROUP BY DEP"
-  
-# Récupérer le résultat sous forme d'un data.frame
-resultat3 <- dbGetQuery(con, requete3)
-```
-   
-        
-Voici un exemple avec une table volumineuse (RP 1968-2019) : 
+<!-- ```{r, eval = FALSE} -->
+<!-- library(DBI) -->
+<!-- library(duckdb) -->
 
-```{r, eval = FALSE}
-# Établir la connexion au moteur duckdb
-con <- dbConnect(duckdb::duckdb())
 
-# Définir la requête (en SQL)
-requete4 < - "SELECT SUM(POND) FROM 'Data/Ficdep19.parquet'
-                 WHERE DEP_RES_21='11'
-                 GROUP BY SEXE"
-  
-# Récupérer le résultat sous forme d'un data.frame
-resultat4 <- dbGetQuery(con, requete4)
-```
+<!-- # Établir la connexion au moteur duckdb -->
+<!-- con <- dbConnect(duckdb::duckdb()) -->
 
-Cette instruction s'exécute également en quelques secondes sur un ordinateur standard.
+<!-- donnees_Ficdep19 <- open_dataset("Data/Ficdep19.parquet") -->
+
+<!-- # Définir la requête (en SQL) -->
+<!-- requete3 < - "SELECT SUM(NB_EQUIP) FROM 'Data/BPE_ENS.parquet' -->
+<!--                  WHERE REG='76' -->
+<!--                  GROUP BY DEP" -->
+
+<!-- # Récupérer le résultat sous forme d'un data.frame -->
+<!-- resultat3 <- dbGetQuery(con, requete3) -->
+<!-- ``` -->
+
+
+<!-- Voici un exemple avec une table volumineuse (RP 1968-2019) :  -->
+
+<!-- ```{r, eval = FALSE} -->
+<!-- # Établir la connexion au moteur duckdb -->
+<!-- con <- dbConnect(duckdb::duckdb()) -->
+
+<!-- # Définir la requête (en SQL) -->
+<!-- requete4 < - "SELECT SUM(POND) FROM 'Data/Ficdep19.parquet' -->
+<!--                  WHERE DEP_RES_21='11' -->
+<!--                  GROUP BY SEXE" -->
+
+<!-- # Récupérer le résultat sous forme d'un data.frame -->
+<!-- resultat4 <- dbGetQuery(con, requete4) -->
+<!-- ``` -->
+
+<!-- Cette instruction s'exécute également en quelques secondes sur un ordinateur standard. -->
 
 
 
@@ -384,31 +384,31 @@ options(arrow.use_threads = TRUE)
 arrow:::set_cpu_count(10)
 ```
 
-#### Avec le _package_ `duckdb`
+<!-- #### Avec le _package_ `duckdb` -->
 
-Il est tout à fait possible d'exploiter un fichier Parquet partitionné avec `duckdb`: il suffit d'utiliser la fonction `duckdb_register_arrow` pour indiquer au moteur `duckdb` qu'il existe une connexion au fichier Parquet partitionné. Voici un exemple:
+<!-- Il est tout à fait possible d'exploiter un fichier Parquet partitionné avec `duckdb`: il suffit d'utiliser la fonction `duckdb_register_arrow` pour indiquer au moteur `duckdb` qu'il existe une connexion au fichier Parquet partitionné. Voici un exemple: -->
 
-```{r, eval = FALSE}
-library(arrow)
-library(DBI)
-library(duckdb)
+<!-- ```{r, eval = FALSE} -->
+<!-- library(arrow) -->
+<!-- library(DBI) -->
+<!-- library(duckdb) -->
 
-# Établir la connexion au moteur duckdb
-con <- dbConnect(duckdb::duckdb())
- 
-# Établir la connexion au fichier Parquet partitionné avec arrow
-donnees_part <- open_dataset(
-  "Data/", # Ici, on met le chemin d'un répertoire
-  hive_style = TRUE,
-  partitioning = arrow::schema(REG = arrow::utf8()) # La variable de partitionnement
-)
+<!-- # Établir la connexion au moteur duckdb -->
+<!-- con <- dbConnect(duckdb::duckdb()) -->
 
-# Indiquer au moteur duckdb qu'il existe une connexion au fichier Parquet 
-duckdb::duckdb_register_arrow(con_ddb, "donnees_part", donnees_part)
+<!-- # Établir la connexion au fichier Parquet partitionné avec arrow -->
+<!-- donnees_part <- open_dataset( -->
+<!--   "Data/", # Ici, on met le chemin d'un répertoire -->
+<!--   hive_style = TRUE, -->
+<!--   partitioning = arrow::schema(REG = arrow::utf8()) # La variable de partitionnement -->
+<!-- ) -->
 
-# Exemple de requête: récupérer le nombre de lignes du fichier
-dbGetQuery(con_ddb, "SELECT count(1) as nb_lignes FROM donnees_part")
-```
+<!-- # Indiquer au moteur duckdb qu'il existe une connexion au fichier Parquet  -->
+<!-- duckdb::duckdb_register_arrow(con_ddb, "donnees_part", donnees_part) -->
+
+<!-- # Exemple de requête: récupérer le nombre de lignes du fichier -->
+<!-- dbGetQuery(con_ddb, "SELECT count(1) as nb_lignes FROM donnees_part") -->
+<!-- ``` -->
 
 
 
