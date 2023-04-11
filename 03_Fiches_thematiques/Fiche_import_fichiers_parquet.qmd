@@ -153,19 +153,14 @@ knitr::include_graphics("../pics/parquet/fichier_partition.png")
 
 ### Cas des données peu volumineuses: importer les données en mémoire
 
-**La méthode présentée dans cette section est valable uniquement pour les fichiers peu volumineux.** Elle implique en effet d'importer l'intégralité d'un fichier Parquet dans la mémoire vive de votre espace de travail avant de pouvoir travailler dessus. Il est possible d'effectuer des requêtes plus efficacement sur des fichiers Parquet, c'est ce que nous allons voir dans les sections suivantes.
+**La méthode présentée dans cette section est valable uniquement pour les fichiers peu volumineux.** Elle implique en effet d'importer l'intégralité d'un fichier Parquet dans la mémoire vive de votre espace de travail avant de pouvoir travailler dessus. Il est possible d'effectuer des requêtes plus efficacement sur des fichiers Parquet. Pour cette raison, **il est conseillé d'utiliser la fonction `open_dataset` (présentée plus bas) pour accéder à des données stockées en format Parquet, plutôt que la fonction `read_parquet`.**
 
-La fonction [`read_parquet()`](https://arrow.apache.org/docs/r/reference/read_parquet.html) permet d'importer un fichier Parquet dans `R`. Elle possède un argument très utile `col_select` qui permet de sélectionner les variables à importer (par défaut toutes). Cet argument accepte soit une liste de noms de variables soit [une expression dite de `tidy selection` issue du *tidyverse*](https://dplyr.tidyverse.org/reference/dplyr_tidy_select.html).
+La fonction [`read_parquet()`](https://arrow.apache.org/docs/r/reference/read_parquet.html) du _package_ `arrow` permet d'importer des fichiers Parquet dans `R`. Elle possède un argument très utile `col_select` qui permet de sélectionner les variables à importer (par défaut toutes). Cet argument accepte soit une liste de noms de variables, soit [une expression dite de `tidy selection` issue du *tidyverse*](https://dplyr.tidyverse.org/reference/dplyr_tidy_select.html).
 
 Pour utiliser `read_parquet()`, il faut charger le *package* `arrow` :
 
 ```{r, eval=FALSE}
 library(arrow)
-```
-
-La fonction [`read_parquet()`](https://arrow.apache.org/docs/r/reference/read_parquet.html) du _package_ `arrow` permet d'importer des fichiers Parquet dans `R`. Elle possède un argument très utile `col_select` qui permet de sélectionner les variables à importer (par défaut toutes). Cet argument accepte soit une liste de noms de variables, soit [une expression dite de `tidy selection` issue du *tidyverse*](https://dplyr.tidyverse.org/reference/dplyr_tidy_select.html).
-
-```{r, eval = FALSE}
 donnees <- arrow::read_parquet("Data/BPE_ENS.parquet")
 ```
 
