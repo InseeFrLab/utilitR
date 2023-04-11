@@ -194,10 +194,6 @@ Il arrive fréquemment que la méthode proposée dans la section précédente ne
 - On définit une chaîne de traitement (ou __requête__) avec la syntaxe du _tidyverse_ (voir la fiche [Manipuler des données avec le `tidyverse`](##tidyverse));
 - On termine la requête avec la fonction `collect()`, qui indique à `R` que l'on souhaite récupérer le résultat de la requête sous forme d'un `data.frame`.
 
-::: {.callout-remarque .icon}
-Les _packages_ `arrow` et `duckdb` présentent une grande différence avec les _packages_ standard de manipulation de données comme `dplyr` ou `data.table`: lorsqu'on exécute une requête sur une table de données, ces _packages_ ne se contentent pas d'exécuter les commandes une à une, dans l'ordre du code, mais analysent la requête pour **optimiser le plan d'exécution de la requête**. En pratique, cela signifie qu'`arrow` et `duckdb` essaient de n'importer que les observations nécessaires à la requête, de ne conserver que les colonnes nécessaires au calcul, etc. C'est cette optimisation du plan d'exécution (appelée _predicate push-down_) qui permet d'accélérer les traitements et de réduire la consommation de ressources informatiques.
-:::
-
 Voici un exemple avec une table peu volumineuse :  
 
 ```{r, eval=FALSE}
@@ -241,6 +237,11 @@ resultat2 <- requete2 |> collect()
 ```
 
 Cette instruction s'exécute sur un ordinateur standard en quelques secondes.
+
+
+::: {.callout-remarque .icon}
+Les _packages_ `arrow` et `duckdb` présentent une grande différence avec les _packages_ standard de manipulation de données comme `dplyr` ou `data.table`: lorsqu'on exécute une requête sur une table de données, ces _packages_ ne se contentent pas d'exécuter les commandes une à une, dans l'ordre du code, mais analysent le code pour **optimiser le plan d'exécution de la requête**. En pratique, cela signifie qu'`arrow` et `duckdb` essaient de n'importer que les observations nécessaires à la requête, de ne conserver que les colonnes nécessaires au calcul, etc. C'est cette optimisation du plan d'exécution (appelée _predicate push-down_) qui permet d'accélérer les traitements et de réduire la consommation de ressources informatiques.
+:::
 
 ## Exploiter un fichier Parquet avec le _package_ `duckdb`
 
