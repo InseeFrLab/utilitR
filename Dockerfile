@@ -39,16 +39,6 @@ RUN rm -rf /var/lib/apt/lists/* \
     && rm -rf /src/*.deb
 RUN apt-get upgrade -y
 
-RUN apt-get update && \
-  apt-get -yq install wget apt-transport-https ca-certificates gnupg --no-install-recommends && \
-  apt-get -yq install libgconf-2-4 && \
-  wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
-  sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list' &&\
-  apt-get update && \
-  apt-get -yq install google-chrome-stable --no-install-recommends &&\
-  apt-get upgrade -y &&\
-  apt-get autoremove -y
-
 # Installing mc
 
 RUN wget https://dl.min.io/client/mc/release/linux-amd64/mc -O /usr/local/bin/mc && \
@@ -57,11 +47,11 @@ RUN wget https://dl.min.io/client/mc/release/linux-amd64/mc -O /usr/local/bin/mc
 
 # update quarto
 
-RUN QUARTO_VERSION="1.2.335" && \
-    QUARTO_DL_URL="https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.deb" && \
-    wget -q ${QUARTO_DL_URL} -O quarto.deb && \
-    sudo dpkg -i quarto.deb && \
-    quarto check install
+# RUN QUARTO_VERSION="1.2.335" && \
+#     QUARTO_DL_URL="https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.deb" && \
+#     wget -q ${QUARTO_DL_URL} -O quarto.deb && \
+#     sudo dpkg -i quarto.deb && \
+#     quarto check install
 
 
 
