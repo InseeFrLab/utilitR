@@ -22,10 +22,14 @@ RUN apt-get -qq install --no-install-recommends \
        ttf-mscorefonts-installer \
        fonts-liberation \
        fonts-freefont-ttf \
-       libssl-dev \
+       libssl-dev
+
+RUN apt-get -qq install --no-install-recommends \
        imagemagick \
        libmagick++-dev \
-       ghostscript \
+       ghostscript
+
+RUN apt-get -qq install --no-install-recommends \
        libgs-dev \
        librsvg2-dev \
        libwebp-dev \
