@@ -240,7 +240,7 @@ Par défaut, le *bucket* utilisateur créé à l'inscription sur le SSP Cloud es
 
 **Pour lister l'ensemble des fichiers disponibles dans un _bucket_, il suffit de charger le _package_ `aws.s3` et d'exécuter la commande `get_bucket()`.** Cette commande donne quelques informations sur les fichiers stockés dans le _bucket_ : nom et emplacement, taille et date de dernière modification. Il n'est pas nécessaire de configurer les droits d'accès au système S3, car le service  RStudio en dispose dès son lancement.
 
-Imaginons qu'on souhaite accéder au _bucket_ nommé `donnees-insee` qui contient des fichiers d'exemples ([lien](https://datalab.sspcloud.fr/mes-fichiers/donnees-insee)) et auquel tout utilisateur du SSP-Cloud a accès. Voici comment afficher la liste des objets contenus dans ce _bucket_ :
+Imaginons qu'on souhaite accéder au _bucket_ nommé `donnees-insee` qui contient des fichiers d'exemples ([lien](https://datalab.sspcloud.fr/my-files/donnees-insee)) et auquel tout utilisateur du SSP-Cloud a accès. Voici comment afficher la liste des objets contenus dans ce _bucket_ :
 
 ```{r, eval = FALSE}
 # Attention cet exemple renvoie un très grand nombre de résultats
@@ -249,11 +249,11 @@ aws.s3::get_bucket("donnees-insee", region = "")
 ```
 
 ::: {.callout-conseil .icon}
-La commande `get_bucket()` peut renvoyer un grand nombre de résultats si le _bucket_ contient un grand nombre de fichiers. Le _bucket_ `donnees-insee` contient ainsi plus de 1000 fichiers. Il est donc conseillé d'utiliser l'option `prefix` pour restreindre le chemin des fichiers que l'on souhaite lister. Par exemple, le code suivant fournit la liste des fichiers situés dans le répertoire `ESTEL/2015` du _bucket_ `donnees.insee` :
+La commande `get_bucket()` peut renvoyer un grand nombre de résultats si le _bucket_ contient un grand nombre de fichiers. Le _bucket_ `donnees-insee` contient ainsi plus de 1000 fichiers. Il est donc conseillé d'utiliser l'option `prefix` pour restreindre le chemin des fichiers que l'on souhaite lister. Par exemple, le code suivant fournit la liste des fichiers situés dans le répertoire `diffusion/ESTEL/2015` du _bucket_ `donnees.insee` :
 
 ```{r, eval = FALSE}
 #library(aws.s3)
-aws.s3::get_bucket("donnees-insee", region = "", prefix = "ESTEL/2015")
+aws.s3::get_bucket("donnees-insee", region = "", prefix = "diffusion/ESTEL/2015")
 ```
 :::
 
@@ -314,14 +314,14 @@ de la session `R`
 - `bucket` : le _bucket_ dans lequel se trouve l'objet ;
 - `opts` : les options.
 
-Dans l'exemple qui suit, on souhaite importer les données du dispositif Filosofi 2017 agrégées par commune, qui sont stockées dans le chemin `/FILOSOFI/2017/FILOSOFI_COM.csv` dans le *bucket* `donnees-insee`. On importe ces données avec la fonction `fread()` du _package_ `data.table`. Vous pouvez consulter la fiche [Importer des fichiers plats (`.csv`, `.tsv`, `.txt`)] pour une présentation détaillée de cette fonction.
+Dans l'exemple qui suit, on souhaite importer les données du dispositif Filosofi 2017 agrégées par commune, qui sont stockées dans le chemin `/diffusion/FILOSOFI/2017/FILOSOFI_COM.csv` dans le *bucket* `donnees-insee`. On importe ces données avec la fonction `fread()` du _package_ `data.table`. Vous pouvez consulter la fiche [Importer des fichiers plats (`.csv`, `.tsv`, `.txt`)] pour une présentation détaillée de cette fonction.
 
 ```{r, eval = FALSE}
 df <- 
   aws.s3::s3read_using(
     FUN = data.table::fread,
     # Mettre les options de FUN ici
-    object = "/FILOSOFI/2016/FILOSOFI_COM.csv",
+    object = "/diffusion/FILOSOFI/2016/FILOSOFI_COM.csv",
     bucket = "donnees-insee",
     opts = list("region" = "")
   )
@@ -336,7 +336,7 @@ df2 <-
     # Les options de fread sont ici
     nrows = 1000L,
     select = c("CODGEO", "LIBGEO", "TP6016"),
-    object = "/FILOSOFI/2016/FILOSOFI_COM.csv",
+    object = "/diffusion/FILOSOFI/2016/FILOSOFI_COM.csv",
     bucket = "donnees-insee",
     opts = list("region" = "")
   )
