@@ -1,6 +1,6 @@
 # Superviser sa session `R` {#superviser-ressources}
 
-::: recommandation
+::: {.callout-recommandation .icon}
 
 Dans un environnement où `R` est en concurrence avec d'autres usages informatiques
 (dans une session personnelle ou environnement de travail partagé comme AUSv3 à l'Insee),
@@ -40,7 +40,7 @@ saturation de la RAM se traduisent généralement par un message du type
 
 **Le risque de saturation de la mémoire vive est particulièrement fréquent lorsqu'on travaille sur une infrastructure informatique où la mémoire vive est partagée avec d'autres utilisateurs (comme c'est le cas dans les environnements partagés, comme l'est l'architecture AUS)**
 Si plusieurs utilisateurs occupent chacun une grande quantité de mémoire vive
-sur la même machine virtuelle d'AUS, il est facile d'arriver à une situation de
+sur la même machine virtuelle, il est facile d'arriver à une situation de
 saturation qui paralyse tous les agents connectés (voire fait planter leur session `R`).
 
 **Le risque de saturation de la mémoire vive est aggravé par la façon dont `R` gère la mémoire.** En effet, une session `R` augmente automatiquement la quantité de mémoire vive qu'elle occupe lorsque les traitements réclament davantage de mémoire, mais elle ne la libère pas toujours lorsque les besoins en mémoire diminuent. Il est donc possible qu'une session `R` occupe beaucoup plus de mémoire que ce dont elle a besoin. Par exemple, si vous lancez une session `R`, que vous importez une table de données de 10 Go, puis que vous la supprimez immédiatement de votre session avec la fonction `rm()`, il est possible que votre session `R` continue à occuper inutilement 10 Go de mémoire vive, et ce quand bien même votre environnement ` RStudio` vous indique qu'il n'y a aucun objet en mémoire.
@@ -65,9 +65,7 @@ Vous pouvez facilement superviser votre session `R` avec le **gestionnaire des t
 
 ### Ouvrir le gestionnaire des tâches
 
-Le gestionnaire des tâches est une application installée sur toutes les machines
-Windows. Son équivalent Linux est `htop`. Le gestionnaire des tâches est
-généralement accessible avec le raccourci bien connu
+Le gestionnaire des tâches est une application installée sur toutes les machines Windows. Son équivalent Linux est `htop`. Le gestionnaire des tâches est généralement accessible avec le raccourci bien connu
 <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>Suppr</kbd>.
 
 ::: {.callout-insee .icon}
@@ -101,12 +99,12 @@ Voici trois références à garder en tête pour superviser votre session `R` :
 - **Votre utilisation de la mémoire vive est excessive lorsqu'elle dépasse durablement 50 Go alors que vous ne réalisez pas de traitement.** Vous pouvez évidemment utiliser beaucoup plus de mémoire pendant un traitement particulièrement lourd.
 - **Votre utilisation des processeurs est excessive lorsqu'elle dépasse durablement 25%.**
 
-### Que faire en cas de saturation ?
-
-Il faut ouvrir un ticket Si\@moi pour signaler un problème de saturation à l'assistance informatique dans les deux cas suivants :
+::: {.callout-insee .icon}
+En cas de saturation, il faut ouvrir un ticket Si\@moi pour signaler un problème de saturation à l'assistance informatique dans les deux cas suivants :
 
 - l'ensemble du serveur est durablement saturé (plus de 15 minutes) ;
 - votre session `R` fait un usage excessif des ressources informatiques et vous ne parvenez pas à arrêter votre traitement.
+:::
 
 ## Comment limiter la consommation de mémoire vive avec `R` ?
 
@@ -172,9 +170,9 @@ utilitr::include_image("../pics/utiliser_ressources/gc_gui2.png", compression = 
 Voici deux remarques sur la fonction `gc()` :
 
 - Plus la session `R` occupe de mémoire vive, plus la fonction `gc()` met de temps à nettoyer la mémoire. Ce nettoyage peut prendre jusqu'à plusieurs minutes si vous manipulez des données volumineuses.
-- Certaines ressources documentaires sur `R` affirment qu'il est inutile de se servir de `gc()` car `R` nettoie automatiquement la mémoire vive lorsqu'elle est presque saturée. Ceci est vrai lorsque vous utilisez `R` sur votre poste local (et où il n'y a qu'une seule session `R`). En revanche, ce n'est pas vrai dans le cas où plusieurs sessions `R` partagent la mémoire vive comme dans AUS (car votre session `R` ne peut déclencher le nettoyage de la mémoire vive dans la session `R` d'un autre agent).
+- Certaines ressources documentaires sur `R` affirment qu'il est inutile de se servir de `gc()` car `R` nettoie automatiquement la mémoire vive lorsqu'elle est presque saturée. Ceci est vrai lorsque vous utilisez `R` sur votre poste local (et où il n'y a qu'une seule session `R`). En revanche, ce n'est pas vrai dans le cas où plusieurs sessions `R` partagent la mémoire vive (car votre session `R` ne peut déclencher le nettoyage de la mémoire vive dans la session `R` d'un autre utilisateur).
 :::
 
-### Et si tout cela ne suffit pas ?
-
+::: {.callout-insee .icon}
 Les conseils et les bonnes pratiques présentés dans cette fiche devraient suffire à résoudre la plupart des problèmes de saturation que vous pourriez rencontrer. Toutefois, il est possible que cela ne suffise pas, parce que vos traitements requièrent des ressources informatiques particulièrement importantes. En ce cas, il faut déposer une demande métier dans Si\@moi.
+:::
