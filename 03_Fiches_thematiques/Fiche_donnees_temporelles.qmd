@@ -34,9 +34,9 @@ install.packages(c("ggplot2", "dygraphs"))
 ```
 :::
 
-::: {.callout-remarque .icon}
+::: {.callout-caution}
 -   La fonction `as.Date()`{.r} existe dans les packages `base` et
-    `zoo`, mais n'a pas la même fonctionnalité. A chaque fois qu'elle
+    `zoo`, mais n'a pas la même fonctionnalité. À chaque fois qu'elle
     sera utilisée, on précisera son package d'origine au moyen de `::`
     (`base::as.Date()`{.r} ou `zoo::as.Date()`{.r}).
 :::
@@ -58,7 +58,7 @@ alors spécifier les heures, les minutes, les secondes.
 
 ### Les séries temporelles
 
-Une série temporelle est une données indexée sur le temps. Généralement
+Une série temporelle est une données indexées sur le temps. Généralement
 on parle de séries mensuelles lorsque le pas entre chaque date est un
 mois mais on parle aussi de données annuelles, trimestrielles ou
 journalières voire plus haute fréquence.
@@ -72,7 +72,7 @@ Pour créer une date en R, il suffit de faire appel à la fonction
 correspond au format américain :
 
 ```{r}
-M.Drucker_birth <- base::as.Date(x = "1942-09-12")
+M_Drucker_birth <- base::as.Date(x = "1942-09-12")
 ```
 
 Il suffit de le changer pour créer une date à partir d'un autre format :
@@ -120,7 +120,7 @@ heure_en_france <- as.POSIXct(x = pied_sur_la_lune, tz = "Europe/Paris")
 heure_los_angeles <- as.POSIXct(x = pied_sur_la_lune, tz = "America/Los_Angeles")
 ```
 
-Pour connaitre la liste des différents fuseaux horaires, il faut appeler
+Pour connaître la liste des différents fuseaux horaires, il faut appeler
 la fonction `OlsonNames()`{.r} (du nom de l'Olson Database).
 
 ### Gérer les changements d'heure
@@ -203,10 +203,10 @@ Les normes ISO8601 et RFC3339 sont des conventions de représentation des
 dates. Selon ces 2 normes, certains formats de dates sont acceptés ou
 non.
 
-Par exemple, voici quelques format représentant la date du 24 mai 2023 à
+Par exemple, voici quelques formats représentant la date du 24 mai 2023 à
 8h43 (UTC) :
 
--   `"2023-05-24T08:43:00Z"`{.r} est un format accepté par ces 2 normes.
+-   `"2023-05-24T08:43:00Z"`{.r} ou `"2023-05-24T08:43:00+08:00"`{.r} sont des formats acceptés par ces 2 normes.
 -   `"2023-05-24t08:43:00z"`{.r} est un format accepté uniquement par la
     norme RFC3339.
 -   `"2023-05-24T08:43Z"`{.r} est un format accepté uniquement par la
@@ -222,7 +222,7 @@ date au format ISO8601
 ```{r, warning = FALSE}
 library("parsedate")
 
-parse_iso_8601("2023-05-24T08:43:00Z") # Accepté par ISO8601
+parse_iso_8601("2023-05-24T08:43:00+08:00") # Accepté par ISO8601
 parse_iso_8601("2023-05-24t08:43:00z") # Refusé par ISO8601
 parse_iso_8601("2023-05-24T08:43Z") # Accepté par ISO8601
 ```
@@ -294,10 +294,10 @@ seq(from = time2, to = time3, by = "sec")
 Le objets de classe `difftime` représentent des durées.
 
 ```{r}
-age <- Sys.Date() - M.Drucker_birth
+age <- Sys.Date() - M_Drucker_birth
 print(age)
 
-difftime(Sys.Date(), M.Drucker_birth)
+difftime(Sys.Date(), M_Drucker_birth)
 
 # Changement d'heure
 heure_hiver <- as.POSIXct(x = "2023-03-26 01:00", tz = "Europe/Paris")
@@ -395,7 +395,7 @@ serie_trimestrielle <- ts(21:40, end = 2023L, frequency = 4L)
 serie_mensuelle <- ts(41:60, start = 2020L, frequency = 12L)
 ```
 
-::: {.callout-remarque .icon}
+::: {.callout-caution}
 ⚠️ Attention ⚠️
 
 La fonction `ts()`{.r} du package `stats` n'est pas faite pour
@@ -415,7 +415,7 @@ Les arguments `start` et `end` doivent être au format `AAAA`,
 -   et `PP` le numéro de la période (dépendant de la fréquence)
 -   et `T` la fréquence de la série
 
-Plus d'information sur la page d'aide de la fonction `start()`{.r}
+Plus d'informations sur la page d'aide de la fonction `start()`{.r}
 (accessible via `help(start)`{.r}).
 
 Ces formats ne sont lisibles qu'avec la fréquence.
@@ -500,8 +500,7 @@ Plusieurs packages permettent l'affichage des séries temporelles.
 ### Classique `plot()`{.r}
 
 La fonction `plot()`{.r} du package `graphics` (méthode `plot.ts()`{.r}
-du package `stats`) permet d'e multiples visualisations'afficher
-simplement des séries temporelles :
+du package `stats`) permet d'afficher simplement des séries temporelles :
 
 ```{r plot}
 plot(x = tour_de_france_ts, col = "blue", 
@@ -513,7 +512,7 @@ plot(x = temp_ts, col = "red",
 
 ### Package `ggplot2`
 
-Le package `ggplot2` propose une grande variété de graphes. Il est
+Le package `ggplot2` propose une grande variété de graphiques. Il est
 nécessaire au préalable de convertir l'objet en `data.frame` pour
 construire le graphique.
 
@@ -526,7 +525,7 @@ ggplot(sunspots_df, aes(x=date, y=value)) +
   geom_line()
 ```
 
-Pour plus d'information sur l'utilisation de `ggplot2`, voir la [fiche
+Pour plus d'informations sur l'utilisation de `ggplot2`, voir la [fiche
 sur les
 graphiques](https://www.book.utilitr.org/03_fiches_thematiques/fiche_graphiques)
 
@@ -552,7 +551,7 @@ dygraph(cbind(fdeaths, mdeaths))
 
 -   [Formats acceptés par les normes ISO8601 et
     RFC3339](https://github.com/IJMacD/rfc3339-iso8601) ;
--   [Gallerie de graphique avec
+-   [Galerie de graphique avec
     `dygraph`](https://r-graph-gallery.com/317-time-series-with-the-dygraphs-library.html)
     ;
 -   [Manuel d'utilisation package
