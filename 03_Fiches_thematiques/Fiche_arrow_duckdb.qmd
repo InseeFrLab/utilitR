@@ -1,0 +1,75 @@
+# Manipuler des données avec `arrow` et `duckdb` {#arrow-duckdb}
+
+
+## Tâches concernées et recommandations
+
+L'utilisateur souhaite XXXXXX.
+
+::: {.callout-recommandation .icon}
+
+XXXXXX
+:::
+
+::: {.callout-remarque .icon}
+Les données sont volumineuses + 
+Il y a un coût d'entrée.
+:::
+
+::: {.callout-conseil .icon}
+Il est fortement recommandé de lire les fiches Parquet et dplyr avant de lire cette fiche.
+:::
+
+
+## Présentation des _packages_ `arrow` et `duckdb`
+
+### Qu'est-ce qu'`arrow`?
+
+Apache `arrow` est un projet _open-source_ qui propose une représentation standardisée des données tabulaires en mémoire vive, qui est à la fois efficace (les traitements sont rapides), interopérable (différents langages de programmation peuvent accéder aux mêmes données, sans conversion des données dans un autre format) et indépendante du langage de programmation utilisé. Un point important à retenir est donc que __`arrow` n'est pas un outil spécifique à `R`__, et il faut bien distinguer le projet `arrow` du _package_ `R` `arrow`. Ce _package_ propose simplement une interface qui permet d'utiliser le projet `arrow` avec `R`, et il existe d'autres interfaces pour se servir d'`arrow` avec d'autres langages: en Python, en Java, en Javascript, en Julia, etc.
+
+
+### Spécificités de `arrow`
+
+Le projet `arrow` présente cinq spécificités:
+
+- Représentation des données en mémoire: `arrow` organise les données en colonnes plutôt qu'en lignes (on parle de _columnar format_). Concrètement, cela veut dire que dans la RAM toutes les valeurs de la première colonne sont stockées de façon contiguë, puis les valeurs de la deuxième colonne, etc. Cette structuration des données rend les traitements très efficaces: si l'on veut par exemple calculer la moyenne d'une variable, `arrow` va accéder directement au bloc de mémoire vive qui contient cette colonne (indépendamment des autres colonnes de la table de données), d'où un traitement très rapide.
+
+- Utilisation avec Parquet : `arrow` est souvent utilisé pour manipuler des données stockées en format Parquet. Parquet est un format de stockage orienté colonne conçu pour être très rapide en lecture (voir la fiche [Importer des fichiers Parquet](#importparquet) pour plus de détails). `arrow` est optimisé pour travailler sur des fichiers Parquet, notamment lorsqu'ils contiennent des données très volumineuses.
+
+- Traitement de données volumineuses: `arrow` est conçu pour traiter des données sans avoir besoin de les charger dans la mémoire vive. Cela signifie qu'`arrow` est capable de traiter des données très volumineuses, plus grosses que la mémoire vive dont on dispose. C'est un avantage majeur en comparaison aux autres approches possibles en `R` (`data.table` et `dplyr` par exemple).
+
+- Interopérabilité : `arrow` est conçu pour être interopérable entre plusieurs langages de programmation tels que `R`, Python, Java, C++, etc. Cela signifie que les données peuvent être échangées entre ces langages sans avoir besoin de convertir les données, d'où des gains importants de temps et de performance.
+
+- _Lazy Evaluation_: `arrow` prend en charge la _lazy evaluation_ (évaluation différée) dans certains contextes. Cela signifie que les traitements ne sont effectivement exécutés que lorsqu'ils sont nécessaires, ce qui peut améliorer les performances en évitant le calcul de résultats intermédiaires non utilisés.
+
+### A quoi sert le _package_ `arrow`?
+
+Du point de vue d'un statisticien utilisant `R`, le _package_ `arrow` permet de faire trois choses:
+
+- Importer des données (exemples: fichiers CSV, fichiers Parquet, stockage S3) et les stocker en mémoire vive en format `arrow`;
+- Manipuler des données en format `arrow` selon la syntaxe `dplyr` ou en SQL (grâce à `duckdb`);
+- Stocker des données en format Parquet.
+
+
+## Comment utiliser `arrow`?
+
+- la différence entre grammaire de traitement et moteur d'exécution;
+- lazy evaluation avec arrow;
+- La différence compute()/collect();
+- la différence entre charger les données avec `read_parquet` et `open_dataset`;
+- La liste des fonctions connues par Acero;
+- les fonctions définies par l'utilisateur (utilisation avancée)
+- il est essentiel de rester en ArrowTable si on manipule des données volumineuses;
+- l'interface arrow/duckdb
+- l'utilisation de `duckdb` en plain SQL ou via `dbplyr`;
+
+
+
+### Introduction
+
+## Pour en savoir plus {#RessourcesArrow}
+
+- la doc [`arrow`](xxx) ;
+- la doc [`duckdb`](xxx) ;
+- diverses ressources à citer.
+
+
