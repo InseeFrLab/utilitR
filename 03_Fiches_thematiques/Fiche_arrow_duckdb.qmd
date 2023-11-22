@@ -24,7 +24,7 @@ Apprendre à bien utiliser `arrow` n'est ni simple ni rapide, car cela nécessit
 
 ### Qu'est-ce qu'`arrow`?
 
-Apache `arrow` est un projet *open-source* qui propose une représentation standardisée des données tabulaires en mémoire vive, qui est à la fois efficace (les traitements sont rapides), interopérable (différents langages de programmation peuvent accéder aux mêmes données, sans conversion des données dans un autre format) et indépendante du langage de programmation utilisé. Un point important à retenir est donc que **`arrow` n'est pas un outil spécifique à `R`**, et il faut bien distinguer le projet `arrow` du *package* `R` `arrow`. Ce *package* propose simplement une interface qui permet d'utiliser le projet `arrow` avec `R`, et il existe d'autres interfaces pour se servir d'`arrow` avec d'autres langages: en Python, en Java, en Javascript, en Julia, etc.
+Apache `arrow` est un projet *open-source* qui propose une représentation standardisée des données tabulaires en mémoire vive, qui est à la fois efficace (les traitements sont rapides), interopérable (différents langages de programmation peuvent accéder aux mêmes données, sans conversion des données dans un autre format) et indépendante du langage de programmation utilisé. Ce projet prend la forme d'une librairie C++ nommée `libarrow`. Un point important à retenir est donc que **`arrow` n'est pas un outil spécifique à `R`**, et il faut bien distinguer le projet `arrow` (et la librairie C++ `libarrow`) du *package* `R` `arrow`. Ce *package* propose simplement une interface qui permet d'utiliser la librairie `libarrow` avec `R`, et il existe d'autres interfaces pour se servir de `libarrow` avec d'autres langages: en Python, en Java, en Javascript, en Julia, etc.
 
 ### Spécificités de `arrow`
 
@@ -44,8 +44,8 @@ Le projet `arrow` présente cinq spécificités:
 
 Du point de vue d'un statisticien utilisant `R`, le *package* `arrow` permet de faire trois choses:
 
--   Importer des données (exemples: fichiers CSV, fichiers Parquet, stockage S3) et les stocker en mémoire vive en format `arrow`;
--   Manipuler des données en format `arrow` selon la syntaxe `dplyr`, ou avec le langage SQL (grâce à `duckdb`);
+-   Importer des données (exemples: fichiers CSV, fichiers Parquet, stockage S3) et les organiser en mémoire vive dans un objet `Arrow Table`;
+-   Manipuler des données organisées dans un `Arrow Table` avec la syntaxe `dplyr`, ou avec le langage SQL (grâce à `duckdb`);
 -   Écrire des données en format Parquet.
 
 ### Quels sont les avantages d'`arrow`?
@@ -83,7 +83,7 @@ arrow::set_cpu_count(parallel::detectCores() %/% 2)
 
 **Le *package*`arrow` structure les données non pas dans un `data.frame` classique, mais dans un objet spécifique à `arrow`: le `Arrow Table`.** Dans un objet `Arrow Table`, les données sont organisées en colonnes plutôt qu'en lignes, conformément aux spécifications d'`arrow` (voir la présentation d'`arrow` ci-dessus). Pour convertir un `data.frame` en `Arrow Table`, il suffit d'utiliser la fonction `as_arrow_table()`.
 
-Par rapport à un `data.frame` standard ou à un `tibble`, le `Arrow Table` se distingue immédiatement sur trois points. Pour illustrer ces différences, on utilise la base permanente des équipements 2018 (table `bpe_ens_2018`), transformée en `tibble` d'une part et en `Arrow Table` d'autre part.
+Par rapport à un `data.frame` standard ou à un `tibble`, le `Arrow Table` se distingue immédiatement sur trois points. Pour illustrer ces différences, on utilise la base permanente des équipements 2018 (table `bpe_ens_2018`), transformée en `tibble` d'une part, et en `Arrow Table` d'autre part.
 
 ```{r}
 # Charger les données et les convertir en tibble
@@ -124,33 +124,33 @@ View(extrait_bpe)
 
 ### Manipuler des `Arrow Table` avec la syntaxe `dplyr`
 
-__Le _package_ `R` `arrow` a été écrit de façon à ce qu'un `Arrow Table` puisse être manipulé avec les fonctions de `dplyr` (`select`, `filter`, `mutate`, `left_join`, etc.), comme s'il cette table était un `data.frame` ou `tibble` standard.__ Il est également possible d'utiliser sur un `Arrow Table` un certain nombre de fonctions des _packages_ du `tidyverse` (comme `stringr` et `lubridate`). Cela s'avère très commode en pratique, car lorsqu'on sait utiliser `dplyr` et le `tidyverse`, on peut commencer à utiliser `arrow` sans avoir à apprendre une nouvelle syntaxe de manipulation de données.
+__Le _package_ `R` `arrow` a été écrit de façon à ce qu'un `Arrow Table` puisse être manipulé avec les fonctions de `dplyr` (`select`, `filter`, `mutate`, `left_join`, etc.), comme si cette table était un `data.frame` ou `tibble` standard.__ Il est également possible d'utiliser sur un `Arrow Table` un certain nombre de fonctions des _packages_ du `tidyverse` (comme `stringr` et `lubridate`). Cela s'avère très commode en pratique, car lorsqu'on sait utiliser `dplyr` et le `tidyverse`, on peut commencer à utiliser `arrow` sans avoir à apprendre une nouvelle syntaxe de manipulation de données.
 
-Voici un exemple dans lequel on calcule le nombre d'équipements par région, à partir d'un `tibble` et à partir d'un `Arrow table`. La seule différence apparente entre les deux traitement est la présence de la fonction `collect()` à la fin des instructions; cette fonction indique que l'on souhaite que le résultat du traitement soit stocké sous la forme d'un `tibble`. La raison d'être de ce `collect()` est expliqué plus loin, dans le paragraphe sur l'évaluation différée.
+Dans l'exemple suivant, on calcule le nombre d'équipements par région, à partir d'un `tibble` et à partir d'un `Arrow table`. La seule différence apparente entre les deux traitement est la présence de la fonction `collect()` à la fin des instructions; cette fonction indique que l'on souhaite que le résultat du traitement soit stocké sous la forme d'un `tibble`. La raison d'être de ce `collect()` est expliqué plus loin, dans le paragraphe sur l'évaluation différée.
 
 <div>
 
 <table class='table' style = "width : 100%;">
-  <tr>
-    <th style="width:50%">Manipulation d'un `tibble`</th>
-    <th style="width:50%">Manipulation d'un `Arrow Table`</th>
-  </tr>
+<tr>
+<th style="width:50%">Manipulation d'un `tibble`</th>
+<th style="width:50%">Manipulation d'un `Arrow Table`</th>
+</tr>
 <td>
 ```{r eval=FALSE,message=FALSE}
 bpe_ens_2018_tbl |>
-	group_by(REG) |>
-	summarise(
-	  NB_EQUIP_TOT = sum(NB_EQUIP)
-	)
+  group_by(REG) |>
+  summarise(
+    NB_EQUIP_TOT = sum(NB_EQUIP)
+  )
 ```
 </td>
 <td>
 ```{r eval=FALSE,message=FALSE}
 bpe_ens_2018_arrow |>
-	group_by(REG) |>
-	summarise(
-	  NB_EQUIP_TOT = sum(NB_EQUIP)
-	) |>
+  group_by(REG) |>
+  summarise(
+    NB_EQUIP_TOT = sum(NB_EQUIP)
+  ) |>
   collect()
 ```
 </td>
@@ -171,21 +171,21 @@ __La grande différence entre manipuler un `tibble` et manipuler un `Arrow Table
 
 <!-- __La grande différence entre `dplyr` et `arrow` tient au moteur d'exécution__: si on manipule un `tibble` avec la syntaxe de `dplyr`, alors c'est le moteur d'exécution de `dplyr` qui fait les calculs; si on manipule un `Arrow Table` avec la syntaxe de `dplyr`, alors les instructions sont automatiquement converties et envoyées au moteur d'exécution d'`arrow` (nommé `acero`), et c'est ce moteur qui fait les calculs. C'est justement parce que le moteur d'exécution d'`arrow` est beaucoup plus efficace que celui de `dplyr` qu'`arrow` est beaucoup plus rapide. __Comprendre cette différence de moteurs d'exécution est essentiel pour bien utiliser `arrow` et résoudre les problèmes qui se présentent lorsqu'on découvre cet outil__. -->
 
-__Cette différence de moteurs d'exécution a une conséquence technique importante__: une fois que l'utilisateur a défini des instructions avec la syntaxe `dplyr`, il est nécessaire que celles-ci soient converties pour que le moteur `acero` (implémenté en C++ et non en `R`) puissent les exécuter. De façon générale, `arrow` fait cette conversion de façon automatique et invisible, car le  _package_ `arrow` contient la traduction C++ de plusieurs centaines de fonctions du `tidyverse`. Par exemple, le _package_ `arrow` contient la traduction C++ de la fonction `filter()` de `dplyr`, ce qui fait que les instructions `filter()` sont automatiquement converties de façon invisible. La liste des fonctions du _tidyverse_ supportés par `acero` est disponible sur [cette page](https://arrow.apache.org/docs/dev/r/reference/acero.html). Il arrive toutefois qu'on veuille utiliser une fonction non supportée par `acero`. Cette situation est décrite dans le paragraphe "Comment utiliser une fonction non supportée par `acero`".
+__Cette différence de moteurs d'exécution a une conséquence technique importante__: une fois que l'utilisateur a défini des instructions avec la syntaxe `dplyr`, il est nécessaire que celles-ci soient converties pour que le moteur `acero` (implémenté en C++ et non en `R`) puissent les exécuter. De façon générale, `arrow` fait cette conversion de façon automatique et invisible, car le  _package_ `arrow` contient la traduction C++ de plusieurs centaines de fonctions du `tidyverse`. Par exemple, le _package_ `arrow` contient la traduction C++ de la fonction `filter()` de `dplyr`, ce qui fait que les instructions `filter()` sont automatiquement converties de façon invisible. La liste des fonctions du _tidyverse_ supportées par `acero` est disponible sur [cette page](https://arrow.apache.org/docs/dev/r/reference/acero.html). Il arrive toutefois qu'on veuille utiliser une fonction non supportée par `acero`. Cette situation est décrite dans le paragraphe "Comment utiliser une fonction non supportée par `acero`".
 
 
 ### L'évaluation différée avec `arrow` (_lazy evaluation_)
 
 __Une caractéristique importante d'`arrow` est qu'il pratique l'évaluation différée (_lazy evaluation_): les calculs ne sont effectivement réalisés que lorsqu'ils sont nécessaires__. En pratique, cela signifie qu'`arrow` se contente de et ne fait aucun calcul tant que l'utilisateur ne le demande pas explicitement. Il existe deux fonctions pour déclencher l'évaluation d'un traitement `arrow`: `collect()` et `compute()`. Ces deux fonctions ont le même effet; la seule différence est que `collect()` renvoie le résultat du traitement sous la forme d'un `tibble`, tandis que `compute()` le renvoie sous la forme d'un `Arrow Table`.
- 
+
 __L'évaluation différée permet d'améliorer les performances en évitant le calcul de résultats intermédiaires inutiles, et en optimisant les requêtes__ pour utiliser le minimum de données et le minimum de ressources. L'exemple suivant illustre l'intérêt de l'évaluation différée dans un cas simple. 
 
 
 ```{r, message=FALSE}
 # Étape 1: compter les équipements par département
 equipements_par_departement <- bpe_ens_2018_arrow |>
-	group_by(DEP) |>
-	summarise(NB_EQUIP_TOT = sum(NB_EQUIP))
+  group_by(DEP) |>
+  summarise(NB_EQUIP_TOT = sum(NB_EQUIP))
 
 # Étape 2: filtrer sur le département
 equipements_par_departement |> filter(DEP == "59") |> collect()
@@ -198,21 +198,23 @@ On pourrait penser que, lorsqu'on exécute l'ensemble de ce traitement, `arrow` 
 
 ## Comment bien utiliser `arrow`?
 
-### Savoir bien utiliser l'évaluation différée
+<!-- ### Savoir bien utiliser l'évaluation différée -->
 
-
-
-
-la différence entre charger les données avec `read_parquet` et `open_dataset`;
+<!-- la différence entre charger les données avec `read_parquet` et `open_dataset`; -->
 
 ### Utiliser des objets `Arrow Table` plutôt que des `tibble`
 
-__Lorsqu'on manipule des données volumineuses, il est essentiel de manipuler uniquement des objets `Arrow Table`, plutôt que des `tibble`__. Cela implique d'utiliser systématiquement `compute()` plutôt que `collect()` dans les étapes de calcul intermédiaires. L'exemple suivant explique pourquoi:
+__Lorsqu'on manipule des données volumineuses, il est essentiel de manipuler uniquement des objets `Arrow Table`, plutôt que des `tibble`__. Cela implique deux recommandations:
+
+- Importer les données directement dans des `Arrow Table`, ou à défaut convertir en `Arrow Table` avec la fonction `as_arrow_table()`. Par exemple, lorsqu'on importe un fichier Parquet avec la fonction `read_parquet`, il est recommandé d'utiliser l'option `as_data_frame = FALSE` pour que les données soient importées dans un `Arrow Table`.
+- Utiliser systématiquement `compute()` plutôt que `collect()` dans les étapes de calcul intermédiaires.
+
+L'exemple suivant explique pourquoi il est préférable d'utiliser `compute()` dans les étapes intermédiaires:
 
 
-- Situation à éviter: la première étape de traitement étant déclenchée par `collect()` (ligne 7), la table intermédiaire `res_intermediaire1` est un `tibble`. Par conséquent, c'est le moteur d'exécution de `dplyr` qui est utilisé pour manipuler `res_intermediaire1` lors de la seconde étape du traitement, ce qui peut dégrader fortement les performances, en particulier si les données sont volumineuses.
+- __Situation à éviter__: la première étape de traitement étant déclenchée par `collect()` (ligne 7), la table intermédiaire `res_intermediaire1` est un `tibble`. Par conséquent, c'est le moteur d'exécution de `dplyr` qui est utilisé pour manipuler `res_intermediaire1` lors de la seconde étape du traitement, ce qui peut dégrader fortement les performances, en particulier si les données sont volumineuses.
 
-- Usage recommandé: la première étape de traitement étant déclenchée par `compute()` (ligne 7), la table intermédiaire `res_intermediaire2` est un `Arrow Table`. Par conséquent, c'est le moteur d'exécution `acero` qui est utilisé pour manipuler `res_intermediaire2` lors de la seconde étape du traitement, ce qui assure de bonnes performances notamment sur données volumineuses.
+- __Usage recommandé__: la première étape de traitement étant déclenchée par `compute()` (ligne 7), la table intermédiaire `res_intermediaire2` est un `Arrow Table`. Par conséquent, c'est le moteur d'exécution `acero` qui est utilisé pour manipuler `res_intermediaire2` lors de la seconde étape du traitement, ce qui assure de bonnes performances notamment sur données volumineuses.
 
 <div>
 
@@ -265,95 +267,148 @@ write_parquet(res_final, "resultats.parquet")
 
 </div>
 
-
-### Comment utiliser une fonction non supportée par `acero`
-
-
-
-### Utiliser une fonction définie par l'utilisateur (utilisation avancée)
-
-
-
-
-
-<div>
-
-<table class='table' style = "width : 100%;">
-  <tr>
-    <th style="width:45%">Code exécuté dans `R`</th>
-    <th style="width:55%">Signification</th>
-  </tr>
-<td>
-```{r eval=FALSE,message=FALSE}
-bpe_ens_2018_arrow  |>
-	group_by(REG) |>
-	summarise(NB_EQUIP_TOT = sum(NB_EQUIP))
-```
-</td>
-<td>Définir une requête calculant le nombre total d'équipements par région (sans l'exécuter)</td> 
-</tr>
-<tr>
-<td>
-```{r eval=FALSE,message=FALSE}
-bpe_ens_2018_arrow  |>
-	group_by(REG) |>
-	summarise(NB_EQUIP_TOT = sum(NB_EQUIP)) |>
-  compute()
-```
-</td>
-<td>Calculer le nombre total d'équipements par région et renvoyer les résultats dans un `Arrow Table`</td> 
-
-</tr>
-<tr>
-<td>
-```{r eval=FALSE,message=FALSE}
-bpe_ens_2018_arrow  |>
-	group_by(REG) |>
-	summarise(NB_EQUIP_TOT = sum(NB_EQUIP)) |>
-  collect()
-```
-</td>
-<td>Calculer le nombre total d'équipements par région et renvoyer les résultats dans un `tibble`</td> 
-</tr>
-</table>
-
-</div>
-
-```{r}
-# Définir une requête calculant le nombre total d'équipements par région (sans l'exécuter)
-bpe_ens_2018_arrow  |>
-	group_by(REG) |>
-	summarise(NB_EQUIP_TOT = sum(NB_EQUIP))
-
-# Calculer le nombre total d'équipements par région et renvoyer un Arrow Table
-bpe_ens_2018_arrow  |>
-	group_by(REG) |>
-	summarise(NB_EQUIP_TOT = sum(NB_EQUIP)) |>
-  compute()
-
-# Calculer le nombre total d'équipements par région et renvoyer un tibble
-bpe_ens_2018_arrow  |>
-	group_by(REG) |>
-	summarise(NB_EQUIP_TOT = sum(NB_EQUIP)) |>
-  collect()
-
-```
-
+::: {.callout-conseil .icon}
+Si vous ne savez plus si une table de données est un `Arrow Table` ou un `tibble`, il suffit d'exécuter `class(le_nom_de_ma_table)`. Si la table est un `Arrow Table`, vous obtiendrez ceci: `"Table"        "ArrowTabular" "ArrowObject"  "R6"`. Si elle est un `tibble`, vous obtiendrez `"tbl_df"     "tbl"        "data.frame"`.
 :::
 
-## Plan de la fiche
+### Connaître les limites d'`arrow`
 
--   FAIT lazy evaluation avec arrow;
--   FAIT La différence compute()/collect();
--   la différence entre charger les données avec `read_parquet` et `open_dataset`;
--   FAIT La liste des fonctions connues par Acero;
--   les fonctions définies par l'utilisateur (utilisation avancée)
--   il est essentiel de rester en ArrowTable avec compute() si on manipule des données volumineuses;
--   l'interface arrow/duckdb
--   l'utilisation de `duckdb` en plain SQL ou via `dbplyr`;
+Le projet `arrow` est relativement récent et en développement actif. Il n'est donc pas surprenant qu'il y ait parfois des bugs, et que certaines fonctions standards de `R` ne soient pas encore disponibles en `arrow`. Il est important de connaître les quelques limites d'`arrow` pour savoir comment les contourner. Voici trois limites d'`arrow` à la date de rédaction de cette fiche (décembre 2023):
+
+- les __jointures de tables volumineuses__: `arrow` ne parvient pas à joindre des tables de données très volumineuses; il est préférable d'utiliser `duckdb` pour ce type d'opération;
+- les __empilements de tables__: il est possible d'empiler plusieurs `tibbles` avec `dplyr` grâce à la fonction `bind_rows()`: `bind_rows(table1, table2, table3, table4)`. En revanche, il n'existe pas à ce jour de fonction similaire dans `arrow`. Les fonctions `union` et `union_all` permettent d'empiler seulement deux `Arrow Table`, donc pour empiler plusieurs `Arrow Tables` il faut appeler plusieurs fois ces fonctions:
+
+    ```{r eval=FALSE,message=FALSE}
+    resultats <- table1 |>
+      union(table2) |>
+      union(table3) |>
+      union(table4) |>
+      compute()
+    ```
+
+- les __réorganisations de données__ (_wide-to-long_ et _long-to-wide_): il n'existe pas à ce jour dans `arrow` de fonctions pour réorganiser une table de données (comme `pivot_wider` et `pivot_longer` du _package_ `tidyr`).
+
+
+
+### Surmonter le problème des fonctions non supportées par `acero`
+
+__Lorsqu'on manipule des données avec `arrow`, il arrive fréquemment qu'on écrive un traitement que le moteur d'exécution `acero` n'arrive pas à exécuter.__ En ce cas, `R` renonce à manipuler les données sous forme de `Arrow Table` avec le moteur `acero`, convertit les données en `tibble` et poursuit le traitement avec le moteur d'exécution de `dplyr` (comme un traitement `dplyr` standard). `R` signale systématiquement le recours à cette solution de repli par un message d'erreur qui se termine par `pulling data into R`. 
+
+Le recours à cette solution de repli a pour conséquence de dégrader fortement les performances (car le moteur de `dplyr` est moins efficace qu'`acero`). __Il est donc préférable d'essayer de réécrire la partie du traitement qui pose problème avec des fonctions supportées par  `acero`.__ Cela est particulièrement recommandé si les données manipulées sont volumineuses ou si le traitement concerné doit être exécuté fréquemment. 
+
+#### Une solution simple existe-t-elle?
+
+Dans la plupart des cas, il est possible de trouver une solution pour écrire un traitement que le moteur `acero` peut exécuter. Voici quelques pistes:
+
+- Vérifier qu'on utilise la dernière version d'`arrow` et mettre à jour le _package_ si ce n'est pas le cas;
+- Étudier en détail le message d'erreur renvoyé par `R` pour bien comprendre d'où vient le problème;
+- Regarder la [liste des fonctions du _tidyverse_ supportées par `acero`](https://arrow.apache.org/docs/dev/r/reference/acero.html) pour voir s'il est possible d'utiliser une fonction supportée par `acero`;
+- Faire des tests pour pour voir si une réécriture mineure du traitement peut régler le problème.
+
+L'exemple qui suit montre comment on peut parfois trouver une solution très simple. Dans cet exemple, on veut calculer le nombre de boulangeries (`TYPEQU == "B203"`) et de poissonneries (`TYPEQU == "B206"`) dans chaque département, en stockant les résultats dans un `Arrow Table` (avec `compute()`). Malheureusement, `acero` ne parvient pas à réaliser ce traitement, et `R` est contraint de convertir les données en `tibble`.
+
+```{r eval=FALSE,message=FALSE}
+resultats <- bpe_ens_2018_arrow |>
+  group_by(DEP) |>
+  summarise(
+    nb_boulangeries  = sum(NB_EQUIP * (TYPEQU == "B203")),
+    nb_poissonneries = sum(NB_EQUIP * (TYPEQU == "B206"))
+  ) |>
+  compute()
+```
+
+Le message d'erreur renvoyé par `R` est la suivante: `! NotImplemented: Function 'multiply_checked' has no kernel matching input types (double, bool); pulling data into `. En lisant attentivement le message d'erreur et en le rapprochant du traitement, on finit par comprendre que l'erreur vient de l'opération `sum(NB_EQUIP * (TYPEQU == "B203"))`: `arrow` ne parvient pas à faire la multiplication entre `NB_EQUIP` (un nombre réel) et `(TYPEQU == "B203")` (un booléen). La solution est très simple: il suffit de convertir `(TYPEQU == "B203")` en nombre entier avec la fonction `as.integer()` qui est supportée par `acero`. Le code suivant peut alors être entièrement exécuté par `acero`:
+
+```{r eval=FALSE,message=FALSE}
+resultats <- bpe_ens_2018_arrow |>
+  group_by(DEP) |>
+  summarise(
+    nb_boulangeries  = sum(NB_EQUIP * as.integer(TYPEQU == "B203")),
+    nb_poissonneries = sum(NB_EQUIP * as.integer(TYPEQU == "B206"))
+  ) |>
+  compute()
+```
+
+#### Définir soi-même des fonctions `arrow` (utilisation avancée)
+
+Si les pistes mentionnées précédemment ne fournissent pas de solution simple, il est possible d'aller plus loin et d'écrire ses propres fonctions `arrow`. Cette approche permet de faire beaucoup plus de choses mais elle nécessite de bien comprendre le fonctionnement d'`arrow` et les fonctions internes de la librairie `libarrow`. Il s'agit d'une utilisation avancée d'`arrow` qui dépasse le cadre de la documentation `utilitR`. Les lecteurs intéressés pourront consulter les deux ressources suivantes:
+
+- [un post de blog qui décrit en détail les liens entre `libarrow` et `R`](https://blog.djnavarro.net/posts/2022-01-18_binding-arrow-to-r/) (en anglais); 
+- la partie du [`Apache Arrow R Cookbook`](https://arrow.apache.org/cookbook/r/manipulating-data---tables.html#use-arrow-functions-in-dplyr-verbs-in-arrow) qui porte sur les `Arrow functions`.
+
+
+
+<!-- <div> -->
+
+<!-- <table class='table' style = "width : 100%;"> -->
+<!-- <tr> -->
+<!-- <th style="width:45%">Code exécuté dans `R`</th> -->
+<!-- <th style="width:55%">Signification</th> -->
+<!-- </tr> -->
+<!-- <td> -->
+<!-- ```{r eval=FALSE,message=FALSE} -->
+<!-- bpe_ens_2018_arrow  |> -->
+<!--   group_by(REG) |> -->
+<!--   summarise(NB_EQUIP_TOT = sum(NB_EQUIP)) -->
+<!-- ``` -->
+<!-- </td> -->
+<!-- <td>Définir une requête calculant le nombre total d'équipements par région (sans l'exécuter)</td>  -->
+<!-- </tr> -->
+<!-- <tr> -->
+<!-- <td> -->
+<!-- ```{r eval=FALSE,message=FALSE} -->
+<!-- bpe_ens_2018_arrow  |> -->
+<!--   group_by(REG) |> -->
+<!--   summarise(NB_EQUIP_TOT = sum(NB_EQUIP)) |> -->
+<!--   compute() -->
+<!-- ``` -->
+<!-- </td> -->
+<!-- <td>Calculer le nombre total d'équipements par région et renvoyer les résultats dans un `Arrow Table`</td>  -->
+
+<!-- </tr> -->
+<!-- <tr> -->
+<!-- <td> -->
+<!-- ```{r eval=FALSE,message=FALSE} -->
+<!-- bpe_ens_2018_arrow  |> -->
+<!--   group_by(REG) |> -->
+<!--   summarise(NB_EQUIP_TOT = sum(NB_EQUIP)) |> -->
+<!--   collect() -->
+<!-- ``` -->
+<!-- </td> -->
+<!-- <td>Calculer le nombre total d'équipements par région et renvoyer les résultats dans un `tibble`</td>  -->
+<!-- </tr> -->
+<!-- </table> -->
+
+<!-- </div> -->
+
+<!-- ```{r} -->
+<!-- # Définir une requête calculant le nombre total d'équipements par région (sans l'exécuter) -->
+<!-- bpe_ens_2018_arrow  |> -->
+<!--   group_by(REG) |> -->
+<!--   summarise(NB_EQUIP_TOT = sum(NB_EQUIP)) -->
+
+<!-- # Calculer le nombre total d'équipements par région et renvoyer un Arrow Table -->
+<!-- bpe_ens_2018_arrow  |> -->
+<!--   group_by(REG) |> -->
+<!--   summarise(NB_EQUIP_TOT = sum(NB_EQUIP)) |> -->
+<!--   compute() -->
+
+<!-- # Calculer le nombre total d'équipements par région et renvoyer un tibble -->
+<!-- bpe_ens_2018_arrow  |> -->
+<!--   group_by(REG) |> -->
+<!--   summarise(NB_EQUIP_TOT = sum(NB_EQUIP)) |> -->
+<!--   collect() -->
+
+<!-- ``` -->
+
+<!-- ::: -->
 
 ## Pour en savoir plus {#RessourcesArrow}
 
--   la doc [`arrow`](xxx) ;
--   la doc [`duckdb`](xxx) ;
--   diverses ressources à citer.
+- documentation:
+    - la doc [`arrow`](xxx) (en anglais);
+    - [un post de blog qui décrit en détail les liens entre `libarrow` et `R`](https://blog.djnavarro.net/posts/2022-01-18_binding-arrow-to-r/) (en anglais); 
+
+
+- tutoriels:
+    - 
