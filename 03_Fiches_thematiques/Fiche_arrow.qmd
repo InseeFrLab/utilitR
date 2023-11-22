@@ -1,21 +1,24 @@
-# Manipuler des données avec `arrow` et `duckdb` {#arrow-duckdb}
+# Manipuler des données avec `arrow` {#arrow}
 
 ## Tâches concernées et recommandations
 
 L'utilisateur souhaite manipuler des données structurées sous forme de `data.frame` (sélectionner des variables, sélectionner des observations, créer des variables, joindre des tables).
 
 ::: {.callout-recommandation .icon}
--   Pour des tables de données de taille petite et moyenne (inférieure à 1 Go ou moins d'un million d'observations), il est recommandé d'utiliser les *packages* `tibble`, `dplyr` et `tidyr` qui sont présentés dans la fiche [Manipuler des données avec le `tidyverse`](#tidyverse);
+- Pour des tables de données de taille petite et moyenne (inférieure à 1 Go ou moins d'un million d'observations), il est recommandé d'utiliser les *packages* `tibble`, `dplyr` et `tidyr` qui sont présentés dans la fiche [Manipuler des données avec le `tidyverse`](#tidyverse);
 
--   Pour des tables de données de grande taille (plus de 1 Go ou plus d'un million d'observations), il est recommandé d'utiliser soit le *package* `data.table` qui fait l'objet de la fiche [Manipuler des données avec `data.table`](#datatable), soit les *packages* `arrow` et `duckdb` qui font l'objet de la présente fiche.
+- Pour des tables de données de grande taille (plus de 1 Go ou plus d'un million d'observations), il est recommandé d'utiliser soit le *package* `data.table` qui fait l'objet de la fiche [Manipuler des données avec `data.table`](#datatable), soit le *package* `arrow` qui fait l'objet de la présente fiche, avec éventuellement `duckdb` en complément.
 
--   Il est essentiel de travailler avec la dernière version d'`arrow`, de `duckdb` et de `R` car les *packages* `arrow` et `duckdb` sont en cours de développement.
+- Il est essentiel de travailler avec la dernière version d'`arrow`, de `duckdb` et de `R` car les *packages* `arrow` et `duckdb` sont en cours de développement.
+
+- Lorsqu'on manipule des données volumineuses, il est essentiel de manipuler uniquement des objets `Arrow Table`, plutôt que des `tibble`. Cela implique d'utiliser la fonction `compute()` plutôt que `collect()` dans les traitements intermédiaires.
+
 :::
 
 ::: {.callout-remarque .icon}
 Apprendre à bien utiliser `arrow` n'est ni simple ni rapide, car cela nécessite une bonne compréhension du fonctionnement de `R` et de `arrow`.
 
--   Il est indispensable de lire les fiches [Importer des fichiers Parquet](#importparquet) et [Manipuler des données avec le `tidyverse`](#tidyverse) avant de lire cette fiche.
+-   Il est indispensable de lire les fiches [Importer des fichiers Parquet](#importparquet) et [Manipuler des données avec le `tidyverse`](#tidyverse) avant de lire la présente fiche.
 -   Il est complètement normal de rencontrer des erreurs difficiles à comprendre lorsqu'on commence à utiliser `arrow`, il ne faut donc pas se décourager.
 -   Il ne faut pas hésiter à demander de l'aide à des collègues, ou à poser des questions sur les salons Tchap adaptés (le salon Langage `R` par exemple).
 :::
