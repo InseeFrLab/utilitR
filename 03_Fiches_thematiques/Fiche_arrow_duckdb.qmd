@@ -139,14 +139,18 @@ Voici un exemple dans lequel on calcule le nombre d'équipements par région, à
 ```{r eval=FALSE,message=FALSE}
 bpe_ens_2018_tbl |>
 	group_by(REG) |>
-	summarise(NB_EQUIP_TOT = sum(NB_EQUIP))
+	summarise(
+	  NB_EQUIP_TOT = sum(NB_EQUIP)
+	)
 ```
 </td>
 <td>
 ```{r eval=FALSE,message=FALSE}
 bpe_ens_2018_arrow |>
 	group_by(REG) |>
-	summarise(NB_EQUIP_TOT = sum(NB_EQUIP)) |>
+	summarise(
+	  NB_EQUIP_TOT = sum(NB_EQUIP)
+	) |>
   collect()
 ```
 </td>
@@ -196,13 +200,71 @@ On pourrait penser que, lorsqu'on exécute l'ensemble de ce traitement, `arrow` 
 
 ### Savoir bien utiliser l'évaluation différée
 
+
+
+
 la différence entre charger les données avec `read_parquet` et `open_dataset`;
 
 ### Utiliser des objets `Arrow Table` plutôt que des `tibble`
 
+__Lorsqu'on manipule des données volumineuses, il est essentiel de manipuler uniquement des objets `Arrow Table`, plutôt que des `tibble`__. Cela implique d'utiliser systématiquement `compute()` plutôt que `collect()` dans les étapes de calcul intermédiaires. L'exemple suivant explique pourquoi:
 
 
-il est essentiel de rester en ArrowTable avec compute() si on manipule des données volumineuses;
+- Situation à éviter: la première étape de traitement étant déclenchée par `collect()` (ligne 7), la table intermédiaire `res_intermediaire1` est un `tibble`. Par conséquent, c'est le moteur d'exécution de `dplyr` qui est utilisé pour manipuler `res_intermediaire1` lors de la seconde étape du traitement, ce qui peut dégrader fortement les performances, en particulier si les données sont volumineuses.
+
+- Usage recommandé: la première étape de traitement étant déclenchée par `compute()` (ligne 7), la table intermédiaire `res_intermediaire2` est un `Arrow Table`. Par conséquent, c'est le moteur d'exécution `acero` qui est utilisé pour manipuler `res_intermediaire2` lors de la seconde étape du traitement, ce qui assure de bonnes performances notamment sur données volumineuses.
+
+<div>
+
+<table class='table' style = "width : 100%;">
+<tr>
+<th style="width:50%"> __Situation à éviter__: `collect()` dans les étapes intermédiaires </th>
+<th style="width:50%"> __Usage recommandé__: `compute()` dans les étapes intermédiaires </th>
+</tr>
+<tr>
+<td>
+```{r eval=FALSE,message=FALSE, `code-line-numbers` = "1"}
+# Etape 1
+res_intermediaire1 <- bpe_ens_2018_tbl |>
+  group_by(DEP) |>
+  summarise(
+    NB_EQUIP_TOT = sum(NB_EQUIP)
+  ) |>
+  collect()
+
+# Etape 2
+res_final <- res_intermediaire1 |> 
+  filter(DEP == "59") |> 
+  collect()
+
+# Sauvegarder les résultats
+write_parquet(res_final, "resultats.parquet")
+```
+</td>
+<td>
+```{r eval=FALSE,message=FALSE, `code-line-numbers` = "1"}
+# Etape 1
+res_intermediaire2 <- bpe_ens_2018_tbl |>
+  group_by(DEP) |>
+  summarise(
+    NB_EQUIP_TOT = sum(NB_EQUIP)
+  ) |>
+  compute()
+
+# Etape 2
+res_final <- res_intermediaire2 |> 
+  filter(DEP == "59") |> 
+  compute()
+
+# Sauvegarder les résultats
+write_parquet(res_final, "resultats.parquet")
+```
+</td>
+</tr>
+</table>
+
+</div>
+
 
 ### Comment utiliser une fonction non supportée par `acero`
 
