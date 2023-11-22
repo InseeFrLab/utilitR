@@ -11,7 +11,7 @@ L'utilisateur souhaite manipuler des données structurées sous forme de `data.f
 
 - Il est essentiel de travailler avec la dernière version d'`arrow`, de `duckdb` et de `R` car les *packages* `arrow` et `duckdb` sont en cours de développement.
 
-- Lorsqu'on manipule des données volumineuses, il est essentiel de manipuler uniquement des objets `Arrow Table`, plutôt que des `tibble`. Cela implique d'utiliser la fonction `compute()` plutôt que `collect()` dans les traitements intermédiaires.
+- Si les données traitées sont très volumineuses (plus de 10 Go ou plus de 10 millions d'observations), il est essentiel de manipuler uniquement des objets `Arrow Table`, plutôt que des `tibbles`. Cela implique notamment d'utiliser la fonction `compute()` plutôt que `collect()` dans les traitements intermédiaires.
 
 :::
 
@@ -205,9 +205,9 @@ On pourrait penser que, lorsqu'on exécute l'ensemble de ce traitement, `arrow` 
 
 <!-- la différence entre charger les données avec `read_parquet` et `open_dataset`; -->
 
-### Utiliser des objets `Arrow Table` plutôt que des `tibble`
+### Utiliser des objets `Arrow Table` plutôt que des `tibbles`
 
-__Lorsqu'on manipule des données volumineuses, il est essentiel de manipuler uniquement des objets `Arrow Table`, plutôt que des `tibble`__. Cela implique deux recommandations:
+__Lorsqu'on manipule des données volumineuses, il est essentiel de manipuler uniquement des objets `Arrow Table`, plutôt que des `tibbles`__. Cela implique deux recommandations:
 
 - Importer les données directement dans des `Arrow Table`, ou à défaut convertir en `Arrow Table` avec la fonction `as_arrow_table()`. Par exemple, lorsqu'on importe un fichier Parquet avec la fonction `read_parquet`, il est recommandé d'utiliser l'option `as_data_frame = FALSE` pour que les données soient importées dans un `Arrow Table`.
 - Utiliser systématiquement `compute()` plutôt que `collect()` dans les étapes de calcul intermédiaires.
