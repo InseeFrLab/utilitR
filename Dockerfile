@@ -1,4 +1,4 @@
-FROM inseefrlab/onyxia-rstudio:latest
+FROM inseefrlab/onyxia-rstudio:r4.2.3
 
 # R packages 
 COPY ./DESCRIPTION /tmp/build_image/
@@ -45,18 +45,3 @@ RUN wget https://dl.min.io/client/mc/release/linux-amd64/mc -O /usr/local/bin/mc
     chmod +x /usr/local/bin/mc
 
 
-# update quarto
-
-# RUN QUARTO_VERSION="1.2.335" && \
-#     QUARTO_DL_URL="https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.deb" && \
-#     wget -q ${QUARTO_DL_URL} -O quarto.deb && \
-#     sudo dpkg -i quarto.deb && \
-#     quarto check install
-
-
-
-# Change right permissions (see https://github.com/rocker-org/rocker-versioned/issues/104)
-# RUN  chown -R root:staff /opt/texlive \
-#   && chown -R root:staff /usr/local/texlive \
-#   && chmod -R 777 /opt/texlive \
-#   && chmod -R 777 /usr/local/texlive
