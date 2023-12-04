@@ -1,0 +1,556 @@
+# Manipuler des données temporelles {#timeseries}
+
+## Tâches concernées et recommandations
+
+L'utilisateur souhaite manipuler des dates (import et export du format
+`Date`, manipulation et formatage de la date, différentes fréquences) ou
+des séries temporelles (création d'objets `ts` en R).
+
+::: {.callout-important}
+## Information sur les packages utilisés
+
+-   Les packages `base` et `stats` proposent déjà une bonne diversité de
+    fonctionnalités pour traiter les dates et séries temporelles ;
+-   Le package `lubridate` ajoute des fonctionnalités supplémentaires
+    sur le traitement des dates ;
+-   Le package `parsedate` permet de contrôler les normes de format de
+    date ;
+-   Le package `zoo` permet de gérer les données journalières ou
+    infra-journalières ;
+-   Pour les graphiques, ce sont les packages `ggplot2` et `dygraphs`
+    qui seront utilisés.
+
+Pour installer les packages :
+
+```{r}
+#| eval: False
+install.packages(c("lubridate", "parsedate", "zoo"))
+install.packages(c("ggplot2", "dygraphs"))
+```
+:::
+
+::: {.callout-caution}
+La fonction `as.Date()`{.r} existe dans les packages `base` et
+    `zoo`, mais n'a pas la même fonctionnalité. À chaque fois qu'elle
+    sera utilisée, on précisera son package d'origine au moyen de `::`
+    (`base::as.Date()`{.r} ou `zoo::as.Date()`{.r}).
+:::
+
+## Définitions
+
+### Les dates
+
+Une date en R signifie généralement un jour d'une année. Elle peut
+s'écrire sous différents formats :
+
+| Format           | Type       | Exemple (Noël 2023) |
+|------------------|------------|---------------------|
+| Format européen  | JJ/MM/AAAA | 25/12/2023          |
+| Format américain | AAAA-MM-JJ | 2023-12-25          |
+
+Une date peut aussi désigner un horaire ou un moment précis. On peut
+alors spécifier les heures, les minutes, les secondes.
+
+### Les séries temporelles
+
+Une série temporelle est une données indexées sur le temps. Généralement
+on parle de séries mensuelles lorsque le pas entre chaque date est un
+mois mais on parle aussi de données annuelles, trimestrielles ou
+journalières voire plus haute fréquence.
+
+## Création de date
+
+### Le format `Date` en R
+
+Pour créer une date en R, il suffit de faire appel à la fonction
+`as.Date()`{.r} du package `base`. Par défaut, l'argument format
+correspond au format américain :
+
+```{r}
+M_Drucker_birth <- base::as.Date(x = "1942-09-12")
+```
+
+Il suffit de le changer pour créer une date à partir d'un autre format :
+
+```{r}
+noel_2023 <- base::as.Date(x = "25/12/2023", format = "%d/%m/%Y")
+```
+
+La liste des formats de données est disponible sur la page d'aide de
+`strptime()`{.r} (accessible via `help(strptime)`{.r}).
+
+### Les autres formats de date `POSIXct` et `POSIXlt`
+
+Pour les horaires ou pour désigner un instant, il faut créer un objet de
+classe `POSIXt`. Pour cela, on peut utiliser les fonctions
+`as.POSIXct()`{.r} et `as.POSIXlt()`{.r}.
+
+-   La fonction `as.POSIXct()`{.r} (**ct** pour **Calendar Time**) va
+    stocker la date sous la forme d'un nombre de secondes depuis le 1^er^
+    janvier 1970.
+-   La fonction `as.POSIXlt()`{.r} (**lt** pour **List Time**) va
+    stocker la date sous la forme d'une liste contenant tous les
+    composants de la date (année, mois, jour, heure...).
+
+```{r}
+pied_sur_la_lune <- as.POSIXct(x = "1969-07-21 02:56:20", 
+                               format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
+```
+
+### Les différents fuseaux horaires
+
+Ici le fuseau horaire (argument `tz`) est fixé sur UTC (Coordinated
+Universal Time = Temps Universel Coordonné). Mais il est possible
+d'appliquer différents fuseaux horaires à un évènement.
+
+Par exemple :
+
+Neil Armstrong a posé le pied sur la lune le
+`r as.POSIXct(pied_sur_la_lune, tz = "Europe/Paris")` à Paris mais le
+`r as.POSIXct(pied_sur_la_lune, tz = "America/Los_Angeles")` à Los
+Angeles.
+
+```{r}
+heure_en_france <- as.POSIXct(x = pied_sur_la_lune, tz = "Europe/Paris")
+heure_los_angeles <- as.POSIXct(x = pied_sur_la_lune, tz = "America/Los_Angeles")
+```
+
+Pour connaître la liste des différents fuseaux horaires, il faut appeler
+la fonction `OlsonNames()`{.r} (du nom de l'Olson Database).
+
+### Gérer les changements d'heure
+
+En France, depuis 1979, on avance d'une heure en mars pour l'heure
+d'été. Ainsi le fuseau horaire européen est un peu plus compliqué que le
+fuseau UTC (qui est linéaire tout au long de l'année).
+
+Il suit 2 fuseaux :
+
+-   le CET (*Central European Time*) correspond à l'heure *d'hiver*.
+    Cela vaut UTC+1.
+-   En été, on utilise le CEST (*Central European Summer Time*), qui est
+    à UTC+2.
+
+On entend aussi parler de GMT (Greenwich Mean Time) qui correspond à
+l'heure de Greenwich. Aujourd'hui, c'est l'heure UTC (même fuseau que
+GMT) qui est la référence.
+
+R gère en interne **automatiquement** les changements d'horaire à partir
+des fuseaux horaires.
+
+-   Par exemple en hiver (CET = UTC+1) :
+
+```{r}
+# définition en date et heure locale avec le bon fuseau horaire
+chute_mur_berlin <- as.POSIXct(x = "1989-11-09 18:00", tz = "Europe/Berlin")
+
+# Heure locale
+print(chute_mur_berlin)
+
+# Heure UTC (exemple en islande)
+print(as.POSIXct(chute_mur_berlin, tz = "UTC"))
+```
+
+-   En été (CEST = UTC+2) :
+
+```{r}
+# définition en date et heure locale avec le bon fuseau horaire
+victoire_fifa_1998 <- as.POSIXct(x = "1998-07-12 21:00", tz = "Europe/Paris")
+
+# Heure locale
+print(victoire_fifa_1998)
+
+# Heure UTC (exemple au Burkina Faso)
+print(as.POSIXct(victoire_fifa_1998, tz = "UTC"))
+```
+
+## Autres fonctions
+
+### Formater une date avec la fonction `format()`{.r}
+
+La fonction `format()`{.r} est utile avec les dates car elle permet de
+formater une date selon *n'importe quelle* représentation.
+
+Par exemple pour des dates :
+
+```{r}
+# On prend la date d'aujourd'hui
+format(Sys.Date(), format = "Nous sommes le %A %d %B %Y.")
+format(Sys.Date(), format = "Date du jour : %x")
+```
+
+Par exemple pour des temps :
+
+```{r}
+# On prend la date d'aujourd'hui
+format(Sys.time(), format = "Nous sommes le %d %B %Y et il est %Hh%M et %Ss.")
+format(Sys.time(), format = "Il s'est écoulé %ss depuis le 1er janvier 1970.")
+format(Sys.time(), format = "Heure : %X")
+```
+
+La liste des formats de données est disponible sur la page d'aide de
+`strptime()`{.r} (accessible via `help(strptime)`{.r}).
+
+::: {.callout-note}
+### Les normes ISO8601 et RFC3339
+
+Les normes ISO8601 et RFC3339 sont des conventions de représentation des
+dates. Selon ces 2 normes, certains formats de dates sont acceptés ou
+non.
+
+Par exemple, voici quelques formats représentant la date du 24 mai 2023 à
+8h43 (UTC) :
+
+-   `"2023-05-24T08:43:00Z"`{.r} ou `"2023-05-24T08:43:00+08:00"`{.r} sont des formats acceptés par ces 2 normes.
+-   `"2023-05-24t08:43:00z"`{.r} est un format accepté uniquement par la
+    norme RFC3339.
+-   `"2023-05-24T08:43Z"`{.r} est un format accepté uniquement par la
+    norme ISO8601.
+
+Pour savoir quels formats sont acceptés par ces normes, une infographie
+est disponible [ici](https://ijmacd.github.io/rfc3339-iso8601/) :
+https://ijmacd.github.io/rfc3339-iso8601/.
+
+On peut aussi utiliser le package `parsedate` qui permet de lire une
+date au format ISO8601
+
+```{r, warning = FALSE}
+library("parsedate")
+
+parse_iso_8601("2023-05-24T08:43:00+08:00") # Accepté par ISO8601
+parse_iso_8601("2023-05-24t08:43:00z") # Refusé par ISO8601
+parse_iso_8601("2023-05-24T08:43Z") # Accepté par ISO8601
+```
+:::
+
+### Paramètres régionaux
+
+Pour obtenir des dates, d'autres fonctions existent comme :
+
+-   `Sys.Date()`{.r} pour connaitre la date du jour,
+-   `Sys.time()`{.r} pour connaitre l'horaire actuel (date + heure),
+-   `Sys.timezone()`{.r} pour le fuseau horaire actuel.
+
+Il peut être utile de vouloir changer les paramètres régionaux sous R.
+Pour cela, il faut faire appel à la fonction `Sys.setlocale()`{.r}
+
+```{r}
+# Paramètres locaux en France
+Sys.setlocale("LC_TIME", "fr_FR.UTF-8")
+format(Sys.time(), format = "%c")
+
+# Paramètres locaux aux USA
+Sys.setlocale("LC_TIME", "en_US")
+format(Sys.time(), format = "%c")
+```
+
+::: {.callout-note}
+La fonction `Sys.setlocale()`{.r} a un impact sur l'affichage mais pas
+sur la valeur de l'objet. Ainsi, cela ne change pas le fuseau horaire
+(par exemple).
+:::
+
+## Création de vecteur de date
+
+Pour créer un vecteur de date, il faut utiliser la fonction `seq()`{.r}.
+
+Les arguments de cette fonction sont :
+
+-   `from` : une date de départ
+-   `to` : une date d'arrivée
+-   `by` : un pas
+-   `length.out` : une longueur
+
+`from` est obligatoire et il faut préciser au moins 2 autres arguments
+parmi les 3 restants.
+
+Exemple :
+
+```{r}
+date1 <- base::as.Date("2016-02-29")
+date2 <- base::as.Date("2021-10-02")
+date3 <- base::as.Date("2023-08-15")
+
+seq(from = date1, to = date3, by = "year")
+seq(from = date2, to = date3, by = "quarter")
+
+time1 <- as.POSIXct(x = "2023-05-26 15:00")
+time2 <- as.POSIXct(x = "2023-05-26 20:59:47")
+time3 <- as.POSIXct(x = "2023-05-26 21:00")
+
+seq(from = time1, to = time3, by = "hour")
+seq(from = time2, to = time3, by = "sec")
+```
+
+## Autres objets de la famille des dates
+
+### Les objets `difftime`
+
+Le objets de classe `difftime` représentent des durées.
+
+```{r}
+age <- Sys.Date() - M_Drucker_birth
+print(age)
+
+difftime(Sys.Date(), M_Drucker_birth)
+
+# Changement d'heure
+heure_hiver <- as.POSIXct(x = "2023-03-26 01:00", tz = "Europe/Paris")
+heure_ete <- as.POSIXct(x = "2023-03-26 03:00", tz = "Europe/Paris")
+heure_ete - heure_hiver
+
+# Voyage sur différents fuseaux horaires
+decollage_paris <- as.POSIXct(x = "2023-07-20 10:30", tz = "Europe/Paris")
+arrivee_toronto <- as.POSIXct(x = "2023-07-20 01:00 PM", 
+                    format = "%Y-%m-%d %I:%M %p", 
+                    tz = "America/Toronto")
+arrivee_toronto - decollage_paris
+```
+
+Avec la fonction `units()`{.r}, on peut changer l'unité de la durée.
+
+```{r}
+# En minutes
+units(age) <- "mins"
+print(age)
+
+# En semaines
+units(age) <- "weeks"
+print(age)
+```
+
+Le package `lubridate` propose aussi d'autres formatages des durées :
+
+```{r, warning = FALSE}
+library("lubridate")
+
+time_length(age, unit = "year")
+```
+
+### Fonctionnalités avancées avec `lubridate`
+
+Le package `lubridate` propose des fonctions de lecture de date
+semblables aux fonctions (`base::as.Date()`{.r}, `format()`{.r},
+`as.POSIXct()`{.r})
+
+On peut résumer les équivalences des principales fonctions dans le
+tableau ci-dessous :
+
+| Fonction `lubridate`                                             | Équivalent R `base`                                              | Type                    |
+|---------------------------|---------------------------|------------------|
+| `today()`{.r}, `now()`{.r}                                       | `Sys.Date()`{.r}, `Sys.time()`{.r}                               | Création de date        |
+| `years()`{.r}, `weeks()`{.r}, `hours()`{.r}, `seconds()`{.r} ... | \-                                                               | Création de durée       |
+| `with_tz()`{.r}                                                  | `base::as.Date()`{.r} ou `as.POSIXct()`{.r} avec l'argument `ts` | Modification d'une date |
+| `ymd()`{.r}, `ydm_hm()`{.r}, ...                                 | `base::as.Date()`{.r} ou `as.POSIXct()`{.r}                      | Lecture de date         |
+
+Les fonctions de création de durée permettent de modifier et décaler les
+dates.
+
+Une date au format `Date` est stockée sous la forme d'un nombre de jours
+ainsi :
+
+```{r}
+# En R base
+Sys.Date() + 5L # Date dans 5 jours
+
+# Avec lubridate
+Sys.Date() + days(5L) # Date dans 5 jours
+```
+
+Par exemple, si je veux avoir la même date il y a 5 ou 4 ans :
+
+```{r}
+fev_29 <- base::as.Date("2016-02-29")
+
+# Il y a 5 ans, 29 fevrier 2011 n'existe pas :
+fev_29 - 365.2425 * 5 # Pas exactement la même date
+fev_29 - years(5L) # Calcul impossible
+
+# Il y a 4 ans :
+fev_29 - 365.2425 * 4
+fev_29 - years(4L)
+```
+
+## Les séries temporelles en R
+
+### Créer une série temporelle
+
+Pour créer une série temporelle, on utilise la fonction `ts()`{.r} du
+package `stats`. L'argument `frequency` est le nombre de période en 1
+an.
+
+```{r}
+# Pour une série annuelle, frequency = 1L
+serie_annuelle <- ts(1:20, start = 2003L, frequency = 1L)
+
+# Pour une série trimestrielle, frequency = 4L
+serie_trimestrielle <- ts(21:40, end = 2023L, frequency = 4L)
+
+# Pour une série mensuelle, frequency = 12L
+serie_mensuelle <- ts(41:60, start = 2020L, frequency = 12L)
+```
+
+::: {.callout-caution}
+## ⚠️ Attention ⚠️
+
+La fonction `ts()`{.r} du package `stats` n'est pas faite pour
+fonctionner avec des fréquences non entières.
+:::
+
+### Autres formats de dates
+
+Les objets `ts` fonctionnent aussi avec des dates mais dans un format
+différent. Pour délimiter notre série temporelle, il faut utiliser les
+arguments `start` et/ou `end` ainsi qu'une fréquence (entière).
+
+Les arguments `start` et `end` doivent être au format `AAAA`,
+`c(AAAA, PP)` ou `AAAA + (PP - 1)/T`, avec :
+
+-   `AAAA` l'année en 4 caractère
+-   et `PP` le numéro de la période (dépendant de la fréquence)
+-   et `T` la fréquence de la série
+
+Plus d'informations sur la page d'aide de la fonction `start()`{.r}
+(accessible via `help(start)`{.r}).
+
+Ces formats ne sont lisibles qu'avec la fréquence.
+
+Exemple :
+
+-   Pour `frequency = 4L`{.r}, `2021L`{.r} et `c(2021L, 1L)`{.r}
+    représentent la même date (1er trimestre 2021)
+-   Pour `frequency = 12L`{.r}, `2019 + 3/12 = 2019.25`{.r} et
+    `c(2019L, 4L)`{.r} représentent la même date
+
+Ainsi `c(2020L, 5L)`{.r} désigne mai 2020 pour des séries mensuelles
+(`frequency = 12L`{.r}) mais le 1^er^ trimestre 2021 pour des séries
+trimestrielles (`frequency = 4L`{.r}).
+
+### Fonctions des objets `ts`
+
+Pour obtenir des informations sur un objet `ts`, on peut utiliser les
+fonctions suivantes :
+
+-   `start()`{.r} : retourne la date de début de la série,
+-   `end()`{.r} : retourne la date de fin de la série,
+-   `frequency()`{.r} : retourne la fréquence de la série,
+-   et `time()`{.r} : retourne le vecteur de date indexant la série
+    temporelle
+
+```{r}
+start(serie_mensuelle)
+end(serie_mensuelle)
+frequency(serie_mensuelle)
+time(serie_mensuelle)
+```
+
+Les dates en output de `time()`{.r} sont au format ts et non au format
+`Date`. Pour les convertir, il faut utiliser la fonction
+`zoo::as.Date()`{.r} :
+
+```{r, warning = FALSE}
+library("zoo")
+
+zoo::as.Date(time(serie_mensuelle))
+```
+
+### Séries hautes fréquences avec `zoo`
+
+Le package `zoo` a d'autres utilités, notamment gérer les séries
+haute-fréquence.
+
+On peut construire des séries journalières :
+
+```{r}
+#data : https://www.letour.fr/fr/parcours-general
+date_tour_de_france <- seq(from = as.Date("2023-06-29"), 
+                           to = as.Date("2023-07-21"), by = "day")
+kilometre_etape <- c(182, 209, 193.5, 182, 163, 145, 170, 201, 
+                     182.5, 0, 167.5, 180, 169, 138, 152, 179, 
+                     0, 22.4, 166, 185, 173, 133.5, 115.5)
+
+tour_de_france_ts <- zoo(x = kilometre_etape, 
+                         order.by = date_tour_de_france)
+```
+
+On peut construire des séries infra-journalières (heure par heure ou
+encore plus haute-fréquence) :
+
+```{r}
+#data : https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/pvgis-tools/hourly-radiation_en
+heures_journee <- seq(from = as.POSIXct("2016-07-01 00:10:00"), 
+                           to = as.POSIXct("2016-07-01 23:10:00"), by = "hours")
+temperature <- c(19.42, 19.21, 18.99, 18.78, 19.71, 20.64, 21.57, 22.82, 
+                 24.06, 25.31, 26.25, 27.19, 28.12, 28.44, 28.75, 29.06, 
+                 28.22, 27.38, 26.54, 24.81, 23.08, 21.35, 21.02, 20.69)
+
+temp_ts <- zoo(x = temperature, 
+               order.by = heures_journee)
+```
+
+## Afficher des séries temporelles
+
+Plusieurs packages permettent l'affichage des séries temporelles.
+
+### Classique `plot()`{.r}
+
+La fonction `plot()`{.r} du package `graphics` (méthode `plot.ts()`{.r}
+du package `stats`) permet d'afficher simplement des séries temporelles :
+
+```{r plot}
+plot(x = tour_de_france_ts, col = "blue", 
+     ylab = "Distance (en km)", xlab = "Time", 
+     main = "Distance parcourue par jour (TDF 2023)")
+plot(x = temp_ts, col = "red", 
+     main = "Temperature")
+```
+
+### Package `ggplot2`
+
+Le package `ggplot2` propose une grande variété de graphiques. Il est
+nécessaire au préalable de convertir l'objet en `data.frame` pour
+construire le graphique.
+
+```{r ggplot2, warning = FALSE}
+library("ggplot2")
+
+sunspots_df <- data.frame(date = time(sunspots), value = sunspots)
+
+ggplot(sunspots_df, aes(x=date, y=value)) +
+  geom_line()
+```
+
+Pour plus d'informations sur l'utilisation de `ggplot2`, voir la [fiche
+sur les
+graphiques](https://www.book.utilitr.org/03_fiches_thematiques/fiche_graphiques)
+
+### Package `dygraphs`
+
+Le package `dygraphs` propose aussi des graphiques pour séries
+temporelles. L'avantage de ce package est l'interactivité et la
+possibilité de zoomer dans les graphiques.
+
+```{r dygraphs, warning = FALSE}
+library("dygraphs")
+
+dygraph(temp_ts)
+```
+
+On peut aussi afficher plusieurs courbes sur le même graphique :
+
+```{r dygraph_multiple_plot}
+dygraph(cbind(fdeaths, mdeaths))
+```
+
+## Pour en savoir plus
+
+-   [Formats acceptés par les normes ISO8601 et
+    RFC3339](https://github.com/IJMacD/rfc3339-iso8601) ;
+-   [Galerie de graphique avec
+    `dygraph`](https://r-graph-gallery.com/317-time-series-with-the-dygraphs-library.html)
+    ;
+-   [Manuel d'utilisation package
+    `dygraph`](https://rstudio.github.io/dygraphs/) ;
+-   [Les séries temporelles en
+    `ggplot2`](https://r-graph-gallery.com/279-plotting-time-series-with-ggplot2.html)
+    ;
