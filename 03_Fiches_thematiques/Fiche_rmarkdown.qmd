@@ -13,7 +13,7 @@ L'utilisateur souhaite produire avec `R` des documents contenant à la fois du t
 * Pour aller plus loin et s'exercer sur `R Markdown`, il est recommandé de lire le chapitre sur `R Markdown` dans la formation [Travail collaboratif avec `R`](https://linogaliana.gitlab.io/collaboratif/rmd.html).
 :::
 
-::: {.callout-remarque .icon}
+::: {.callout-note}
 Certains exemples de cette fiche utilisent les données disponibles dans le _package_ `doremifasolData` ; vous ne pourrez reproduire ces exemples que si ce _package_ est installé sur la machine sur laquelle vous travaillez. Si vous ne savez pas si ce _package_ est déjà installé, consultez la fiche [Comment utiliser la documentation `utilitR`](#presentation-utilitr).
 :::
 
@@ -29,7 +29,7 @@ Certains exemples de cette fiche utilisent les données disponibles dans le _pac
 
 **Il est toutefois possible de produire un document `R Markdown` sans exécuter les codes `R` qu'il contient** (comme dans un `Markdown` classique). En outre, `R Markdown` propose de [plus en plus de langages](https://bookdown.org/yihui/rmarkdown/language-engines.html#shell-scripts) pour aller au-delà de `R`, parmi lesquels `Python`, `SQL`, `C++`...
 
-::: {.callout-remarque .icon}
+::: {.callout-note}
 `R Markdown` est une alternative aux [notebooks Jupyter](https://jupyter.org/) qui permettent de lier du code et du texte. Du point de vue de la reproductibilité des résultats, les fichiers `R Markdown` sont préférables car l'exécution du code dans le document est linéaire alors que les blocs de code des `notebook jupyter` peuvent être exécutés dans le désordre. 
 :::
 
@@ -43,7 +43,7 @@ Il y a une grande liberté dans les formats de sortie disponibles pour un fichie
 * Des sites *web* (comme celui associé à [cet ouvrage](https://www.book.utilitr.org) ou comme [la page d'accueil d'utilitR](https://www.utilitr.org)).
 
 
-::: {.callout-remarque .icon}
+::: {.callout-note}
 
 Pour la génération d'un document au format `pdf`, vous devez avoir une installation fonctionnelle de LaTeX sur votre système. Si ça n’est pas le cas, le _package_ `tinytex` de Yihui Xie vise à faciliter l’installation d’une distribution LaTeX minimale quel que soit le système d’exploitation de votre machine. Pour l’utiliser il vous faut d’abord installer le _package_ `tinytex`, puis lancer l"installation de LaTeX (prévoir un téléchargement d’environ 200Mo). Voici les instructions à exécuter :
 
@@ -57,7 +57,7 @@ Une distribution `MiKTeX` (plus riche que `tinytex`) est disponible et permet
 de compiler en `pdf`. 
 :::
 
-::: {.callout-conseil .icon}
+::: {.callout-tip}
 
 Il existe une manière d'obtenir une sortie en `pdf` qui n'implique pas de passer
 par LaTeX grâce au package `pagedown` ([présentation plus bas](#extensionsrmd)).
@@ -126,7 +126,7 @@ Cela donne, par exemple, le rendu suivant :
 ![](../pics/rmarkdown/rmd-temp.png)
 ----->
 
-::: {.callout-conseil .icon}
+::: {.callout-tip}
 Pour assurer la **reproductibilité** des résultats, le document doit pouvoir être généré par chacun des membres de l'équipe projet. Voici quelques bonnes pratiques pour y parvenir :
 
 Tout comme pour un script `R`, les ressources (images, données...) doivent être appelées via des chemins d'accès relatifs. Par défaut, le dossier de travail de travail est celui où se situe le document. Il faut donc utiliser des chemins relatifs, et non absolus :
@@ -139,7 +139,7 @@ Si un fichier `R Markdown` se situe dans l'arborescence d'un `R Project`, il fau
 Quelle que soit la configuration, l'emplacement des ressources doit respecter une arborescence connue et utilisée par tous.
 :::
 
-::: {.callout-conseil .icon}
+::: {.callout-tip}
 Les fichiers `.Rmd` s'intègrent bien avec `git` car il s'agit de fichiers texte. En revanche, il faut éviter de mettre sous contrôle de version les fichiers de sortie (`pdf`, `html`). Pour ce faire, on peut ajouter au fichier `.gitignore` les extensions associées, par exemple `*.pdf` ou `*.html`
 :::
 
@@ -182,7 +182,7 @@ Le corps d'un document `R Markdown` comprend deux types de **blocs**, qu'on peut
     - ces *chunks* peuvent être nommés (il est même recommandé de le faire) ;
     - des options peuvent être spécifiées. Ces options (détaillées plus bas) permettent par exemple de ne pas faire figurer l'*output* du code dans le document final ou inversement de ne montrer que l'*output* du code et non le code l'ayant généré.
 
-::: {.callout-remarque .icon}
+::: {.callout-note}
 Il est possible d'ajouter en dessous de l'en-tête un tout premier *chunk* nommé *setup*, qui permet de définir des options par défaut pour tous les *chunks* du document. Par exemple, on peut souhaiter par défaut ne pas afficher le code `R` de chaque bloc dans le document final.
 
 ```{r echo = FALSE, comment = ""}
@@ -250,7 +250,7 @@ facilité, plus de raccourcis claviers, etc.).
 
 `r if(knitr::is_html_output()){"![Présentation de l'éditeur visuel de RStudio](https://www.rstudio.com/blog/rstudio-v1-4-preview-visual-markdown-editing/images/visualmode-demo.gif)"}`
 
-::: {.callout-conseil .icon}
+::: {.callout-tip}
 L'*addin* `Remedy` est également pratique et facilite l'écriture de fichiers `R Markdown` 
 grâce à un menu qui permet de cliquer directement sur le type de balise désiré :
 
@@ -311,14 +311,14 @@ utilitr::include_image("../pics/rmarkdown/chunk.png")
 
 Lorsque le document est compilé au format HTML, PDF ou docx, chaque bloc est exécuté tour à tour, et le résultat inclus dans le document final, qu’il s’agisse de texte, d’un tableau ou d’un graphique. Les blocs sont liés entre eux, dans le sens où les données importées ou calculées dans un bloc sont accessibles aux blocs suivants. On peut donc aussi concevoir un document `R Markdown` comme un script `R` dans lequel on aurait intercalé des blocs de texte au format `Markdown`.
 
-::: {.callout-remarque .icon}
+::: {.callout-note}
 
 Le bouton `Knit` ou le raccourci clavier `CTRL+SHIFT+K` lancent automatiquement l'exécution du code `R` dans une nouvelle session. Cela signifie que les objets appartenant à l'environnement global de l'utilisateur sont ignorés, par défaut. C'est une bonne pratique parce qu'elle aboutit à des documents plus reproductibles. 
 
 Par défaut, la commande `rmarkdown::render` n'utilise pas cette option. Si le fichier `R Markdown` est compilé en utilisant `rmarkdown::render`, il est recommandé d'utiliser la syntaxe `rmarkdown::render(..., envir = new.env())` 
 :::
 
-::: {.callout-conseil .icon}
+::: {.callout-tip}
 Par défaut, dans ` RStudio`, le résultat du bloc de code ne s'affiche pas dans la console mais sous le bloc, dans l'interface visuelle du document. Si vous n'appréciez pas ce fonctionnement, vous pouvez le modifier de la façon suivante : aller dans le panneau `Tools > Global Options...`, onglet `R Markdown`, puis décocher l'option `Show output inline for all R Markdown documents`.
 :::
 
@@ -443,7 +443,7 @@ Le format `bibtex` constitue un standard dans le domaine. Il s'agit de définir 
 
 Un fichier séparé, généralement au format `.bib`, centralise les références. L'ajout du champ `bibliography` au yaml permet à `R Markdown` d'automatiquement construire la bibliographie à la fin du document. 
 
-::: {.callout-conseil .icon}
+::: {.callout-tip}
 La bibliographie se trouve généralement à la fin du document, sauf si un fichier de style [lien vers partie template] en modifie l'emplacement. En général, on ajoute ainsi un titre de section du type `# Références`à la fin du `.Rmd` pour dissocier la bibliographie de la fin du texte.
 :::
 
@@ -456,7 +456,7 @@ donnera l'*output* suivant :
 utilitr::include_image("../resources/rmarkdown/chunk07.png", ratio_compression = 1)
 ```
 
-::: {.callout-conseil .icon}
+::: {.callout-tip}
 Il est rare qu'il soit nécessaire de devoir écrire soi-même la bibliographie lorsqu'on écrit un article académique. En effet, on trouve souvent des références au format `bibtex` sur les bases de données scientifiques, notamment sur [google scholar](https://scholar.google.fr/) ou sur le site [ideas.repec](https://ideas.repec.org/) (pour les articles d'économie). Sur `scholar`, pour récupérer une citation, on clique sur le guillemet puis sur `bibtex` :
 
 ```{r, echo = FALSE, fig.cap= "Google Scholar"}
@@ -489,7 +489,7 @@ L'approche la plus appropriée dépend de la structure du besoin :
 * Pour une table construite à partir de données, des packages spécialisés sont plus adaptés. L'utilisation de ces derniers permet de ne pas écrire les valeurs numériques et améliore ainsi la reproductibilité des tables construites.
 
 
-::: {.callout-conseil .icon}
+::: {.callout-tip}
 Pour des tables simples, notamment de statistiques agrégées, la fonction `kable` (du _package_ `knitr`) et le _package_ d'extension `kableExtra` peuvent être utilisés.
 
 Pour des tables plus complexes, les packages `gt` et  `flextable` peuvent être mobilisés.

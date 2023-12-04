@@ -53,7 +53,7 @@ Les fonctions de `sf` sont pour la plupart préfixées par `st_` *(Spatial Type)
 
 **Le *package* `sf` introduit un objet géographique particulier : la table de données spatiale appelée `sf`. Un `sf` est simplement une table de données `R` traditionnelle (un `data.frame`), enrichie d'une colonne supplémentaire `geometry` qui contient l'information géographique.** Par conséquent, toutes les fonctions qui s'appliquent à un `data.frame` s'appliquent exactement de la même façon aux attributs des objets `sf`.
 
-::: {.callout-remarque .icon}
+::: {.callout-note}
 Le *package* `sf` est une extension du *package* `dplyr` pour les objets géographiques. On peut donc utiliser le *pipe* (`%>%`) pour chaîner des opérations avec `sf`, ce qui est souvent pratique (voir la fiche [Manipuler des données avec le tidyverse](https://www.book.utilitr.org/03_fiches_thematiques/fiche_tidyverse#enchaîner-les-manipulations-avec-lopérateur-pipe)).
 :::
 
@@ -140,7 +140,7 @@ plot(martinique['POP'])
 plot(martinique_agg['POP'])
 ```
  
-::: {.callout-conseil .icon}
+::: {.callout-tip}
 Les manipulations de données sur un `sf` sont nettement plus lentes que sur un `data.frame` traditionnel (car `R` doit gérer les informations géographiques pendant la manipulation des données). Lorsque vous manipulez des données de grandes dimensions, il peut être préférable d'effectuer les opérations sur les données *avant* de joindre une géométrie à celles-ci.
 :::
 
@@ -183,14 +183,14 @@ La fonction `sf::st_join()` permet d'appliquer ces fonctions pour réaliser la j
 
 La [vignette du package](https://r-spatial.github.io/sf/articles/sf4.html#joining-two-feature-sets-based-on-attributes) permet d'aller plus loin sur le sujet.
 
-::: {.callout-conseil .icon}
+::: {.callout-tip}
 Les jointures spatiales peuvent être très gourmandes en ressources (car il peut être nécessaire de croiser toutes les géométries de `x` avec toutes les géométries de `y`). Voici deux conseils qui peuvent vous aider :
 
 - Il est préférable de tester les jointures géographiques sur un petit échantillon de données, pour estimer le temps et les ressources nécessaires à la réalisation de la jointure.
 - Il est parfois possible d'écrire une fonction qui réduit la taille du problème. Exemple : vous voulez déterminer dans quelle commune se situe un logement dont vous connaissez les coordonnées et le département ; vous pouvez écrire une fonction qui réalise pour chaque département une jointure spatiale entre les logements situés dans ce département et les communes de ce département, puis empiler les 101 tables de sorties.
 :::
 
-::: {.callout-conseil .icon}
+::: {.callout-tip}
 Une application possible de la jointure spatiale est l'obtention de données sur un zonage à façon.
 
 Il est, par exemple, possible d'utiliser les données carroyées mises en ligne sur [le site de l'Insee](https://www.insee.fr/fr/statistiques/4176290?sommaire=4176305) pour obtenir des données sur chaque zone du zonage à façon en transformant des agrégats au niveau carré dans la granularité spatiale désirée.
@@ -250,12 +250,12 @@ Le code officiel géographique (COG), qui tient à jour les entités administrat
 est disponible sur [le site de l'Insee](https://www.insee.fr/fr/information/2560452) et via
 l'API Métadonnées. La [fiche API](https://www.book.utilitr.org/03_fiches_thematiques/fiche_api) indique comment accéder à des données via une API.
 
-::: {.callout-conseil .icon}
+::: {.callout-tip}
 Contrairement à ce qui pourrait être pensé, la géographie et le COG sont régulièrement modifiés, pour prendre notamment en compte des fusions et scissions de communes. Deux ensembles apparemment identiques de codes communes au 1er janvier 2022 et 1er janvier 2021 peuvent ainsi différer, et il convient de retraiter ses données pour s'assurer qu'elles sont toutes définies dans une même géographie.
 :::
 Le *package* [COGugaison](https://antuki.github.io/COGugaison/) fournit un ensemble d'outils répondant à ce besoin. Il permet de réaliser de nombreuses modifications utiles au chargé d'études (remplacement des codes arrondissements dans Paris, Lyon, Marseille, identification du millésime géographique des données, visualisation des changements de géographie, transformation d'un millésime à un autre pour les communes, les zonages standards d'études de l'Insee, et les zonages à façon, etc.) sans avoir à mobiliser le COG.
 
-::: {.callout-remarque .icon}
+::: {.callout-note}
 Ce package n'étant pas disponible sur le CRAN, dans un environnement connecté à internet, il est nécessaire de l'installer depuis `Github`:
 
 ```{r, eval=FALSE}
@@ -263,7 +263,9 @@ remotes::install_github("antuki/COGugaison")
 ```
 :::
 
-::: {.callout-insee .icon}
+::: {.callout-warning}
+## Spécificité Insee
+
 Ce package n'est pas disponible sur le CRAN. Sur AUS, on peut l'installer avec la commande `install.packages("COGugaison", repos = "https://nexus.insee.fr/repository/r-public")`. 
 :::
 
@@ -273,7 +275,8 @@ Il est également possible de trouver des données géographiques sur [data.gouv
 soient génériques comme [opendatasoft](https://public.opendatasoft.com/explore/) ou plus institutionnels
 comme [opendata.paris.fr/](https://opendata.paris.fr/)
 
-::: {.callout-insee .icon}
+::: {.callout-warning}
+## Spécificité Insee
 
 L'Insee propose un outil pour sélectionner et télécharger des données géographiques via l'application `creacartes`.
 

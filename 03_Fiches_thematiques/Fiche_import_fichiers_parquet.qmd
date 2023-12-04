@@ -127,7 +127,7 @@ Le package `arrow` présente une fonctionnalité supplémentaire qui consiste à
 
 Partitionner un fichier revient à le "découper" selon une clé de partitionnement, qui prend la forme d'une ou de plusieurs variables. Cela signifie en pratique que l'ensemble des données sera stockée sous forme d'un grand nombre de fichiers Parquet (un fichier par valeur des variable de partitionnement). Par exemple, il est possible de partitionner un fichier national par département: on obtient alors un fichier Parquet par département.
 
-::: {.callout-conseil .icon}
+::: {.callout-tip}
 - **Il est important de bien choisir les variables de partitionnement** d'un fichier **Parquet**. Il faut choisir des variables faciles à comprendre et qui soient cohérentes avec l'usage des données (année, département, secteur...). En effet, un partitionnement bien construit induit par la suite des gains d'efficacité sur les traitements et facilite la maintenance du fichier sur le long terme.
 - **Il est inutile de partitionner des données de petite taille**. Si les données dépassent quelques millions d'observations et/ou si leur taille en CSV dépasse quelques giga-octets, il est utile de partitionner.
 - **Il ne faut pas partitionner les données en trop de fichiers**. En pratique, il est rare d'avoir besoin de plus qu'une ou deux variables de partitionnement.
@@ -240,7 +240,7 @@ resultat2 <- requete2 |> collect()
 Cette instruction s'exécute sur un ordinateur standard en quelques secondes.
 
 
-::: {.callout-remarque .icon}
+::: {.callout-note}
 Les _packages_ `arrow` et `duckdb` présentent une grande différence avec les _packages_ standard de manipulation de données comme `dplyr` ou `data.table`: lorsqu'on exécute une requête sur une table de données, ces _packages_ ne se contentent pas d'exécuter les commandes une à une, dans l'ordre du code, mais analysent le code pour **optimiser le plan d'exécution de la requête**. En pratique, cela signifie qu'`arrow` et `duckdb` essaient de n'importer que les observations nécessaires à la requête, de ne conserver que les colonnes nécessaires au calcul, etc. C'est cette optimisation du plan d'exécution (appelée _predicate push-down_) qui permet d'accélérer les traitements et de réduire la consommation de ressources informatiques.
 :::
 
