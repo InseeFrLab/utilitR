@@ -176,7 +176,7 @@ __La grande différence entre manipuler un `tibble` et manipuler un `Arrow Table
 __Cette différence de moteurs d'exécution a une conséquence technique importante__: une fois que l'utilisateur a défini des instructions avec la syntaxe `dplyr`, il est nécessaire que celles-ci soient converties pour que le moteur `acero` (implémenté en C++ et non en `R`) puissent les exécuter. De façon générale, `arrow` fait cette conversion de façon automatique et invisible, car le  _package_ `arrow` contient la traduction C++ de plusieurs centaines de fonctions du `tidyverse`. Par exemple, le _package_ `arrow` contient la traduction C++ de la fonction `filter()` de `dplyr`, ce qui fait que les instructions `filter()` écrites en syntaxe `tidyverse` sont converties de façon automatique et invisible en des instructions C++ équivalentes. La liste des fonctions du _tidyverse_ supportées par `acero` est disponible sur [cette page](https://arrow.apache.org/docs/dev/r/reference/acero.html). Il arrive toutefois qu'on veuille utiliser une fonction non supportée par `acero`. Cette situation est décrite dans le paragraphe "Comment utiliser une fonction non supportée par `acero`".
 
 
-### L'évaluation différée avec `arrow` (_lazy evaluation_)
+### L'évaluation différée avec `arrow` (_lazy evaluation_) {#subsec-lazy}
 
 __Une caractéristique importante d'`arrow` est qu'il pratique l'évaluation différée (_lazy evaluation_): les calculs ne sont effectivement réalisés que lorsqu'ils sont nécessaires__. En pratique, cela signifie qu'`arrow` se contente de et ne fait aucun calcul tant que l'utilisateur ne le demande pas explicitement. Il existe deux fonctions pour déclencher l'évaluation d'un traitement `arrow`: `collect()` et `compute()`. Il n'y a qu'une seule différence entre `collect()` et `compute()`, mais elle est importante: `collect()` renvoie le résultat du traitement sous la forme d'un `tibble`, tandis que `compute()` le renvoie sous la forme d'un `Arrow Table`.
 
@@ -184,13 +184,17 @@ __L'évaluation différée permet d'améliorer les performances en évitant le c
 
 
 ```{r, message=FALSE}
-# Étape 1: compter les équipements par département
-equipements_par_departement <- bpe_ens_2018_arrow |>
+# Étape 1: compter les équipements
+eq_dep <- bpe_ens_2018_arrow |>
   group_by(DEP) |>
-  summarise(NB_EQUIP_TOT = sum(NB_EQUIP))
+  summarise(
+    NB_EQUIP_TOT = sum(NB_EQUIP)
+  )
 
 # Étape 2: filtrer sur le département
-equipements_par_departement |> filter(DEP == "59") |> collect()
+resultats <- eq_dep |> 
+  filter(DEP == "59") |> 
+  collect()
 ```
 
 Dans cet exemple, on procède à un traitement en deux temps: on compte les équipements par département, puis on filtre sur le département. Il est important de souligner que la première étape ne réalise aucun calcul par elle-même, car elle ne comprend ni `collect()` ni `compute()`. L'objet `equipements_par_departement` n'est pas une table et ne contient pas de données, il contient simplement une requête (_query_) à appliquer à la table `bpe_ens_2018_arrow`.
