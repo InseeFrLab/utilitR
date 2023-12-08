@@ -203,18 +203,12 @@ On pourrait penser que, lorsqu'on exécute l'ensemble de ce traitement, `arrow` 
 
 ## Comment bien utiliser `arrow`?
 
-<!-- ### Savoir bien utiliser l'évaluation différée -->
-
-<!-- la différence entre charger les données avec `read_parquet` et `open_dataset`; -->
-
 ### Utiliser des objets `Arrow Table` plutôt que des `tibbles`
 
 __Lorsqu'on manipule des données volumineuses, il est essentiel de manipuler uniquement des objets `Arrow Table`, plutôt que des `tibbles`__. Cela implique deux recommandations:
 
-- Importer les données directement dans des `Arrow Table`, ou à défaut convertir en `Arrow Table` avec la fonction `as_arrow_table()`. Par exemple, lorsqu'on importe un fichier Parquet avec la fonction `read_parquet`, il est recommandé d'utiliser l'option `as_data_frame = FALSE` pour que les données soient importées dans un `Arrow Table`.
-- Utiliser systématiquement `compute()` plutôt que `collect()` dans les étapes de calcul intermédiaires.
-
-L'exemple suivant explique pourquoi il est préférable d'utiliser `compute()` dans les étapes intermédiaires:
+- __Importer les données directement dans des `Arrow Table`, ou à défaut convertir en `Arrow Table` avec la fonction `as_arrow_table()`.__ Par exemple, lorsqu'on importe un fichier Parquet avec la fonction `read_parquet` ou un fichier csv avec la fonction `arrow::read_csv_arrow()`, il est recommandé d'utiliser l'option `as_data_frame = FALSE` pour que les données soient importées dans un `Arrow Table`.
+- __Utiliser systématiquement `compute()` plutôt que `collect()` dans les étapes de calcul intermédiaires.__ Cette recommandation est particulièrement importante. L'exemple suivant explique pourquoi il est préférable d'utiliser `compute()` dans les étapes intermédiaires:
 
 
 - __Situation à éviter__: la première étape de traitement étant déclenchée par `collect()` (ligne 7), la table intermédiaire `res_intermediaire1` est un `tibble`. Par conséquent, c'est le moteur d'exécution de `dplyr` qui est utilisé pour manipuler `res_intermediaire1` lors de la seconde étape du traitement, ce qui peut dégrader fortement les performances, en particulier si les données sont volumineuses.
@@ -275,6 +269,65 @@ write_parquet(res_final, "resultats.parquet")
 ::: {.callout-conseil .icon}
 Si vous ne savez plus si une table de données est un `Arrow Table` ou un `tibble`, il suffit d'exécuter `class(le_nom_de_ma_table)`. Si la table est un `Arrow Table`, vous obtiendrez ceci: `"Table"        "ArrowTabular" "ArrowObject"  "R6"`. Si elle est un `tibble`, vous obtiendrez `"tbl_df"     "tbl"        "data.frame"`.
 :::
+
+### Savoir bien utiliser l'évaluation différée
+
+Le paragraphe @subsec-lazy a présenté la notion d'évaluation différée et son intérêt pour optimiser les performances. Toutefois, l'évaluation différée n'est pas toujours facile à utiliser, et présente des limites qu'il faut bien comprendre. Cette section 
+
+#### Comprendre les limites de l'évaluation différée
+
+L'évaluation différée optimise les performances en minimisant la quantité de données chargées en RAM et la quantité de calculs effectivement réalisés. 
+Avec cette vision en tête, on pourrait penser que la meilleure façon d'utiliser `arrow` est d'écrire un traitement entier en mode _lazy_ (autrement dit: sans aucun `compute()` ni aucun `collect()` dans les étapes intermédiaires), et faire un unique `compute()` ou `collect()` tout à la fin du traitement, pour que toutes les opérations soient réalisées de façon optimisée en une seule étape. Un traitement idéal ressemblerait alors à ceci:
+
+```{r, eval=FALSE}
+# Se connecter aux données
+data1 <- open_dataset("data1.parquet")
+data2 <- open_dataset("data2.parquet")
+
+# Une première étape de traitement
+table_intermediaire1 <- data1 |>
+  select(...) |>
+  filter(...) |>
+  mutate(...)
+
+# Une deuxième étape de traitement
+table_intermediaire2 <- data2 |>
+  select(...) |>
+  filter(...) |>
+  mutate(...)
+
+# Et encore beaucoup d'autres étapes de traitement
+# avec beaucoup d'instructions...
+
+# La dernière étape du traitement
+resultats <- table_intermediaire8 |>
+  left_join(
+    table_intermediaire9, 
+    by = "identifiant"
+  ) |>
+  compute()
+  
+write_parquet(resultats, "resultats.parquet")
+```
+
+La réalité n'est malheureusement pas si simple, car __l'évaluation différée a des limites__. En effet, au moment de produire le résultat final de l'exemple précédent, la fonction `compute()` donne l'instruction au moteur `acero` d'analyser puis d'exécuter _l'intégralité du traitement en une seule fois_. Or, le moteur `acero` est certes puissant, mais il a ses limites et ne peut pas exécuter en une seule fois des traitements vraiment trop complexes. Par exemple, `acero` rencontre des difficultés lorsqu'on enchaîne de multiples jointures de tables volumineuses.
+
+__Ces limites de l'évaluation différée peuvent provoquer des bugs violents__. Lorsque le moteur `acero` échoue à exécuter une requête trop complexe, les conséquences sont brutales: `R` n'imprime aucun message d'erreur, la session `R` plante et il faut simplement redémarrer `R` et tout recommencer. Il est donc nécessaire de bien structurer le traitement pour profiter des avantages de l'évaluation différée sans en toucher les limites.
+
+#### Accéder aux données avec `open_dataset` plutôt que `read_parquet`
+
+A écrire
+
+#### Décomposer le traitement en étapes cohérentes, puis le tester
+
+__La solution évidente pour ne pas toucher les limites de l'évaluation différée consiste à décomposer le traitement en étapes__, et à exécuter chaque étape séparément (en mettant un `compute()`). De cette façon, `acero` va réaliser séquentiellement plusieurs traitements un peu complexes, plutôt qu'échouer à réaliser un seul traitement très complexe en une seule fois. 
+
+__La vraie difficulté consiste à savoir quelle est la bonne longueur de ces étapes intermédiaires__: s'il faut éviter de faire de très longues étapes (sinon l'évaluation différée plante), il faut également éviter d'exécuter une à une les étapes du traitement (sinon on perd les avantages de l'évaluation différée). Il n'y a pas de solution miracle, et seule la pratique permet de déterminer ce qui est raisonnable. Voici toutefois quelques conseils de bon sens:
+
+- __Un point de départ raisonnable peut consister à définir des étapes de traitement qui ne dépassent pas 30 ou 40 lignes de code__. Une étape de traitement de 200 lignes aura toutes les chances de poser des problèmes, d'autant qu'elle ne sera probablement pas très lisible.
+- __Il est préférable que le séquencement des étapes soit cohérent avec l'objet du traitement.__ Par exemple, si l'ensemble du traitement consiste à retraiter séparément deux tables, puis à les joindre, on peut imaginer trois étapes qui s'achèvent chacune par un `compute()`: le retraitement de la première table, le retraitement de la seconde table, et la jointure.
+- __Plus les données sont volumineuses, plus il faut être prudent avant de définir de longues étapes de traitement__.
+- __Plus les opérations unitaires sont complexes, plus les étapes doivent être courtes.__ Par exemple, si les opérations sont simplement des `filter()` et des `select()`, il est possible d'en enchaîner un certain nombre en une seule étape de traitement sans aucun problème. Inversement, une étape de traitement ne doit pas comprendre plus de trois ou quatre jointures (car les jointures sont des opérations complexes), en particulier si les tables sont volumineuses.
 
 ### Connaître les limites d'`arrow`
 
