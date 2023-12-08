@@ -33,15 +33,15 @@ Apache `arrow` est un projet *open-source* qui propose une représentation stand
 
 Le projet `arrow` présente cinq spécificités:
 
--   Représentation des données en mémoire: `arrow` organise les données en colonnes plutôt qu'en lignes (on parle de *columnar format*). Concrètement, cela veut dire que dans la RAM toutes les valeurs de la première colonne sont stockées de façon contiguë, puis les valeurs de la deuxième colonne, etc. Cette structuration des données rend les traitements très efficaces: si l'on veut par exemple calculer la moyenne d'une variable, il est possible d'accéder directement au bloc de mémoire vive qui contient cette colonne (indépendamment des autres colonnes de la table de données), d'où un traitement très rapide.
+-   __Représentation des données en mémoire__: `arrow` organise les données en colonnes plutôt qu'en lignes (on parle de *columnar format*). Concrètement, cela veut dire que dans la RAM toutes les valeurs de la première colonne sont stockées de façon contiguë, puis les valeurs de la deuxième colonne, etc. Cette structuration des données rend les traitements très efficaces: si l'on veut par exemple calculer la moyenne d'une variable, il est possible d'accéder directement au bloc de mémoire vive qui contient cette colonne (indépendamment des autres colonnes de la table de données), d'où un traitement très rapide.
 
--   Utilisation avec Parquet : `arrow` est souvent utilisé pour manipuler des données stockées en format Parquet. Parquet est un format de stockage orienté colonne conçu pour être très rapide en lecture (voir la fiche [Importer des fichiers Parquet](#importparquet) pour plus de détails). `arrow` est optimisé pour travailler sur des fichiers Parquet, notamment lorsqu'ils contiennent des données très volumineuses.
+-   __Utilisation avec Parquet__: `arrow` est souvent utilisé pour manipuler des données stockées en format Parquet. Parquet est un format de stockage orienté colonne conçu pour être très rapide en lecture (voir la fiche [Importer des fichiers Parquet](#importparquet) pour plus de détails). `arrow` est optimisé pour travailler sur des fichiers Parquet, notamment lorsqu'ils contiennent des données très volumineuses.
 
--   Traitement de données volumineuses: `arrow` est conçu pour traiter des données sans avoir besoin de les charger dans la mémoire vive. Cela signifie qu'`arrow` est capable de traiter des données très volumineuses, plus grosses que la mémoire vive dont on dispose. C'est un avantage majeur en comparaison aux autres approches possibles en `R` (`data.table` et `dplyr` par exemple).
+-   __Traitement de données volumineuses__: `arrow` est conçu pour traiter des données sans avoir besoin de les charger dans la mémoire vive. Cela signifie qu'`arrow` est capable de traiter des données très volumineuses, plus grosses que la mémoire vive dont on dispose. C'est un avantage majeur en comparaison aux autres approches possibles en `R` (`data.table` et `dplyr` par exemple).
 
--   Interopérabilité : `arrow` est conçu pour être interopérable entre plusieurs langages de programmation tels que `R`, Python, Java, C++, etc. Cela signifie que les données peuvent être échangées entre ces langages sans avoir besoin de convertir les données, d'où des gains importants de temps et de performance.
+-   __Interopérabilité__: `arrow` est conçu pour être interopérable entre plusieurs langages de programmation tels que `R`, Python, Java, C++, etc. Cela signifie que les données peuvent être échangées entre ces langages sans avoir besoin de convertir les données, d'où des gains importants de temps et de performance.
 
--   *Lazy Evaluation*: `arrow` prend en charge la *lazy evaluation* (évaluation différée) dans certains contextes. Cela signifie que les traitements ne sont effectivement exécutés que lorsqu'ils sont nécessaires, ce qui peut améliorer les performances en évitant le calcul de résultats intermédiaires non utilisés.
+-   __*Lazy Evaluation*__: `arrow` prend en charge la *lazy evaluation* (évaluation différée) dans certains contextes. Cela signifie que les traitements ne sont effectivement exécutés que lorsqu'ils sont nécessaires, ce qui peut améliorer les performances en évitant le calcul de résultats intermédiaires non utilisés.
 
 ### A quoi sert le *package* `arrow`?
 
@@ -70,7 +70,7 @@ Le _package_ `arrow` présente quatre caractéristiques importantes:
 
 ### Charger et paramétrer le `arrow`
 
-Pour utiliser `arrow`, il faut commencer par charger le *package*. Comme  `arrow` s'utilise presque toujours avec `dplyr` en pratique, il est préférable de prendre l'habitude de charger les deux *packages* ensemble. Par ailleurs, il est utile de définir systématiquement deux réglages qui sont importants pour les performances d'`arrow`: autoriser `arrow` à utiliser plusieurs processeurs en parallèle, et définir le nombre de processeurs qu'`arrow` peut utiliser.
+Pour utiliser `arrow`, il faut commencer par charger le *package*. Comme `arrow` s'utilise presque toujours avec `dplyr` en pratique, il est préférable de prendre l'habitude de charger les deux *packages* ensemble. Par ailleurs, il est utile de définir systématiquement deux réglages qui sont importants pour les performances d'`arrow`: autoriser `arrow` à utiliser plusieurs processeurs en parallèle, et définir le nombre de processeurs qu'`arrow` peut utiliser.
 
 ```{r, message=FALSE, warning=FALSE}
 library(arrow)
@@ -84,7 +84,7 @@ arrow::set_cpu_count(parallel::detectCores() %/% 2)
 
 ### Le `data.frame` version `arrow`: le `Arrow Table`
 
-**Le *package*`arrow` structure les données non pas dans un `data.frame` classique, mais dans un objet spécifique à `arrow`: le `Arrow Table`.** Dans un objet `Arrow Table`, les données sont organisées en colonnes plutôt qu'en lignes, conformément aux spécifications d'`arrow` (voir la présentation d'`arrow` ci-dessus). Pour convertir un `data.frame` en `Arrow Table`, il suffit d'utiliser la fonction `as_arrow_table()`.
+**Le *package* `arrow` structure les données non pas dans un `data.frame` classique, mais dans un objet spécifique à `arrow`: le `Arrow Table`.** Dans un objet `Arrow Table`, les données sont organisées en colonnes plutôt qu'en lignes, conformément aux spécifications d'`arrow` (voir la présentation d'`arrow` ci-dessus). Pour convertir un `data.frame` ou un `tibble` en `Arrow Table`, il suffit d'utiliser la fonction `as_arrow_table()`.
 
 Par rapport à un `data.frame` standard ou à un `tibble`, le `Arrow Table` se distingue immédiatement sur trois points. Pour illustrer ces différences, on utilise la base permanente des équipements 2018 (table `bpe_ens_2018`), transformée en `tibble` d'une part, et en `Arrow Table` d'autre part.
 
@@ -123,7 +123,6 @@ extrait_bpe <- bpe_ens_2018_arrow |> slice_head(n = 1000) |> collect()
 View(extrait_bpe)
 ```
 :::
-
 
 ### Manipuler des `Arrow Table` avec la syntaxe `dplyr`
 
@@ -165,21 +164,21 @@ bpe_ens_2018_arrow |>
 
 ### Le moteur d'exécution d'`arrow`: `acero`
 
-Il y a une différence fondamentale entre manipuler un `data.frame` ou un `tibble` et manipuler un `Arrow Table`, qui porte sur la __distinction entre syntaxe de manipulation des données et moteur d'exécution__. La syntaxe de manipulation des données sert à décrire décrire les manipulations de données qu'on veut faire (calculer des moyennes, faire des jointures...), indépendamment de la façon dont ces calculs sont effectivement réalisés. Inversement, le moteur d'exécution fait référence à la façon dont les opérations sur les données sont effectivement réalisées en mémoire, indépendamment de la façon dont elles ont été décrites par l'utilisateur.
+Il y a une différence fondamentale entre manipuler un `data.frame` ou un `tibble` et manipuler un `Arrow Table`. Pour bien la comprendre, il faut d'abord comprendre la __distinction entre syntaxe de manipulation des données et moteur d'exécution__. La syntaxe de manipulation des données sert à décrire les manipulations de données qu'on veut faire (calculer des moyennes, faire des jointures...), indépendamment de la façon dont ces calculs sont effectivement réalisés. Inversement, le moteur d'exécution fait référence à la façon dont les opérations sur les données sont effectivement réalisées en mémoire, indépendamment de la façon dont elles ont été décrites par l'utilisateur.
 
-__La grande différence entre manipuler un `tibble` et manipuler un `Arrow Table` tient au moteur d'exécution__: si on manipule un `tibble` avec la syntaxe de `dplyr`, alors c'est le moteur d'exécution de `dplyr` qui fait les calculs; si on manipule un `Arrow Table` avec la syntaxe de `dplyr`, alors c'est le moteur d'exécution d'`arrow` (nommé `acero`) qui fait les calculs. C'est justement parce que le moteur d'exécution d'`arrow` est beaucoup plus efficace que celui de `dplyr` qu'`arrow` est beaucoup plus rapide. 
+__La grande différence entre manipuler un `tibble` et manipuler un `Arrow Table` tient au moteur d'exécution__: si on manipule un `tibble` avec la syntaxe de `dplyr`, alors c'est le moteur d'exécution de `dplyr` qui fait les calculs; si on manipule un `Arrow Table` avec la syntaxe de `dplyr`, alors c'est le moteur d'exécution d'`arrow` (nommé `acero`) qui fait les calculs. C'est justement parce que le moteur d'exécution d'`arrow` est beaucoup plus efficace que celui de `dplyr` qu'`arrow` est beaucoup plus rapide.
 
 <!-- __Comprendre cette différence de moteurs d'exécution est essentiel pour bien utiliser `arrow` et résoudre les problèmes qui se présentent lorsqu'on découvre cet outil__. -->
 
 
 <!-- __La grande différence entre `dplyr` et `arrow` tient au moteur d'exécution__: si on manipule un `tibble` avec la syntaxe de `dplyr`, alors c'est le moteur d'exécution de `dplyr` qui fait les calculs; si on manipule un `Arrow Table` avec la syntaxe de `dplyr`, alors les instructions sont automatiquement converties et envoyées au moteur d'exécution d'`arrow` (nommé `acero`), et c'est ce moteur qui fait les calculs. C'est justement parce que le moteur d'exécution d'`arrow` est beaucoup plus efficace que celui de `dplyr` qu'`arrow` est beaucoup plus rapide. __Comprendre cette différence de moteurs d'exécution est essentiel pour bien utiliser `arrow` et résoudre les problèmes qui se présentent lorsqu'on découvre cet outil__. -->
 
-__Cette différence de moteurs d'exécution a une conséquence technique importante__: une fois que l'utilisateur a défini des instructions avec la syntaxe `dplyr`, il est nécessaire que celles-ci soient converties pour que le moteur `acero` (implémenté en C++ et non en `R`) puissent les exécuter. De façon générale, `arrow` fait cette conversion de façon automatique et invisible, car le  _package_ `arrow` contient la traduction C++ de plusieurs centaines de fonctions du `tidyverse`. Par exemple, le _package_ `arrow` contient la traduction C++ de la fonction `filter()` de `dplyr`, ce qui fait que les instructions `filter()` sont automatiquement converties de façon invisible. La liste des fonctions du _tidyverse_ supportées par `acero` est disponible sur [cette page](https://arrow.apache.org/docs/dev/r/reference/acero.html). Il arrive toutefois qu'on veuille utiliser une fonction non supportée par `acero`. Cette situation est décrite dans le paragraphe "Comment utiliser une fonction non supportée par `acero`".
+__Cette différence de moteurs d'exécution a une conséquence technique importante__: une fois que l'utilisateur a défini des instructions avec la syntaxe `dplyr`, il est nécessaire que celles-ci soient converties pour que le moteur `acero` (implémenté en C++ et non en `R`) puissent les exécuter. De façon générale, `arrow` fait cette conversion de façon automatique et invisible, car le  _package_ `arrow` contient la traduction C++ de plusieurs centaines de fonctions du `tidyverse`. Par exemple, le _package_ `arrow` contient la traduction C++ de la fonction `filter()` de `dplyr`, ce qui fait que les instructions `filter()` écrites en syntaxe `tidyverse` sont converties de façon automatique et invisible en des instructions C++ équivalentes. La liste des fonctions du _tidyverse_ supportées par `acero` est disponible sur [cette page](https://arrow.apache.org/docs/dev/r/reference/acero.html). Il arrive toutefois qu'on veuille utiliser une fonction non supportée par `acero`. Cette situation est décrite dans le paragraphe "Comment utiliser une fonction non supportée par `acero`".
 
 
 ### L'évaluation différée avec `arrow` (_lazy evaluation_)
 
-__Une caractéristique importante d'`arrow` est qu'il pratique l'évaluation différée (_lazy evaluation_): les calculs ne sont effectivement réalisés que lorsqu'ils sont nécessaires__. En pratique, cela signifie qu'`arrow` se contente de et ne fait aucun calcul tant que l'utilisateur ne le demande pas explicitement. Il existe deux fonctions pour déclencher l'évaluation d'un traitement `arrow`: `collect()` et `compute()`. Ces deux fonctions ont le même effet; la seule différence est que `collect()` renvoie le résultat du traitement sous la forme d'un `tibble`, tandis que `compute()` le renvoie sous la forme d'un `Arrow Table`.
+__Une caractéristique importante d'`arrow` est qu'il pratique l'évaluation différée (_lazy evaluation_): les calculs ne sont effectivement réalisés que lorsqu'ils sont nécessaires__. En pratique, cela signifie qu'`arrow` se contente de et ne fait aucun calcul tant que l'utilisateur ne le demande pas explicitement. Il existe deux fonctions pour déclencher l'évaluation d'un traitement `arrow`: `collect()` et `compute()`. Il n'y a qu'une seule différence entre `collect()` et `compute()`, mais elle est importante: `collect()` renvoie le résultat du traitement sous la forme d'un `tibble`, tandis que `compute()` le renvoie sous la forme d'un `Arrow Table`.
 
 __L'évaluation différée permet d'améliorer les performances en évitant le calcul de résultats intermédiaires inutiles, et en optimisant les requêtes__ pour utiliser le minimum de données et le minimum de ressources. L'exemple suivant illustre l'intérêt de l'évaluation différée dans un cas simple. 
 
@@ -194,8 +193,7 @@ equipements_par_departement <- bpe_ens_2018_arrow |>
 equipements_par_departement |> filter(DEP == "59") |> collect()
 ```
 
-
-Dans cet exemple, on procède à un traitement en deux temps: on compte les équipements par département, puis on filtre sur le département. Il est important de souligner que la première étape ne réalise aucun calcul par elle-même, car elle ne comprend ni `collect()` ni `compute()`. L'objet `equipements_par_departement` n'est pas une table et ne contient pas de données, il contient simplement la requête (_query_) à appliquer à la table `bpe_ens_2018_arrow`.
+Dans cet exemple, on procède à un traitement en deux temps: on compte les équipements par département, puis on filtre sur le département. Il est important de souligner que la première étape ne réalise aucun calcul par elle-même, car elle ne comprend ni `collect()` ni `compute()`. L'objet `equipements_par_departement` n'est pas une table et ne contient pas de données, il contient simplement une requête (_query_) à appliquer à la table `bpe_ens_2018_arrow`.
 
 On pourrait penser que, lorsqu'on exécute l'ensemble de ce traitement, `arrow` se contente d'exécuter les instructions les unes après les autres: compter les équipements par département, puis conserver uniquement le département 59. Mais en réalité `arrow` fait beaucoup mieux que cela: __`arrow` analyse la requête avant de l'exécuter, et optimise le traitement pour minimiser le travail__. Dans le cas présent, `arrow` repère que la requête ne porte en fait que sur le département 59, et commence donc par filtrer les données sur le département avant de compter les équipements, de façon à ne conserver que le minimum de données nécessaires et à ne réaliser que le minimum de calculs. Ce type d'optimisation s'avère très utile quand les données à traiter sont très volumineuses.
 
