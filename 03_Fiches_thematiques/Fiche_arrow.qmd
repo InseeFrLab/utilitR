@@ -363,7 +363,7 @@ Dans la plupart des cas, il est possible de trouver une solution pour écrire un
 - Regarder la [liste des fonctions du _tidyverse_ supportées par `acero`](https://arrow.apache.org/docs/dev/r/reference/acero.html) pour voir s'il est possible d'utiliser une fonction supportée par `acero`;
 - Faire des tests pour pour voir si une réécriture mineure du traitement peut régler le problème.
 
-L'exemple qui suit montre comment on peut parfois trouver une solution très simple. Dans cet exemple, on veut calculer le nombre de boulangeries (`TYPEQU == "B203"`) et de poissonneries (`TYPEQU == "B206"`) dans chaque département, en stockant les résultats dans un `Arrow Table` (avec `compute()`). Malheureusement, `acero` ne parvient pas à réaliser ce traitement, et `R` est contraint de convertir les données en `tibble`.
+L'exemple qui suit montre que la solution peut être très simple, même lorsque l'erreur semble complexe. Dans cet exemple, on veut calculer le nombre de boulangeries (`TYPEQU == "B203"`) et de poissonneries (`TYPEQU == "B206"`) dans chaque département, en stockant les résultats dans un `Arrow Table` (avec `compute()`). Malheureusement, `acero` ne parvient pas à réaliser ce traitement, et `R` est contraint de convertir les données en `tibble`.
 
 ```{r eval=FALSE,message=FALSE}
 resultats <- bpe_ens_2018_arrow |>
@@ -375,7 +375,7 @@ resultats <- bpe_ens_2018_arrow |>
   compute()
 ```
 
-Le message d'erreur renvoyé par `R` est la suivante: `! NotImplemented: Function 'multiply_checked' has no kernel matching input types (double, bool); pulling data into `. En lisant attentivement le message d'erreur et en le rapprochant du traitement, on finit par comprendre que l'erreur vient de l'opération `sum(NB_EQUIP * (TYPEQU == "B203"))`: `arrow` ne parvient pas à faire la multiplication entre `NB_EQUIP` (un nombre réel) et `(TYPEQU == "B203")` (un booléen). La solution est très simple: il suffit de convertir `(TYPEQU == "B203")` en nombre entier avec la fonction `as.integer()` qui est supportée par `acero`. Le code suivant peut alors être entièrement exécuté par `acero`:
+Le message d'erreur renvoyé par `R` est la suivante: `! NotImplemented: Function 'multiply_checked' has no kernel matching input types (double, bool); pulling data into R`. En lisant attentivement le message d'erreur et en le rapprochant du traitement, on finit par comprendre que l'erreur vient de l'opération `sum(NB_EQUIP * (TYPEQU == "B203"))`: `arrow` ne parvient pas à faire la multiplication entre `NB_EQUIP` (un nombre réel) et `(TYPEQU == "B203")` (un booléen). La solution est très simple: il suffit de convertir `(TYPEQU == "B203")` en nombre entier avec la fonction `as.integer()` qui est supportée par `acero`. Le code suivant peut alors être entièrement exécuté par `acero`:
 
 ```{r eval=FALSE,message=FALSE}
 resultats <- bpe_ens_2018_arrow |>
