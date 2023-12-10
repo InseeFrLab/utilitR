@@ -269,11 +269,83 @@ write_parquet(res_final, "resultats.parquet")
 Si vous ne savez plus si une table de données est un `Arrow Table` ou un `tibble`, il suffit d'exécuter `class(le_nom_de_ma_table)`. Si la table est un `Arrow Table`, vous obtiendrez ceci: `"Table"        "ArrowTabular" "ArrowObject"  "R6"`. Si elle est un `tibble`, vous obtiendrez `"tbl_df"     "tbl"        "data.frame"`.
 :::
 
+### Accéder aux fichiers Parquet avec `open_dataset()` plutôt que `read_parquet()`
+
+__Il est recommandé d'utiliser systématiquement la fonction `open_dataset()` plutôt que la fonction `read_parquet()` pour accéder à des données stockées en format Parquet.__ En effet, la fonction `open_dataset()` présente deux avantages:
+
+- __Consommation mémoire inférieure__: la fonction `open_dataset()` crée une connexion au fichier Parquet, mais elle n'importe pas les données contenues dans le fichier tant que l'utilisateur ne le demande pas avec `compute()` ou `collect()`, et elle est optimisée pour importer uniquement les données nécessaires au traitement. Inversement, la fonction `read_parquet()` importe immédiatement dans `R` toutes les données du fichier Parquet, y compris des données qui ne servent pas à la suite du traitement.
+- __Usage plus général__: la fonction `open_dataset()` peut se connecter à un fichier Parquet unique, mais aussi à des fichiers Parquet partitionnés, tandis que `read_parquet()` ne peut pas lire ces derniers.
+
+
 ### Savoir bien utiliser l'évaluation différée
 
-Le paragraphe @subsec-lazy a présenté la notion d'évaluation différée et son intérêt pour optimiser les performances. Toutefois, l'évaluation différée n'est pas toujours facile à utiliser, et présente des limites qu'il faut bien comprendre. Cette section 
+Le paragraphe @subsec-lazy a présenté la notion d'évaluation différée et son intérêt pour optimiser les performances. Toutefois, l'évaluation différée n'est pas toujours facile à utiliser, et présente des limites qu'il faut bien comprendre. Cette section décrit plus en détail le fonctionnement de l'évaluation différée et ses limites. Pour illustrer ce fonctionnement, on commence par exporter la base permanente des équipements sous la forme d'un dataset Arrow partitionné. 
 
-#### Comprendre les limites de l'évaluation différée
+```{r, message=FALSE}
+# Sauvegarder la BPE 2018 sous la forme d'un dataset Arrow partitionné
+write_dataset(
+  bpe_ens_2018_arrow,
+  "bpe2018/",
+  partitioning = "REG",
+  hive_style = TRUE
+)
+```
+
+#### Comment fonctionne l'évaluation différée?
+
+Ce paragraphe s'adresse aux lecteurs qui souhaitent comprendre plus en détail le fonctionnement de l'évaluation différée. Les lecteurs pressés peuvent passer directement au paragraphe suivant, sur les limites de l'évaluation différée.
+
+Le traitement suivant est un exemple simple d'utilisation de l'évaluation différée. Ce traitement comprend trois étapes: se connecter aux données avec `open_dataset()`, puis calculer le nombre d'équipements par département, et enfin sélectionner le département 59.
+
+```{r, message=FALSE}
+# Étape 1: se connecter au fichier Paruet Partitionné
+ds_bpe2018 <- open_dataset(
+  "bpe2018/",
+  partitioning = schema("REG" = utf8()),
+  hive_style = TRUE
+)
+
+# Étape 2: compter les équipements
+eq_dep <- ds_bpe2018 |>
+  group_by(DEP) |>
+  summarise(
+    NB_EQUIP_TOT = sum(NB_EQUIP)
+  )
+
+# Étape 3: filtrer sur le département
+resultats <- eq_dep |> 
+  filter(DEP == "59")
+```
+
+
+```{r, message=FALSE}
+# Imprimer la première requête
+show_exec_plan(ds_bpe2018)
+```
+
+
+
+- Le code ci-dessous n'effectue aucun calcul, car il ne comprend ni `collect()` ni `compute()`. Il faut exécuter `resultats |> collect()` ou  `resultats |> compute()` pour que les calculs soient effectivement réalisés.
+- Les objets `ds_bpe2018`, `eq_dep` et `resultats` ne sont pas des tables `R` standards contenant des données: ce sont des requêtes de classe `arrow_dplyr_query`, qui décrivent des opérations à mener sur des données. C'est justement en utilisant `collect()` ou `compute()` qu'on demande à `R` d'exécuter ces requêtes. 
+
+
+```{r, message=FALSE}
+# Imprimer la deuxième requête, qui contient la première
+show_exec_plan(eq_dep)
+```
+
+```{r, message=FALSE}
+# Imprimer la troisième requête, qui contient les deux premières
+show_exec_plan(resultats)
+```
+
+Expliquer la notion de `arrow_dplyr_query`
+
+
+Plus un traitement est long, plus la requête est longue et complexe.
+
+
+#### Quelles sont les limites de l'évaluation différée?
 
 L'évaluation différée optimise les performances en minimisant la quantité de données chargées en RAM et la quantité de calculs effectivement réalisés. 
 Avec cette vision en tête, on pourrait penser que la meilleure façon d'utiliser `arrow` est d'écrire un traitement entier en mode _lazy_ (autrement dit: sans aucun `compute()` ni aucun `collect()` dans les étapes intermédiaires), et faire un unique `compute()` ou `collect()` tout à la fin du traitement, pour que toutes les opérations soient réalisées de façon optimisée en une seule étape. Un traitement idéal ressemblerait alors à ceci:
