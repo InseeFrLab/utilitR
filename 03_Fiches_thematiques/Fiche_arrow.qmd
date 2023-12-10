@@ -126,7 +126,7 @@ View(extrait_bpe)
 
 ### Manipuler des `Arrow Table` avec la syntaxe `dplyr`
 
-__Le _package_ `R` `arrow` a été écrit de façon à ce qu'un `Arrow Table` puisse être manipulé avec les fonctions de `dplyr` (`select`, `filter`, `mutate`, `left_join`, etc.), comme si cette table était un `data.frame` ou `tibble` standard.__ Il est également possible d'utiliser sur un `Arrow Table` un certain nombre de fonctions des _packages_ du `tidyverse` (comme `stringr` et `lubridate`). Cela s'avère très commode en pratique, car lorsqu'on sait utiliser `dplyr` et le `tidyverse`, on peut commencer à utiliser `arrow` sans avoir à apprendre une nouvelle syntaxe de manipulation de données.
+__Le _package_ `R` `arrow` a été écrit de façon à ce qu'un `Arrow Table` puisse être manipulé avec les fonctions de `dplyr` (`select`, `filter`, `mutate`, `left_join`, etc.), comme si cette table était un `data.frame` ou un `tibble` standard.__ Il est également possible d'utiliser sur un `Arrow Table` un certain nombre de fonctions des _packages_ du `tidyverse` (comme `stringr` et `lubridate`). Cela s'avère très commode en pratique, car lorsqu'on sait utiliser `dplyr` et le `tidyverse`, on peut commencer à utiliser `arrow` sans avoir à apprendre une nouvelle syntaxe de manipulation de données.
 
 Dans l'exemple suivant, on calcule le nombre d'équipements par région, à partir d'un `tibble` et à partir d'un `Arrow table`. La seule différence apparente entre les deux traitement est la présence de la fonction `collect()` à la fin des instructions; cette fonction indique que l'on souhaite que le résultat du traitement soit stocké sous la forme d'un `tibble`. La raison d'être de ce `collect()` est expliqué plus loin, dans le paragraphe sur l'évaluation différée.
 
@@ -207,9 +207,8 @@ On pourrait penser que, lorsqu'on exécute l'ensemble de ce traitement, `arrow` 
 
 __Lorsqu'on manipule des données volumineuses, il est essentiel de manipuler uniquement des objets `Arrow Table`, plutôt que des `tibbles`__. Cela implique deux recommandations:
 
-- __Importer les données directement dans des `Arrow Table`, ou à défaut convertir en `Arrow Table` avec la fonction `as_arrow_table()`.__ Par exemple, lorsqu'on importe un fichier Parquet avec la fonction `read_parquet` ou un fichier csv avec la fonction `arrow::read_csv_arrow()`, il est recommandé d'utiliser l'option `as_data_frame = FALSE` pour que les données soient importées dans un `Arrow Table`.
+- __Importer les données directement dans des `Arrow Table`, ou à défaut convertir en `Arrow Table` avec la fonction `as_arrow_table()`.__ Par exemple, lorsqu'on importe un fichier Parquet avec la fonction `read_parquet()` ou un fichier csv avec la fonction `read_csv_arrow()`, il est recommandé d'utiliser l'option `as_data_frame = FALSE` pour que les données soient importées dans un `Arrow Table`.
 - __Utiliser systématiquement `compute()` plutôt que `collect()` dans les étapes de calcul intermédiaires.__ Cette recommandation est particulièrement importante. L'exemple suivant explique pourquoi il est préférable d'utiliser `compute()` dans les étapes intermédiaires:
-
 
 - __Situation à éviter__: la première étape de traitement étant déclenchée par `collect()` (ligne 7), la table intermédiaire `res_intermediaire1` est un `tibble`. Par conséquent, c'est le moteur d'exécution de `dplyr` qui est utilisé pour manipuler `res_intermediaire1` lors de la seconde étape du traitement, ce qui peut dégrader fortement les performances, en particulier si les données sont volumineuses.
 
