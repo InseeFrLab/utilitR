@@ -27,7 +27,8 @@ RUN apt-get -qq install --no-install-recommends \
 RUN apt-get -qq install --no-install-recommends \
        imagemagick \
        libmagick++-dev \
-       ghostscript
+       ghostscript \
+       libglpk40
 
 RUN apt-get -qq install --no-install-recommends \
        libgs-dev \
