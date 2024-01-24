@@ -4,12 +4,14 @@
 
 L'utilisateur souhaite manipuler des données structurées sous forme de `data.frame` (sélectionner des variables, sélectionner des observations, créer des variables, joindre des tables).
 
-::: {.callout-recommandation .icon}
+::: {.callout-important}
+## Tâche concernée et recommandation
+
 * Pour des tables de données de taille petite et moyenne (inférieure à 1 Go ou moins d'un million d'observations), il est recommandé d'utiliser les *packages* `tibble`, `dplyr` et `tidyr` qui sont présentés dans la fiche [Manipuler des données avec le `tidyverse`](#tidyverse);
 * Pour des tables de données de grande taille (plus de 1 Go ou plus d'un million d'observations), il est recommandé d'utiliser soit le _package_ `data.table` qui fait l'objet de la présente fiche, soit les _packages_ `arrow` et `duckdb` présentés dans les fiches [Manipuler des données avec `arrow`](#arrow) et [Manipuler des données avec `duckdb`](#duckdb).
 :::
 
-::: {.callout-remarque .icon}
+::: {.callout-note}
 Certains exemples de cette fiche utilisent les données disponibles dans le _package_ `doremifasolData` ; vous ne pourrez reproduire ces exemples que si ce _package_ est installé sur la machine sur laquelle vous travaillez. Si vous ne savez pas si ce _package_ est déjà installé, consultez la fiche [Comment utiliser la documentation `utilitR`](#presentation-utilitr).
 :::
 
@@ -34,7 +36,7 @@ dt <- data.table(x = c("A", "B", "C"),
 dt
 ```
 
-::: {.callout-remarque .icon}
+::: {.callout-note}
 Il est possible de modifier les options globales de `data.table` pour avoir un affichage plus informatif avec les classes de chaque colonne et l'éventuelle clé de la base (voir plus bas) :
 ```{r}
 options(
@@ -56,7 +58,7 @@ options(
 - Il n'est pas nécessaire d'utiliser le préfixe `DT$` pour se référer aux variables à l'intérieur de `[...]` ;
 - Le code est très concis, ce qui aide à le rendre lisible.
 
-::: {.callout-remarque .icon}
+::: {.callout-note}
 Cette syntaxe compacte est aussi un des atouts fondamentaux de `data.table` pour sa rapidité : `data.table` ne manipule que les colonnes mentionnées dans l'opérateur `[...]`, ce qui réduit le temps de traitement des données.
 :::
 
@@ -103,7 +105,7 @@ dt[x > 3, sum(y), by = z]
 
 </div>
 
-::: {.callout-conseil .icon}
+::: {.callout-tip}
 L'utilisation du *package* `data.table` peut paraître plus déroutante pour les débutants que l'utilisation de `dplyr`. Toutefois, l'apprentissage de `data.table` est particulièrement recommandé si vous avez l'intention d'utiliser `R` avec des données volumineuses car `data.table` est _beaucoup_ plus rapide et puissant que `dplyr`. Des remarques et conseils sont présents dans cette fiche pour vous aider à vous familiariser avec la syntaxe de `data.table`.
 :::
 
@@ -249,7 +251,7 @@ bpe_ens_2018_dt <- as.data.table(bpe_ens_2018)
 selection <- bpe_ens_2018_dt[DEPCOM == "75101" & TYPEQU == "B304"]
 ```
 
-::: {.callout-remarque .icon}
+::: {.callout-note}
 Voici une remarque très importante sur le fonctionnement de `data.table` : **lorsqu'on souhaite conserver toutes les lignes d'un `data.table`, il faut laisser vide l'emplacement pour `i`, sans oublier la virgule.** Par exemple, pour connaître le nombre de lignes de `iris_dt`, on écrit : `iris_dt[ , .N]`.  Notez bien l'emplacement vide et la virgule après `[`.
 :::
 
@@ -270,7 +272,7 @@ bpe_ens_2018_dt[ , .(DEPCOM, TYPEQU, NB_EQUIP)]
 bpe_ens_2018_dt[ , .SD, .SDcols = c("DEPCOM", "TYPEQU", "NB_EQUIP")]
 ```
 
-::: {.callout-remarque .icon}
+::: {.callout-note}
 La seconde méthode peut vous sembler inutilement complexe. C'est vrai dans l'exemple donné ci-dessus, mais les fonctions `.SD` et `.SDcols` s'avèrent très puissantes dans un grand nombre de situations (notamment quand on veut programmer des fonctions qui font appel à `data.table`).
 :::
 
@@ -323,7 +325,7 @@ Vous pouvez utiliser toutes les fonctions statistiques de `R` avec `data.table`.
 |`%between%`      | Valeur entre deux nombres                         | `dt[x %between% c(5,13)]` |
 | `%like%`        | Reconnaissance d'une chaîne de caractères (expression régulière)         | `dt[departement %like% "^Haute"]`
 
-::: {.callout-remarque .icon}
+::: {.callout-note}
 La fonction `.N` permet de créer facilement des compteurs avec la syntaxe `1:.N` ou `seq(.N)`. Par exemple `dt[ , compteur := seq(.N), by = 'x']` permet de créer une variable `compteur` qui vaut de 1 à N pour chaque groupe d'observations défini par `x`.
 :::
 
@@ -343,7 +345,7 @@ bpe_ens_2018_dt[ ,
                  by = .(DEP)]
 ```
 
-::: {.callout-remarque .icon}
+::: {.callout-note}
 L'argument `by` fonctionne également avec l'opérateur `:=`. Vous pouvez en apprendre davantage sur l'usage de cet opérateur dans la partie [La fonction d'assignation par référence (ou `:=`)](#assignation-reference).
 :::
 
@@ -367,7 +369,7 @@ Enfin, il est possible de réaliser des jointures plus sophistiquées avec `data
 
 Pour savoir si `un data.table` est déjà indexé, on peut exécuter la commande `key(dt)` qui renvoie le nom des clés s'il y en a, et `NULL` sinon.
 
-::: {.callout-conseil .icon}
+::: {.callout-tip}
 **L'exécution de la fonction `data.table::setkey()` peut prendre un peu de temps** (parfois quelques minutes sur une table de plus de 10 millions de lignes), car `data.table` trie toute la table en fonction des variables-clé. Toutefois, c'est une étape vraiment utile car elle accélère considérablement les opérations ultérieures sur les lignes. Il est vivement recommandé de l'utiliser si une ou plusieurs variables vont régulièrement servir à filtrer ou combiner des données. Pour aller plus loin, voir cette [vignette](https://cran.r-project.org/web/packages/data.table/vignettes/datatable-keys-fast-subset.html).
 :::
 
@@ -417,7 +419,7 @@ donnees_pauvrete_long <-
 donnees_pauvrete_long
 ```
 
-::: {.callout-conseil .icon}
+::: {.callout-tip}
 
 **Il est recommandé de travailler avec des données en format `long` plutôt qu'en format `wide`, notamment lorsque vous voulez faire des graphiques.** En effet, le _package_ de visualisation graphique `ggplot2` est optimisé pour manipuler des données en format `long` (voir la fiche [Faire des graphiques avec `ggplot2`]). Ce conseil est particulièrement important si vous voulez représenter un graphique avec des groupes : il est préférable que les groupes soient empilés (format `long`) plutôt que juxtaposés (format `wide`), car le code est plus rapide et facile à écrire.
 :::
@@ -454,7 +456,7 @@ bpe_ens_2018_wide2 <- dcast(bpe_ens_2018_dt,
 bpe_ens_2018_wide2
 ```
 
-::: {.callout-conseil .icon}
+::: {.callout-tip}
 * La fonction `dcast()` crée une colonne par valeur des variables utilisées dans la partie droite de la formule. **Il faut donc faire attention à ce que ces variables aient un nombre limité de valeurs**, pour ne pas obtenir une table *extrêmement* large. On peut éventuellement discrétiser les variables continues, ou regrouper les modalités avant d'utiliser `dcast()`.
 * On peut obtenir des **noms de colonnes peu significatifs** lorsqu'on utilise `dcast()` avec une fonction d'agrégation. Il est conseillé de modifier légèrement la partie droite de la formule pour obtenir des noms plus significatifs. Voici un exemple où on ajoute le préfixe `resultat_region` :
   ```{r}
@@ -466,7 +468,7 @@ bpe_ens_2018_wide2
   ```
 :::
 
-::: {.callout-remarque .icon}
+::: {.callout-note}
 
 **Il est conseillé de bien réfléchir avant de restructurer des données en format *wide*, et de ne le faire que lorsque cela paraît indispensable**. En effet, s'il est tentant de restructurer les données sous format *wide* car ce format peut paraître plus intuitif, il est généralement plus simple et plus rigoureux de traiter les données en format *long*. Ceci dit, il existe des situations dans lesquelles il est indiqué de restructurer les données en format *wide*. Voici deux exemples :
 
@@ -475,7 +477,7 @@ bpe_ens_2018_wide2
 :::
   
 
-<!-- ::: {.callout-conseil .icon} -->
+<!-- ::: {.callout-tip} -->
 <!-- **Conseils** -->
 
 <!-- * La fonction `dcast()` crée une colonne par valeur des variables utilisées dans la partie droite de la formule (trois colonnes pour les trois valeurs de `cyl` dans l'exemple qui précède). **Il faut donc faire attention à ce que ces variables aient un nombre limité de valeurs**, pour ne pas obtenir une table *extrêmement* large. On peut éventuellement discrétiser les variables continues, ou regrouper les modalités avant d'utiliser `dcast()`. -->
@@ -566,7 +568,7 @@ bpe_ens_2018_dt[ , `:=`(nouvelle_colonne1 = NB_EQUIP * 2,
                         nouvelle_colonne2 = NB_EQUIP + 3)]
 ```
 
-::: {.callout-remarque .icon}
+::: {.callout-note}
 Si vous utilisez la notation`` `:=`() ``, alors il faut utiliser uniquement `=` à l'intérieur des parenthèses pour créer ou modifier des variables, et non `:=`.  Par exemple,
 ```{r, eval = FALSE}
 dt[ , `:=`(var1 = "Hello", var2 = "world")]
@@ -705,7 +707,7 @@ head(creation_var(filosofi_com_2016_dt,
 
 `c(nouveau_nom)` permet de s'assurer que `data.table` crée une nouvelle colonne dont le nom est défini en argument (et qui ne s'appelle donc pas `nouveau_nom`).
 
-::: {.callout-remarque .icon}
+::: {.callout-note}
 La version `1.14.1` de data.table (encore en développement) apporte une syntaxe améliorée dans ce cas et considère l'utilisation de `get` comme désuète. Le `[...]` admet un nouvel argument `env` à qui on donne tous les remplacements que l'on souhaite. L'exemple devient :
 
 ```
@@ -732,7 +734,7 @@ creation_var <- function(data, nom_variable, nouveau_nom, fonction){
 ```
 :::
 
-::: {.callout-conseil .icon}
+::: {.callout-tip}
 Lorsqu'on définit des fonctions pour effectuer des traitements génériques, une précaution est nécessaire pour ne pas modifier les données en entrée de la fonction si l'opérateur `:=` est utilisée. Il est recommandé dans ce cas de créer une copie du dataframe en entrée (`data.table::copy(df)`) et d'effectuer les traitements sur cette copie. 
 :::
 
