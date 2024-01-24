@@ -180,7 +180,7 @@ __La grande différence entre manipuler un `tibble` et manipuler un `Arrow Table
 __Cette différence de moteurs d'exécution a une conséquence technique importante__: une fois que l'utilisateur a défini des instructions avec la syntaxe `dplyr`, il est nécessaire que celles-ci soient converties pour que le moteur `acero` (écrit en C++ et non en `R`) puissent les exécuter. De façon générale, `arrow` fait cette conversion de façon automatique et invisible, car le  _package_ `arrow` contient la traduction C++ de plusieurs centaines de fonctions du `tidyverse`. Par exemple, le _package_ `arrow` contient la traduction C++ de la fonction `filter()` de `dplyr`, ce qui fait que les instructions `filter()` écrites en syntaxe `tidyverse` sont converties de façon automatique et invisible en des instructions C++ équivalentes. La liste des fonctions du _tidyverse_ supportées par `acero` est disponible sur [cette page](https://arrow.apache.org/docs/dev/r/reference/acero.html). Il arrive toutefois qu'on veuille utiliser une fonction non supportée par `acero`. Cette situation est décrite dans le paragraphe "Comment utiliser une fonction non supportée par `acero`".
 
 
-### L'évaluation différée avec `arrow` (_lazy evaluation_) {#subsec-lazy}
+### L'évaluation différée avec `arrow` (_lazy evaluation_) {#sec-lazy}
 
 __Une caractéristique importante d'`arrow` est qu'il pratique l'évaluation différée (_lazy evaluation_): les calculs ne sont effectivement réalisés que lorsqu'ils sont nécessaires__. En pratique, cela signifie qu'`arrow` se contente de mémoriser les instructions, sans faire aucun calcul tant que l'utilisateur ne le demande pas explicitement. Il existe deux fonctions pour déclencher l'évaluation d'un traitement `arrow`: `collect()` et `compute()`. Il n'y a qu'une seule différence entre `collect()` et `compute()`, mais elle est importante: `collect()` renvoie le résultat du traitement sous la forme d'un `tibble`, tandis que `compute()` le renvoie sous la forme d'un `Arrow Table`.
 
@@ -283,7 +283,7 @@ __Il est recommandé d'utiliser systématiquement la fonction `open_dataset()` p
 
 ### Savoir bien utiliser l'évaluation différée
 
-Le paragraphe @subsec-lazy a présenté la notion d'évaluation différée et son intérêt pour optimiser les performances. Toutefois, l'évaluation différée n'est pas toujours facile à utiliser, et présente des limites qu'il faut bien comprendre. Cette section décrit plus en détail le fonctionnement de l'évaluation différée et ses limites. Pour illustrer ce fonctionnement, on commence par exporter la base permanente des équipements sous la forme d'un dataset Arrow partitionné. La fiche [Importer des fichiers Parquet](#importparquet) décrit en détail ce qu'est un fichier Parquet partitionné et comment le manipuler.
+Le paragraphe @sec-lazy a présenté la notion d'évaluation différée et son intérêt pour optimiser les performances. Toutefois, l'évaluation différée n'est pas toujours facile à utiliser, et présente des limites qu'il faut bien comprendre. Cette section décrit plus en détail le fonctionnement de l'évaluation différée et ses limites. Pour illustrer ce fonctionnement, on commence par exporter la base permanente des équipements sous la forme d'un dataset Arrow partitionné. La fiche [Importer des fichiers Parquet](#importparquet) décrit en détail ce qu'est un fichier Parquet partitionné et comment le manipuler.
 
 ```{r, message=FALSE}
 # Sauvegarder la BPE 2018 sous la forme d'un dataset Arrow partitionné
