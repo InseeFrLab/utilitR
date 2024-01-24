@@ -7,11 +7,11 @@ L'utilisateur souhaite manipuler des données structurées sous forme de `data.f
 ::: {.callout-recommandation .icon}
 - Pour des tables de données de taille petite et moyenne (inférieure à 1 Go ou moins d'un million d'observations), il est recommandé d'utiliser les *packages* `tibble`, `dplyr` et `tidyr` qui sont présentés dans la fiche [Manipuler des données avec le `tidyverse`](#tidyverse);
 
-- Pour des tables de données de grande taille (plus de 1 Go ou plus d'un million d'observations), il est recommandé d'utiliser soit le *package* `data.table` qui fait l'objet de la fiche [Manipuler des données avec `data.table`](#datatable), soit le *package* `arrow` qui fait l'objet de la présente fiche, avec éventuellement `duckdb` en complément.
+- Pour des tables de données de grande taille (plus de 1 Go en CSV, plus de 200 Mo en Parquet, ou plus d'un million d'observations), il est recommandé d'utiliser soit le *package* `data.table` qui fait l'objet de la fiche [Manipuler des données avec `data.table`](#datatable), soit le *package* `arrow` qui fait l'objet de la présente fiche, avec éventuellement `duckdb` en complément.
 
 - Il est essentiel de travailler avec la dernière version d'`arrow`, de `duckdb` et de `R` car les *packages* `arrow` et `duckdb` sont en cours de développement.
 
-- Si les données traitées sont très volumineuses (plus de 10 Go ou plus de 10 millions d'observations), il est essentiel de manipuler uniquement des objets `Arrow Table`, plutôt que des `tibbles`. Cela implique notamment d'utiliser la fonction `compute()` plutôt que `collect()` dans les traitements intermédiaires.
+- Si les données traitées sont très volumineuses (plus de 5 Go en CSV, plus de 1 Go en Parquet ou plus de 5 millions d'observations), il est essentiel de manipuler uniquement des objets `Arrow Table`, plutôt que des `tibbles`. Cela implique notamment d'utiliser la fonction `compute()` plutôt que `collect()` dans les traitements intermédiaires.
 
 :::
 
@@ -178,7 +178,7 @@ __Cette différence de moteurs d'exécution a une conséquence technique importa
 
 ### L'évaluation différée avec `arrow` (_lazy evaluation_) {#subsec-lazy}
 
-__Une caractéristique importante d'`arrow` est qu'il pratique l'évaluation différée (_lazy evaluation_): les calculs ne sont effectivement réalisés que lorsqu'ils sont nécessaires__. En pratique, cela signifie qu'`arrow` se contente de et ne fait aucun calcul tant que l'utilisateur ne le demande pas explicitement. Il existe deux fonctions pour déclencher l'évaluation d'un traitement `arrow`: `collect()` et `compute()`. Il n'y a qu'une seule différence entre `collect()` et `compute()`, mais elle est importante: `collect()` renvoie le résultat du traitement sous la forme d'un `tibble`, tandis que `compute()` le renvoie sous la forme d'un `Arrow Table`.
+__Une caractéristique importante d'`arrow` est qu'il pratique l'évaluation différée (_lazy evaluation_): les calculs ne sont effectivement réalisés que lorsqu'ils sont nécessaires__. En pratique, cela signifie qu'`arrow` se contente de mémoriser les instructions, sans faire aucun calcul tant que l'utilisateur ne le demande pas explicitement. Il existe deux fonctions pour déclencher l'évaluation d'un traitement `arrow`: `collect()` et `compute()`. Il n'y a qu'une seule différence entre `collect()` et `compute()`, mais elle est importante: `collect()` renvoie le résultat du traitement sous la forme d'un `tibble`, tandis que `compute()` le renvoie sous la forme d'un `Arrow Table`.
 
 __L'évaluation différée permet d'améliorer les performances en évitant le calcul de résultats intermédiaires inutiles, et en optimisant les requêtes__ pour utiliser le minimum de données et le minimum de ressources. L'exemple suivant illustre l'intérêt de l'évaluation différée dans un cas simple. 
 
