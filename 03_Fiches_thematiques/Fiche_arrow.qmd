@@ -398,11 +398,24 @@ __La vraie difficulté consiste à savoir quelle est la bonne longueur de ces é
 - __Plus les données sont volumineuses, plus il faut être prudent avant de définir de longues étapes de traitement__.
 - __Plus les opérations unitaires sont complexes, plus les étapes doivent être courtes.__ Par exemple, si les opérations sont des `filter()` et des `select()`, il est possible d'en enchaîner un certain nombre en une seule étape de traitement sans aucun problème, car ces opérations sont simples. Inversement, une étape de traitement ne doit pas comprendre plus de trois ou quatre jointures (car les jointures sont des opérations complexes), en particulier si les tables sont volumineuses.
 
-### Connaître les limites d'`arrow`
+### Connaître les limites d'`arrow` {#sec-limites-arrow}
 
-Le projet `arrow` est relativement récent et en développement actif. Il n'est donc pas surprenant qu'il y ait parfois des bugs, et que certaines fonctions standards de `R` ne soient pas encore disponibles en `arrow`. Il est important de connaître les quelques limites d'`arrow` pour savoir comment les contourner. Voici trois limites d'`arrow` à la date de rédaction de cette fiche (janvier 2024):
+Le projet `arrow` est relativement récent et en développement actif. Il n'est donc pas surprenant qu'il y ait parfois des bugs, et que certaines fonctions standards de `R` ne soient pas encore disponibles en `arrow`. Il est important de connaître les quelques limites d'`arrow` pour savoir comment les contourner. Voici quatre limites d'`arrow` à la date de rédaction de cette fiche (janvier 2024):
 
 - les __jointures de tables volumineuses__: `arrow` ne parvient pas à joindre des tables de données très volumineuses; il est préférable d'utiliser `duckdb` pour ce type d'opération;
+- les __réorganisations de données__ (_wide-to-long_ et _long-to-wide_): il n'existe pas à ce jour dans `arrow` de fonctions pour réorganiser une table de données (comme `pivot_wider` et `pivot_longer` du _package_ `tidyr`).
+-   les __fonctions fenêtre__ (_window functions_): `arrow` ne permet pas d'ajouter directement à une table des informations issues d'une agrégation par groupe de la même table. Par exemple, `arrow` ne peut pas ajouter directement à la base permanente des équipements une colonne égale au nombre total d'équipements du département:
+
+    ```{r eval=FALSE, message=FALSE}
+    # Arrow ne peut pas exécuter ceci
+    data <- bpe_ens_2018_arrow |>
+      group_by(DEP) |>
+      mutate(
+        NB_EQUIP_TOTAL_DEP  = sum(NB_EQUIP)
+      ) |>
+      compute()
+    ```
+
 -   les __empilements de tables__: il est facile d'empiler plusieurs `tibbles` avec `dplyr` grâce à la fonction `bind_rows()`: `bind_rows(table1, table2, table3, table4)`. En revanche, il n'existe pas à ce jour de fonction similaire dans `arrow`. Les fonctions `union` et `union_all` permettent d'empiler seulement deux `Arrow Table`, donc pour empiler plusieurs `Arrow Tables` il faut appeler plusieurs fois ces fonctions. Par ailleurs, les deux `Arrow Table` doivent être parfaitement compatibles pour être empilés (il faut le même nombre de colonnes avec le même nom et le même type, ce qui n'est pas toujours le cas en pratique).
 
     ```{r eval=FALSE, message=FALSE}
@@ -414,7 +427,6 @@ Le projet `arrow` est relativement récent et en développement actif. Il n'est 
       compute()
     ```
 
-- les __réorganisations de données__ (_wide-to-long_ et _long-to-wide_): il n'existe pas à ce jour dans `arrow` de fonctions pour réorganiser une table de données (comme `pivot_wider` et `pivot_longer` du _package_ `tidyr`).
 
 ### Surmonter le problème des fonctions non supportées par `acero`
 
@@ -454,6 +466,30 @@ resultats <- bpe_ens_2018_arrow |>
   ) |>
   compute()
 ```
+
+#### Passer par `duckdb`
+
+Il arrive qu'il ne soit pas possible de résoudre le problème en réécrivant légèrement le traitement. __Une autre solution peut consister à passer par `duckdb`, qui permet de manipuler directement des objets `Arrow Table` de façon simple et transparente.__ Dans l'exemple suivant, on veut ajouter à la base permanente des équipements une colonne égale au nombre total d'équipements du département. Cette opération ne peut pas être exécutée par `arrow` (voir le paragraphe @sec-limites-arrow), contrairement à `duckdb`. Voici comment faire:
+
+```{r eval=FALSE, message=FALSE}
+library(duckdb)
+# Arrow ne peut pas exécuter ceci
+data <- bpe_ens_2018_arrow |>
+  to_duckdb() |>
+  group_by(DEP) |>
+  mutate(
+    NB_EQUIP_TOTAL_DEP  = sum(NB_EQUIP)
+  ) |>
+  to_arrow() |>
+  compute()
+```
+
+Cet exemple appelle trois commentaires:
+
+- La fonction `to_duckdb()` sert à ce que `duckdb` puisse accéder à l'objet `Arrow Table`;
+- Symétriquement, la fonction `to_arrow()` sert à remettre les données dans un objet `Arrow Table`;
+- Les instructions figurant entre ces deux étapes (le `group_by()` puis le `summarise()`) sont exécutées par le moteur d'exécution de `duckdb`, de façon complètement transparente pour l'utilisateur.
+
 
 #### Définir soi-même des fonctions `arrow` (utilisation avancée)
 
