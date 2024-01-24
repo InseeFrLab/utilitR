@@ -326,29 +326,27 @@ Voici quelques commentaires pour comprendre ce traitement:
 - Le code ci-dessus n'effectue aucun calcul, car il ne comprend ni `collect()` ni `compute()`. Il faut exécuter `resultats |> collect()` ou  `resultats |> compute()` pour que les calculs soient effectivement réalisés.
 - Les objets `ds_bpe2018`, `eq_dep` et `resultats` ne sont pas des tables `R` standards contenant des données: ce sont des requêtes (de classe `arrow_dplyr_query`), qui décrivent des opérations à mener sur des données. C'est justement en utilisant `collect()` ou `compute()` qu'on demande à `arrow` d'exécuter ces requêtes avec le moteur `acero`. 
 -   Il est possible d'afficher le contenu des requêtes avec la fonction `show_exec_plan()`.
-    + La première requête est très courte: elle ne contient que la description des données contenues dans le fichier Parquet partitionné.
+    +   La première requête est très courte: elle ne contient que la description des données contenues dans le fichier Parquet partitionné.
 
-    ```{r, message=FALSE}
-    # Imprimer la première requête
-    show_exec_plan(ds_bpe2018)
-    ```
+        ```{r, message=FALSE}
+        # Imprimer la première requête
+        show_exec_plan(ds_bpe2018)
+        ```
 
-    + La deuxième requête est un peu plus longue, et si on regarde en détail, on constate deux choses. Premièrement, elle contient la première requête, mais elle n'a conservé que les variables utilisées dans le traitement (`NB_EQUIP` et `DEP`). Deuxièmement, on retrouve tous les éléments du traitement (notamment le `group_by` et la somme), mais le traitement décrit en syntaxe `tidyverse` a été traduit automatiquement en fonctions internes d'`arrow` (la fonction `sum` est par exemple remplacée par `hash_sum`).
+    +   La deuxième requête est un peu plus longue, et si on regarde en détail, on constate deux choses. Premièrement, elle contient la première requête, mais elle n'a conservé que les variables utilisées dans le traitement (`NB_EQUIP` et `DEP`). Deuxièmement, on retrouve tous les éléments du traitement (notamment le `group_by` et la somme), mais le traitement décrit en syntaxe `tidyverse` a été traduit automatiquement en fonctions internes d'`arrow` (la fonction `sum` est par exemple remplacée par `hash_sum`).
 
-    ```{r, message=FALSE}
-    # Imprimer la deuxième requête, qui contient la première
-    show_exec_plan(eq_dep)
-    ```
+        ```{r, message=FALSE}
+        # Imprimer la deuxième requête, qui contient la première
+        show_exec_plan(eq_dep)
+        ```
 
-    + Enfin, la troisième requête est encore plus longue, et contient les deux premières. Autrement dit, la troisième requête contient l'intégralité du traitement, donc on réalise l'intégralité du traitement lorsqu'on exécute cette requête avec `resultats |> collect()`.
+    +   Enfin, la troisième requête est encore plus longue, et contient les deux premières. Autrement dit, elle contient l'intégralité du traitement, donc on réalise l'intégralité du traitement lorsqu'on exécute cette requête avec `resultats |> collect()`.
 
-    ```{r, message=FALSE}
-    # Imprimer la troisième requête, qui contient les deux premières
-    show_exec_plan(resultats)
-    ```
+        ```{r, message=FALSE}
+        # Imprimer la troisième requête, qui contient les deux premières
+        show_exec_plan(resultats)
+        ```
     
-
-
 #### Quelles sont les limites de l'évaluation différée?
 
 L'évaluation différée optimise les performances en minimisant la quantité de données chargées en RAM et la quantité de calculs effectivement réalisés. 
@@ -391,7 +389,7 @@ __Ces limites de l'évaluation différée peuvent provoquer des bugs violents__.
 
 #### Décomposer le traitement en étapes cohérentes, puis le tester
 
-__La solution évidente pour ne pas toucher les limites de l'évaluation différée consiste à décomposer le traitement en étapes__, et à exécuter chaque étape séparément (en mettant un `compute()`). De cette façon, `acero` va réaliser séquentiellement plusieurs traitements un peu complexes, plutôt qu'échouer à réaliser un seul traitement très complexe en une seule fois. 
+__La solution évidente pour ne pas toucher les limites de l'évaluation différée consiste à décomposer le traitement en étapes__, et à exécuter chaque étape séparément, en mettant un `compute()`. De cette façon, `acero` va réaliser séquentiellement plusieurs traitements un peu complexes, plutôt qu'échouer à réaliser un seul traitement très complexe en une seule fois. 
 
 __La vraie difficulté consiste à savoir quelle est la bonne longueur de ces étapes intermédiaires__: s'il faut éviter de faire de très longues étapes (sinon l'évaluation différée plante), il faut également éviter d'exécuter une à une les étapes du traitement (sinon on perd les avantages de l'évaluation différée). Il n'y a pas de solution miracle, et seule la pratique permet de déterminer ce qui est raisonnable. Voici toutefois quelques conseils de bon sens:
 
@@ -405,9 +403,9 @@ __La vraie difficulté consiste à savoir quelle est la bonne longueur de ces é
 Le projet `arrow` est relativement récent et en développement actif. Il n'est donc pas surprenant qu'il y ait parfois des bugs, et que certaines fonctions standards de `R` ne soient pas encore disponibles en `arrow`. Il est important de connaître les quelques limites d'`arrow` pour savoir comment les contourner. Voici trois limites d'`arrow` à la date de rédaction de cette fiche (janvier 2024):
 
 - les __jointures de tables volumineuses__: `arrow` ne parvient pas à joindre des tables de données très volumineuses; il est préférable d'utiliser `duckdb` pour ce type d'opération;
-- les __empilements de tables__: il est facile d'empiler plusieurs `tibbles` avec `dplyr` grâce à la fonction `bind_rows()`: `bind_rows(table1, table2, table3, table4)`. En revanche, il n'existe pas à ce jour de fonction similaire dans `arrow`. Les fonctions `union` et `union_all` permettent d'empiler seulement deux `Arrow Table`, donc pour empiler plusieurs `Arrow Tables` il faut appeler plusieurs fois ces fonctions. Par ailleurs, les deux `Arrow Table` doivent être parfaitement compatibles pour être empilés (il faut le même nombre de colonnes avec le même nom et le même type, ce qui n'est pas toujours le cas en pratique).
+-   les __empilements de tables__: il est facile d'empiler plusieurs `tibbles` avec `dplyr` grâce à la fonction `bind_rows()`: `bind_rows(table1, table2, table3, table4)`. En revanche, il n'existe pas à ce jour de fonction similaire dans `arrow`. Les fonctions `union` et `union_all` permettent d'empiler seulement deux `Arrow Table`, donc pour empiler plusieurs `Arrow Tables` il faut appeler plusieurs fois ces fonctions. Par ailleurs, les deux `Arrow Table` doivent être parfaitement compatibles pour être empilés (il faut le même nombre de colonnes avec le même nom et le même type, ce qui n'est pas toujours le cas en pratique).
 
-    ```{r eval=FALSE,message=FALSE}
+    ```{r eval=FALSE, message=FALSE}
     # Comment empiler de multiples Arrow Tables
     resultats <- table1 |>
       union(table2) |>
