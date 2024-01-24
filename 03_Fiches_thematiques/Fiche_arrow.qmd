@@ -282,7 +282,7 @@ __Il est recommandé d'utiliser systématiquement la fonction `open_dataset()` p
 
 ### Savoir bien utiliser l'évaluation différée
 
-Le paragraphe @subsec-lazy a présenté la notion d'évaluation différée et son intérêt pour optimiser les performances. Toutefois, l'évaluation différée n'est pas toujours facile à utiliser, et présente des limites qu'il faut bien comprendre. Cette section décrit plus en détail le fonctionnement de l'évaluation différée et ses limites. Pour illustrer ce fonctionnement, on commence par exporter la base permanente des équipements sous la forme d'un dataset Arrow partitionné. 
+Le paragraphe @subsec-lazy a présenté la notion d'évaluation différée et son intérêt pour optimiser les performances. Toutefois, l'évaluation différée n'est pas toujours facile à utiliser, et présente des limites qu'il faut bien comprendre. Cette section décrit plus en détail le fonctionnement de l'évaluation différée et ses limites. Pour illustrer ce fonctionnement, on commence par exporter la base permanente des équipements sous la forme d'un dataset Arrow partitionné. La fiche [Importer des fichiers Parquet](#importparquet) décrit en détail ce qu'est un fichier Parquet partitionné et comment le manipuler.
 
 ```{r, message=FALSE}
 # Sauvegarder la BPE 2018 sous la forme d'un dataset Arrow partitionné
@@ -320,17 +320,16 @@ resultats <- eq_dep |>
   filter(DEP == "59")
 ```
 
+Voici quelques commentaires pour comprendre ce traitement:
+
+- Le code ci-dessus n'effectue aucun calcul, car il ne comprend ni `collect()` ni `compute()`. Il faut exécuter `resultats |> collect()` ou  `resultats |> compute()` pour que les calculs soient effectivement réalisés.
+- Les objets `ds_bpe2018`, `eq_dep` et `resultats` ne sont pas des tables `R` standards contenant des données: ce sont des requêtes (de classe `arrow_dplyr_query`), qui décrivent des opérations à mener sur des données. C'est justement en utilisant `collect()` ou `compute()` qu'on demande à `arrow` d'exécuter ces requêtes avec le moteur `acero`. 
+- Il est possible d'afficher le contenu des requêtes avec la fonction `show_exec_plan()`. La première requête est très courte: elle ne contient que la description des données contenues dans le fichier Parquet partitionné. La deuxième requête est un peu plus longue, et si on regarde en détail, on constate qu'elle contient la première requête. Enfin, la troisième requête est encore plus longue, et contient les deux premières. Autrement dit, la troisième requête contient l'intégralité du traitement, donc on réalise l'intégralité du traitement lorsqu'on exécute cette requête avec `resultats |> collect()`.
 
 ```{r, message=FALSE}
 # Imprimer la première requête
 show_exec_plan(ds_bpe2018)
 ```
-
-
-
-- Le code ci-dessous n'effectue aucun calcul, car il ne comprend ni `collect()` ni `compute()`. Il faut exécuter `resultats |> collect()` ou  `resultats |> compute()` pour que les calculs soient effectivement réalisés.
-- Les objets `ds_bpe2018`, `eq_dep` et `resultats` ne sont pas des tables `R` standards contenant des données: ce sont des requêtes de classe `arrow_dplyr_query`, qui décrivent des opérations à mener sur des données. C'est justement en utilisant `collect()` ou `compute()` qu'on demande à `R` d'exécuter ces requêtes. 
-
 
 ```{r, message=FALSE}
 # Imprimer la deuxième requête, qui contient la première
@@ -341,11 +340,6 @@ show_exec_plan(eq_dep)
 # Imprimer la troisième requête, qui contient les deux premières
 show_exec_plan(resultats)
 ```
-
-Expliquer la notion de `arrow_dplyr_query`
-
-
-Plus un traitement est long, plus la requête est longue et complexe.
 
 
 #### Quelles sont les limites de l'évaluation différée?
@@ -384,7 +378,7 @@ resultats <- table_intermediaire8 |>
 write_parquet(resultats, "resultats.parquet")
 ```
 
-La réalité n'est malheureusement pas si simple, car __l'évaluation différée a des limites__. En effet, au moment de produire le résultat final de l'exemple précédent, la fonction `compute()` donne l'instruction au moteur `acero` d'analyser puis d'exécuter _l'intégralité du traitement en une seule fois_. Or, le moteur `acero` est certes puissant, mais il a ses limites et ne peut pas exécuter en une seule fois des traitements vraiment trop complexes. Par exemple, `acero` rencontre des difficultés lorsqu'on enchaîne de multiples jointures de tables volumineuses.
+La réalité n'est malheureusement pas si simple, car __l'évaluation différée a des limites__. En effet, au moment de produire le résultat final de l'exemple précédent, la fonction `compute()` donne l'instruction au moteur `acero` d'analyser puis d'exécuter _l'intégralité du traitement en une seule fois_ (le paragraphe précédent donne un exemple détaillé). Or, le moteur `acero` est certes puissant, mais il a ses limites et ne peut pas exécuter en une seule fois des traitements vraiment trop complexes. Par exemple, `acero` rencontre des difficultés lorsqu'on enchaîne de multiples jointures de tables volumineuses.
 
 __Ces limites de l'évaluation différée peuvent provoquer des bugs violents__. Lorsque le moteur `acero` échoue à exécuter une requête trop complexe, les conséquences sont brutales: `R` n'imprime aucun message d'erreur, la session `R` plante et il faut simplement redémarrer `R` et tout recommencer. Il est donc nécessaire de bien structurer le traitement pour profiter des avantages de l'évaluation différée sans en toucher les limites.
 
@@ -397,16 +391,17 @@ __La vraie difficulté consiste à savoir quelle est la bonne longueur de ces é
 - __Un point de départ raisonnable peut consister à définir des étapes de traitement qui ne dépassent pas 30 ou 40 lignes de code__. Une étape de traitement de 200 lignes aura toutes les chances de poser des problèmes, d'autant qu'elle ne sera probablement pas très lisible.
 - __Il est préférable que le séquencement des étapes soit cohérent avec l'objet du traitement.__ Par exemple, si l'ensemble du traitement consiste à retraiter séparément deux tables, puis à les joindre, on peut imaginer trois étapes qui s'achèvent chacune par un `compute()`: le retraitement de la première table, le retraitement de la seconde table, et la jointure.
 - __Plus les données sont volumineuses, plus il faut être prudent avant de définir de longues étapes de traitement__.
-- __Plus les opérations unitaires sont complexes, plus les étapes doivent être courtes.__ Par exemple, si les opérations sont simplement des `filter()` et des `select()`, il est possible d'en enchaîner un certain nombre en une seule étape de traitement sans aucun problème. Inversement, une étape de traitement ne doit pas comprendre plus de trois ou quatre jointures (car les jointures sont des opérations complexes), en particulier si les tables sont volumineuses.
+- __Plus les opérations unitaires sont complexes, plus les étapes doivent être courtes.__ Par exemple, si les opérations sont des `filter()` et des `select()`, il est possible d'en enchaîner un certain nombre en une seule étape de traitement sans aucun problème, car ces opérations sont simples. Inversement, une étape de traitement ne doit pas comprendre plus de trois ou quatre jointures (car les jointures sont des opérations complexes), en particulier si les tables sont volumineuses.
 
 ### Connaître les limites d'`arrow`
 
 Le projet `arrow` est relativement récent et en développement actif. Il n'est donc pas surprenant qu'il y ait parfois des bugs, et que certaines fonctions standards de `R` ne soient pas encore disponibles en `arrow`. Il est important de connaître les quelques limites d'`arrow` pour savoir comment les contourner. Voici trois limites d'`arrow` à la date de rédaction de cette fiche (janvier 2024):
 
 - les __jointures de tables volumineuses__: `arrow` ne parvient pas à joindre des tables de données très volumineuses; il est préférable d'utiliser `duckdb` pour ce type d'opération;
-- les __empilements de tables__: il est facile d'empiler plusieurs `tibbles` avec `dplyr` grâce à la fonction `bind_rows()`: `bind_rows(table1, table2, table3, table4)`. En revanche, il n'existe pas à ce jour de fonction similaire dans `arrow`. Les fonctions `union` et `union_all` permettent d'empiler seulement deux `Arrow Table`, donc pour empiler plusieurs `Arrow Tables` il faut appeler plusieurs fois ces fonctions:
+- les __empilements de tables__: il est facile d'empiler plusieurs `tibbles` avec `dplyr` grâce à la fonction `bind_rows()`: `bind_rows(table1, table2, table3, table4)`. En revanche, il n'existe pas à ce jour de fonction similaire dans `arrow`. Les fonctions `union` et `union_all` permettent d'empiler seulement deux `Arrow Table`, donc pour empiler plusieurs `Arrow Tables` il faut appeler plusieurs fois ces fonctions. Par ailleurs, les deux `Arrow Table` doivent être parfaitement compatibles pour être empilés (il faut le même nombre de colonnes avec le même nom et le même type, ce qui n'est pas toujours le cas en pratique).
 
     ```{r eval=FALSE,message=FALSE}
+    # Comment empiler de multiples Arrow Tables
     resultats <- table1 |>
       union(table2) |>
       union(table3) |>
@@ -424,7 +419,7 @@ Le recours à cette solution de repli a pour conséquence de dégrader fortement
 
 #### Une solution simple existe-t-elle?
 
-Dans la plupart des cas, il est possible de trouver une solution pour écrire un traitement que le moteur `acero` peut exécuter. Voici quelques pistes:
+Dans la plupart des cas, il est possible de trouver une solution simple pour écrire un traitement que le moteur `acero` peut exécuter. Voici quelques pistes:
 
 - Vérifier qu'on utilise la dernière version d'`arrow` et mettre à jour le _package_ si ce n'est pas le cas;
 - Étudier en détail le message d'erreur renvoyé par `R` pour bien comprendre d'où vient le problème;
@@ -531,10 +526,6 @@ Si les pistes mentionnées précédemment ne fournissent pas de solution simple,
 
 ## Pour en savoir plus {#RessourcesArrow}
 
-- documentation:
-    - la doc [`arrow`](xxx) (en anglais);
-    - [un post de blog qui décrit en détail les liens entre `libarrow` et `R`](https://blog.djnavarro.net/posts/2022-01-18_binding-arrow-to-r/) (en anglais); 
+- la documentation officielle du _package_ [`arrow`](https://arrow.apache.org/docs/dev/r/index.html) (en anglais);
+- [un post de blog qui décrit en détail les liens entre `libarrow` et `R`](https://blog.djnavarro.net/posts/2022-01-18_binding-arrow-to-r/) (en anglais); 
 
-
-- tutoriels:
-    - 
