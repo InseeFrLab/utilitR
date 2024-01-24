@@ -325,27 +325,28 @@ Voici quelques commentaires pour comprendre ce traitement:
 
 - Le code ci-dessus n'effectue aucun calcul, car il ne comprend ni `collect()` ni `compute()`. Il faut exécuter `resultats |> collect()` ou  `resultats |> compute()` pour que les calculs soient effectivement réalisés.
 - Les objets `ds_bpe2018`, `eq_dep` et `resultats` ne sont pas des tables `R` standards contenant des données: ce sont des requêtes (de classe `arrow_dplyr_query`), qui décrivent des opérations à mener sur des données. C'est justement en utilisant `collect()` ou `compute()` qu'on demande à `arrow` d'exécuter ces requêtes avec le moteur `acero`. 
-- Il est possible d'afficher le contenu des requêtes avec la fonction `show_exec_plan()`. 
-    + La première requête est très courte: elle ne contient que la description des données contenues dans le fichier Parquet partitionné. 
-    
-```{r, message=FALSE}
-# Imprimer la première requête
-show_exec_plan(ds_bpe2018)
-```
-    
-    + La deuxième requête est un peu plus longue, et si on regarde en détail, on constate deux choses: elle contient la première requête, et elle n'a conservé que les variables utilisées dans le traitement (`NB_EQUIP` et `DEP`). 
-    
-```{r, message=FALSE}
-# Imprimer la deuxième requête, qui contient la première
-show_exec_plan(eq_dep)
-``` 
-    
+-   Il est possible d'afficher le contenu des requêtes avec la fonction `show_exec_plan()`.
+    + La première requête est très courte: elle ne contient que la description des données contenues dans le fichier Parquet partitionné.
+
+    ```{r, message=FALSE}
+    # Imprimer la première requête
+    show_exec_plan(ds_bpe2018)
+    ```
+
+    + La deuxième requête est un peu plus longue, et si on regarde en détail, on constate trois choses: elle contient la première requête, elle n'a conservé que les variables utilisées dans le traitement (`NB_EQUIP` et `DEP`), et le traitement décrit en syntaxe `tidyverse` a été traduit automatiquement en fonctions internes d'`arrow` (la fonction `sum` est par exemple remplacée par `hash_sum`).
+
+    ```{r, message=FALSE}
+    # Imprimer la deuxième requête, qui contient la première
+    show_exec_plan(eq_dep)
+    ```
+
     + Enfin, la troisième requête est encore plus longue, et contient les deux premières. Autrement dit, la troisième requête contient l'intégralité du traitement, donc on réalise l'intégralité du traitement lorsqu'on exécute cette requête avec `resultats |> collect()`.
 
-```{r, message=FALSE}
-# Imprimer la troisième requête, qui contient les deux premières
-show_exec_plan(resultats)
-```
+    ```{r, message=FALSE}
+    # Imprimer la troisième requête, qui contient les deux premières
+    show_exec_plan(resultats)
+    ```
+    
 
 
 #### Quelles sont les limites de l'évaluation différée?
