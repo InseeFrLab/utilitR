@@ -214,9 +214,9 @@ __Lorsqu'on manipule des données volumineuses, il est essentiel de manipuler un
 - __Importer les données directement dans des `Arrow Table`, ou à défaut convertir en `Arrow Table` avec la fonction `as_arrow_table()`.__ Par exemple, lorsqu'on importe un fichier Parquet avec la fonction `read_parquet()` ou un fichier csv avec la fonction `read_csv_arrow()`, il est recommandé d'utiliser l'option `as_data_frame = FALSE` pour que les données soient importées sous forme de `Arrow Table`.
 - __Utiliser systématiquement `compute()` plutôt que `collect()` dans les étapes de calcul intermédiaires.__ Cette recommandation est particulièrement importante. L'exemple suivant explique pourquoi il est préférable d'utiliser `compute()` dans les étapes intermédiaires:
 
-- __Situation à éviter__: la première étape de traitement étant déclenchée par `collect()` (ligne 7), la table intermédiaire `res_intermediaire1` est un `tibble`. Par conséquent, c'est le moteur d'exécution de `dplyr` qui est utilisé pour manipuler `res_intermediaire1` lors de la seconde étape du traitement, ce qui peut dégrader fortement les performances, en particulier si les données sont volumineuses.
+- __Situation à éviter__: la première étape de traitement étant déclenchée par `collect()` (ligne 7 de l'exemple ci-dessous), la table intermédiaire `res_intermediaire1` est un `tibble`. Par conséquent, c'est le moteur d'exécution de `dplyr` qui est utilisé pour manipuler `res_intermediaire1` lors de la seconde étape du traitement, ce qui peut dégrader fortement les performances, en particulier si les données sont volumineuses.
 
-- __Usage recommandé__: la première étape de traitement étant déclenchée par `compute()` (ligne 7), la table intermédiaire `res_intermediaire2` est un `Arrow Table`. Par conséquent, c'est le moteur d'exécution `acero` qui est utilisé pour manipuler `res_intermediaire2` lors de la seconde étape du traitement, ce qui assure de bonnes performances notamment sur données volumineuses.
+- __Usage recommandé__: la première étape de traitement étant déclenchée par `compute()` (ligne 7 de l'exemple ci-dessous), la table intermédiaire `res_intermediaire2` est un `Arrow Table`. Par conséquent, c'est le moteur d'exécution `acero` qui est utilisé pour manipuler `res_intermediaire2` lors de la seconde étape du traitement, ce qui assure de bonnes performances notamment sur données volumineuses.
 
 <div>
 
@@ -469,11 +469,11 @@ resultats <- bpe_ens_2018_arrow |>
 
 #### Passer par `duckdb`
 
-Il arrive qu'il ne soit pas possible de résoudre le problème en réécrivant légèrement le traitement. __Une autre solution peut consister à passer par `duckdb`, qui permet de manipuler directement des objets `Arrow Table` de façon simple et transparente.__ Dans l'exemple suivant, on veut ajouter à la base permanente des équipements une colonne égale au nombre total d'équipements du département. Cette opération ne peut pas être exécutée par `arrow` (voir le paragraphe @sec-limites-arrow), contrairement à `duckdb`. Voici comment faire:
+Il arrive qu'il ne soit pas possible de résoudre le problème en réécrivant légèrement le traitement. __Une autre solution peut consister à passer par `duckdb`, qui permet de manipuler directement des objets `Arrow Table` de façon simple et transparente.__ Dans l'exemple suivant, on veut ajouter à la base permanente des équipements une colonne égale au nombre total d'équipements du département. Cette opération ne peut pas être exécutée par `arrow` (voir le paragraphe @sec-limites-arrow), contrairement à `duckdb`. Voici comment faire avec `duckdb`:
 
 ```{r eval=FALSE, message=FALSE}
 library(duckdb)
-# Arrow ne peut pas exécuter ceci
+
 data <- bpe_ens_2018_arrow |>
   to_duckdb() |>
   group_by(DEP) |>
@@ -488,7 +488,7 @@ Cet exemple appelle trois commentaires:
 
 - La fonction `to_duckdb()` sert à ce que `duckdb` puisse accéder à l'objet `Arrow Table`;
 - Symétriquement, la fonction `to_arrow()` sert à remettre les données dans un objet `Arrow Table`;
-- Les instructions figurant entre ces deux étapes (le `group_by()` puis le `summarise()`) sont exécutées par le moteur d'exécution de `duckdb`, de façon complètement transparente pour l'utilisateur.
+- Les instructions figurant entre ces deux étapes (le `group_by()` puis le `mutate()`) sont exécutées par le moteur d'exécution de `duckdb`, de façon complètement transparente pour l'utilisateur.
 
 
 #### Définir soi-même des fonctions `arrow` (utilisation avancée)
