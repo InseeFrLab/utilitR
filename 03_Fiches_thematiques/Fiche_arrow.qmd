@@ -435,6 +435,10 @@ __Lorsqu'on manipule des données avec `arrow`, il arrive fréquemment qu'on éc
 
 Le recours à cette solution de repli a pour conséquence de dégrader fortement les performances (car le moteur de `dplyr` est moins efficace qu'`acero`). __Il est donc préférable d'essayer de réécrire la partie du traitement qui pose problème avec des fonctions supportées par  `acero`.__ Cela est particulièrement recommandé si les données manipulées sont volumineuses ou si le traitement concerné doit être exécuté fréquemment. 
 
+::: {.callout-conseil .icon}
+Il arrive qu'il soit impossible de trouver une solution entièrement supportée par `acero`, ou que la solution soit vraiment trop complexe à écrire. Ce n'est pas une catastrophe: en dernier recours, on peut tout à fait convertir temporairement les données en `tibble` (avec `collect()`) et exécuter le traitement qui pose problème avec `dplyr`. Le traitement sera simplement plus lent (voire beaucoup plus lent). En revanche, il est important de reconvertir ensuite les données en `Arrow Table` le plus vite possible, en utilisant la fonction `as_arrow_table()`.
+:::
+
 #### Une solution simple existe-t-elle?
 
 Dans la plupart des cas, il est possible de trouver une solution simple pour écrire un traitement que le moteur `acero` peut exécuter. Voici quelques pistes:
