@@ -336,7 +336,7 @@ Voici quelques commentaires pour comprendre ce traitement:
         show_exec_plan(ds_bpe2018)
         ```
 
-    +   La deuxième requête est un peu plus longue, et si on regarde en détail, on constate deux choses. Premièrement, elle contient la première requête, mais elle n'a conservé que les variables utilisées dans le traitement (`NB_EQUIP` et `DEP`). Deuxièmement, on retrouve tous les éléments du traitement (notamment le `group_by` et la somme), mais le traitement décrit en syntaxe `tidyverse` a été traduit automatiquement en fonctions internes d'`arrow` (la fonction `sum` est par exemple remplacée par `hash_sum`).
+    +   La deuxième requête est un peu plus longue, et si on regarde en détail, on constate deux choses. Premièrement, elle contient la première requête, mais elle n'a conservé que les variables utilisées dans le traitement (`NB_EQUIP` et `DEP`). C'est un exemple d'optimisation faite par `arrow`: le moteur `acero` a compris automatiquement qu'il suffisait de charger seulement deux variables pour réaliser le traitement. Deuxièmement, on retrouve tous les éléments du traitement (notamment le `group_by` et la somme), mais le traitement décrit en syntaxe `tidyverse` a été traduit automatiquement en fonctions internes d'`arrow` (la fonction `sum` est par exemple remplacée par `hash_sum`).
 
         ```{r, message=FALSE}
         # Imprimer la deuxième requête, qui contient la première
