@@ -121,7 +121,7 @@ bpe_ens_2018_arrow
 
 Troisième différence: alors qu'il est possible d'afficher le contenu d'un `data.frame` ou d'un `tibble` en cliquant sur son nom dans la rubrique `Data` de l'environnement ou en utilisant la fonction `View()`, il n'est pas possible d'afficher directement le contenu d'un `Arrow Table`. Pour afficher le contenu d'un `Arrow Table`, il faut d'abord convertir le `Arrow Table` en `tibble` avec la fonction `collect()`.
 
-::: {.callout-conseil .icon}
+::: {.callout-tip}
 Il arrive fréquemment que l'on souhaite jeter un coup d'oeil au contenu d'un `Arrow Table`. Toutefois, convertir directement un `Arrow Table` très volumineux en `tibble` peut poser de sérieux problèmes: temps de conversion, consommation importante de RAM, voire plantage de `R` si le `Arrow Table` est vraiment très gros. **Il est donc fortement conseillé de prendre un petit extrait du `Arrow Table` concerné et de convertir uniquement cet extrait en `tibble`.** Voici un exemple de code qui le fait:
 
 ```{r, eval=FALSE}
@@ -270,7 +270,7 @@ write_parquet(res_final, "resultats.parquet")
 
 </div>
 
-::: {.callout-conseil .icon}
+::: {.callout-tip}
 Si vous ne savez plus si une table de données est un `Arrow Table` ou un `tibble`, il suffit d'exécuter `class(le_nom_de_ma_table)`. Si la table est un `Arrow Table`, vous obtiendrez ceci: `"Table"        "ArrowTabular" "ArrowObject"  "R6"`. Si elle est un `tibble`, vous obtiendrez `"tbl_df"     "tbl"        "data.frame"`.
 :::
 
@@ -435,7 +435,7 @@ __Lorsqu'on manipule des données avec `arrow`, il arrive fréquemment qu'on éc
 
 Le recours à cette solution de repli a pour conséquence de dégrader fortement les performances (car le moteur de `dplyr` est moins efficace qu'`acero`). __Il est donc préférable d'essayer de réécrire la partie du traitement qui pose problème avec des fonctions supportées par  `acero`.__ Cela est particulièrement recommandé si les données manipulées sont volumineuses ou si le traitement concerné doit être exécuté fréquemment. 
 
-::: {.callout-conseil .icon}
+::: {.callout-tip}
 Il arrive qu'il soit impossible de trouver une solution entièrement supportée par `acero`, ou que la solution soit vraiment trop complexe à écrire. Ce n'est pas une catastrophe: en dernier recours, on peut tout à fait convertir temporairement les données en `tibble` (avec `collect()`) et exécuter le traitement qui pose problème avec `dplyr`. Le traitement sera simplement plus lent (voire beaucoup plus lent). En revanche, il est important de reconvertir ensuite les données en `Arrow Table` le plus vite possible, en utilisant la fonction `as_arrow_table()`.
 :::
 
