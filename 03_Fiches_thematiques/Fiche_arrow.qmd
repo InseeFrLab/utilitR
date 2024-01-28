@@ -210,80 +210,6 @@ On pourrait penser que, lorsqu'on exécute l'ensemble de ce traitement, `arrow` 
 
 ## Comment bien utiliser `arrow`?
 
-### Utiliser des objets `Arrow Table` plutôt que des `data.frames`
-
-__Lorsqu'on manipule des données volumineuses, il est essentiel de manipuler uniquement des objets `Arrow Table`, plutôt que des `data.frames` (ou des `tibbles`)__. Cela implique deux recommandations:
-
-- __Importer les données directement dans des `Arrow Table`, ou à défaut convertir en `Arrow Table` avec la fonction `as_arrow_table()`.__ Par exemple, lorsqu'on importe un fichier Parquet avec la fonction `read_parquet()` ou un fichier csv avec la fonction `read_csv_arrow()`, il est recommandé d'utiliser l'option `as_data_frame = FALSE` pour que les données soient importées sous forme de `Arrow Table`.
-- __Utiliser systématiquement `compute()` plutôt que `collect()` dans les étapes de calcul intermédiaires.__ Cette recommandation est particulièrement importante. L'exemple suivant explique pourquoi il est préférable d'utiliser `compute()` dans les étapes intermédiaires:
-
-- __Situation à éviter__: la première étape de traitement étant déclenchée par `collect()` (ligne 7 de l'exemple ci-dessous), la table intermédiaire `res_intermediaire1` est un `tibble`. Par conséquent, c'est le moteur d'exécution de `dplyr` qui est utilisé pour manipuler `res_intermediaire1` lors de la seconde étape du traitement, ce qui peut dégrader fortement les performances, en particulier si les données sont volumineuses.
-
-- __Usage recommandé__: la première étape de traitement étant déclenchée par `compute()` (ligne 7 de l'exemple ci-dessous), la table intermédiaire `res_intermediaire2` est un `Arrow Table`. Par conséquent, c'est le moteur d'exécution `acero` qui est utilisé pour manipuler `res_intermediaire2` lors de la seconde étape du traitement, ce qui assure de bonnes performances notamment sur données volumineuses.
-
-<div>
-
-<table class='table' style = "width : 100%;">
-<tr>
-<th style="width:50%"> __Situation à éviter__: `collect()` dans les étapes intermédiaires </th>
-<th style="width:50%"> __Usage recommandé__: `compute()` dans les étapes intermédiaires </th>
-</tr>
-<tr>
-<td>
-```{r eval=FALSE,message=FALSE}
-# Etape 1
-res_intermediaire1 <- bpe_ens_2018_tbl |>
-  group_by(DEP) |>
-  summarise(
-    NB_EQUIP_TOT = sum(NB_EQUIP)
-  ) |>
-  collect()
-
-# Etape 2
-res_final <- res_intermediaire1 |> 
-  filter(DEP == "59") |> 
-  collect()
-
-# Sauvegarder les résultats
-write_parquet(res_final, "resultats.parquet")
-```
-</td>
-<td>
-```{r eval=FALSE,message=FALSE}
-# Etape 1
-res_intermediaire2 <- bpe_ens_2018_tbl |>
-  group_by(DEP) |>
-  summarise(
-    NB_EQUIP_TOT = sum(NB_EQUIP)
-  ) |>
-  compute()
-
-# Etape 2
-res_final <- res_intermediaire2 |> 
-  filter(DEP == "59") |> 
-  compute()
-
-# Sauvegarder les résultats
-write_parquet(res_final, "resultats.parquet")
-```
-</td>
-</tr>
-</table>
-
-</div>
-
-::: {.callout-tip}
-Si vous ne savez plus si une table de données est un `Arrow Table` ou un `tibble`, il suffit d'exécuter `class(le_nom_de_ma_table)`. Si la table est un `Arrow Table`, vous obtiendrez ceci: `"Table"        "ArrowTabular" "ArrowObject"  "R6"`. Si elle est un `tibble`, vous obtiendrez `"tbl_df"     "tbl"        "data.frame"`.
-:::
-
-### Lire des fichiers Parquet avec `open_dataset()` plutôt que `read_parquet()`
-
-__Il est recommandé d'utiliser systématiquement la fonction `open_dataset()` plutôt que la fonction `read_parquet()` pour accéder à des données stockées en format Parquet.__ En effet, la fonction `open_dataset()` présente deux avantages:
-
-- __Consommation mémoire inférieure__: la fonction `open_dataset()` crée une connexion au fichier Parquet, mais elle n'importe pas les données contenues dans le fichier tant que l'utilisateur ne le demande pas avec `compute()` ou `collect()`, et elle est optimisée pour importer uniquement les données nécessaires au traitement. Inversement, la fonction `read_parquet()` importe immédiatement dans `R` toutes les données du fichier Parquet, y compris des données qui ne servent pas à la suite du traitement.
-- __Usage plus général__: la fonction `open_dataset()` peut se connecter à un fichier Parquet unique, mais aussi à des fichiers Parquet partitionnés, tandis que `read_parquet()` ne peut pas lire ces derniers.
-
-
 ### Savoir bien utiliser l'évaluation différée
 
 La @sec-lazy a présenté la notion d'évaluation différée et son intérêt pour optimiser les performances. Toutefois, l'évaluation différée n'est pas toujours facile à utiliser, et présente des limites qu'il faut bien comprendre. Cette section décrit plus en détail le fonctionnement de l'évaluation différée et ses limites. Pour illustrer ce fonctionnement, on commence par exporter la base permanente des équipements sous la forme d'un dataset Arrow partitionné. La fiche [Importer des fichiers Parquet](#importparquet) décrit en détail ce qu'est un fichier Parquet partitionné et comment le manipuler.
@@ -401,6 +327,78 @@ __La vraie difficulté consiste à savoir quelle est la bonne longueur de ces é
 - __Plus les données sont volumineuses, plus il faut être prudent avant de définir de longues étapes de traitement__.
 - __Plus les opérations unitaires sont complexes, plus les étapes doivent être courtes.__ Par exemple, si les opérations sont des `filter()` et des `select()`, il est possible d'en enchaîner un certain nombre en une seule étape de traitement sans aucun problème, car ces opérations sont simples. Inversement, une étape de traitement ne doit pas comprendre plus de trois ou quatre jointures (car les jointures sont des opérations complexes), en particulier si les tables sont volumineuses.
 
+### Utiliser des objets `Arrow Table` plutôt que des `data.frames`
+
+__Lorsqu'on manipule des données volumineuses, il est essentiel de manipuler uniquement des objets `Arrow Table`, plutôt que des `data.frames` (ou des `tibbles`)__. Cela implique deux recommandations:
+
+- __Importer les données directement dans des `Arrow Table`, ou à défaut convertir en `Arrow Table` avec la fonction `as_arrow_table()`.__ Par exemple, lorsqu'on importe un fichier Parquet avec la fonction `read_parquet()` ou un fichier csv avec la fonction `read_csv_arrow()`, il est recommandé d'utiliser l'option `as_data_frame = FALSE` pour que les données soient importées sous forme de `Arrow Table`.
+- __Utiliser systématiquement `compute()` plutôt que `collect()` dans les étapes de calcul intermédiaires.__ Cette recommandation est particulièrement importante. L'exemple suivant explique pourquoi il est préférable d'utiliser `compute()` dans les étapes intermédiaires:
+
+- __Situation à éviter__: la première étape de traitement étant déclenchée par `collect()` (ligne 7 de l'exemple ci-dessous), la table intermédiaire `res_intermediaire1` est un `tibble`. Par conséquent, c'est le moteur d'exécution de `dplyr` qui est utilisé pour manipuler `res_intermediaire1` lors de la seconde étape du traitement, ce qui peut dégrader fortement les performances, en particulier si les données sont volumineuses.
+
+- __Usage recommandé__: la première étape de traitement étant déclenchée par `compute()` (ligne 7 de l'exemple ci-dessous), la table intermédiaire `res_intermediaire2` est un `Arrow Table`. Par conséquent, c'est le moteur d'exécution `acero` qui est utilisé pour manipuler `res_intermediaire2` lors de la seconde étape du traitement, ce qui assure de bonnes performances notamment sur données volumineuses.
+
+<div>
+
+<table class='table' style = "width : 100%;">
+<tr>
+<th style="width:50%"> __Situation à éviter__: `collect()` dans les étapes intermédiaires </th>
+<th style="width:50%"> __Usage recommandé__: `compute()` dans les étapes intermédiaires </th>
+</tr>
+<tr>
+<td>
+```{r eval=FALSE,message=FALSE}
+# Etape 1
+res_intermediaire1 <- bpe_ens_2018_tbl |>
+  group_by(DEP) |>
+  summarise(
+    NB_EQUIP_TOT = sum(NB_EQUIP)
+  ) |>
+  collect()
+
+# Etape 2
+res_final <- res_intermediaire1 |> 
+  filter(DEP == "59") |> 
+  collect()
+
+# Sauvegarder les résultats
+write_parquet(res_final, "resultats.parquet")
+```
+</td>
+<td>
+```{r eval=FALSE,message=FALSE}
+# Etape 1
+res_intermediaire2 <- bpe_ens_2018_tbl |>
+  group_by(DEP) |>
+  summarise(
+    NB_EQUIP_TOT = sum(NB_EQUIP)
+  ) |>
+  compute()
+
+# Etape 2
+res_final <- res_intermediaire2 |> 
+  filter(DEP == "59") |> 
+  compute()
+
+# Sauvegarder les résultats
+write_parquet(res_final, "resultats.parquet")
+```
+</td>
+</tr>
+</table>
+
+</div>
+
+::: {.callout-tip}
+Si vous ne savez plus si une table de données est un `Arrow Table` ou un `tibble`, il suffit d'exécuter `class(le_nom_de_ma_table)`. Si la table est un `Arrow Table`, vous obtiendrez ceci: `"Table"        "ArrowTabular" "ArrowObject"  "R6"`. Si elle est un `tibble`, vous obtiendrez `"tbl_df"     "tbl"        "data.frame"`.
+:::
+
+### Lire des fichiers Parquet avec `open_dataset()` plutôt que `read_parquet()`
+
+__Il est recommandé d'utiliser systématiquement la fonction `open_dataset()` plutôt que la fonction `read_parquet()` pour accéder à des données stockées en format Parquet.__ En effet, la fonction `open_dataset()` présente deux avantages:
+
+- __Consommation mémoire inférieure__: la fonction `open_dataset()` crée une connexion au fichier Parquet, mais elle n'importe pas les données contenues dans le fichier tant que l'utilisateur ne le demande pas avec `compute()` ou `collect()`, et elle est optimisée pour importer uniquement les données nécessaires au traitement. Inversement, la fonction `read_parquet()` importe immédiatement dans `R` toutes les données du fichier Parquet, y compris des données qui ne servent pas à la suite du traitement.
+- __Usage plus général__: la fonction `open_dataset()` peut se connecter à un fichier Parquet unique, mais aussi à des fichiers Parquet partitionnés, tandis que `read_parquet()` ne peut pas lire ces derniers.
 
 ## Notions avancées
 
