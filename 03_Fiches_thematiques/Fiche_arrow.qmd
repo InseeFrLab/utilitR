@@ -360,22 +360,17 @@ __Lorsqu'on manipule des données volumineuses, il est essentiel de manipuler un
 - __Importer les données directement dans des `Arrow Table`, ou à défaut convertir en `Arrow Table` avec la fonction `as_arrow_table()`.__ Par exemple, lorsqu'on importe un fichier Parquet avec la fonction `read_parquet()` ou un fichier csv avec la fonction `read_csv_arrow()`, il est recommandé d'utiliser l'option `as_data_frame = FALSE` pour que les données soient importées sous forme de `Arrow Table`.
 - __Utiliser systématiquement `compute()` plutôt que `collect()` dans les étapes de calcul intermédiaires.__ Cette recommandation est particulièrement importante. L'exemple suivant explique pourquoi il est préférable d'utiliser `compute()` dans les étapes intermédiaires:
 
-- __Situation à éviter__: la première étape de traitement étant déclenchée par `collect()` (ligne 7 de l'exemple ci-dessous), la table intermédiaire `res_intermediaire1` est un `tibble`. Par conséquent, c'est le moteur d'exécution de `dplyr` qui est utilisé pour manipuler `res_intermediaire1` lors de la seconde étape du traitement, ce qui peut dégrader fortement les performances, en particulier si les données sont volumineuses.
+:::: {.columns}
 
-- __Usage recommandé__: la première étape de traitement étant déclenchée par `compute()` (ligne 7 de l'exemple ci-dessous), la table intermédiaire `res_intermediaire2` est un `Arrow Table`. Par conséquent, c'est le moteur d'exécution `acero` qui est utilisé pour manipuler `res_intermediaire2` lors de la seconde étape du traitement, ce qui assure de bonnes performances notamment sur données volumineuses.
+::: {.column width="49%"}
 
-<div>
+__Situation à éviter__
 
-<table class='table' style = "width : 100%;">
-<tr>
-<th style="width:50%"> __Situation à éviter__: `collect()` dans les étapes intermédiaires </th>
-<th style="width:50%"> __Usage recommandé__: `compute()` dans les étapes intermédiaires </th>
-</tr>
-<tr>
-<td>
+La première étape de traitement est déclenchée par `collect()`, la table intermédiaire `res_etape1` est donc un `tibble`. C'est le moteur d'exécution de `dplyr` qui est utilisé pour manipuler `res_etape1` lors de la seconde étape, ce qui dégrade fortement les performances sur données volumineuses.
+
 ```{r eval=FALSE,message=FALSE}
 # Etape 1
-res_intermediaire1 <- bpe_ens_2018_tbl |>
+res_etape1 <- bpe_ens_2018_tbl |>
   group_by(DEP) |>
   summarise(
     NB_EQUIP_TOT = sum(NB_EQUIP)
@@ -383,18 +378,30 @@ res_intermediaire1 <- bpe_ens_2018_tbl |>
   collect()
 
 # Etape 2
-res_final <- res_intermediaire1 |> 
+res_final <- res_etape1 |> 
   filter(DEP == "59") |> 
   collect()
 
 # Sauvegarder les résultats
 write_parquet(res_final, "resultats.parquet")
 ```
-</td>
-<td>
+
+:::
+
+::: {.column width="2%"}
+<!-- empty column to create gap -->
+:::
+
+::: {.column width="49%"}
+
+__Usage recommandé__
+
+La première étape de traitement est déclenchée par `compute()`, la table intermédiaire `res_etape1` est donc un `Arrow Table`. C'est le moteur d'exécution `acero` qui est utilisé pour manipuler `res_etape1` lors de la seconde étape, ce qui assure de bonnes performances notamment sur données volumineuses.
+
+
 ```{r eval=FALSE,message=FALSE}
 # Etape 1
-res_intermediaire2 <- bpe_ens_2018_tbl |>
+res_etape1 <- bpe_ens_2018_tbl |>
   group_by(DEP) |>
   summarise(
     NB_EQUIP_TOT = sum(NB_EQUIP)
@@ -402,18 +409,17 @@ res_intermediaire2 <- bpe_ens_2018_tbl |>
   compute()
 
 # Etape 2
-res_final <- res_intermediaire2 |> 
+res_final <- res_etape1 |> 
   filter(DEP == "59") |> 
   compute()
 
 # Sauvegarder les résultats
 write_parquet(res_final, "resultats.parquet")
 ```
-</td>
-</tr>
-</table>
 
-</div>
+:::
+
+::::
 
 ::: {.callout-tip}
 Si vous ne savez plus si une table de données est un `Arrow Table` ou un `tibble`, il suffit d'exécuter `class(le_nom_de_ma_table)`. Si la table est un `Arrow Table`, vous obtiendrez ceci: `"Table"        "ArrowTabular" "ArrowObject"  "R6"`. Si elle est un `tibble`, vous obtiendrez `"tbl_df"     "tbl"        "data.frame"`.
