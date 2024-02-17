@@ -27,7 +27,7 @@ Apprendre à utiliser `duckdb` n'est pas difficile, car la syntaxe utilisée est
 
 ## Présentation du package `duckdb`  et du projet associé
 
-### Qu'est-ce qu'`duckdb`?  {#sec-presentation}
+### Qu'est-ce que `duckdb`?  {#sec-presentation}
 
 [`DuckDB`](https://duckdb.org/) est un projet *open-source* (license MIT) qui propose un moteur SQL optimisé pour les requêtes *online analytical processing* (OLAP): 
 
@@ -36,21 +36,11 @@ Apprendre à utiliser `duckdb` n'est pas difficile, car la syntaxe utilisée est
 - une installation et un déploiement facile,
 - un moteur portable, utilisable sous Windows, MacOS, Linux, et interfacé avec de nombreux langages de programmation (R, Python, Javascript, etc.).
 
-Un point important à retenir est donc que **`duckdb` n'est pas un outil spécifique à `R`**, et il faut bien distinguer le projet `DuckDB` du *package* `R` `duckdb`. Ce *package* propose simplement une interface qui permet d'utiliser la librairie `libduckdb` avec `R`, et il existe d'autres interfaces pour se servir de `libduckdb` avec d'autres langages: en Python, en Java, en Javascript, en Julia, etc.
+`DuckDB` est bien un serveur SQL. Il dispose de sa propre mémoire, et on peut lui envoyer des requêtes SQL sans passer par R. 
+Un point important à retenir est donc que **`duckdb` n'est pas un outil spécifique à `R`**, et il faut bien distinguer le projet `DuckDB` du *package* `R` `duckdb`. Ce *package* propose simplement une interface avec R parmi les autres interfaces existantes : Python, Java, Javascript, Julia, etc.
 
-### Spécificités de `duckdb`
+Toutefois, il est très facile à utiliser avec R, ce qui permet de bénéficier des optimisations inhérentes au langage SQL, à la fois en terme d'utilisation de la mémoire et de rapidité de calcul. C'est de plus un bon intermédiaire avant de passer à des infrastructures avancées telles que spark ou oracle.
 
-Le projet `duckdb` présente cinq spécificités:
-
--   __Représentation des données en mémoire__ : `duckdb` est un moteur SQL. Les lignes n'ont pas d'ordre pré-défini, et peuvent être retournées dans un ordre aléatoire.
-
--   __Utilisation avec Parquet__: `duckdb` peut être utilisé pour manipuler des données stockées en format Parquet. Parquet est un format de stockage orienté colonne conçu pour être très rapide en lecture (voir la fiche [Importer des fichiers Parquet](#importparquet) pour plus de détails). `duckdb` est optimisé pour travailler sur des fichiers Parquet, notamment lorsqu'ils contiennent des données très volumineuses.
-
--   __Traitement de données volumineuses__: `duckdb` est conçu pour traiter des données sans avoir besoin de les charger dans la mémoire vive. Cela signifie qu'`duckdb` est capable de traiter des données plus volumineuses que la mémoire vive (RAM) dont on dispose. C'est un avantage majeur en comparaison aux autres approches possibles en `R` (`data.table` et `dplyr` par exemple).
-
--   __Interopérabilité__: `duckdb` est conçu pour être interopérable entre plusieurs langages de programmation tels que `R`, Python, Java, C++, etc. Cela signifie que les données peuvent être échangées entre ces langages sans avoir besoin de convertir les données, d'où des gains importants de temps et de performance.
-
--   __*Lazy Evaluation*__: `duckdb` prend en charge la *lazy evaluation* (évaluation différée) dans certains contextes. Cela signifie que les traitements ne sont effectivement exécutés que lorsqu'ils sont nécessaires, ce qui peut améliorer les performances en évitant le calcul de résultats intermédiaires non utilisés. La @sec-lazy présente en détail cette notion.
 
 ### A quoi sert le *package* `duckdb`?
 
@@ -60,26 +50,34 @@ Du point de vue d'un statisticien utilisant `R`, le *package* `duckdb` permet de
 -   Manipuler des données avec la syntaxe `dplyr`, ou avec le langage SQL;
 -   Écrire des données en format Parquet.
 
+
 ### Quels sont les avantages de `duckdb`?
 
-En pratique, le *package* `duckdb` présente trois avantages:
+-   **Performances élevées**: `duckdb` est très rapide pour la manipulation de données tabulaires (nettement plus performant que `dplyr` par exemple);
+-   **Ne pas charger les données en mémoire**: `duckdb` permet de travailler directement sur des fichiers du disque dur.
+-   **Optimisations automatiques**: `duckdb` sélectionne automatiquement les colonnes nécessaires au calcule, et ne lit que les lignes nécessaires. Cela permet d'accélérer les calculs et de réduire considérablement les besoins en mémoire, même lorsque les données sont volumineuses;
+-   **Facilité d'apprentissage** grâce aux approches `dplyr` et SQL: `duckdb` peut être utilisé avec les verbes de `dplyr` (`select`, `mutate`, etc.) et/ou avec le langage SQL. Par conséquent, il n'est pas nécessaire d'apprendre une nouvelle syntaxe pour utiliser `duckdb`, on peut s'appuyer sur la ou les approches que l'on maîtrise déjà. 
 
--   **Performances élevées**: `duckdb` est très efficace et très rapide pour la manipulation de données tabulaires (nettement plus performant que `dplyr` par exemple);
--   **Usage réduit des ressources**: `duckdb` est conçu pour ne charger en mémoire que le minimum de données. Cela permet de réduire considérablement les besoins en mémoire, même lorsque les données sont volumineuses;
--   **Facilité d'apprentissage** grâce aux approches `dplyr` et SQL: `duckdb` peut être utilisé avec les verbes de `dplyr` (`select`, `mutate`, etc.) et/ou avec le langage SQL. Par conséquent, il n'est pas nécessaire d'apprendre une nouvelle syntaxe pour utiliser `duckdb`, on peut s'appuyer sur la ou les approches que l'on maîtrise déjà. En revanche, il est à noter que le _package_ `data.table` n'est pas directement compatible avec `duckdb` (il faut convertir les objets `duckdb en `data.table`, opération longue lorsque les données sont volumineuses).
 
-## Que faut-il savoir pour utiliser `duckdb`?
+### Quelles sont les points d'attention à l'usage ?
 
-Le _package_ `duckdb` présente quatre caractéristiques importantes:
+-   __Représentation des données en mémoire__ : `duckdb` est un moteur SQL. Les lignes n'ont pas d'ordre pré-défini, et peuvent être retournées dans un ordre aléatoire.
 
-- une structure de données spécifique: les données sont dans un serveur SQL, il faut passer par des requêtes;
-- une utilisation via la syntaxe `dplyr`;
-- un moteur d'exécution spécifique;
-- un mode de fonctionnement particulier: l'évaluation différée.
+-   __Traitement de données volumineuses__: `duckdb` traite des données qui peuvent être en mémoire vive ou sur le disque dur. En mémoire vive, les échanges sont efficaces avec `arrow` mais il faudra convertir les données pour les utiliser au format `tibble` (fonction `collect()`) ou avec `data.table`. Avec des données sur le disque dur, `duckdb` est capable de faire les traitements sur des données plus volumineuses que la mémoire vive (RAM). C'est un avantage majeur en comparaison aux autres approches possibles en `R` (`data.table` et `dplyr` par exemple).
 
-### Charger et paramétrer le *package* `duckdb`
+-   __*Évaluation différée*__: `duckdb` construit des requêtes SQL, qui sont exécutées uniquement quand nécessaire, après optimisation des étapes intermédiaires, et peuvent être exécutées partiellement. La @sec-lazy présente en détail cette notion.
 
-Pour utiliser `duckdb`, il faut commencer par charger le *package*. Il est utile de charger le package `dplyr` pour bénéficier de la syntaxe correspondante. Le moteur `duckdb` fonctionnant "en dehors" de R, il détecte le nombre de processeurs et effectue les opérations en parallèle si possible.
+-   __*Traduction en SQL*__: `duckdb` construit des requêtes SQL, et toutes les fonctions de `dplyr` ne sont pas traduites. Il y moins de limitations que `arrow` mais il faut parfois utiliser une fonction SQL directement ou contourner le problème. La @sec-sql donne quelques trucs et astuces dans ce cas.
+
+-   __Interopérabilité__: `duckdb` est conçu pour être interopérable entre plusieurs langages de programmation tels que `R`, Python, Java, C++, etc. Cela signifie que les données peuvent être échangées entre ces langages sans avoir besoin de convertir les données, d'où des gains importants de temps et de performance.
+
+
+
+# Utilisation de `duckdb`
+
+## Charger le *package* `duckdb`
+
+Pour utiliser `duckdb`, il faut commencer par charger le *package*. Il est utile de charger le package `dplyr` pour bénéficier de la syntaxe correspondante. 
 
 ```{r}
 #| output: false
@@ -87,9 +85,12 @@ library(duckdb)
 library(dplyr)
 ```
 
-### Structure de données
+Le moteur `duckdb` fonctionnant "en dehors" de R, il détecte le nombre de processeurs et effectue les opérations en parallèle si possible. Le paramètrage s'effectue au moment de l'ouverture de la connexion (section suivante).
 
-**Le *package* `duckdb` s'utilise comme une base de données distante : il faut ouvrir une connexion et "charger" les données.** 
+
+## Connexion à une base de données
+
+**`duckdb` est une base de données distante et s'utilise comme tel: il faut ouvrir une connexion et "charger" les données.** 
 
 Comme beaucoup d'autres bases de données (distantes ou locales), on ouvre une connexion au moteur `duckdb` avec une base de données en mémoire vive de la façon suivante :
 ```{r}
@@ -106,7 +107,15 @@ Pour la suite, on supposera que la connexion est ouverte.
 con <- DBI::dbConnect(duckdb::duckdb()); 
 ```
 
-On charge des données dans `duckdb` au travers de la connexion `con` avec la fonction `duckdb_register()`. Cette methode a l'avantage de ne pas _recopier_ les données. D'autres moyens sont possibles, notamment en passant par `arrow`. L'objet `con` apparaît dans l'onglet `Data` de l'environnement `RStudio`, mais la liste des tables n'est pas directement accessibles. Pour plus d'informations, se reporter à la documentation du package `DBI`.
+**Important** : on peut adosser un fichier `.db` à `duckdb` pour lui permettre de déborder de la mémoire vive ou de stocker dans son format l'ensemble des tables. C'est très lent. Restructurer les calculs ou écrire une base intermédiaire au format `parquet` partitionné est souvent une meilleure solution.
+
+
+
+## Chargement des données et écriture au format parquet
+
+### Déclaration de données provenant de R
+
+On charge des données dans `duckdb` au travers de la connexion `con` avec la fonction `duckdb_register()`. Cette methode a l'avantage de ne pas _recopier_ les données. D'autres moyens sont possibles, notamment en passant par `arrow`. L'objet `con` apparaît dans l'onglet `Data` de l'environnement `RStudio`, mais la liste des tables n'y est pas directement accessibles. Pour plus d'informations, se reporter à la documentation du package `DBI`.
 
 ```{r}
 con %>% duckdb::duckdb_register(name = "bpe_ens_2018_duckdb", df = doremifasolData::bpe_ens_2018 |> as_tibble())
@@ -117,36 +126,37 @@ Le code ci-dessous permet de vérifier que le chargement des données a bien fon
 con %>% tbl("bpe_ens_2018_duckdb")
 ```
 
+### Écriture au format parquet 
 
+**Pour écrire une table (ou n'importe quelle requête) sur le disque au format parquet, on suggère d'utiliser la librairie `arrow`.**
 ```{r}
-DBI::dbDisconnect(con, shutdown = TRUE)
+con %>% tbl("bpe_ens_2018_duckdb") %>% arrow::to_arrow() %>% arrow::write_dataset("bpe_ens_2018_dataset")
+list.files("bpe_ens_2018_dataset")
+```
+
+Une autre possibilité est de passer par la commande SQL `COPY ... TO`. Dans mon expérience, passer par `arrow` permet d'exécuter des calculs plus complexes sans faire déborder la mémoire (`arrow` sauvegarde au fur et à mesure), et la syntaxe est plus facile à manipuler, notamment quand on souhaite ajouter des options.
+
+
+### Déclaration de données provenant du disque dur
+
+**Pour utiliser un fichier parquet dans `duckdb` sans le charger en mémoire, on propose deux méthodes.**
+
+En passant par arrow. Cette méthode est généralisable aux autres formats de données lisibles par `arrow`, notamment CSV, mais utilise des objets intermédiaires : 
+```{r}
+arrow::open_dataset("bpe_ens_2018_dataset") %>% arrow::to_duckdb(con)
+```
+
+En passant directement par duckdb, il faut travailler un peu plus pour construire les noms de fichiers :
+```{r messages=FALSE}
+con %>% tbl("read_parquet('bpe_ens_2018_dataset/*.parquet')")
 ```
 
 
-# Ajouter lecture d'un fichier parquet sans le charger en mémoire
+## Construire des requêtes SQL avec la syntaxe `dplyr`
 
+Le _package_ `R` `duckdb` (en fait `dbplyr`) a été écrit de façon à pouvoir manipuler les données avec la syntaxe de `dplyr` (`select`, `filter`, `mutate`, `left_join`, etc.). `dbplyr` traduit le code R, y compris certaines fonctions de `stringr` et `lubridate` en requête SQL. Cela s'avère très commode en pratique, car lorsqu'on sait utiliser `dplyr` et le `tidyverse`, on peut commencer à utiliser `duckdb` sans avoir à apprendre une nouvelle syntaxe de manipulation de données. Il y a néanmoins des subtilités à connaître, détaillées dans la suite de cette fiche.
 
-```
-{r, message=FALSE}
-# Sauvegarder la BPE 2018 sous la forme d'un dataset duckdb partitionné
-write_dataset(
-  bpe_ens_2018_duckdb,
-  "bpe2018/",
-  partitioning = "REG",
-  hive_style = TRUE
-)
-```
-
-------------
-
-
-### Manipuler des `duckdb Table` avec la syntaxe `dplyr`
-
-Le _package_ `R` `duckdb` a été écrit de façon à ce qu'un `duckdb Table` puisse être manipulé avec les fonctions de `dplyr` (`select`, `filter`, `mutate`, `left_join`, etc.), *comme si* cette table était un `data.frame` ou un `tibble` standard.
-
-Il est également possible d'utiliser sur un `duckdb Table` un certain nombre de fonctions des _packages_ du `tidyverse` (comme `stringr` et `lubridate`). Cela s'avère très commode en pratique, car lorsqu'on sait utiliser `dplyr` et le `tidyverse`, on peut commencer à utiliser `duckdb` sans avoir à apprendre une nouvelle syntaxe de manipulation de données. Il y a néanmoins des subtilités à connaître, détaillées dans la suite de cette fiche.
-
-Dans l'exemple suivant, on calcule le nombre d'équipements par région, à partir d'un `tibble` et à partir d'un `duckdb table`. La seule différence apparente entre les deux traitement est la présence de la fonction `collect()` à la fin des instructions; cette fonction indique que l'on souhaite que le résultat du traitement soit stocké sous la forme d'un `tibble`. La raison d'être de ce `collect()` est expliquée plus loin, dans le paragraphe sur l'évaluation différée.
+Dans l'exemple suivant, on calcule le nombre d'équipements par région, à partir d'un `tibble` et à partir d'un `duckdb table`. La seule différence apparente entre les deux traitement est la présence de la fonction `collect()` à la fin des instructions; cette fonction indique que l'on souhaite que le résultat du traitement soit stocké sous la forme d'un `tibble`. La raison d'être de ce `collect()` est expliquée plus loin, dans le paragraphe sur l'évaluation différée. Les résultats sont identiques, à permutation près. En effet, un moteur SQL ne respecte pas l'ordre par défaut, il faut le demander explicitement avec `arrange`.
 
 :::: {.columns}
 
@@ -154,9 +164,8 @@ Dans l'exemple suivant, on calcule le nombre d'équipements par région, à part
 
 __Manipulation d'un `tibble`__
 
-```
-{r eval=FALSE,message=FALSE}
-bpe_ens_2018_tbl |>
+```{r message=FALSE}
+doremifasolData::bpe_ens_2018 |>
   group_by(REG) |>
   summarise(
     NB_EQUIP_TOT = sum(NB_EQUIP)
@@ -173,9 +182,8 @@ bpe_ens_2018_tbl |>
 
 __Manipulation d'un `duckdb Table`__
 
-```
-{r eval=FALSE,message=FALSE}
-bpe_ens_2018_duckdb |>
+```{r message=FALSE}
+con %>% tbl("bpe_ens_2018_duckdb") |>
   group_by(REG) |>
   summarise(
     NB_EQUIP_TOT = sum(NB_EQUIP)
@@ -187,55 +195,56 @@ bpe_ens_2018_duckdb |>
 
 ::::
 
-### Le moteur d'exécution d'`duckdb`: `acero`
 
-Il y a une différence fondamentale entre manipuler un `data.frame` ou un `tibble` et manipuler un `duckdb Table`. Pour bien la comprendre, il faut d'abord comprendre la __distinction entre syntaxe de manipulation des données et moteur d'exécution__:
+
+### Le moteur d'exécution SQL de `duckdb`
+
+Il y a une différence fondamentale entre manipuler un `data.frame` ou un `tibble` et manipuler une requête SQL. Pour bien la comprendre, il faut d'abord comprendre la __distinction entre syntaxe de manipulation des données et moteur d'exécution__:
 
 - La syntaxe de manipulation des données sert à décrire les manipulations de données qu'on veut faire (calculer des moyennes, faire des jointures...), indépendamment de la façon dont ces calculs sont effectivement réalisés;
 -  le moteur d'exécution fait référence à la façon dont les opérations sur les données sont effectivement réalisées en mémoire, indépendamment de la façon dont elles ont été décrites par l'utilisateur.
 
-__La grande différence entre manipuler un `tibble` et manipuler un `duckdb Table` tient au moteur d'exécution__: si on manipule un `tibble` avec la syntaxe de `dplyr`, alors c'est le moteur d'exécution de `dplyr` qui fait les calculs; si on manipule un `duckdb Table` avec la syntaxe de `dplyr`, alors c'est le moteur d'exécution d'`duckdb` (nommé `acero`) qui fait les calculs. C'est justement parce que le moteur d'exécution d'`duckdb` est beaucoup plus efficace que celui de `dplyr` qu'`duckdb` est beaucoup plus rapide.
+__La grande différence entre manipuler un `tibble` et manipuler une requête `duckdb` tient au moteur d'exécution__: si on manipule un `tibble` avec la syntaxe de `dplyr`, alors c'est le moteur d'exécution de `dplyr` qui fait les calculs; si on manipule une requête `duckdb` avec la syntaxe de `dplyr`, alors c'est le moteur d'exécution de `duckdb` qui fait les calculs. C'est justement parce que le moteur d'exécution de `duckdb` est beaucoup plus efficace que celui de `dplyr` que `duckdb` est beaucoup plus rapide.
 
 
-<!-- __La grande différence entre `dplyr` et `duckdb` tient au moteur d'exécution__: si on manipule un `tibble` avec la syntaxe de `dplyr`, alors c'est le moteur d'exécution de `dplyr` qui fait les calculs; si on manipule un `duckdb Table` avec la syntaxe de `dplyr`, alors les instructions sont automatiquement converties et envoyées au moteur d'exécution d'`duckdb` (nommé `acero`), et c'est ce moteur qui fait les calculs. C'est justement parce que le moteur d'exécution d'`duckdb` est beaucoup plus efficace que celui de `dplyr` qu'`duckdb` est beaucoup plus rapide. __Comprendre cette différence de moteurs d'exécution est essentiel pour bien utiliser `duckdb` et résoudre les problèmes qui se présentent lorsqu'on découvre cet outil__. -->
-
-__Cette différence de moteurs d'exécution a une conséquence technique importante__: une fois que l'utilisateur a défini des instructions avec la syntaxe `dplyr`, il est nécessaire que celles-ci soient converties pour que le moteur `acero` (écrit en C++ et non en `R`) puisse les exécuter. De façon générale, `duckdb` fait cette conversion de façon automatique et invisible, car le  _package_ `duckdb` contient la traduction C++ de plusieurs centaines de fonctions du `tidyverse`. Par exemple, le _package_ `duckdb` contient la traduction C++ de la fonction `filter()` de `dplyr`, ce qui fait que les instructions `filter()` écrites en syntaxe `tidyverse` sont converties de façon automatique et invisible en des instructions C++ équivalentes. La liste des fonctions du _tidyverse_ supportées par `acero` est disponible sur [cette page](https://duckdb.apache.org/docs/dev/r/reference/acero.html). Il arrive toutefois qu'on veuille utiliser une fonction non supportée par `acero`. Cette situation est décrite dans le paragraphe "Comment utiliser une fonction non supportée par `acero`".
+__Cette différence de moteurs d'exécution a une conséquence technique importante__: une fois que l'utilisateur a défini des instructions avec la syntaxe `dplyr`, il est nécessaire que celles-ci soient converties en SQL pour que `duckdb` puisse les exécuter. De façon générale, `duckdb` fait cette conversion de façon automatique et invisible, car le  _package_ `duckdb` contient la traduction de plusieurs centaines de fonctions du `tidyverse`. Par exemple, le _package_ `duckdb` contient la traduction de la fonction `filter()` de `dplyr`, ce qui fait que les instructions `filter()` écrites en syntaxe `tidyverse` sont converties de façon automatique et invisible en des instructions SQL équivalentes. Il arrive toutefois qu'on veuille utiliser une fonction non supportée. Cette situation est décrite dans le paragraphe "Comment utiliser une fonction non supportée".
 
 
 ### L'évaluation différée avec `duckdb` (_lazy evaluation_) {#sec-lazy}
 
-__Une caractéristique importante d'`duckdb` est qu'il pratique l'évaluation différée (_lazy evaluation_): les calculs ne sont effectivement réalisés que lorsqu'ils sont nécessaires__. En pratique, cela signifie qu'`duckdb` se contente de mémoriser les instructions, sans faire aucun calcul tant que l'utilisateur ne le demande pas explicitement. Il existe deux fonctions pour déclencher l'évaluation d'un traitement `duckdb`: `collect()` et `compute()`. Il n'y a qu'une seule différence entre `collect()` et `compute()`, mais elle est importante: `collect()` renvoie le résultat du traitement sous la forme d'un `tibble`, tandis que `compute()` le renvoie sous la forme d'un `duckdb Table`.
+__Une caractéristique importante de `duckdb` est qu'il pratique l'évaluation différée (_lazy evaluation_): les calculs ne sont effectivement réalisés que lorsqu'ils sont nécessaires__. En pratique, cela signifie que l'on construit successivement des requêtes SQL, sans faire aucun calcul tant que l'utilisateur ne le demande pas explicitement. Il existe deux fonctions pour déclencher l'évaluation d'un traitement : `collect()` et `print()`.
 
 __L'évaluation différée permet d'améliorer les performances en évitant le calcul de résultats intermédiaires inutiles, et en optimisant les requêtes__ pour utiliser le minimum de données et le minimum de ressources. L'exemple suivant illustre l'intérêt de l'évaluation différée dans un cas simple. 
 
 
-```
-{r, message=FALSE}
+```{r, message=FALSE}
 # Étape 1: compter les équipements
-eq_dep <- bpe_ens_2018_duckdb |>
+eq_dep <- con %>% tbl("bpe_ens_2018_duckdb") |>
   group_by(DEP) |>
   summarise(
     NB_EQUIP_TOT = sum(NB_EQUIP)
   )
 
 # Étape 2: filtrer sur le département
-resultats <- eq_dep |> 
+eq_dep |> 
   filter(DEP == "59") |> 
   collect()
 ```
 
-Dans cet exemple, on procède à un traitement en deux temps: on compte les équipements par département, puis on filtre sur le département. Il est important de souligner que la première étape ne réalise aucun calcul par elle-même, car elle ne comprend ni `collect()` ni `compute()`. L'objet `equipements_par_departement` n'est pas une table et ne contient pas de données, il contient simplement une requête (_query_) décrivant les opérations à mener sur la table `bpe_ens_2018_duckdb`.
+
+Dans cet exemple, on procède à un traitement en deux temps: on compte les équipements par département, puis on filtre sur le département. Il est important de souligner que la première étape ne réalise aucun calcul par elle-même, car elle ne comprend ni `collect()` ni `print()`. L'objet `eq_dep` n'est pas une table et ne contient pas de données, il contient simplement une requête (_query_) décrivant les opérations à mener sur la table `bpe_ens_2018_duckdb`.
 
 On pourrait penser que, lorsqu'on exécute l'ensemble de ce traitement, `duckdb` se contente d'exécuter les instructions les unes après les autres: compter les équipements par département, puis conserver uniquement le département 59. Mais en réalité `duckdb` fait beaucoup mieux que cela: __`duckdb` analyse la requête avant de l'exécuter, et optimise le traitement pour minimiser le travail__. Dans le cas présent, `duckdb` repère que la requête ne porte en fait que sur le département 59, et commence donc par filtrer les données sur le département avant de compter les équipements, de façon à ne conserver que le minimum de données nécessaires et à ne réaliser que le minimum de calculs. Ce type d'optimisation s'avère très utile quand les données à traiter sont très volumineuses.
 
-## Comment bien utiliser `duckdb`?
+
+## Comment bien utiliser `duckdb`? (à faire)
 
 Au premier abord, on peut avoir l'impression qu'`duckdb` s'utilise exactement comme `dplyr` (c'est d'ailleurs fait exprès!). Il y a toutefois quelques différences qui peuvent avoir un impact considérable sur les performances des traitements. Cette partie détaille quatre recommandations à suivre pour bien utiliser `duckdb`:
 
 - Utiliser correctement l'évaluation différée;
-- Utiliser `compute()` plutôt que `collect()`;
-- Utiliser `open_dataset()` plutôt que `read_parquet()`;
 - Surveiller la consommation de RAM de `R`.
+
+
 
 
 ### Savoir bien utiliser l'évaluation différée
@@ -252,6 +261,10 @@ write_dataset(
   hive_style = TRUE
 )
 ```
+
+
+
+# Notions avancées
 
 #### Comment fonctionne l'évaluation différée?
 
@@ -279,6 +292,8 @@ eq_dep <- ds_bpe2018 |>
 resultats <- eq_dep |> 
   filter(DEP == "59")
 ```
+
+
 
 Voici quelques commentaires pour comprendre ce traitement:
 
@@ -361,12 +376,6 @@ __La vraie difficulté consiste à savoir quelle est la bonne longueur de ces é
 - __Plus les données sont volumineuses, plus il faut être prudent avant de définir de longues étapes de traitement__.
 - __Plus les opérations unitaires sont complexes, plus les étapes doivent être courtes.__ Par exemple, si les opérations sont des `filter()` et des `select()`, il est possible d'en enchaîner un certain nombre en une seule étape de traitement sans aucun problème, car ces opérations sont simples. Inversement, une étape de traitement ne doit pas comprendre plus de trois ou quatre jointures (car les jointures sont des opérations complexes), en particulier si les tables sont volumineuses.
 
-### Lire des fichiers Parquet avec `open_dataset()` plutôt que `read_parquet()`
-
-__Il est recommandé d'utiliser systématiquement la fonction `open_dataset()` plutôt que la fonction `read_parquet()` pour accéder à des données stockées en format Parquet.__ En effet, la fonction `open_dataset()` présente deux avantages:
-
-- __Consommation mémoire inférieure__: la fonction `open_dataset()` crée une connexion au fichier Parquet, mais elle n'importe pas les données contenues dans le fichier tant que l'utilisateur ne le demande pas avec `compute()` ou `collect()`, et elle est optimisée pour importer uniquement les données nécessaires au traitement. Inversement, la fonction `read_parquet()` importe immédiatement dans `R` toutes les données du fichier Parquet, y compris des données qui ne servent pas à la suite du traitement.
-- __Usage plus général__: la fonction `open_dataset()` peut se connecter à un fichier Parquet unique, mais aussi à des fichiers Parquet partitionnés, tandis que `read_parquet()` ne peut pas lire ces derniers.
 
 ### Utiliser des objets `duckdb Table` plutôt que des `data.frames`
 
@@ -444,6 +453,7 @@ write_parquet(res_final, "resultats.parquet")
 Si vous ne savez plus si une table de données est un `duckdb Table` ou un `tibble`, il suffit d'exécuter `class(le_nom_de_ma_table)`. Si la table est un `duckdb Table`, vous obtiendrez ceci: `"Table"        "duckdbTabular" "duckdbObject"  "R6"`. Si elle est un `tibble`, vous obtiendrez `"tbl_df"     "tbl"        "data.frame"`.
 :::
 
+
 ### Surveiller la consommation de RAM de `R`
 
 
@@ -452,6 +462,8 @@ Comme expliqué plus haut, les `duckdb Table` ne sont pas des objets `R` standar
 
 - Si on travaille sur des données volumineuses, __il est important de surveiller fréquemment sa consommation de RAM pour s'assurer qu'elle n'est pas excessive__; la fiche [Superviser sa session `R`]{#superviser-ressources}.
 - Si la consommation de RAM devient très élevée, __la seule solution semble être de redémarrer la session `R`__. En pratique, redémarrer la session `R` ne fait pas perdre plus de quelques minutes, car grâce à `duckdb` et Parquet le chargement des données est très rapide.
+
+
 
 
 
@@ -489,7 +501,8 @@ Le projet `duckdb` est relativement récent et en développement actif. Il n'est
     ```
 
 
-### Surmonter le problème des fonctions non supportées par `acero`
+
+### Surmonter le problème des fonctions non supportées par `acero` {#sec-sql}
 
 __Lorsqu'on manipule des données avec `duckdb`, il arrive fréquemment qu'on écrive un traitement que le moteur d'exécution `acero` n'arrive pas à exécuter.__ En ce cas, `R` renonce à manipuler les données sous forme de `duckdb Table` avec le moteur `acero`, convertit les données en `tibble` et poursuit le traitement avec le moteur d'exécution de `dplyr` (comme un traitement `dplyr` standard). `R` signale systématiquement le recours à cette solution de repli par un message d'erreur qui se termine par `pulling data into R`. 
 
@@ -638,4 +651,10 @@ Si les pistes mentionnées précédemment ne fournissent pas de solution simple,
 - la documentation officielle du _package_ [`duckdb`](https://duckdb.apache.org/docs/dev/r/index.html) (en anglais);
 - [un post de blog qui décrit en détail les liens entre `libduckdb` et `R`](https://blog.djnavarro.net/posts/2022-01-18_binding-duckdb-to-r/) (en anglais);
 - la [liste](https://duckdb.apache.org/docs/dev/r/reference/acero.html) des fonctions du _tidyverse_ supportées par `acero`.
+
+```{r}
+DBI::dbDisconnect(con, shutdown = TRUE)
+```
+
+
 
