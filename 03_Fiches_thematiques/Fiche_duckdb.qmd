@@ -6,13 +6,14 @@ L'utilisateur souhaite manipuler des données structurées sous forme de `data.f
 
 ::: {.callout-important}
 Tâches concernées et recommandations
+
 - Pour des tables de données de taille petite et moyenne (inférieure à 1 Go ou moins d'un million d'observations), il est recommandé d'utiliser les *packages* `tibble`, `dplyr` et `tidyr` qui sont présentés dans la fiche [Manipuler des données avec le `tidyverse`](#tidyverse);
 
 - Pour des tables de données de grande taille (plus de 1 Go en CSV, plus de 200 Mo en Parquet, ou plus d'un million d'observations), il est recommandé d'utiliser soit le *package* `data.table` qui fait l'objet de la fiche [Manipuler des données avec `data.table`](#datatable) lorsque les données tiennent en mémoire vive, soit le *package* `arrow` [Manipuler des données avec `arrow`](#arrow). Nous présentons ici les fonctionnalités du package `duckdb` en complément ou en remplacement de `arrow`.
 
 - Il est essentiel de travailler avec la dernière version d'`arrow`, de `duckdb` et de `R` car les *packages* `arrow` et `duckdb` sont en cours de développement.
 
-- Si les données sont très volumineuses (plus de 5 Go en CSV, plus de 1 Go en Parquet ou plus de 5 millions d'observations), il est essentiel de manipuler des requêtes `duckdb`, plutôt que des `tibbles` pour pouvoir réaliser les traitements sur une machine standard. Les éléments présentés dans cette fiche concernent préférentiellement ce cas de figure.
+- Si les données sont très volumineuses (plus de 5 Go en CSV, plus de 1 Go en Parquet ou plus de 5 millions d'observations), il est essentiel de manipuler des requêtes `duckdb` plutôt que des `tibbles`, lorsque l'on réalise les traitements sur une machine standard. Les éléments présentés dans cette fiche concernent préférentiellement ce cas de figure. Si cela ne suffit pas, il faut s'orienter vers d'autres infrastructures spécialisées Big Data.
 :::
 
 
@@ -64,21 +65,24 @@ Du point de vue d'un statisticien utilisant `R`, le *package* `duckdb` permet de
 ### Quelles sont les points d'attention à l'usage ?
 
 -   __Représentation des données en mémoire__ : `duckdb` est un moteur SQL. Les lignes n'ont pas d'ordre pré-défini, et le résultat d'un traitement peut être dans un ordre aléatoire.
--   __Traitement de données volumineuses__: `duckdb` traite des données qui peuvent être en mémoire vive ou sur le disque dur. En mémoire vive, les échanges sont efficaces avec `arrow` mais il faudra convertir les données pour les utiliser au format `tibble` (fonction `collect()`) ou avec `data.table`. Avec des données sur le disque dur, `duckdb` est capable de faire les traitements sur des données plus volumineuses que la mémoire vive (RAM). C'est un avantage majeur en comparaison aux autres approches possibles en `R` (`data.table` et `dplyr` par exemple).
+-   __Traitement de données volumineuses__: `duckdb` traite des données qui peuvent être en mémoire vive ou sur le disque dur. En mémoire vive, les échanges sont efficaces avec `arrow` mais il faudra convertir les données pour les utiliser au format `tibble` (fonction `collect()`) ou avec `data.table`. Avec des données sur le disque dur, `duckdb` est capable de faire les traitements sur des données plus volumineuses que la mémoire vive (RAM). C'est un avantage majeur en comparaison aux autres approches possibles en `R` (`data.table` et `dplyr` par exemple). Toutefois, il faut dans ce cas ajouter le temps de lecture des données au temps nécessaire pour le calcul.
 -   __*Évaluation différée*__: `duckdb` construit des requêtes SQL, qui sont exécutées uniquement quand nécessaire, après optimisation des étapes intermédiaires, et peuvent être exécutées partiellement. La @sec-lazy présente en détail cette notion.
 -   __*Traduction en SQL*__: `duckdb` traduit automatiquement les instructions `dplyr` en requêtes SQL (de la même façon qu'`arrow` traduit ces instructions en code C++). Il arrive toutefois que certaines fonctions de `dplyr` n'aient pas d'équivalent direct en `duckdb` et ne puissent être traduites automatiquement. Dans ce cas (qui est heureusement moins fréquent qu'avec `arrow`), il faut parfois utiliser une fonction SQL directement ou trouver une solution pour contourner le problème. La @sec-sql donne quelques trucs et astuces dans ce cas.
 -   __Interopérabilité__: `duckdb` est conçu pour être interopérable entre plusieurs langages de programmation tels que `R`, Python, Java, C++, etc. Cela signifie que les données peuvent être échangées entre ces langages sans avoir besoin de convertir les données, d'où des gains importants de temps et de performance.
 
-# Installation de `duckdb`
+## Installation de `duckdb`
 
-Il suffit d'installer le package `duckdb` à partir du CRAN.
-```{r}
+Il suffit d'installer le package `duckdb`.
+
+```{r eval=FALSE}
 install.packages("duckdb", repos="https://cloud.r-project.org")
-# Utilisation de `duckdb`
+```
+
+## Utilisation de `duckdb`
 
 Dans cette section, on présente l'utilisation basique de `duckdb`. C'est très facile: il n'est pas nécessaire de connaître le langage de SQL car il est possible d'utiliser `duckdb` avec la syntaxe `tidyverse`.
 
-## Charger le *package* `duckdb`
+### Charger le *package* `duckdb`
 
 Pour utiliser `duckdb`, il faut commencer par charger le *package*. Il est utile de charger le *package* `dplyr` pour utiliser la syntaxe `tidyverse`. 
 
@@ -91,7 +95,7 @@ library(dplyr)
 Le moteur `duckdb` fonctionnant "en dehors" de `R`, il détecte le nombre de processeurs et effectue les opérations en parallèle si possible. 
 
 
-## Connexion à une base de données
+### Connexion à une base de données
 
 **`duckdb` est une base de données distante et s'utilise comme telle: il faut ouvrir une connexion, puis "charger" les données dans la base de données pour les manipuler.** 
 
@@ -114,10 +118,10 @@ con <- DBI::dbConnect(duckdb::duckdb());
 
 
 
-## Chargement des données et écriture au format Parquet
+### Chargement des données
 
 
-### Déclaration de données provenant de `R`
+#### Déclaration de données provenant de `R`
 
 On charge des données dans `duckdb` au travers de la connexion `con` avec la fonction `duckdb_register()`. Cette methode a l'avantage de ne pas _recopier_ les données. D'autres moyens sont possibles, notamment en passant par `arrow`. L'objet `con` apparaît dans l'onglet `Data` de l'environnement `RStudio`, mais la liste des tables n'y est pas directement accessibles. Pour plus d'informations, se reporter à la documentation du package `DBI`.
 
@@ -133,19 +137,12 @@ con %>% tbl("bpe_ens_2018_duckdb")
 ```
 
 
-### Écriture au format parquet 
+#### Déclaration de données provenant du disque dur
 
-**Pour écrire une table (ou n'importe quelle requête) sur le disque au format parquet, on suggère d'utiliser la librairie `arrow`.**
+Pour l'exemple, on sauvegarde les données `bpe_ens_2018` au format Parquet.
 ```{r}
-con %>% tbl("bpe_ens_2018_duckdb") %>% 
-  arrow::to_arrow() %>% arrow::write_dataset("bpe_ens_2018_dataset")
-list.files("bpe_ens_2018_dataset") # liste des fichiers du répertoire bpe_ens_2018_dataset/
+doremifasolData::bpe_ens_2018 |> arrow::write_dataset("bpe_ens_2018_dataset")
 ```
-
-Une autre possibilité est de passer par la commande SQL `COPY ... TO`. Dans mon expérience, passer par `arrow` permet d'exécuter des calculs plus complexes sans faire déborder la mémoire (`arrow` sauvegarde au fur et à mesure), et la syntaxe est plus facile à manipuler, notamment quand on souhaite ajouter des options.
-
-
-### Déclaration de données provenant du disque dur
 
 **Pour utiliser un fichier parquet dans `duckdb` sans le charger en mémoire, on propose deux méthodes.**
 
@@ -159,8 +156,13 @@ En passant directement par duckdb, il faut travailler un peu plus pour construir
 con %>% tbl("read_parquet('bpe_ens_2018_dataset/*.parquet')", check_from = FALSE)
 ```
 
+Ces deux méthodes utilisent les données directement depuis le dataset Parquet. Les données ne sont ni dans la mémoire de `R`, ni dans celle de `DuckDB`. Pour plus de commodité, on sauvegarde l'instruction précédente dans la variable `bpe_ens_2018_dataset`.
+```{r}
+bpe_ens_2018_dataset <- con %>% tbl("read_parquet('bpe_ens_2018_dataset/*.parquet')", check_from = FALSE)
+```
 
-## Syntaxe `dplyr`
+
+### Manipulation des données avec la syntaxe `dplyr`
 
 Le _package_ `R` `duckdb` (en fait `dbplyr`) a été écrit de façon à pouvoir manipuler les données avec la syntaxe de `dplyr` (`select`, `filter`, `mutate`, `left_join`, etc.). `duckdb` traduit le code `R`, y compris certaines fonctions de `stringr` et `lubridate` en requête SQL. Cela s'avère très commode en pratique, car lorsqu'on sait utiliser `dplyr` et le `tidyverse`, on peut commencer à utiliser `duckdb` sans avoir à apprendre une nouvelle syntaxe de manipulation de données. 
 
@@ -192,7 +194,7 @@ doremifasolData::bpe_ens_2018 |>
 __Manipulation d'une table `duckdb`__
 
 ```{r}
-con %>% tbl("bpe_ens_2018_duckdb") |>
+bpe_ens_2018_dataset |>
   group_by(REG) |>
   summarise(
     NB_EQUIP_TOT = sum(NB_EQUIP)
@@ -207,7 +209,7 @@ con %>% tbl("bpe_ens_2018_duckdb") |>
 
 On peut examiner la requête SQL construite par `duckdb` avec la fonction `show_query()`.
 ```{r}
-con %>% tbl("bpe_ens_2018_duckdb") |>
+bpe_ens_2018_dataset |>
   group_by(REG) |>
   summarise(
     NB_EQUIP_TOT = sum(NB_EQUIP)
@@ -222,12 +224,27 @@ Cette requête est envoyée au serveur SQL et exécutée
 En utilisant `print()`, on peut prévisualiser le résultat d'une requête `duckdb`. Il ne faut pas hésiter à s'en servir pour explorer les données et pour construire son calcul itérativement, et ajuster en fonction des résultats.
 
 
-## Erreurs courantes 
+
+
+### Écriture au format parquet 
+
+**Pour écrire une table (ou n'importe quelle requête) sur le disque au format parquet, on suggère d'utiliser la librairie `arrow`.**
+```{r}
+bpe_ens_2018_dataset %>% 
+  arrow::to_arrow() %>% arrow::write_dataset("temp_dataset")
+list.files("temp_dataset") # liste des fichiers du répertoire temp_dataset/
+```
+
+Une autre possibilité est de passer par la commande SQL `COPY ... TO`. Dans mon expérience, passer par `arrow` permet d'exécuter des calculs plus complexes sans faire déborder la mémoire (`arrow` sauvegarde au fur et à mesure), et la syntaxe est plus facile à manipuler, notamment quand on souhaite ajouter des options.
+
+
+
+### Erreurs courantes 
 
 **On a éliminé des colonnes nécessaires**
 
 ```{r error=TRUE}
-con %>% tbl("bpe_ens_2018_duckdb") |> select(DEP) |>
+bpe_ens_2018_dataset |> select(DEP) |>
       mutate(NB_EQUIP_TOTAL_DEP  = sum(NB_EQUIP))
 ```
 
@@ -235,29 +252,29 @@ con %>% tbl("bpe_ens_2018_duckdb") |> select(DEP) |>
 
 Dans cet exemple, on veut multiplier un nombre par une indicatrice.
 ```{r error=TRUE}
-con %>% tbl("bpe_ens_2018_duckdb") %>%
+bpe_ens_2018_dataset %>%
   summarise(nb_boulangeries  = sum(NB_EQUIP * (TYPEQU == "B203")), .by = DEP)
 ```
 
 Avec `duckdb`, il faut transformer explicitement un booléen en nombre (entier ou flottant).
 
 ```{r}
-con %>% tbl("bpe_ens_2018_duckdb") %>%
+bpe_ens_2018_dataset %>%
   summarise(nb_boulangeries  = sum(NB_EQUIP * as.integer(TYPEQU == "B203")), .by = DEP)
 ```
 
 
 
-# Notions avancées / bien utiliser `duckdb`
+## Notions avancées / bien utiliser `duckdb`
 
 
-## L'évaluation différée avec `duckdb` (_lazy evaluation_) {#sec-lazy}
+### L'évaluation différée avec `duckdb` (_lazy evaluation_) {#sec-lazy}
 
 Quand on manipule des objets `duckdb`, on construit des requêtes SQL. Le package `duckdb` se contente de traduire le code `R` en `SQL` sans l'exécuter. On rappelle qu'il faut utiliser `show_query()` pour visualiser la requête. La fonction `print()` permet de pré-visualiser le résultat.
 ```{r}
 # Étape 1: compter les équipements
 req_dep <- 
-  con %>% tbl("bpe_ens_2018_duckdb") |>
+  bpe_ens_2018_dataset |>
   group_by(DEP) |> 
   summarise(
     NB_EQUIP_TOT = sum(NB_EQUIP)
@@ -291,7 +308,7 @@ La première étape de traitement est déclenchée par `collect()`, la table int
 ```{r}
 # Etape 1
 res_etape1 <- 
-  con %>% tbl("bpe_ens_2018_duckdb") |>
+  bpe_ens_2018_dataset |>
   group_by(DEP) |>
   summarise(
     NB_EQUIP_TOT = sum(NB_EQUIP)
@@ -322,7 +339,7 @@ La première étape construit une requête SQL, sans effectuer de calcul. La deu
 
 ```{r}
 # Etape 1
-res_etape1 <- con %>% tbl("bpe_ens_2018_duckdb") |>
+res_etape1 <- bpe_ens_2018_dataset |>
   group_by(DEP) |>
   summarise(
     NB_EQUIP_TOT = sum(NB_EQUIP)
@@ -346,13 +363,13 @@ Si vous ne savez plus si une table de données est une requête SQL ou un `tibbl
 :::
 
 
-## Fonctions non traduites et/ou comment passer des paramètres ? {#sec-sql}
+### Fonctions non traduites et/ou comment passer des paramètres ? {#sec-sql}
 
 Que faire quand la traduction automatique ne fonctionne pas ? Pour les fonctions non traduites ou bien pour spécifier un paramètre à une fonction, il faut mettre les mains dans le mécanisme de traduction vers SQL. 
 
 **Facile : les fonctions non connues par le package `duckdb` sont écrites directement dans le code SQL**, y compris lorsqu'elles n'existent pas.
 ```{r}
-req <- con %>% tbl("bpe_ens_2018_duckdb") |> 
+req <- bpe_ens_2018_dataset |> 
   mutate(test = fonction_inexistante(DEP)) |> 
   show_query()
 ```
@@ -388,7 +405,7 @@ con %>% tbl("dates_duckdb") %>%
 ```
 
 
-## Exécuter du code SQL directement
+### Exécuter du code SQL directement
 
 `DuckDB` étant un serveur SQL à part entière, on peut interagir avec `DuckDB` directement avec des requêtes SQL. Par exemple,
 
@@ -410,7 +427,7 @@ con %>% tbl("bpe_ens_2018_view")
 Il est déconseillé de faire `CREATE TABLE` car cela charge les données dans la mémoire. Les fonctions `read_parquet()` en SQL et `duckdb_register` du package utilisent `CREATE VIEW` implicitement.
 
 
-## Optimisations
+### Optimisations
 
 Les opérations difficiles en SQL, longues, nécessitant beaucoup de mémoire, sont les fonctions "fenêtre" : jointures, `GROUP BY` avec beaucoup de petits groupes, dédoublonnage, etc. On propose ici quelques techniques pour faire passer ces calculs difficiles.
 
@@ -455,7 +472,7 @@ arrow::open_dataset("base_intermediaire") %>% arrow::to_duckdb(con) %>%
 - En SQL, on peut créer un index, mais il faut que les données soient en mémoire, ce qui peut s'avérer être incompatible avec de très grosses volumétries.
 - Par contre, on peut partitionner les données, et le moteur SQL sait utiliser le partitionnement comme un index.
 ```{r}
-con %>% tbl("bpe_ens_2018_duckdb") %>% 
+bpe_ens_2018_dataset %>% 
   arrow::to_arrow() %>% arrow::write_dataset("bpe_ens_2018_dataset_parts", partitioning = "REG" )
 list.files("bpe_ens_2018_dataset_parts") # on obtient un sous-répertoire par région
 ```
@@ -464,10 +481,10 @@ list.files("bpe_ens_2018_dataset_parts") # on obtient un sous-répertoire par r�
 **Exécuter les traitements par groupe _explicitement_**.
 S'il faut absolument charger des données en mémoire, on peut découper le calcul pour ne charger qu'une partie des données. Par exemple, faire une jointure région par région au lieu de faire la jointure sur toute la base d'un coup. On peut utiliser le partitionnement pour sauvegarder les résultats partiels, et les ré-assembler ensuite.
 ```{r eval=FALSE}
-groups <- con %>% tbl("bpe_ens_2018_duckdb") %>% 
+groups <- bpe_ens_2018_dataset %>% 
   distinct(REG) %>% pull() # liste des modalités de la variable REG
 f <- function(x) {
-  con %>% tbl("bpe_ens_2018_duckdb") %>% 
+  bpe_ens_2018_dataset %>% 
     filter(REG == x) %>% 
     calcul_long() %>% 
     arrow::to_arrow() %>% arrow::write_dataset("resultat", partitioning = "REG")
@@ -480,7 +497,7 @@ purrr::walk(f, groups) # on peut aussi utiliser sapply
 
 
 
-# Comparaison avec `arrow`
+## Comparaison avec `arrow`
 
 `arrow` et `duckdb` partagent de nombreux concepts. Voici quelques différences : 
 
@@ -493,7 +510,7 @@ purrr::walk(f, groups) # on peut aussi utiliser sapply
 
 ```{r}
 # arrow ne peut pas exécuter ceci
-con %>% tbl("bpe_ens_2018_duckdb") |>
+bpe_ens_2018_dataset |>
       group_by(DEP) |>
       mutate(NB_EQUIP_TOTAL_DEP  = sum(NB_EQUIP)) |>
   select(DEP, NB_EQUIP, NB_EQUIP_TOTAL_DEP)
@@ -503,14 +520,14 @@ con %>% tbl("bpe_ens_2018_duckdb") |>
 
     ```{r}
     # Comment empiler de multiples tables
-    con %>% tbl("bpe_ens_2018_duckdb") %>% count()
-    con %>% tbl("bpe_ens_2018_duckdb") %>% 
-    union_all( con %>% tbl("bpe_ens_2018_duckdb")) %>% 
-    union_all( con %>% tbl("bpe_ens_2018_duckdb")) %>% count()
+    bpe_ens_2018_dataset %>% count()
+    bpe_ens_2018_dataset %>% 
+    union_all( bpe_ens_2018_dataset) %>% 
+    union_all( bpe_ens_2018_dataset) %>% count()
     ```
 
 
-# Pour en savoir plus {#Ressourcesduckdb}
+## Pour en savoir plus {#Ressourcesduckdb}
 
 - la documentation officielle du _moteur_ [`DuckDB`](https://duckdb.org/docs/) (en anglais);
 - la documentation du _package_ [`DBI`](https://dbi.r-dbi.org/) décrit les mécanismes de traduction `dplyr` vers SQL utilisés dans toutes les bases de données interfacées avec R.
