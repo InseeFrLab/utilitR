@@ -185,7 +185,7 @@ bpe_ens_2018_dataset <- conn_ddb %>% tbl("read_parquet('bpe_ens_2018_dataset/*.p
 Le _package_ `R` `duckdb` (en fait `dbplyr`) a été écrit de façon à pouvoir manipuler les données avec la syntaxe de `dplyr` (`select`, `filter`, `mutate`, `left_join`, etc.). `duckdb` traduit le code `R`, y compris certaines fonctions de `stringr` et `lubridate` en requête SQL. Cela s'avère très commode en pratique, car lorsqu'on sait utiliser `dplyr` et le `tidyverse`, on peut commencer à utiliser `duckdb` sans avoir à apprendre une nouvelle syntaxe de manipulation de données. 
 
 
-Dans l'exemple suivant, on calcule le nombre d'équipements par région, à partir d'un `tibble` et à partir d'une table `duckdb`. La seule différence apparente entre les deux traitement est la présence de la fonction `collect()` à la fin des instructions; cette fonction indique que l'on souhaite que le résultat du traitement soit stocké sous la forme d'un `tibble`. La raison d'être de ce `collect()` est expliquée plus loin, dans le paragraphe sur l'évaluation différée. Les résultats sont identiques, à permutation près. En effet, un moteur SQL ne respecte pas l'ordre par défaut, il faut le demander explicitement avec `arrange`.
+Dans l'exemple suivant, on calcule le nombre d'équipements par région, à partir d'un `tibble` et à partir d'une table `duckdb`. La seule différence apparente entre les deux traitement est la présence de la fonction `collect()` à la fin des instructions; cette fonction indique que l'on souhaite que le résultat du traitement soit stocké sous la forme d'un `tibble`. La raison d'être de ce `collect()` est expliquée plus loin, dans le paragraphe sur l'évaluation différée. Les résultats sont identiques, à l'exception de l'ordre des lignes. En effet, un moteur SQL ne respecte pas l'ordre par défaut, il faut le demander explicitement avec `arrange`.
 
 :::: {.columns}
 
@@ -226,6 +226,7 @@ bpe_ens_2018_dataset |>
 
 
 On peut examiner la requête SQL construite par `duckdb` avec la fonction `show_query()`.
+
 ```{r}
 bpe_ens_2018_dataset |>
   group_by(REG) |>
@@ -234,12 +235,13 @@ bpe_ens_2018_dataset |>
   ) |>
   show_query()
 ```
-Cette requête est envoyée au serveur SQL et exécutée 
 
-- lors d'un appel à `collect()`: le calcul est exécuté en entier et le résultat est retourné sous la forme d'un `tibble`,
-- lors d'un appel à `print(n=nb_lignes)`: le calcul est exécuté partiellement, et seules les `nb_lignes` demandées sont affichées.
+Cette requête est envoyée au serveur SQL et exécutée de façon différente en fonction de la dernière instruction du traitement:
 
-En utilisant `print()`, on peut prévisualiser le résultat d'une requête `duckdb`. Il ne faut pas hésiter à s'en servir pour explorer les données et pour construire son calcul itérativement, et ajuster en fonction des résultats.
+- si le traitement se termine par `collect()`: le calcul est exécuté en entier et le résultat est retourné sous la forme d'un `tibble`,
+- si le traitement se termine par `print(n=nb_lignes)`: le calcul est exécuté partiellement, et seules les `nb_lignes` demandées sont affichées. Cela permet de minimiser les ressources et la mémoire utilisées.
+
+__Ce point est important: en utilisant `print()`, on peut prévisualiser le résultat d'une requête `duckdb` de façon très rapide, sans exécuter tout le traitement.__ Il ne faut pas hésiter à s'en servir pour explorer les données et pour construire le traitement étape par étape, en ajustant en fonction des résultats.
 
 
 
