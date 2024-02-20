@@ -101,19 +101,19 @@ Le moteur `duckdb` fonctionnant "en dehors" de `R`, il détecte le nombre de pro
 
 Comme beaucoup d'autres bases de données (distantes ou locales), on ouvre une connexion au moteur `duckdb` avec une base de données en mémoire vive de la façon suivante :
 ```{r}
-con <- DBI::dbConnect(duckdb::duckdb())
+conn_ddb <- DBI::dbConnect(duckdb::duckdb())
 ```
 
 Concrètement, cette commande crée une nouvelle base de données `duckdb` dans la mémoire vive. Cette base de données ne contient aucune donnée lorsqu'elle est créée.
 
 À la fin du traitement ou du programme, on ferme la connexion avec le code ci-dessous. L'option `shutdown` est importante : elle permet de fermer complètement la session `duckdb` et de libérer la mémoire utilisée. Si on n'utilise pas cette option, il arrive souvent d'avoir des connexions à moitié ouvertes, et de devoir relancer la session `R`.
 ```{r}
-DBI::dbDisconnect(con, shutdown = TRUE)
+DBI::dbDisconnect(conn_ddb, shutdown = TRUE)
 ```
 
 Pour la suite, on supposera que la connexion est ouverte.
 ```{r}
-con <- DBI::dbConnect(duckdb::duckdb()); 
+conn_ddb <- DBI::dbConnect(duckdb::duckdb()); 
 ```
 
 
@@ -123,17 +123,17 @@ con <- DBI::dbConnect(duckdb::duckdb());
 
 #### Déclaration de données provenant de `R`
 
-On charge des données dans `duckdb` au travers de la connexion `con` avec la fonction `duckdb_register()`. Cette methode a l'avantage de ne pas _recopier_ les données. D'autres moyens sont possibles, notamment en passant par `arrow`. L'objet `con` apparaît dans l'onglet `Data` de l'environnement `RStudio`, mais la liste des tables n'y est pas directement accessibles. Pour plus d'informations, se reporter à la documentation du package `DBI`.
+On charge des données dans `duckdb` au travers de la connexion `conn_ddb` avec la fonction `duckdb_register()`. Cette methode a l'avantage de ne pas _recopier_ les données. D'autres moyens sont possibles, notamment en passant par `arrow`. L'objet `conn_ddb` apparaît dans l'onglet `Data` de l'environnement `RStudio`, mais la liste des tables n'y est pas directement accessibles. Pour plus d'informations, se reporter à la documentation du package `DBI`.
 
 ```{r}
-con %>% duckdb::duckdb_register(
+conn_ddb %>% duckdb::duckdb_register(
   name = "bpe_ens_2018_duckdb", 
   df = doremifasolData::bpe_ens_2018 |> as_tibble())
 ```
 
 Le code ci-dessous permet de vérifier que le chargement des données a bien fonctionné. La fonction `tbl` permet d'accéder à un objet de la base de données par le nom (de la table), ou par du code SQL (utilisation avancée). Par défaut, `duckdb` affiche les 10 premières lignes du résultat, sans effectuer tout le calcul. C'est super pratique !
 ```{r}
-con %>% tbl("bpe_ens_2018_duckdb")
+conn_ddb %>% tbl("bpe_ens_2018_duckdb")
 ```
 
 
@@ -148,17 +148,17 @@ doremifasolData::bpe_ens_2018 |> arrow::write_dataset("bpe_ens_2018_dataset")
 
 En passant par arrow. Cette méthode est généralisable aux autres formats de données lisibles par `arrow`, notamment CSV, mais utilise des objets intermédiaires : 
 ```{r}
-arrow::open_dataset("bpe_ens_2018_dataset") %>% arrow::to_duckdb(con)
+arrow::open_dataset("bpe_ens_2018_dataset") %>% arrow::to_duckdb(conn_ddb)
 ```
 
 En passant directement par duckdb, il faut travailler un peu plus pour construire les noms de fichiers :
 ```{r messages=FALSE}
-con %>% tbl("read_parquet('bpe_ens_2018_dataset/*.parquet')", check_from = FALSE)
+conn_ddb %>% tbl("read_parquet('bpe_ens_2018_dataset/*.parquet')", check_from = FALSE)
 ```
 
 Ces deux méthodes utilisent les données directement depuis le dataset Parquet. Les données ne sont ni dans la mémoire de `R`, ni dans celle de `DuckDB`. Pour plus de commodité, on sauvegarde l'instruction précédente dans la variable `bpe_ens_2018_dataset`.
 ```{r}
-bpe_ens_2018_dataset <- con %>% tbl("read_parquet('bpe_ens_2018_dataset/*.parquet')", check_from = FALSE)
+bpe_ens_2018_dataset <- conn_ddb %>% tbl("read_parquet('bpe_ens_2018_dataset/*.parquet')", check_from = FALSE)
 ```
 
 
@@ -378,17 +378,17 @@ On peut se servir de cela pour utiliser directement des fonctions du moteur `Duc
 ```{r}
 dates <- tibble(date_naissance = c("02/07/1980", "29/02/2004"),
                 date_deces = c("05/06/2001", "12/07/2023"),)
-con %>% duckdb::duckdb_register(name = "dates_duckdb", df = dates, overwrite = TRUE)
+conn_ddb %>% duckdb::duckdb_register(name = "dates_duckdb", df = dates, overwrite = TRUE)
 ```
 
 ```{r error=TRUE}
-con %>% tbl("dates_duckdb") %>% 
+conn_ddb %>% tbl("dates_duckdb") %>% 
   mutate(date_naissance = as.Date(date_naissance, "%d/%m/%Y")) # erreur
 ```
 
 On peut utiliser la fonction [`strptime`](https://duckdb.org/docs/sql/functions/dateformat.html) du moteur SQL `DuckDB` en indiquant le paramètre adéquat :
 ```{r}
-con %>% tbl("dates_duckdb") %>% 
+conn_ddb %>% tbl("dates_duckdb") %>% 
   mutate(date_naissance = strptime(date_naissance,"%d/%m/%Y"))
 ```
 
@@ -400,7 +400,7 @@ Note : `duckdb` ne propose pas de convertir automatiquement les objets en `tibbl
 
 ```{r}
 liste_variables <- c("date_naissance","date_deces")
-con %>% tbl("dates_duckdb") %>% 
+conn_ddb %>% tbl("dates_duckdb") %>% 
   mutate_at(liste_variables, ~ strptime(.,"%d/%m/%Y"))
 ```
 
@@ -410,18 +410,18 @@ con %>% tbl("dates_duckdb") %>%
 `DuckDB` étant un serveur SQL à part entière, on peut interagir avec `DuckDB` directement avec des requêtes SQL. Par exemple,
 
 ```{r}
-DBI::dbGetQuery(con, "SELECT * FROM bpe_ens_2018_duckdb") |> head()
+DBI::dbGetQuery(conn_ddb, "SELECT * FROM bpe_ens_2018_duckdb") |> head()
 ```
 
 Par exemple, on peut créer des vues ou des tables explicitement. La fonction `dbExecute` retourne le nombre de lignes modifiées, tandis que la fonction `dbGetQuery` retourne le résultat sous la forme d'un `tibble`.
 ```{r}
-DBI::dbExecute(con, "CREATE TABLE bpe_ens_2018_table AS SELECT REG, SUM(NB_EQUIP) AS NB_EQUIP_TOT FROM bpe_ens_2018_duckdb GROUP BY REG") # Éviter
-DBI::dbExecute(con, "CREATE VIEW bpe_ens_2018_view AS SELECT REG, SUM(NB_EQUIP) AS NB_EQUIP_TOT FROM bpe_ens_2018_duckdb GROUP BY REG")   # n'utilise pas de mémoire
+DBI::dbExecute(conn_ddb, "CREATE TABLE bpe_ens_2018_table AS SELECT REG, SUM(NB_EQUIP) AS NB_EQUIP_TOT FROM bpe_ens_2018_duckdb GROUP BY REG") # Éviter
+DBI::dbExecute(conn_ddb, "CREATE VIEW bpe_ens_2018_view AS SELECT REG, SUM(NB_EQUIP) AS NB_EQUIP_TOT FROM bpe_ens_2018_duckdb GROUP BY REG")   # n'utilise pas de mémoire
 ```
 
 Et interroger les objets créés dans la base SQL via `dplyr` :
 ```{r}
-con %>% tbl("bpe_ens_2018_view")
+conn_ddb %>% tbl("bpe_ens_2018_view")
 ```
 
 Il est déconseillé de faire `CREATE TABLE` car cela charge les données dans la mémoire. Les fonctions `read_parquet()` en SQL et `duckdb_register` du package utilisent `CREATE VIEW` implicitement.
@@ -449,7 +449,7 @@ Or set PRAGMA temp_directory='/path/to/tmp.tmp'
 
 Pour éviter cela, il est possible d'adosser un fichier sur le disque dur à la base de données en mémoire au moment de la création de la connexion. Cela ralentit considérablement les calculs, et ne permet pas toujours d'obtenir un résultat. Il est recommandé de ne pas utiliser de fichier, et d'employer plutôt les techniques présentées dans la suite de cette section.
 ```{r}
-# con <- dbConnect(duckdb(), dbdir = "my-db.duckdb", read_only = FALSE)
+# conn_ddb <- dbConnect(duckdb(), dbdir = "my-db.duckdb", read_only = FALSE)
 ```
 
 
@@ -458,9 +458,9 @@ Pour éviter cela, il est possible d'adosser un fichier sur le disque dur à la 
 - Avec l'évaluation différée, l'ensemble de la requête est exécutée à chaque appel à `collect()`. Il peut être utile de conserver des résultats pour ne pas refaire les mêmes calculs.
 - Certaines requêtes sont trop compliquées pour le moteur SQL et/ou pour la traduction automatique. Par contre, `arrow::write_dataset()` sait faire les calculs par morceaux automatiquement, et libère la mémoire au fur et à mesure. Lorsqu'un calcul ne passe pas, on peut tenter de le découper en passant par une base intermédiaire :
 ```{r eval=FALSE}
-con %>% calcul1() %>% 
+conn_ddb %>% calcul1() %>% 
   arrow::to_arrow() %>% arrow::write_dataset("base_intermediaire")
-arrow::open_dataset("base_intermediaire") %>% arrow::to_duckdb(con) %>% 
+arrow::open_dataset("base_intermediaire") %>% arrow::to_duckdb(conn_ddb) %>% 
   calcul2()
 ```
 
@@ -533,7 +533,8 @@ bpe_ens_2018_dataset |>
 - la documentation du _package_ [`DBI`](https://dbi.r-dbi.org/) décrit les mécanismes de traduction `dplyr` vers SQL utilisés dans toutes les bases de données interfacées avec R.
 
 ```{r}
-DBI::dbDisconnect(con, shutdown = TRUE)
+#| echo: false
+DBI::dbDisconnect(conn_ddb, shutdown = TRUE)
 ```
 
 
