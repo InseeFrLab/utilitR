@@ -20,6 +20,7 @@ Tâches concernées et recommandations
 Apprendre à utiliser `duckdb` n'est pas difficile, car la syntaxe utilisée est quasiment identique à celle du `tidyverse`. Toutefois, une bonne compréhension du fonctionnement de `R` et de `duckdb` est nécessaire pour bien utiliser `duckdb` sur des données volumineuses. Voici quelques conseils pour bien démarrer:
 
 -   Il est indispensable de lire la fiche [Manipuler des données avec le `tidyverse`](#tidyverse) avant de lire la présente fiche.
+-   Il est recommandé de lire la fiche [Se connecter à une base de données](#bdd) avant de lire la présente fiche.
 -   Il est complètement normal de rencontrer des erreurs difficiles à comprendre lorsqu'on commence à utiliser `duckdb`, il ne faut donc pas se décourager.
 -   Il ne faut pas hésiter à demander de l'aide à des collègues, ou à poser des questions sur les salons Tchap adaptés (le salon Langage `R` par exemple).
 :::
@@ -36,10 +37,10 @@ Apprendre à utiliser `duckdb` n'est pas difficile, car la syntaxe utilisée est
 - une installation et un déploiement facile,
 - un moteur portable, utilisable sous Windows, MacOS, Linux, et interfacé avec de nombreux langages de programmation (R, Python, Javascript, etc.).
 
-`DuckDB` est bien un serveur SQL. Il dispose de sa propre mémoire, et on peut lui envoyer des requêtes SQL sans passer par R. 
-Un point important à retenir est donc que **`DuckDB` n'est pas un outil spécifique à `R`**, et il faut bien distinguer le projet `DuckDB` du *package* `R` `duckdb`. Ce *package* propose simplement une interface avec R parmi les autres interfaces existantes : Python, Java, Javascript, Julia, etc.
+Un point important à comprendre est que `DuckDB` est un système de gestion de base de données (SGBD), similaire par exemple à un serveur PostgreSQL: il dispose donc de sa propre mémoire, et on peut lui envoyer directement des requêtes SQL, sans passer par `R`.
+Un point important à retenir est donc que **`DuckDB` n'est pas un outil spécifique à `R`**, et il faut bien distinguer le projet `DuckDB` du *package* `R` `duckdb`. Ce *package* propose simplement une interface avec `R` parmi les autres interfaces existantes : Python, Java, Javascript, Julia, etc.
 
-Toutefois, `DuckDB` est très facile à utiliser avec R, ce qui permet de bénéficier des optimisations inhérentes au langage SQL, à la fois en terme d'utilisation de la mémoire et de rapidité de calcul. C'est de plus un bon intermédiaire avant de passer à des infrastructures avancées telles que spark ou oracle.
+Toutefois, `DuckDB` est très facile à utiliser avec `R`, ce qui permet de bénéficier des optimisations inhérentes au langage SQL, à la fois en terme d'utilisation de la mémoire et de rapidité de calcul. C'est de plus un bon intermédiaire avant de passer à des infrastructures avancées telles que spark ou oracle.
 
 
 ### A quoi sert le *package* `duckdb`?
@@ -62,21 +63,21 @@ Du point de vue d'un statisticien utilisant `R`, le *package* `duckdb` permet de
 
 ### Quelles sont les points d'attention à l'usage ?
 
--   __Représentation des données en mémoire__ : `duckdb` est un moteur SQL. Les lignes n'ont pas d'ordre pré-défini, et peuvent être retournées dans un ordre aléatoire.
+-   __Représentation des données en mémoire__ : `duckdb` est un moteur SQL. Les lignes n'ont pas d'ordre pré-défini, et le résultat d'un traitement peut être dans un ordre aléatoire.
 -   __Traitement de données volumineuses__: `duckdb` traite des données qui peuvent être en mémoire vive ou sur le disque dur. En mémoire vive, les échanges sont efficaces avec `arrow` mais il faudra convertir les données pour les utiliser au format `tibble` (fonction `collect()`) ou avec `data.table`. Avec des données sur le disque dur, `duckdb` est capable de faire les traitements sur des données plus volumineuses que la mémoire vive (RAM). C'est un avantage majeur en comparaison aux autres approches possibles en `R` (`data.table` et `dplyr` par exemple).
 -   __*Évaluation différée*__: `duckdb` construit des requêtes SQL, qui sont exécutées uniquement quand nécessaire, après optimisation des étapes intermédiaires, et peuvent être exécutées partiellement. La @sec-lazy présente en détail cette notion.
--   __*Traduction en SQL*__: `duckdb` construit des requêtes SQL, et toutes les fonctions de `dplyr` ne sont pas traduites. Il y moins de limitations que `arrow` mais il faut parfois utiliser une fonction SQL directement ou contourner le problème. La @sec-sql donne quelques trucs et astuces dans ce cas.
+-   __*Traduction en SQL*__: `duckdb` traduit automatiquement les instructions `dplyr` en requêtes SQL (de la même façon qu'`arrow` traduit ces instructions en code C++). Il arrive toutefois que certaines fonctions de `dplyr` n'aient pas d'équivalent direct en `duckdb` et ne puissent être traduites automatiquement. Dans ce cas (qui est heureusement moins fréquent qu'avec `arrow`), il faut parfois utiliser une fonction SQL directement ou trouver une solution pour contourner le problème. La @sec-sql donne quelques trucs et astuces dans ce cas.
 -   __Interopérabilité__: `duckdb` est conçu pour être interopérable entre plusieurs langages de programmation tels que `R`, Python, Java, C++, etc. Cela signifie que les données peuvent être échangées entre ces langages sans avoir besoin de convertir les données, d'où des gains importants de temps et de performance.
 
 
 
 # Utilisation de `duckdb`
 
-Dans cette section, on présente l'utilisation basique de `duckdb`. C'est très facile car il suffit de manipuler la syntaxe `dplyr`. En particulier, il n'est pas nécessaire d'avoir des notions de SQL. 
+Dans cette section, on présente l'utilisation basique de `duckdb`. C'est très facile: il n'est pas nécessaire de connaître le langage de SQL car il est possible d'utiliser `duckdb` avec la syntaxe `tidyverse`.
 
 ## Charger le *package* `duckdb`
 
-Pour utiliser `duckdb`, il faut commencer par charger le *package*. Il est utile de charger le package `dplyr` pour bénéficier de la syntaxe correspondante. 
+Pour utiliser `duckdb`, il faut commencer par charger le *package*. Il est utile de charger le *package* `dplyr` pour utiliser la syntaxe `tidyverse`. 
 
 ```{r}
 #| output: false
@@ -84,19 +85,21 @@ library(duckdb)
 library(dplyr)
 ```
 
-Le moteur `duckdb` fonctionnant "en dehors" de R, il détecte le nombre de processeurs et effectue les opérations en parallèle si possible. 
+Le moteur `duckdb` fonctionnant "en dehors" de `R`, il détecte le nombre de processeurs et effectue les opérations en parallèle si possible. 
 
 
 ## Connexion à une base de données
 
-**`duckdb` est une base de données distante et s'utilise comme tel: il faut ouvrir une connexion et "charger" les données.** 
+**`duckdb` est une base de données distante et s'utilise comme telle: il faut ouvrir une connexion, puis "charger" les données dans la base de données pour les manipuler.** 
 
 Comme beaucoup d'autres bases de données (distantes ou locales), on ouvre une connexion au moteur `duckdb` avec une base de données en mémoire vive de la façon suivante :
 ```{r}
 con <- DBI::dbConnect(duckdb::duckdb()); 
 ```
 
-À la fin du traitement ou du programme, on ferme la connexion avec le code ci-dessous. L'option `shutdown` est importante : elle permet de fermer le moteur et de récupérer la mémoire. Autrement, il arrive souvent d'avoir d'avoir des connexions à moitié ouvertes, et de devoir relancer la session R.
+Concrètement, cette commande crée une nouvelle base de données `duckdb` dans la mémoire vive. Cette base de données ne contient aucune donnée lorsqu'elle est créée.
+
+À la fin du traitement ou du programme, on ferme la connexion avec le code ci-dessous. L'option `shutdown` est importante : elle permet de fermer complètement la session `duckdb` et de libérer la mémoire utilisée. Si on n'utilise pas cette option, il arrive souvent d'avoir des connexions à moitié ouvertes, et de devoir relancer la session `R`.
 ```{r}
 DBI::dbDisconnect(con, shutdown = TRUE)
 ```
@@ -108,10 +111,10 @@ con <- DBI::dbConnect(duckdb::duckdb());
 
 
 
-## Chargement des données et écriture au format parquet
+## Chargement des données et écriture au format Parquet
 
 
-### Déclaration de données provenant de R
+### Déclaration de données provenant de `R`
 
 On charge des données dans `duckdb` au travers de la connexion `con` avec la fonction `duckdb_register()`. Cette methode a l'avantage de ne pas _recopier_ les données. D'autres moyens sont possibles, notamment en passant par `arrow`. L'objet `con` apparaît dans l'onglet `Data` de l'environnement `RStudio`, mais la liste des tables n'y est pas directement accessibles. Pour plus d'informations, se reporter à la documentation du package `DBI`.
 
