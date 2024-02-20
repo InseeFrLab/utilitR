@@ -9,7 +9,7 @@ Tâches concernées et recommandations
 
 - Pour des tables de données de taille petite et moyenne (inférieure à 1 Go ou moins d'un million d'observations), il est recommandé d'utiliser les *packages* `tibble`, `dplyr` et `tidyr` qui sont présentés dans la fiche [Manipuler des données avec le `tidyverse`](#tidyverse);
 
-- Pour des tables de données de grande taille (plus de 1 Go en CSV, plus de 200 Mo en Parquet, ou plus d'un million d'observations), il est recommandé d'utiliser soit le *package* `data.table` qui fait l'objet de la fiche [Manipuler des données avec `data.table`](#datatable) lorsque les données tiennent en mémoire vive, soit le *package* `arrow` [Manipuler des données avec `arrow`](#arrow). Nous présentons ici les fonctionnalités du package `duckdb` en complément ou en remplacement de `arrow`.
+- Pour des tables de données de grande taille (plus de 1 Go en CSV, plus de 200 Mo en Parquet, ou plus d'un million d'observations), il est recommandé d'utiliser soit le *package* `data.table` qui fait l'objet de la fiche [Manipuler des données avec `data.table`](#datatable) lorsque les données tiennent en mémoire vive, soit le *package* `arrow` [Manipuler des données avec `arrow`](#arrow). Nous présentons ici les fonctionnalités du _package_ `duckdb` en complément ou en remplacement de `arrow`.
 
 - Il est essentiel de travailler avec la dernière version d'`arrow`, de `duckdb` et de `R` car les *packages* `arrow` et `duckdb` sont en cours de développement.
 
@@ -27,7 +27,7 @@ Apprendre à utiliser `duckdb` n'est pas difficile, car la syntaxe utilisée est
 :::
 
 
-## Présentation du package `duckdb`  et du projet associé
+## Présentation du _package_ `duckdb`  et du projet associé
 
 ### Qu'est-ce que `duckdb`?  {#sec-presentation}
 
@@ -72,7 +72,7 @@ Du point de vue d'un statisticien utilisant `R`, le *package* `duckdb` permet de
 
 ## Installation de `duckdb`
 
-Il suffit d'installer le package `duckdb`.
+Il suffit d'installer le _package_ `duckdb`.
 
 ```{r eval=FALSE}
 install.packages("duckdb", repos="https://cloud.r-project.org")
@@ -123,7 +123,7 @@ conn_ddb <- DBI::dbConnect(duckdb::duckdb());
 
 #### Déclaration de données provenant de `R`
 
-On charge des données dans `duckdb` au travers de la connexion `conn_ddb` avec la fonction `duckdb_register()`. Cette methode a l'avantage de ne pas _recopier_ les données. D'autres moyens sont possibles, notamment en passant par `arrow`. L'objet `conn_ddb` apparaît dans l'onglet `Data` de l'environnement `RStudio`, mais la liste des tables n'y est pas directement accessibles. Pour plus d'informations, se reporter à la documentation du package `DBI`.
+On charge des données dans `duckdb` au travers de la connexion `conn_ddb` avec la fonction `duckdb_register()`. Cette methode a l'avantage de ne pas _recopier_ les données. D'autres moyens sont possibles, notamment en passant par `arrow`. L'objet `conn_ddb` apparaît dans l'onglet `Data` de l'environnement `RStudio`, mais la liste des tables n'y est pas directement accessibles. Pour plus d'informations, se reporter à la documentation du _package_ `DBI`.
 
 ```{r}
 conn_ddb %>% duckdb::duckdb_register(
@@ -270,7 +270,7 @@ bpe_ens_2018_dataset %>%
 
 ### L'évaluation différée avec `duckdb` (_lazy evaluation_) {#sec-lazy}
 
-Quand on manipule des objets `duckdb`, on construit des requêtes SQL. Le package `duckdb` se contente de traduire le code `R` en `SQL` sans l'exécuter. On rappelle qu'il faut utiliser `show_query()` pour visualiser la requête. La fonction `print()` permet de pré-visualiser le résultat.
+Quand on manipule des objets `duckdb`, on construit des requêtes SQL. Le _package_ `duckdb` se contente de traduire le code `R` en `SQL` sans l'exécuter. On rappelle qu'il faut utiliser `show_query()` pour visualiser la requête. La fonction `print()` permet de pré-visualiser le résultat.
 ```{r}
 # Étape 1: compter les équipements
 req_dep <- 
@@ -287,7 +287,7 @@ req_dep_filter <- req_dep |>
 req_dep_filter |> show_query()
 ```
 
-La fonction `collect()` fait exécuter le calcul, et transmet les résultats à `R`. Avant `collect()`, c'est le moteur SQL de `duckdb` qui fait / fera les calculs. Après `collect()`, c'est `R` qui fait le calcul, et l'on manipule un objet `R` (`tibble`) standard, avec toutes les fonctions / packages disponibles.
+La fonction `collect()` fait exécuter le calcul, et transmet les résultats à `R`. Avant `collect()`, c'est le moteur SQL de `duckdb` qui fait / fera les calculs. Après `collect()`, c'est `R` qui fait le calcul, et l'on manipule un objet `R` (`tibble`) standard, avec toutes les fonctions / _packages_ disponibles.
 ```{r}
 req_dep_filter |> collect()
 ```
@@ -367,7 +367,7 @@ Si vous ne savez plus si une table de données est une requête SQL ou un `tibbl
 
 Que faire quand la traduction automatique ne fonctionne pas ? Pour les fonctions non traduites ou bien pour spécifier un paramètre à une fonction, il faut mettre les mains dans le mécanisme de traduction vers SQL. 
 
-**Facile : les fonctions non connues par le package `duckdb` sont écrites directement dans le code SQL**, y compris lorsqu'elles n'existent pas.
+**Facile : les fonctions non connues par le _package_ `duckdb` sont écrites directement dans le code SQL**, y compris lorsqu'elles n'existent pas.
 ```{r}
 req <- bpe_ens_2018_dataset |> 
   mutate(test = fonction_inexistante(DEP)) |> 
@@ -424,7 +424,7 @@ Et interroger les objets créés dans la base SQL via `dplyr` :
 conn_ddb %>% tbl("bpe_ens_2018_view")
 ```
 
-Il est déconseillé de faire `CREATE TABLE` car cela charge les données dans la mémoire. Les fonctions `read_parquet()` en SQL et `duckdb_register` du package utilisent `CREATE VIEW` implicitement.
+Il est déconseillé de faire `CREATE TABLE` car cela charge les données dans la mémoire. Les fonctions `read_parquet()` en SQL et `duckdb_register` du _package_ utilisent `CREATE VIEW` implicitement.
 
 
 ### Optimisations
