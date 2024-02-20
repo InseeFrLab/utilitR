@@ -43,7 +43,7 @@ Un point important à retenir est donc que **`DuckDB` n'est pas un outil spécif
 Toutefois, `DuckDB` est très facile à utiliser avec `R`, ce qui permet de bénéficier des optimisations inhérentes au langage SQL, à la fois en terme d'utilisation de la mémoire et de rapidité de calcul. C'est de plus un bon intermédiaire avant de passer à des infrastructures avancées telles que spark ou oracle.
 
 
-### A quoi sert le *package* `duckdb`?
+### À quoi sert le *package* `duckdb`?
 
 Du point de vue d'un statisticien utilisant `R`, le *package* `duckdb` permet de faire trois choses:
 
@@ -56,7 +56,7 @@ Du point de vue d'un statisticien utilisant `R`, le *package* `duckdb` permet de
 
 -   **Disponibilité immédiate**: on peut pré-visualiser les données ou le résultat d'un calcul sans l'exécuter totalement, sans attendre le chargement des données;
 -   **Performances élevées**: `duckdb` est très rapide pour la manipulation de données tabulaires (nettement plus performant que `dplyr` par exemple);
--   **Ne pas charger les données en mémoire**: `duckdb` permet de travailler directement sur des fichiers du disque dur;
+-   **Ne pas nécessairement charger les données en mémoire**: `duckdb` permet également de travailler directement sur des fichiers du disque dur;
 -   **Optimisations automatiques**: `duckdb` sélectionne automatiquement les colonnes nécessaires, et ne lit que les lignes nécessaires. Cela permet d'accélérer les calculs et de réduire considérablement les besoins en mémoire, même lorsque les données sont volumineuses;
 -   **Facilité d'apprentissage** grâce aux approches `dplyr` et SQL: `duckdb` peut être utilisé avec les verbes de `dplyr` (`select`, `mutate`, etc.) et/ou avec le langage SQL. Par conséquent, il n'est pas nécessaire d'apprendre une nouvelle syntaxe pour utiliser `duckdb`, on peut s'appuyer sur la ou les approches que l'on maîtrise déjà. 
 
@@ -72,7 +72,8 @@ Du point de vue d'un statisticien utilisant `R`, le *package* `duckdb` permet de
 # Installation de `duckdb`
 
 Il suffit d'installer le package `duckdb` à partir du CRAN.
-
+```{r}
+install.packages("duckdb", repos="https://cloud.r-project.org")
 # Utilisation de `duckdb`
 
 Dans cette section, on présente l'utilisation basique de `duckdb`. C'est très facile: il n'est pas nécessaire de connaître le langage de SQL car il est possible d'utiliser `duckdb` avec la syntaxe `tidyverse`.
@@ -252,7 +253,7 @@ con %>% tbl("bpe_ens_2018_duckdb") %>%
 
 ## L'évaluation différée avec `duckdb` (_lazy evaluation_) {#sec-lazy}
 
-Quand on manipule des objets `duckdb`, on construit des requêtes SQL. Le package `duckdb` se contente de traduire le code `R` en `SQL` sans l'exécuter. On rappelle qu'il faut utiliser `show_query()` pour visualiser la requête. La fonction `print()` pré-visualise le résultat.
+Quand on manipule des objets `duckdb`, on construit des requêtes SQL. Le package `duckdb` se contente de traduire le code `R` en `SQL` sans l'exécuter. On rappelle qu'il faut utiliser `show_query()` pour visualiser la requête. La fonction `print()` permet de pré-visualiser le résultat.
 ```{r}
 # Étape 1: compter les équipements
 req_dep <- 
@@ -406,7 +407,7 @@ Et interroger les objets créés dans la base SQL via `dplyr` :
 con %>% tbl("bpe_ens_2018_view")
 ```
 
-Il est déconseillé de faire CREATE TABLE car cela charge les données dans la mémoire. Les fonctions `read_parquet()` en SQL et `duckdb_register` du package utilisent `CREATE VIEW` implicitement.
+Il est déconseillé de faire `CREATE TABLE` car cela charge les données dans la mémoire. Les fonctions `read_parquet()` en SQL et `duckdb_register` du package utilisent `CREATE VIEW` implicitement.
 
 
 ## Optimisations
@@ -429,7 +430,7 @@ Launch the database with a persistent storage back-end
 Or set PRAGMA temp_directory='/path/to/tmp.tmp'
 ```
 
-Pour éviter cela, il est possible d'adosser un fichier sur le disque dur à la base de données en mémoire au moment de la création de la connexion. Cela ralentit considérablement les calculs, et ne permet pas toujours d'obtenir un résultat. Dans mon expérience, il est préférable de ne pas utiliser de fichier, et d'employer les techniques présentées dans la suite de cette section.
+Pour éviter cela, il est possible d'adosser un fichier sur le disque dur à la base de données en mémoire au moment de la création de la connexion. Cela ralentit considérablement les calculs, et ne permet pas toujours d'obtenir un résultat. Il est recommandé de ne pas utiliser de fichier, et d'employer plutôt les techniques présentées dans la suite de cette section.
 ```{r}
 # con <- dbConnect(duckdb(), dbdir = "my-db.duckdb", read_only = FALSE)
 ```
@@ -451,7 +452,7 @@ arrow::open_dataset("base_intermediaire") %>% arrow::to_duckdb(con) %>%
 
 - Pour exécuter une fonction fenêtre, il faut pouvoir localiser les données en mémoire avec un _index_.
 - Les fichiers `parquet` ont un index `min-max` : les fichiers sont structurés en blocs, et on indique le minimum et maximum des valeurs du bloc dans les métadonnées. Ceci permet de sauter la lecture d'un bloc si l'on s'intéresse à des valeurs en dehors de la plage `min-max`, parce que l'on filtre les données par exemple.
-- En SQL, on peut créer un index, mais il faut que les données soient en mémoire, ce qui est incompatible avec des grosses volumétries.
+- En SQL, on peut créer un index, mais il faut que les données soient en mémoire, ce qui peut s'avérer être incompatible avec de très grosses volumétries.
 - Par contre, on peut partitionner les données, et le moteur SQL sait utiliser le partitionnement comme un index.
 ```{r}
 con %>% tbl("bpe_ens_2018_duckdb") %>% 
