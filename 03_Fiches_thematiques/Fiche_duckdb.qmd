@@ -100,63 +100,81 @@ Le moteur `duckdb` fonctionnant "en dehors" de `R`, il détecte le nombre de pro
 **`duckdb` est une base de données distante et s'utilise comme telle: il faut ouvrir une connexion, puis "charger" les données dans la base de données pour les manipuler.** 
 
 Comme beaucoup d'autres bases de données (distantes ou locales), on ouvre une connexion au moteur `duckdb` avec une base de données en mémoire vive de la façon suivante :
+
 ```{r}
 conn_ddb <- DBI::dbConnect(duckdb::duckdb())
 ```
 
-Concrètement, cette commande crée une nouvelle base de données `duckdb` dans la mémoire vive. Cette base de données ne contient aucune donnée lorsqu'elle est créée.
+Concrètement, cette commande crée une nouvelle base de données `duckdb` dans la mémoire vive. Cette base de données ne contient aucune donnée lorsqu'elle est créée. L'objet `conn_ddb` apparaît dans l'onglet `Data` de l'environnement `RStudio`, mais la liste des tables n'y est pas directement accessible. Pour plus d'informations, se reporter à la documentation du _package_ `DBI`.
 
 À la fin du traitement ou du programme, on ferme la connexion avec le code ci-dessous. L'option `shutdown` est importante : elle permet de fermer complètement la session `duckdb` et de libérer la mémoire utilisée. Si on n'utilise pas cette option, il arrive souvent d'avoir des connexions à moitié ouvertes, et de devoir relancer la session `R`.
+
 ```{r}
 DBI::dbDisconnect(conn_ddb, shutdown = TRUE)
 ```
 
 Pour la suite, on supposera que la connexion est ouverte.
+
 ```{r}
-conn_ddb <- DBI::dbConnect(duckdb::duckdb()); 
+conn_ddb <- DBI::dbConnect(duckdb::duckdb())
 ```
-
-
 
 ### Chargement des données
 
+Une fois qu'on s'est connecté à une base de données duckDB, il faut charger des données dans cette base de données. Il y a deux façons de le faire:
+
+- En établissant un lien entre la base de données duckDB et les objets de la session `R`;
+- En indiquant à `duckdb` l'emplacement des données sur le disque dur.
 
 #### Déclaration de données provenant de `R`
 
-On charge des données dans `duckdb` au travers de la connexion `conn_ddb` avec la fonction `duckdb_register()`. Cette methode a l'avantage de ne pas _recopier_ les données. D'autres moyens sont possibles, notamment en passant par `arrow`. L'objet `conn_ddb` apparaît dans l'onglet `Data` de l'environnement `RStudio`, mais la liste des tables n'y est pas directement accessibles. Pour plus d'informations, se reporter à la documentation du _package_ `DBI`.
+__On charge des données dans `duckdb` au travers de la connexion `conn_ddb` avec la fonction `duckdb_register()`.__ Cette méthode a l'avantage de ne pas _recopier_ les données: elle se contente d'établir un lien entre la base de données `duckdb` et un objet de la session `R`. Il existe d'autres moyens de charger les données dans `duckdb` (notamment en passant par `arrow`). Voici un exemple avec la Base permanente des équipements.
 
 ```{r}
+# Charger la Base permanente des équipements 2018 dans la session R
+bpe_ens_2018 <- doremifasolData::bpe_ens_2018 |> as_tibble()
+
+# Etablir le lien entre la base de données duckdb et la table de données
 conn_ddb %>% duckdb::duckdb_register(
   name = "bpe_ens_2018_duckdb", 
   df = doremifasolData::bpe_ens_2018 |> as_tibble())
 ```
 
-Le code ci-dessous permet de vérifier que le chargement des données a bien fonctionné. La fonction `tbl` permet d'accéder à un objet de la base de données par le nom (de la table), ou par du code SQL (utilisation avancée). Par défaut, `duckdb` affiche les 10 premières lignes du résultat, sans effectuer tout le calcul. C'est super pratique !
+Le code ci-dessous permet de vérifier que le chargement des données a bien fonctionné. La fonction `tbl` permet d'accéder à un objet de la base de données par le nom (de la table), ou par du code SQL (utilisation un peu plus avancée). Par défaut, `duckdb` affiche les 10 premières lignes du résultat, sans effectuer tout le calcul. C'est très pratique et très rapide !
+
 ```{r}
 conn_ddb %>% tbl("bpe_ens_2018_duckdb")
 ```
 
 
-#### Déclaration de données provenant du disque dur
+#### Déclaration de données stockées sur le disque dur
 
 Pour l'exemple, on sauvegarde les données `bpe_ens_2018` au format Parquet.
+
 ```{r}
-doremifasolData::bpe_ens_2018 |> arrow::write_dataset("bpe_ens_2018_dataset")
+bpe_ens_2018 |> arrow::write_dataset("bpe_ens_2018_dataset")
 ```
 
-**Pour utiliser un fichier parquet dans `duckdb` sans le charger en mémoire, on propose deux méthodes.**
+**Pour utiliser un fichier Parquet dans `duckdb` sans le charger en mémoire, on propose deux méthodes:** utiliser `arrow`, ou passer directement par `duckdb`. Il est recommandé de privilégier la première méthode qui est plus simple.
 
-En passant par arrow. Cette méthode est généralisable aux autres formats de données lisibles par `arrow`, notamment CSV, mais utilise des objets intermédiaires : 
+En passant par `arrow`. Cette méthode est généralisable aux autres formats de données lisibles par `arrow`, notamment CSV, mais utilise des objets intermédiaires : 
+
 ```{r}
-arrow::open_dataset("bpe_ens_2018_dataset") %>% arrow::to_duckdb(conn_ddb)
+# Créer une connexion au dataset Parquet
+bpe_ens_2018_dataset <- arrow::open_dataset("bpe_ens_2018_dataset") 
+
+# Etablir le lien entre la base de données duckdb et le dataset Parquet
+bpe_ens_2018_dataset %>% arrow::to_duckdb(conn_ddb)
 ```
 
-En passant directement par duckdb, il faut travailler un peu plus pour construire les noms de fichiers :
+En passant directement par `duckdb`, il faut travailler un peu plus pour construire les noms de fichiers :
+
 ```{r messages=FALSE}
 conn_ddb %>% tbl("read_parquet('bpe_ens_2018_dataset/*.parquet')", check_from = FALSE)
 ```
 
-Ces deux méthodes utilisent les données directement depuis le dataset Parquet. Les données ne sont ni dans la mémoire de `R`, ni dans celle de `DuckDB`. Pour plus de commodité, on sauvegarde l'instruction précédente dans la variable `bpe_ens_2018_dataset`.
+Ces deux méthodes utilisent les données directement depuis le dataset Parquet. Les données ne sont chargées ni dans la mémoire de `R`, ni dans celle de `DuckDB`. Pour plus de commodité, on sauvegarde l'instruction précédente dans la variable `bpe_ens_2018_dataset`.
+
 ```{r}
 bpe_ens_2018_dataset <- conn_ddb %>% tbl("read_parquet('bpe_ens_2018_dataset/*.parquet')", check_from = FALSE)
 ```
