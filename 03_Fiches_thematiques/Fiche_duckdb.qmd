@@ -69,7 +69,9 @@ Du point de vue d'un statisticien utilisant `R`, le *package* `duckdb` permet de
 -   __*Traduction en SQL*__: `duckdb` traduit automatiquement les instructions `dplyr` en requêtes SQL (de la même façon qu'`arrow` traduit ces instructions en code C++). Il arrive toutefois que certaines fonctions de `dplyr` n'aient pas d'équivalent direct en `duckdb` et ne puissent être traduites automatiquement. Dans ce cas (qui est heureusement moins fréquent qu'avec `arrow`), il faut parfois utiliser une fonction SQL directement ou trouver une solution pour contourner le problème. La @sec-sql donne quelques trucs et astuces dans ce cas.
 -   __Interopérabilité__: `duckdb` est conçu pour être interopérable entre plusieurs langages de programmation tels que `R`, Python, Java, C++, etc. Cela signifie que les données peuvent être échangées entre ces langages sans avoir besoin de convertir les données, d'où des gains importants de temps et de performance.
 
+# Installation de `duckdb`
 
+Il suffit d'installer le package `duckdb` à partir du CRAN.
 
 # Utilisation de `duckdb`
 
@@ -94,7 +96,7 @@ Le moteur `duckdb` fonctionnant "en dehors" de `R`, il détecte le nombre de pro
 
 Comme beaucoup d'autres bases de données (distantes ou locales), on ouvre une connexion au moteur `duckdb` avec une base de données en mémoire vive de la façon suivante :
 ```{r}
-con <- DBI::dbConnect(duckdb::duckdb()); 
+con <- DBI::dbConnect(duckdb::duckdb())
 ```
 
 Concrètement, cette commande crée une nouvelle base de données `duckdb` dans la mémoire vive. Cette base de données ne contient aucune donnée lorsqu'elle est créée.
@@ -372,6 +374,8 @@ con %>% tbl("dates_duckdb") %>%
   mutate(date_naissance = strptime(date_naissance,"%d/%m/%Y"))
 ```
 
+On a ainsi, très facilement, accès à l'ensemble des fonctions optimisées de `DuckDB` disponibles ([documentation ici](https://duckdb.org/docs/sql/functions/overview)). 
+
 Note : `duckdb` ne propose pas de convertir automatiquement les objets en `tibble` pour faire passer les calculs.
 
 **Avancé :** utilisation sur plusieurs variables avec `mutate_at`.
@@ -480,7 +484,7 @@ purrr::walk(f, groups) # on peut aussi utiliser sapply
 `arrow` et `duckdb` partagent de nombreux concepts. Voici quelques différences : 
 
 - Le projet `duckdb` est très récent. Il y a régulièrement des évolutions qui sont souvent des extensions ou des optimisations, et parfois la résolution de bugs. `arrow` est un projet plus ancien et plus mature.
-- Certaines fonctions standards de `R` ne sont pas traduites, mais la situation est meilleure du côté `duckdb`.
+- Certaines fonctions standards de `R` ne sont pas traduites, mais la situation est meilleure du côté `duckdb`. Hormis `write_dataset()`, la plupart des traitements peuvent être effectués en utilisant uniquement `duckdb`, sans passer par `arrow`.
 - Les __conversions de type__: `duckdb` est plus permissif que `arrow` et fera plus facilement des conversions automatiques sans danger.
 - Les __jointures de tables volumineuses__: `arrow` ne parvient pas à joindre des tables de données très volumineuses; il est préférable d'utiliser `duckdb` pour ce type d'opération.
 - Les __réorganisations de données__ : `pivot_wider` et `pivot_longer` existent nativement dans `duckdb` mais pas dans `arrow`.
