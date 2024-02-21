@@ -137,7 +137,7 @@ bpe_ens_2018 <- doremifasolData::bpe_ens_2018 |> as_tibble()
 # Etablir le lien entre la base de données duckdb et la table de données
 conn_ddb %>% duckdb::duckdb_register(
   name = "bpe_ens_2018_duckdb", 
-  df = doremifasolData::bpe_ens_2018 |> as_tibble())
+  df = bpe_ens_2018)
 ```
 
 Le code ci-dessous permet de vérifier que le chargement des données a bien fonctionné. La fonction `tbl` permet d'accéder à un objet de la base de données par le nom (de la table), ou par du code SQL (utilisation un peu plus avancée). Par défaut, `duckdb` affiche les 10 premières lignes du résultat, sans effectuer tout le calcul. C'est très pratique et très rapide !
@@ -176,7 +176,8 @@ conn_ddb %>% tbl("read_parquet('bpe_ens_2018_dataset/*.parquet')", check_from = 
 Ces deux méthodes utilisent les données directement depuis le dataset Parquet. Les données ne sont chargées ni dans la mémoire de `R`, ni dans celle de `DuckDB`. Pour plus de commodité, on sauvegarde l'instruction précédente dans la variable `bpe_ens_2018_dataset`.
 
 ```{r}
-bpe_ens_2018_dataset <- conn_ddb %>% tbl("read_parquet('bpe_ens_2018_dataset/*.parquet')", check_from = FALSE)
+bpe_ens_2018_dataset <- conn_ddb %>% 
+  tbl("read_parquet('bpe_ens_2018_dataset/*.parquet')", check_from = FALSE)
 ```
 
 
@@ -256,7 +257,7 @@ bpe_ens_2018_dataset %>%
 list.files("temp_dataset") # liste des fichiers du répertoire temp_dataset/
 ```
 
-Une autre possibilité est de passer par la commande SQL `COPY ... TO`. Dans mon expérience, passer par `arrow` permet d'exécuter des calculs plus complexes sans faire déborder la mémoire (`arrow` sauvegarde au fur et à mesure), et la syntaxe est plus facile à manipuler, notamment quand on souhaite ajouter des options.
+Pour un usage basique en syntaxe `dplyr`, passer par `arrow` (au lieu de SQL) est plus facile à manipuler, notamment quand on souhaite ajouter des options telle que le partitionnement. 
 
 
 
@@ -468,10 +469,21 @@ Launch the database with a persistent storage back-end
 Or set PRAGMA temp_directory='/path/to/tmp.tmp'
 ```
 
-Pour éviter cela, il est possible d'adosser un fichier sur le disque dur à la base de données en mémoire au moment de la création de la connexion. Cela ralentit considérablement les calculs, et ne permet pas toujours d'obtenir un résultat. Il est recommandé de ne pas utiliser de fichier, et d'employer plutôt les techniques présentées dans la suite de cette section.
-```{r}
-# conn_ddb <- dbConnect(duckdb(), dbdir = "my-db.duckdb", read_only = FALSE)
-```
+Pour contourner le manque de mémoire vive, on propose les quatre techniques suivantes :   
+
+- exécuter et sauvegarder les résultats au fur et à mesure. La commande `arrow::write_dataset` et la commande SQL `COPY request TO filename.parquet` savent le faire automatiquement, sans faire déborder la mémoire, pour certains calculs.
+  ```{r eval=FALSE}
+  conn_ddb <- dbConnect(duckdb(), dbdir = "my-db.duckdb", read_only = FALSE)
+  ```
+- adosser un fichier sur le disque dur à la base de données en mémoire au moment de la création de la connexion. Cela ralentit considérablement les calculs, et ne permet pas toujours d'obtenir un résultat. 
+- diminuer le nombre de threads utilisés par `duckdb`, donc moins de besoins de mémoire, mais aussi moins de parallélisme.
+  ```{r eval=FALSE}
+  conn_ddb <- dbConnect(duckdb(), 
+                        config=list("memory_limit"="10GB", "threads"="1")))
+  ```
+- découper le calcul et sauvegarder une base intermédiaire (cf ci-dessous).
+
+L'interaction entre les différentes options de `duckdb` est complexe et rendent difficile l'élaboration de recommandations claires. Nous mettrons à jour cette fiche quand des benchmarks plus poussés seront disponibles.
 
 
 **Sauvegarder des résulats intermédiaires**. 
