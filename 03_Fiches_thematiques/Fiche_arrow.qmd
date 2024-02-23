@@ -553,7 +553,89 @@ Si les pistes mentionnées précédemment ne fournissent pas de solution simple,
 - [un post de blog qui décrit en détail les liens entre `libarrow` et `R`](https://blog.djnavarro.net/posts/2022-01-18_binding-arrow-to-r/) (en anglais); 
 - la partie du [`Apache Arrow R Cookbook`](https://arrow.apache.org/cookbook/r/manipulating-data---tables.html#use-arrow-functions-in-dplyr-verbs-in-arrow) qui porte sur les `Arrow functions`.
 
+## Un modèle de traitement de données avec `arrow`
 
+Le code ci-dessous propose un squelette de traitement de données avec `arrow` qui suit les recommandations et conseils de la présente fiche. Vous pouvez le copier-coller et vous en inspirer pour construire vos propres traitements!
+
+```{r}
+#| eval: false
+#| output: false
+
+library(arrow)
+library(dplyr)
+
+# Autoriser arrow à utiliser plusieurs processeurs en parallèle
+options(arrow.use_threads = TRUE)
+# Définir le nombre de processeurs qu'arrow peut utiliser
+arrow::set_cpu_count(parallel::detectCores() %/% 2)
+
+##################
+### Se connecter aux données
+### Conseil: utiliser open_dataset() plutôt que read_parquet()
+##################
+
+# Cas 1: se connecter à un unique fichier Parquet
+dataset1 <- open_dataset("mon/beau/dossier/dataset1.parquet")
+
+# Cas 2: se connecter à un fichier Parquet partitionné par la variable DEP
+dataset2 <- open_dataset(
+  "mon/beau/dossier/dataset2/",
+  partitioning = schema(
+    DEP = utf8()
+  )
+)
+
+##################
+### Faire les traitements
+### Conseils: 
+### - Faire des étapes de traitement de 30-40 lignes, suivies d'un compute()
+### - Ne pas utiliser collect()
+### - Faire attention à suivre la consommation de RAM
+##################
+
+# Une première étape de traitement portant sur le dataset1
+table_intermediaire1 <- dataset1 |>
+  select(...) |>
+  filter(...) |>
+  mutate(...) |>
+  compute()
+
+# Une première étape de traitement portant sur le dataset2
+table_intermediaire2 <- dataset2 |>
+  select(...) |>
+  filter(...) |>
+  mutate(...) |>
+  compute()
+
+# Et encore beaucoup d'autres étapes de traitement
+# avec beaucoup d'instructions...
+
+# La dernière étape du traitement
+resultat_final <- table_intermediaire8 |>
+  left_join(
+    table_intermediaire9, 
+    by = "identifiant"
+  ) |>
+  compute()
+
+##################
+### Exporter les résultats
+### Conseil: partitionner les fichiers Parquet si les données sont volumineuses
+##################
+
+# Cas 1: exporter les résultats sous la forme d'un unique fichier Parquet
+write_parquet(resultat_final, "mon/dossier/de/sortie/resultat_final.parquet")
+
+# Cas 2: exporter les résultats sous la forme d'un fichier Parquet par les variables DEP et annee
+write_dataset(
+  resultat_final, 
+  "mon/dossier/de/sortie/resultat_final/",
+  format= "parquet",
+  hive_style = TRUE,
+  partitioning = c("DEP", "annee")
+  
+)
+```
 
 <!-- <div> -->
 
