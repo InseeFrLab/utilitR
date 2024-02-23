@@ -93,11 +93,12 @@ Pour utiliser `arrow`, il faut commencer par charger le *package*. Comme `arrow`
 library(arrow)
 library(dplyr)
 
-options(arrow.use_threads = TRUE) # <1>
+# Autoriser arrow à utiliser plusieurs processeurs en parallèle
+options(arrow.use_threads = TRUE)
+# Définir le nombre de processeurs qu'arrow peut utiliser
 arrow::set_cpu_count(parallel::detectCores() %/% 2)
 ```
-1. Autoriser `arrow` à utiliser plusieurs processeurs en parallèle
-2. Définir le nombre de processeurs qu'arrow peut utiliser
+
 ### Le `data.frame` version `arrow`: le `Arrow Table`
 
 **Le *package* `arrow` structure les données non pas dans un `data.frame` classique, mais dans un objet spécifique à `arrow`: le `Arrow Table`.** Dans un objet `Arrow Table`, les données sont organisées en colonnes plutôt qu'en lignes, conformément aux spécifications d'`arrow` (voir la [présentation d'`arrow`](@sec-presentation)). Pour convertir un `data.frame` ou un `tibble` en `Arrow Table`, il suffit d'utiliser la fonction `as_arrow_table()`.
