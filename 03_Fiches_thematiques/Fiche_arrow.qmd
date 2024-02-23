@@ -9,7 +9,7 @@ L'utilisateur souhaite manipuler des données structurées sous forme de `data.f
 
 - Pour des tables de données de taille petite et moyenne (inférieure à 1 Go ou moins d'un million d'observations), il est recommandé d'utiliser les *packages* `tibble`, `dplyr` et `tidyr` qui sont présentés dans la fiche [Manipuler des données avec le `tidyverse`](#tidyverse);
 
-- Pour des tables de données de grande taille (plus de 1 Go en CSV, plus de 200 Mo en Parquet, ou plus d'un million d'observations), il est recommandé d'utiliser soit le *package* `data.table` qui fait l'objet de la fiche [Manipuler des données avec `data.table`](#datatable), soit le *package* `arrow` qui fait l'objet de la présente fiche, avec éventuellement `duckdb` en complément.
+- Pour des tables de données de grande taille (plus de 1 Go en CSV, plus de 200 Mo en Parquet, ou plus d'un million d'observations), il est possible d'utiliser soit le *package* `data.table` qui fait l'objet de la fiche [Manipuler des données avec `data.table`](#datatable), soit le *package* `arrow` qui fait l'objet de la présente fiche, avec éventuellement `duckdb` en complément. Dans la mesure où le trio `Parquet` / `Arrow`/ `DuckDB` devient de plus en plus central dans l'écosystème du traitement de la donnée et où ces outils présentent l'avantage d'être interopérables, il est recommandé de préférer ces solutions pour les traitements de données volumineuses.
 
 - Il est essentiel de travailler avec la dernière version d'`arrow`, de `duckdb` et de `R` car les *packages* `arrow` et `duckdb` sont en cours de développement.
 
@@ -53,7 +53,7 @@ Illustration de ce principe
 
 -   __Utilisation avec Parquet__: `arrow` est souvent utilisé pour manipuler des données stockées en format Parquet. Parquet est un format de stockage orienté colonne conçu pour être très rapide en lecture (voir la fiche [Importer des fichiers Parquet](#importparquet) pour plus de détails). `arrow` est optimisé pour travailler sur des fichiers Parquet, notamment lorsqu'ils contiennent des données très volumineuses.
 
--   __Traitement de données volumineuses__: `arrow` est conçu pour traiter des données sans avoir besoin de les charger dans la mémoire vive. Cela signifie qu'`arrow` est capable de traiter des données plus volumineuses que la mémoire vive (RAM) dont on dispose. C'est un avantage majeur en comparaison aux autres approches possibles en `R` (`data.table` et `dplyr` par exemple).
+-   __Traitement de données volumineuses__: `arrow` est conçu pour traiter des données sans avoir besoin de les charger complètement dans la mémoire vive. Cela signifie qu'`arrow` est capable de traiter des données plus volumineuses que la mémoire vive (RAM) dont on dispose. C'est un avantage majeur en comparaison aux autres approches possibles en `R` (`data.table` et `dplyr` par exemple).
 
 -   __Interopérabilité__: `arrow` est conçu pour être interopérable entre plusieurs langages de programmation tels que `R`, Python, Java, C++, etc. Cela signifie que les données peuvent être échangées entre ces langages sans avoir besoin de convertir les données, d'où des gains importants de temps et de performance.
 
@@ -443,10 +443,8 @@ Si vous ne savez plus si une table de données est un `Arrow Table` ou un `tibbl
 Comme expliqué plus haut, les `Arrow Table` ne sont pas des objets `R` standards, mais des objets C++ qui peuvent être manipulés avec `R` via `arrow`. En pratique, cela signifie que `R` n'a qu'un contrôle partiel sur la RAM occupé par `arrow`, et ne parvient pas toujours à libérer la RAM qu'`arrow` a utilisée temporairement pour réaliser un traitement. En particulier, __la fonction `gc()` ne permet pas de libérer la RAM qu'`arrow` a utilisée temporairement__. Cette imperfection de la gestion de la RAM implique deux choses:
 
 
-- Si on travaille sur des données volumineuses, __il est important de surveiller fréquemment sa consommation de RAM pour s'assurer qu'elle n'est pas excessive__; la fiche [Superviser sa session `R`]{#superviser-ressources}.
+- Si on travaille sur des données volumineuses, __il est important de surveiller fréquemment sa consommation de RAM pour s'assurer qu'elle n'est pas excessive__ (cf. fiche [Superviser sa session `R`](#superviser-ressources)) ;
 - Si la consommation de RAM devient très élevée, __la seule solution semble être de redémarrer la session `R`__. En pratique, redémarrer la session `R` ne fait pas perdre plus de quelques minutes, car grâce à `arrow` et Parquet le chargement des données est très rapide.
-
-
 
 ## Notions avancées
 
