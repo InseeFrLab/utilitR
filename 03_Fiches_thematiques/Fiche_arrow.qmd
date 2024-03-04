@@ -569,7 +569,7 @@ library(dplyr)
 # Autoriser arrow à utiliser plusieurs processeurs en parallèle
 options(arrow.use_threads = TRUE)
 # Définir le nombre de processeurs qu'arrow peut utiliser
-arrow::set_cpu_count(parallel::detectCores() %/% 2)
+arrow::set_cpu_count(parallel::detectCores() %/% 4)
 
 ##################
 ### Se connecter aux données
@@ -591,7 +591,7 @@ dataset2 <- open_dataset(
 ### Faire les traitements
 ### Conseils: 
 ### - Faire des étapes de traitement de 30-40 lignes, suivies d'un compute()
-### - Ne pas utiliser collect()
+### - Ne pas utiliser collect() dans les calculs intermédiaires sur des données volumineuses
 ### - Faire attention à suivre la consommation de RAM
 ##################
 
@@ -619,6 +619,16 @@ resultat_final <- table_intermediaire8 |>
     by = "identifiant"
   ) |>
   compute()
+
+
+##################
+### Visualiser les résultats finaux sous forme de tibble
+### Vous pouvez utiliser collect() sur de petites données
+##################
+
+resultat_final_tbl <- resultat_final |> collect()
+
+
 
 ##################
 ### Exporter les résultats
