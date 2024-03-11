@@ -15,6 +15,8 @@ L'utilisateur souhaite manipuler des données structurées sous forme de `data.f
 
 - Si les données traitées sont très volumineuses (plus de 5 Go en CSV, plus de 1 Go en Parquet ou plus de 5 millions d'observations), il est essentiel de manipuler uniquement des objets `Arrow Table`, plutôt que des `tibbles`. Cela implique notamment d'utiliser la fonction `compute()` plutôt que `collect()` dans les traitements intermédiaires.
 
+- Pour les personnes qui découvrent `arrow`, il est recommandé de partir de l'exemple de script de la @sec-template-arrow pour se familiariser avec l'usage `d'arrow`.
+
 :::
 
 ::: {.callout-note}
@@ -96,7 +98,7 @@ library(dplyr)
 # Autoriser arrow à utiliser plusieurs processeurs en parallèle
 options(arrow.use_threads = TRUE)
 # Définir le nombre de processeurs qu'arrow peut utiliser
-arrow::set_cpu_count(parallel::detectCores() %/% 2)
+arrow::set_cpu_count(parallel::detectCores() %/% 4)
 ```
 
 ### Le `data.frame` version `arrow`: le `Arrow Table`
@@ -553,72 +555,105 @@ Si les pistes mentionnées précédemment ne fournissent pas de solution simple,
 - [un post de blog qui décrit en détail les liens entre `libarrow` et `R`](https://blog.djnavarro.net/posts/2022-01-18_binding-arrow-to-r/) (en anglais); 
 - la partie du [`Apache Arrow R Cookbook`](https://arrow.apache.org/cookbook/r/manipulating-data---tables.html#use-arrow-functions-in-dplyr-verbs-in-arrow) qui porte sur les `Arrow functions`.
 
+## Un exemple de traitement de données avec `arrow` {#sec-template-arrow}
+
+Le code ci-dessous propose un exemple de traitement de données avec `arrow` qui suit les recommandations et conseils de la présente fiche. Vous pouvez le copier-coller et vous en inspirer pour construire vos propres traitements!
+
+```{r}
+#| eval: false
+#| output: false
+
+library(arrow)
+library(dplyr)
+
+# Autoriser arrow à utiliser plusieurs processeurs en parallèle
+options(arrow.use_threads = TRUE)
+# Définir le nombre de processeurs qu'arrow peut utiliser - ici on prend la partie entière du nombre de processeurs disponibles divisé par 4
+arrow::set_cpu_count(parallel::detectCores() %/% 4)
+
+##################
+### Se connecter aux données
+### Conseil: utiliser open_dataset() plutôt que read_parquet()
+##################
+
+# Cas 1: se connecter à un unique fichier Parquet
+dataset1 <- open_dataset("mon/beau/dossier/dataset1.parquet")
+
+# Cas 2: se connecter à un fichier Parquet partitionné par la variable DEP
+dataset2 <- open_dataset(
+  "mon/beau/dossier/dataset2/",
+  partitioning = schema(
+    DEP = utf8()
+  )
+)
+
+##################
+### Faire les traitements
+### Conseils: 
+### - Faire des étapes de traitement de 30-40 lignes, suivies d'un compute()
+### - Ne pas utiliser collect() dans les calculs intermédiaires sur des données volumineuses
+### - Faire attention à suivre la consommation de RAM
+##################
+
+# Une première étape de traitement portant sur le dataset1
+table_intermediaire1 <- dataset1 |>
+  select(...) |>
+  filter(...) |>
+  mutate(...) |>
+  compute()
+
+# Une première étape de traitement portant sur le dataset2
+table_intermediaire2 <- dataset2 |>
+  select(...) |>
+  filter(...) |>
+  mutate(...) |>
+  compute()
+
+# Et encore beaucoup d'autres étapes de traitement
+# avec beaucoup d'instructions...
+
+# La dernière étape du traitement
+resultat_final <- table_intermediaire8 |>
+  left_join(
+    table_intermediaire9, 
+    by = "identifiant"
+  ) |>
+  compute()
 
 
-<!-- <div> -->
+##################
+### Visualiser un extrait d'une table intermédiaire
+### Vous pouvez utiliser collect() sur un extrait des données
+##################
 
-<!-- <table class='table' style = "width : 100%;"> -->
-<!-- <tr> -->
-<!-- <th style="width:45%">Code exécuté dans `R`</th> -->
-<!-- <th style="width:55%">Signification</th> -->
-<!-- </tr> -->
-<!-- <td> -->
-<!-- ```{r eval=FALSE,message=FALSE} -->
-<!-- bpe_ens_2018_arrow  |> -->
-<!--   group_by(REG) |> -->
-<!--   summarise(NB_EQUIP_TOT = sum(NB_EQUIP)) -->
-<!-- ``` -->
-<!-- </td> -->
-<!-- <td>Définir une requête calculant le nombre total d'équipements par région (sans l'exécuter)</td>  -->
-<!-- </tr> -->
-<!-- <tr> -->
-<!-- <td> -->
-<!-- ```{r eval=FALSE,message=FALSE} -->
-<!-- bpe_ens_2018_arrow  |> -->
-<!--   group_by(REG) |> -->
-<!--   summarise(NB_EQUIP_TOT = sum(NB_EQUIP)) |> -->
-<!--   compute() -->
-<!-- ``` -->
-<!-- </td> -->
-<!-- <td>Calculer le nombre total d'équipements par région et renvoyer les résultats dans un `Arrow Table`</td>  -->
+extrait_table2 <- table_intermediaire2 |> slice_head(n = 1000) |> collect()
+View(extrait_table2)
 
-<!-- </tr> -->
-<!-- <tr> -->
-<!-- <td> -->
-<!-- ```{r eval=FALSE,message=FALSE} -->
-<!-- bpe_ens_2018_arrow  |> -->
-<!--   group_by(REG) |> -->
-<!--   summarise(NB_EQUIP_TOT = sum(NB_EQUIP)) |> -->
-<!--   collect() -->
-<!-- ``` -->
-<!-- </td> -->
-<!-- <td>Calculer le nombre total d'équipements par région et renvoyer les résultats dans un `tibble`</td>  -->
-<!-- </tr> -->
-<!-- </table> -->
+##################
+### Visualiser les résultats finaux sous forme de tibble
+### Vous pouvez utiliser collect() sur de petites données
+##################
 
-<!-- </div> -->
+resultat_final_tbl <- resultat_final |> collect()
 
-<!-- ```{r} -->
-<!-- # Définir une requête calculant le nombre total d'équipements par région (sans l'exécuter) -->
-<!-- bpe_ens_2018_arrow  |> -->
-<!--   group_by(REG) |> -->
-<!--   summarise(NB_EQUIP_TOT = sum(NB_EQUIP)) -->
 
-<!-- # Calculer le nombre total d'équipements par région et renvoyer un Arrow Table -->
-<!-- bpe_ens_2018_arrow  |> -->
-<!--   group_by(REG) |> -->
-<!--   summarise(NB_EQUIP_TOT = sum(NB_EQUIP)) |> -->
-<!--   compute() -->
+##################
+### Exporter les résultats
+### Conseil: partitionner les fichiers Parquet si les données sont volumineuses
+##################
 
-<!-- # Calculer le nombre total d'équipements par région et renvoyer un tibble -->
-<!-- bpe_ens_2018_arrow  |> -->
-<!--   group_by(REG) |> -->
-<!--   summarise(NB_EQUIP_TOT = sum(NB_EQUIP)) |> -->
-<!--   collect() -->
+# Cas 1: exporter les résultats sous la forme d'un unique fichier Parquet
+write_parquet(resultat_final, "mon/dossier/de/sortie/resultat_final.parquet")
 
-<!-- ``` -->
-
-<!-- ::: -->
+# Cas 2: exporter les résultats sous la forme d'un fichier Parquet par les variables DEP et annee
+write_dataset(
+  resultat_final, 
+  "mon/dossier/de/sortie/resultat_final/",
+  format= "parquet",
+  hive_style = TRUE,
+  partitioning = c("DEP", "annee")
+)
+```
 
 ## Pour en savoir plus {#RessourcesArrow}
 
