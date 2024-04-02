@@ -1,22 +1,81 @@
-name: Publish slides
+name: Production de la documentation
 
-on: 
+
+on:
   push:
     branches:
+      - main
       - master
-  workflow_dispatch:
 
 jobs:
-  publish:
+  docker:
+    if: "!contains(github.event.commits[0].message, '[skip ci]')"
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Set up quarto
-        uses: quarto-dev/quarto-actions/setup@v2
+      -
+        name: Checkout
+        uses: actions/checkout@v2    
+      -
+        name: Set up QEMU
+        if: ${{ github.repository == 'inseefrlab/utilitr' }}
+        uses: docker/setup-qemu-action@v1
+      -
+        name: Set up Docker Buildx
+        if: ${{ github.repository == 'inseefrlab/utilitr' }}
+        uses: docker/setup-buildx-action@v1
+      -
+        name: Login to DockerHub
+        if: ${{ github.repository == 'inseefrlab/utilitr' }}
+        uses: docker/login-action@v1 
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Build and push
+        if: ${{ github.repository == 'inseefrlab/utilitr' }}
+        id: docker_build
+        uses: docker/build-push-action@v2
+        env:
+          GITHUB_PAT: ${{ secrets.PAT }}
+        with:
+          push: true
+          context: .
+          tags: |
+            inseefrlab/utilitr:latest
+            inseefrlab/utilitr:0.9.1      
+      -
+        name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
+  website:
+    if: "!contains(github.event.commits[0].message, '[skip ci]')"
+    needs: docker
+    runs-on: ubuntu-latest
+    container: inseefrlab/utilitr:latest
+    steps:
+      - name: Checkout Repository
+        env:
+          GITHUB_PAT: ${{ secrets.PAT }}
+        uses: actions/checkout@master
+      - name: Install Dependencies
+        run: |
+          Rscript -e "install.packages(c('remotes'))"
+          Rscript -e "remotes::install_github('rstudio/htmltools')"
+          Rscript -e "remotes::install_github('r-spatial/sf', dependencies = TRUE)"
+        env:
+          GITHUB_PAT: ${{ secrets.PAT }}
+      - name: Render Book
+        run: |
+          quarto render
+      - uses: actions/upload-artifact@v2
+        with:
+          name: _public
+          path: _public/
+          retention-days: 5
       - name: Publish to GitHub Pages (and render)
         uses: quarto-dev/quarto-actions/publish@v2
         with:
           target: gh-pages
+        run:
+          quarto publish $target . --no-render --no-browser
         #env:
         #  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
