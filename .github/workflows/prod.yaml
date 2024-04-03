@@ -48,15 +48,17 @@ jobs:
         name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
   website:
+    name: Render website
     if: "!contains(github.event.commits[0].message, '[skip ci]')"
     needs: docker
     runs-on: ubuntu-latest
     container: inseefrlab/utilitr:latest
     steps:
-      - name: Checkout Repository
-        env:
-          GITHUB_PAT: ${{ secrets.PAT }}
-        uses: actions/checkout@master
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{github.event.pull_request.head.repo.full_name}}
       - name: Install Dependencies
         run: |
           Rscript -e "install.packages(c('remotes'))"
@@ -66,7 +68,7 @@ jobs:
           GITHUB_PAT: ${{ secrets.PAT }}
       - name: Render Book
         run: |
-          quarto render
+          quarto render --to html
       - uses: actions/upload-artifact@v2
         with:
           name: _public
