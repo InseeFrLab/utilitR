@@ -1,0 +1,1637 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.549">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>10&nbsp; Construire une chaîne de traitement reproductible avec targets</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../03_Fiches_thematiques/Fiche_import_fichiers_plats.html" rel="next">
+<link href="../03_Fiches_thematiques/Fiche_resoudre_un_probleme.html" rel="prev">
+<link href="../resources/logo-utilitr.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark"><script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><script async="" src="https://hypothes.is/embed.js"></script><script>
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    document.body.classList.add('hypothesis-enabled');
+  });
+</script>
+</head>
+<body class="nav-sidebar docked nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="navbar navbar-expand-lg " data-bs-theme="dark"><div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../resources/logo-utilitr.png" alt="Logo du projet utilitR" class="navbar-logo"></a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+<li class="nav-item">
+    <a class="nav-link active" href="../01_R_Insee/presentation_utilitr.html" aria-current="page"> 
+<span class="menu-text">Introduction</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_rprojects.html"> 
+<span class="menu-text">Mener un projet statistique</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_import_fichiers_plats.html"> 
+<span class="menu-text">Importer des données</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_tidyverse.html"> 
+<span class="menu-text">Choisir son paradigme</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_joindre_donnees.html"> 
+<span class="menu-text">Manipuler des données</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_graphiques.html"> 
+<span class="menu-text">Produire des sorties</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../02_Bonnes_pratiques/01-qualite-code.html"> 
+<span class="menu-text">Bonnes pratiques</span></a>
+  </li>  
+</ul>
+</div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools tools-wide">
+    <a href="https://github.com/InseeFrLab/utilitR" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <div class="dropdown">
+      <a href="" title="Share" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Share"><i class="bi bi-share"></i></a>
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="quarto-navigation-tool-dropdown-0">
+<li>
+            <a class="dropdown-item quarto-navbar-tools-item" href="https://twitter.com/intent/tweet?url=%7Curl%7C">
+              <i class="bi bi-bi-twitter pe-1"></i>
+            Twitter
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item quarto-navbar-tools-item" href="https://www.linkedin.com/sharing/share-offsite/?url=%7Curl%7C">
+              <i class="bi bi-bi-linkedin pe-1"></i>
+            LinkedIn
+            </a>
+          </li>
+      </ul>
+</div>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_rprojects.html">Mener un projet statistique avec R</a></li><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_targets.html"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Construire une chaîne de traitement reproductible avec <code>targets</code></span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="../resources/logo-utilitr.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none"></a>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Principales parties</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Introduction</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/presentation_utilitr.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Présentation du projet <code>utilitR</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_utilitR.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Comment utiliser la documentation <code>utilitR</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">Mener un projet statistique avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_rprojects.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Utiliser les projets <code>RStudio</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_git_utilisation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Utiliser <code>Git</code> avec RStudio</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_installer_packages.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Utiliser des <em>packages</em> <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_comment_choisir_un_package.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Comment choisir un <em>package</em> ?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_gerer_dependances.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Gérer les dépendances</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_se_documenter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Se documenter sur <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_resoudre_un_probleme.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Résoudre un problème avec <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_targets.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Construire une chaîne de traitement reproductible avec <code>targets</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">Importer des données avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_fichiers_plats.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Importer des fichiers plats (<code>.csv</code>, <code>.tsv</code>, <code>.txt</code>)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_tables_sas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Importer des tables SAS®</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_tableurs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Importer des fichiers issus de tableurs (Excel, Calc)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_fichiers_parquet.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Lire et écrire des fichiers Parquet</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_api.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Travailler avec des API</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_connexion_bdd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Se connecter à une base de données</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true">
+ <span class="menu-text">Choisir son paradigme d’analyse des données avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_tidyverse.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Manipuler des données avec le <code>tidyverse</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_datatable.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Manipuler des données avec <code>data.table</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_arrow.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Manipuler des données avec <code>arrow</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text">Manipuler des données avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_joindre_donnees.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Joindre des tables de données</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_donnees_textuelles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Manipuler des données textuelles</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_survey.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Utiliser des données d’enquêtes</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_donnees_spatiales.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Manipuler des données spatiales</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_donnees_temporelles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Manipuler des données temporelles</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_analyse_de_donnees.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">L’analyse de données (ACP, ACM, ACF…)</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text">Produire des sorties avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_graphiques.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Faire des graphiques avec <code>ggplot2</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_rmarkdown.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Produire des documents avec <code>R Markdown</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_rmarkdown_param_report.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Produire des rapports automatisés avec <code>R Markdown</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text">Bonnes pratiques</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_Bonnes_pratiques/01-qualite-code.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Qualité du code</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_Bonnes_pratiques/02-structure-code.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Structure des projets</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true">
+ <span class="menu-text">Éléments de configuration</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_Rstudio_AUSv3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Utiliser RStudio sur l’environnement AUSv3</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_Rstudio_SSPCloud.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Utiliser <code>RStudio</code> sur l’environnement SSP Cloud</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_configurer_git.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Configurer <code>Git</code> sur son poste de travail</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche-personnaliser-R.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Personnaliser la configuration de <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_ressources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Superviser sa session <code>R</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+    </ul>
+</div>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+<li><a href="#t%C3%A2ches-concern%C3%A9es-et-recommandations" id="toc-tâches-concernées-et-recommandations" class="nav-link active" data-scroll-target="#t%C3%A2ches-concern%C3%A9es-et-recommandations"><span class="header-section-number">10.1</span> Tâches concernées et recommandations</a></li>
+  <li><a href="#pourquoi-utiliser-targets" id="toc-pourquoi-utiliser-targets" class="nav-link" data-scroll-target="#pourquoi-utiliser-targets"><span class="header-section-number">10.2</span> Pourquoi utiliser <code>targets</code> ?</a></li>
+  <li><a href="#quelles-sont-les-t%C3%A2ches-automatis%C3%A9es-par-targets" id="toc-quelles-sont-les-tâches-automatisées-par-targets" class="nav-link" data-scroll-target="#quelles-sont-les-t%C3%A2ches-automatis%C3%A9es-par-targets"><span class="header-section-number">10.3</span> Quelles sont les tâches automatisées par <code>targets</code> ?</a></li>
+  <li>
+<a href="#un-projet-minimal-pour-comprendre-lessentiel" id="toc-un-projet-minimal-pour-comprendre-lessentiel" class="nav-link" data-scroll-target="#un-projet-minimal-pour-comprendre-lessentiel"><span class="header-section-number">10.4</span> Un projet minimal pour comprendre l’essentiel</a>
+  <ul class="collapse">
+<li><a href="#structure-du-projet" id="toc-structure-du-projet" class="nav-link" data-scroll-target="#structure-du-projet"><span class="header-section-number">10.4.1</span> Structure du projet</a></li>
+  <li><a href="#premier-exemple" id="toc-premier-exemple" class="nav-link" data-scroll-target="#premier-exemple"><span class="header-section-number">10.4.2</span> Premier exemple</a></li>
+  <li><a href="#modification-dune-%C3%A9tape-interm%C3%A9diaire" id="toc-modification-dune-étape-intermédiaire" class="nav-link" data-scroll-target="#modification-dune-%C3%A9tape-interm%C3%A9diaire"><span class="header-section-number">10.4.3</span> Modification d’une étape intermédiaire</a></li>
+  <li><a href="#acc%C3%A9der-%C3%A0-des-%C3%A9l%C3%A9ments-du-pipeline-dans-une-session-r" id="toc-accéder-à-des-éléments-du-pipeline-dans-une-session-r" class="nav-link" data-scroll-target="#acc%C3%A9der-%C3%A0-des-%C3%A9l%C3%A9ments-du-pipeline-dans-une-session-r"><span class="header-section-number">10.4.4</span> Accéder à des éléments du pipeline dans une session <code>R</code></a></li>
+  </ul>
+</li>
+  <li>
+<a href="#int%C3%A9grer-un-rapport-en-rmarkdown" id="toc-intégrer-un-rapport-en-rmarkdown" class="nav-link" data-scroll-target="#int%C3%A9grer-un-rapport-en-rmarkdown"><span class="header-section-number">10.5</span> Intégrer un rapport en Rmarkdown</a>
+  <ul class="collapse">
+<li><a href="#concevoir-un-rapport-en-sortie-de-cha%C3%AEne-de-traitement" id="toc-concevoir-un-rapport-en-sortie-de-chaîne-de-traitement" class="nav-link" data-scroll-target="#concevoir-un-rapport-en-sortie-de-cha%C3%AEne-de-traitement"><span class="header-section-number">10.5.1</span> Concevoir un rapport en sortie de chaîne de traitement</a></li>
+  <li><a href="#utiliser-des-objets-issus-dune-cha%C3%AEne-de-traitement-dans-un-r-markdown" id="toc-utiliser-des-objets-issus-dune-chaîne-de-traitement-dans-un-r-markdown" class="nav-link" data-scroll-target="#utiliser-des-objets-issus-dune-cha%C3%AEne-de-traitement-dans-un-r-markdown"><span class="header-section-number">10.5.2</span> Utiliser des objets issus d’une chaîne de traitement dans un <code>R Markdown</code></a></li>
+  </ul>
+</li>
+  <li>
+<a href="#les-branches" id="toc-les-branches" class="nav-link" data-scroll-target="#les-branches"><span class="header-section-number">10.6</span> Les branches</a>
+  <ul class="collapse">
+<li><a href="#les-branches-dynamiques" id="toc-les-branches-dynamiques" class="nav-link" data-scroll-target="#les-branches-dynamiques"><span class="header-section-number">10.6.1</span> Les branches dynamiques</a></li>
+  <li><a href="#un-exemple" id="toc-un-exemple" class="nav-link" data-scroll-target="#un-exemple"><span class="header-section-number">10.6.2</span> Un exemple</a></li>
+  <li><a href="#it%C3%A9rer-croiser-les-arguments-pour-cr%C3%A9er-des-branches" id="toc-itérer-croiser-les-arguments-pour-créer-des-branches" class="nav-link" data-scroll-target="#it%C3%A9rer-croiser-les-arguments-pour-cr%C3%A9er-des-branches"><span class="header-section-number">10.6.3</span> Itérer, croiser les arguments pour créer des branches</a></li>
+  </ul>
+</li>
+  <li><a href="#pour-en-savoir-plus" id="toc-pour-en-savoir-plus" class="nav-link" data-scroll-target="#pour-en-savoir-plus"><span class="header-section-number">10.7</span> Pour en savoir plus</a></li>
+  </ul><div class="toc-actions"><ul><li><a href="https://github.com/InseeFrLab/utilitR/edit/master/03_Fiches_thematiques/Fiche_targets.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/InseeFrLab/utilitR/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_rprojects.html">Mener un projet statistique avec R</a></li><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_targets.html"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Construire une chaîne de traitement reproductible avec <code>targets</code></span></a></li></ol></nav><div class="quarto-title">
+<h1 class="title"><span id="targets" class="quarto-section-identifier"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Construire une chaîne de traitement reproductible avec <code>targets</code></span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header><section id="tâches-concernées-et-recommandations" class="level2" data-number="10.1"><h2 data-number="10.1" class="anchored" data-anchor-id="tâches-concernées-et-recommandations">
+<span class="header-section-number">10.1</span> Tâches concernées et recommandations</h2>
+<p>L’utilisateur souhaite automatiser une chaîne de traitement complexe afin de la rendre reproductible et rapide à exécuter en cas de modification.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tâche concernée et recommandation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Le <em>package</em> <code>targets</code> permet de construire simplement une chaîne de traitement reproductible.</p>
+<p>Les deux éléments suivants sont à prendre en considération :</p>
+<ul>
+<li>ce <em>package</em> ne sera approprié que si la chaîne de traitement est exclusivement écrite en <code>R</code> ;</li>
+<li>il est fortement recommandé de savoir créer des fonctions, afin de modulariser le code.</li>
+</ul>
+</div>
+</div>
+</section><section id="pourquoi-utiliser-targets" class="level2" data-number="10.2"><h2 data-number="10.2" class="anchored" data-anchor-id="pourquoi-utiliser-targets">
+<span class="header-section-number">10.2</span> Pourquoi utiliser <code>targets</code> ?</h2>
+<p>Le <em>package</em> <code>targets</code> peut être particulièrement intéressant :</p>
+<ul>
+<li>dans le cadre du développement d’un prototype ayant vocation à devenir une chaîne de production pérenne écrite avec <code>R</code> ;</li>
+<li>dans le cas d’un projet d’étude qui vise à une forte reproductibilité.</li>
+</ul>
+<p>Plus précisément, utiliser <code>targets</code> pour un projet permet de :</p>
+<ol type="1">
+<li>Viser la <strong>reproductibilité</strong> de l’ensemble des étapes de traitement, tout en réduisant au strict nécessaire la répétition de ces étapes, parfois longues ;</li>
+<li>Adopter des <strong>bonnes pratiques</strong> de développement en <code>R</code> par l’usage (modulariser le code, décomposer ses traitements par étapes, assurer la lisibilité des étapes successives du traitement…)</li>
+<li>Représenter <strong>sous forme de <em>pipeline</em></strong> les étapes de sa chaîne de traitement et leurs dépendances à partir d’une technique de graphiques directionnels asynchrones (appelés <em>DAG</em> pour l’acronyme anglais dans la sphère informatique)</li>
+<li>Faciliter la prise en main par une autre personne grâce à une <strong>organisation standardisée des codes</strong> et à une description complète de l’enchaînement des étapes intégrée dans le code lui-même.</li>
+</ol>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Le <a href="https://www.pratiques.utilitr.org/">guide des bonnes pratiques <code>utilitR</code></a> devrait prochainement s’enrichir d’éléments concernant la gestion de <em>pipelines</em> de données en <code>R</code> et en <code>Python</code>.</p>
+<p>Les premiers éléments du débat sont disponibles sur <a href="https://github.com/InseeFrLab/utilitR/issues/388">l’issue #388</a> dans le dépôt <code>Github</code> d’<code>utilitR</code>.</p>
+</div>
+</div>
+</section><section id="quelles-sont-les-tâches-automatisées-par-targets" class="level2" data-number="10.3"><h2 data-number="10.3" class="anchored" data-anchor-id="quelles-sont-les-tâches-automatisées-par-targets">
+<span class="header-section-number">10.3</span> Quelles sont les tâches automatisées par <code>targets</code> ?</h2>
+<p><code>targets</code> permet de définir et d’exécuter une chaîne de traitement avec :</p>
+<ul>
+<li>Sauvegarde automatique de résultats intermédiaires, ce qu’on appelle les <em>“targets”</em> (cibles)</li>
+<li>Traçabilité de ces résultats intermédiaires par <code>targets</code>: lors de la répétition d’une exécution de la chaîne de traitement, ils ne sont mobilisés que si ils sont reproductibles.</li>
+<li>Si une fonction ou un <em>input</em> nécessaire au calcul d’une <em>“target”</em> est modifié, <code>targets</code> repère automatiquement les étapes à reconduire, et seulement celles-ci.</li>
+</ul>
+<p>Ainsi, le lancement du traitement et la vérification de la reproductibilité sont effectués ensemble au cours du développement du projet par l’appel de <code><a href="https://docs.ropensci.org/targets/reference/tar_make.html">tar_make()</a></code>.</p>
+<p><strong>Vérifier la reproductibilité revient ainsi à ne pas ‘tout relancer’ de 0</strong> ! Ceci représenterait un coût trop élevé. <code>targets</code> automatise le travail d’aller-retour dans les étapes d’une étude ou de prototypage (j’ai modifié l’étape 1, il faut donc que je relance l’étape 2 qui en dépend…), en construisant un graphe des dépendances des différentes étapes du traitement.</p>
+<p>Pour la suite de la fiche, prenons l’exemple d’une étude qui se structurerait suivant les étapes suivantes :</p>
+<ol start="0" type="1">
+<li>Charger les données</li>
+<li>Traiter les données</li>
+<li>Produire des résultats</li>
+<li>Représenter des résultats</li>
+</ol></section><section id="un-projet-minimal-pour-comprendre-lessentiel" class="level2" data-number="10.4"><h2 data-number="10.4" class="anchored" data-anchor-id="un-projet-minimal-pour-comprendre-lessentiel">
+<span class="header-section-number">10.4</span> Un projet minimal pour comprendre l’essentiel</h2>
+<section id="structure-du-projet" class="level3" data-number="10.4.1"><h3 data-number="10.4.1" class="anchored" data-anchor-id="structure-du-projet">
+<span class="header-section-number">10.4.1</span> Structure du projet</h3>
+<p>Un projet <code>targets</code> est un projet <code>R</code> en règle générale structuré de la sorte :</p>
+<ul>
+<li>un fichier <code>_targets.R</code> décrivant les éléments de configuration (par exemple <em>packages</em> utilisés) et l’enchaînement des traitements</li>
+<li>un dossier <code>R</code> comprenant les scripts définissant les fonctions utilisées par le projet</li>
+<li>un dossier <code>data</code> pour les données externes (non générées au cours du projet)</li>
+</ul>
+<p>L’architecture des dossiers du projet ressemble par conséquent à ceci :</p>
+<pre><code>├── _targets.R
+├── R/
+├───── mesfonctions_pour_faire_ceci.R
+├───── mesfonctions_pour_faire_cela.R
+├──── ...
+├── data/
+├───── donnees_entrees.csv
+└───── ...</code></pre>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Organiser ses fichiers de cette façon est très commun, mais pas indispensable pour l’utilisation de <code>targets</code>. La seule obligation est que le fichier <code>_targets.R</code> soit positionné dans le répertoire de travail.</p>
+<p>Une manière commode pour un utilisateur souhaitant utiliser <code>targets</code> est donc de créer un <a href="rproject.html">projet RStudio</a> à la racine duquel il place ce fichier. En prévision des futures fonctions qu’il va écrire, il crée un dossier <code>R/</code>. Le fichier <code>_targets.R</code> détaille l’enchaînement des traitements. Il doit toujours contenir une instruction chargeant le <em>package</em> <code>targets</code>.</p>
+</div>
+</div>
+</section><section id="premier-exemple" class="level3" data-number="10.4.2"><h3 data-number="10.4.2" class="anchored" data-anchor-id="premier-exemple">
+<span class="header-section-number">10.4.2</span> Premier exemple</h3>
+<p>Partons d’un exemple simple :</p>
+<ul>
+<li>on lit les données de population depuis un fichier CSV ;</li>
+<li>on a créé une fonction pour ne garder que les communes de plus de 200 000 habitants ;</li>
+<li>sur ces communes, on désire connaître la proportion dont le revenu médian est supérieur à 25 000 euros.</li>
+</ul>
+<p>La chaîne de traitement est donc ici linéaire. Chaque étape dépend de la précédente et uniquement de celle-ci. Le fichier d’instruction <code>_targets</code> prendra alors la forme suivante:</p>
+<div class="cell">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># fichier _targets.R</span></span>
+<span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/targets/">targets</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_option_set.html">tar_option_set</a></span><span class="op">(</span>packages <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"dplyr"</span>, <span class="st">"readr"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/source.html">source</a></span><span class="op">(</span><span class="st">"mesfonctions_pour_faire_ceci.R"</span>, encoding <span class="op">=</span> <span class="st">"utf-8"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># on crée un fichier à partir d'un des jeux d'exemples</span></span>
+<span><span class="va">raw_file_path</span> <span class="op">&lt;-</span> <span class="st">"data/donnes_entrees.csv"</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/files2.html">dir.create</a></span><span class="op">(</span><span class="st">"data"</span><span class="op">)</span></span>
+<span><span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/write_delim.html">write_csv</a></span><span class="op">(</span><span class="fu">doremifasolData</span><span class="fu">::</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData/reference/filosofi_com_2016.html">filosofi_com_2016</a></span>, <span class="va">raw_file_path</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
+<span>  </span>
+<span>  <span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_target.html">tar_target</a></span><span class="op">(</span><span class="va">csv_file</span>, <span class="va">raw_file_path</span>, format <span class="op">=</span> <span class="st">"file"</span><span class="op">)</span>,</span>
+<span></span>
+<span>  <span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_target.html">tar_target</a></span><span class="op">(</span></span>
+<span>    <span class="va">raw_filosofi_epci</span>, <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv</a></span><span class="op">(</span><span class="va">csv_file</span><span class="op">)</span>,</span>
+<span>  <span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_target.html">tar_target</a></span><span class="op">(</span></span>
+<span>    <span class="va">grandes_villes</span>, <span class="fu">garde_grandes_villes</span><span class="op">(</span><span class="va">raw_filosofi_epci</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_target.html">tar_target</a></span><span class="op">(</span></span>
+<span>    <span class="va">prop_sup_25k</span>, <span class="va">grandes_villes</span> <span class="op">%&gt;%</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">MED16</span> <span class="op">&gt;</span> <span class="fl">25000</span><span class="op">)</span><span class="op">*</span><span class="fl">100</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Les fonctions écrites par l’analyste et utilisées dans la chaîne de traitement (en l’occurrence <code>garde_grandes_villes</code>) sont contenues dans les fichiers que l’on <em>“source”</em> au départ, ici depuis un script <code>"mesfonctions_pour_faire_ceci.R</code>.</p>
+<p>Les <em>packages</em> utilisés dans les traitements sont définis via la fonction <code>tar_option_set</code> du <em>package</em> <code>targets</code>. Ici, on a besoin des <em>packages</em> <code>dplyr</code> et <code>readr</code> dans notre chaîne de traitement.</p>
+<p>La chaîne de traitement est représentée par une liste de <code>tar_target</code>, soit les objets <code>R</code> qui sont les cibles intermédiaires de l’analyse. Ils sont le résultat de l’application à une cible précédente d’une fonction pour obtenir la cible suivante :</p>
+<ol type="1">
+<li>Ici la première cible est particulière (<code>format = file</code>) : on spécifie où sont les données d’entrée afin de surveiller si elles changent.</li>
+<li>La seconde prend en entrée la première cible <code>data_file</code> et la transforme en appliquant la fonction <code><a href="https://readr.tidyverse.org/reference/read_delim.html">readr::read_csv</a></code> en un nouvel objet R, <code>raw_filosofi_epci</code>. Il s’agit ainsi des données brutes après l’import dans <code>R</code>, avant toute modification</li>
+<li>La troisième applique cette fois une fonction écrite par l’utilisateur à <code>raw_filosofi_epci</code> pour obtenir <code>grandes_villes</code>, et ainsi de suite…</li>
+</ol>
+<p>Ainsi, le fichier <code>_targets.R</code> contient la description de l’ensemble des étapes du traitement. La complexité des traitements est résumée de façon concise par un ensemble minimal de fonctions résumant les grandes étapes. Afin de faire tourner l’analyse, l’utilisateur fait appel au sein du projet à la fonction <code><a href="https://docs.ropensci.org/targets/reference/tar_make.html">tar_make()</a></code>. Il s’agit de la fonction qu’un utilisateur du package <code>targets</code> utilisera le plus fréquemment. L’utilisateur est informé de l’évolution des calculs.</p>
+<div class="cell">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_make.html">tar_make</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>▶ dispatched target csv_file
+● completed target csv_file [0.063 seconds]
+▶ dispatched target raw_filosofi_epci
+Rows: 34932 Columns: 29
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr  (2): CODGEO, LIBGEO
+dbl (27): NBMENFISC16, NBPERSMENFISC16, MED16, PIMP16, TP6016, TP60AGE116, T...
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+● completed target raw_filosofi_epci [0.183 seconds]
+▶ dispatched target grandes_villes
+● completed target grandes_villes [0.082 seconds]
+▶ dispatched target prop_sup_25k
+● completed target prop_sup_25k [0.003 seconds]
+▶ completed pipeline [0.619 seconds]</code></pre>
+</div>
+</div>
+<p>Lorsque la chaîne de traitement est de taille relativement modeste (comme ici), on peut la visualiser avec la fonction <code>tar_visnetwork</code>:</p>
+<div class="cell">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_visnetwork.html">tar_visnetwork</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>On obtient bien un diagramme linéaire comme on en avait l’intuition.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Il est tout à fait possible de stocker l’ensemble des cibles intermédiaires dans un emplacement différent du projet. Il s’agit même d’une bonne pratique de séparer le lieu de stockage du code de celui des données.</p>
+<p>Il sera nécessaire d’éditer les options de la chaîne dans le fichier <code>_targets.R</code>. Par exemple avec cette ligne de commande, au début du fichier <code>_targets.R</code> (mais après l’appel à <code><a href="https://docs.ropensci.org/targets/">library(targets)</a></code>:</p>
+<div class="cell">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_config_set.html">tar_config_set</a></span><span class="op">(</span>store <span class="op">=</span> <span class="st">"mon_dossier_donnees/projet-toto"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</section><section id="modification-dune-étape-intermédiaire" class="level3" data-number="10.4.3"><h3 data-number="10.4.3" class="anchored" data-anchor-id="modification-dune-étape-intermédiaire">
+<span class="header-section-number">10.4.3</span> Modification d’une étape intermédiaire</h3>
+<p>L’utilisateur décide ensuite de modifier la définition des grandes villes considérées. Supposons qu’il ajoute un argument à la fonction <code>garde_grandes_villes</code> pour ne garder que celles dont la population est supérieure à <code>seuil</code>. Dans le fichier <code>_targets.R</code>, il est nécessaire de changer la définition de l’étape de définition de <code>grandes_villes</code>. Cela amènera à une chaîne ayant la structure suivante</p>
+<div class="cell">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># fichier _targets.R</span></span>
+<span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/targets/">targets</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_option_set.html">tar_option_set</a></span><span class="op">(</span>packages <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"dplyr"</span>, <span class="st">"readr"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/source.html">source</a></span><span class="op">(</span><span class="st">"mesfonctions_pour_faire_ceci.R"</span>, encoding <span class="op">=</span> <span class="st">"utf-8"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># on crée un fichier à partir d'un des jeux d'exemples</span></span>
+<span><span class="va">raw_file_path</span> <span class="op">&lt;-</span> <span class="st">"data/donnes_entrees.csv"</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/files2.html">dir.create</a></span><span class="op">(</span><span class="st">"data"</span><span class="op">)</span></span>
+<span><span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/write_delim.html">write_csv</a></span><span class="op">(</span><span class="fu">doremifasolData</span><span class="fu">::</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData/reference/filosofi_com_2016.html">filosofi_com_2016</a></span>, <span class="va">raw_file_path</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
+<span>  </span>
+<span>  <span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_target.html">tar_target</a></span><span class="op">(</span><span class="va">csv_file</span>, <span class="va">raw_file_path</span>, format <span class="op">=</span> <span class="st">"file"</span><span class="op">)</span>,</span>
+<span>  </span>
+<span>  <span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_target.html">tar_target</a></span><span class="op">(</span></span>
+<span>    <span class="va">raw_filosofi_epci</span>, <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv</a></span><span class="op">(</span><span class="va">csv_file</span><span class="op">)</span>,</span>
+<span>  <span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_target.html">tar_target</a></span><span class="op">(</span></span>
+<span>    <span class="va">grandes_villes</span>, <span class="fu">garde_grandes_villes</span><span class="op">(</span><span class="va">raw_filosofi_epci</span>, seuil <span class="op">=</span> <span class="fl">10000</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_target.html">tar_target</a></span><span class="op">(</span></span>
+<span>    <span class="va">prop_sup_25k</span>, <span class="va">grandes_villes</span> <span class="op">%&gt;%</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">MED16</span> <span class="op">&gt;</span> <span class="fl">25000</span><span class="op">)</span><span class="op">*</span><span class="fl">100</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Ici, le <em>pipeline</em> est de taille relativement modeste et il est facile d’identifier la source de modification. Néanmoins, la représentation sous forme de diagramme peut aider à mieux s’en rendre compte</p>
+<div class="cell">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_visnetwork.html">tar_visnetwork</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>La modification de la fonction <code>garde_grandes_villes</code> entraîne la nécessaire mise à jour de <code>grandes_villes</code> et toutes les cibles qui en dépendent, mais pas du début de la chaîne de traitement !</p>
+<p><code>targets</code> va ainsi intelligemment utiliser ceci pour minimiser le temps nécessaire pour mettre à jour l’ensemble de la chaîne de traitement</p>
+<div class="cell">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_make.html">tar_make</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>✔ skipped target csv_file
+✔ skipped target raw_filosofi_epci
+▶ dispatched target grandes_villes
+● completed target grandes_villes [0.006 seconds]
+▶ dispatched target prop_sup_25k
+● completed target prop_sup_25k [0.003 seconds]
+▶ completed pipeline [0.218 seconds]
+Warning message:
+In dir.create("data") : 'data' already exists</code></pre>
+</div>
+</div>
+<p>Les cibles définies sont calculées successivement, stockées et mises à jour automatiquement dans un dossier <code>_targets/objects/</code>.</p>
+</section><section id="accéder-à-des-éléments-du-pipeline-dans-une-session-r" class="level3" data-number="10.4.4"><h3 data-number="10.4.4" class="anchored" data-anchor-id="accéder-à-des-éléments-du-pipeline-dans-une-session-r">
+<span class="header-section-number">10.4.4</span> Accéder à des éléments du pipeline dans une session <code>R</code>
+</h3>
+<p>On peut facilement accéder à un objet cible, quel que soit son emplacement dans la chaîne de traitement, puisque chaque cible est stockée sous la forme d’un fichier temporaire.</p>
+<p>La fonction <code>tar_load</code> permet de charger dans l’environnement <code>R</code> l’objet en question. Par exemple, si on désire tester des choses sur <code>grandes_villes</code>, on pourra utiliser la commande suivante</p>
+<div class="cell">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_load.html">tar_load</a></span><span class="op">(</span><span class="va">grandes_villes</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">grandes_villes</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 29
+  CODGEO LIBGEO      NBMENFISC16 NBPERSMENFISC16  MED16 PIMP16 TP6016 TP60AGE116
+  &lt;chr&gt;  &lt;chr&gt;             &lt;dbl&gt;           &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;      &lt;dbl&gt;
+1 01004  Ambérieu-e…        6363          14228  19721      49     17         19
+2 01033  Valserhône         6472          15255  21405.     45     16         18
+3 01053  Bourg-en-B…       18601          38014. 18249.     46     22         27
+4 01173  Gex                4894          11276. 32304.     60     11         NA
+5 01283  Oyonnax            9248          22444. 16948.     40     25         31
+6 02168  Château-Th…        6805          15070. 17643.     43     24         33
+# ℹ 21 more variables: TP60AGE216 &lt;dbl&gt;, TP60AGE316 &lt;dbl&gt;, TP60AGE416 &lt;dbl&gt;,
+#   TP60AGE516 &lt;dbl&gt;, TP60AGE616 &lt;dbl&gt;, TP60TOL116 &lt;dbl&gt;, TP60TOL216 &lt;dbl&gt;,
+#   PACT16 &lt;dbl&gt;, PTSA16 &lt;dbl&gt;, PCHO16 &lt;dbl&gt;, PBEN16 &lt;dbl&gt;, PPEN16 &lt;dbl&gt;,
+#   PPAT16 &lt;dbl&gt;, PPSOC16 &lt;dbl&gt;, PPFAM16 &lt;dbl&gt;, PPMINI16 &lt;dbl&gt;, PPLOGT16 &lt;dbl&gt;,
+#   PIMPOT16 &lt;dbl&gt;, D116 &lt;dbl&gt;, D916 &lt;dbl&gt;, RD16 &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<p>Cela permettra à l’utilisateur de <code>targets</code> de prototyper une nouvelle étape de traitement dans sa session <code>R</code> puis, une fois satisfait, la mettre en production en mettant les fonctions dans le fichier <code>XXXXX.R</code> et en créant l’étape <code>tar_target</code> adéquate.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Par défaut, les cibles sont stockées au format <code>rds</code>. Ce format présente deux inconvénients :</p>
+<ul>
+<li>il est spécifique à <code>R</code> et ne permet pas de lire les étapes intermédiaires dans un autre langage (par exemple <code>Python</code>) ;</li>
+<li>la sérialisation des objets <code>R</code> nécessaire pour écrire sous format <code>rds</code> ou lire un tel fichier est assez lente.</li>
+</ul>
+<p>Il est conseillé d’utiliser un autre format de stockage des cibles.</p>
+<p>En premier lieu, le format par défaut qui peut être utilisé est le format <a href="https://cran.r-project.org/web/packages/qs/index.html">qs</a>. À l’instar du format <code>rds</code>, celui-ci est spécifique à <code>R</code> mais présente l’avantage d’être beaucoup plus rapide en termes de temps en lecture/écriture. Pour cela, il convient d’ajouter la ligne suivante au début des options du fichier <code>_targets.R</code> :</p>
+<div class="cell">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_option_set.html">tar_option_set</a></span><span class="op">(</span>format <span class="op">=</span> <span class="st">"fst_dt"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Pour les dataframes, il est possible d’utiliser des formats plus universels ou plus appropriés. Les formats à privilégier sont les suivants:</p>
+<ul>
+<li>
+<code>parquet</code>: format qui tend à devenir un standard dans le monde de la science des données. Ce format présente plusieurs avantages, parmi lesquels le fait qu’il est très compressé, très rapide et qu’il conserve les métadonnées du fichier ce qui permet, à la différence des formats type CSV, de conserver l’intégrité des typages des colonnes (voir la fiche <a href="Fiche_import_fichiers_parquet.html">Importer des fichiers parquets</a> pour plus de détails) ;</li>
+<li>
+<code>fst_tbl</code> (utilisateurs du tidyverse) ou <code>fst_dt</code> (utilisateurs de data.table) : formats spécifiques à <code>R</code> présentant des avantages proches de ceux d’un fichier <code>parquet</code>. Ils préservent la nature d’un data.frame, ce qui permet de repartir d’un tibble ou d’un datatable sans avoir à faire de conversion à chaque étape du <em>pipeline</em>.</li>
+</ul>
+<p>Le choix du format de stockage d’un objet se fait directement lors de la déclaration de la cible dans <code>_targets.R</code>:</p>
+<div class="cell">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_target.html">tar_target</a></span><span class="op">(</span></span>
+<span>    <span class="va">grandes_villes</span>, <span class="fu">garde_grandes_villes</span><span class="op">(</span><span class="va">raw_filosofi_epci</span><span class="op">)</span>,</span>
+<span>    format <span class="op">=</span> <span class="st">"parquet"</span></span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Dans le dossier <code>_targets/object</code>, le fichier sera ainsi stocké au format exigé.</p>
+<p>Il n’est pas recommandé d’utiliser les formats <code>parquet</code>, <code>fst_dt</code> ou <code>fst_tbl</code> par défaut car ils ne permettent de stocker que des dataframes. Or, un <em>pipeline</em> peut stocker des objets de nature beaucoup plus diverses (listes, objets ggplot, etc.)</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>L’utilisation du <em>garbage collector</em> peut parfois s’avérer utile pour nettoyer la mémoire de la session <code>R</code> dans laquelle tourne le <em>pipeline</em>. Ceci est particulièrement utile lorsque les objets manipulés sont volumineux (voir la fiche <a href="https://www.book.utilitr.org/01_r_insee/fiche_utiliser_ressources">Superviser sa session R</a>).</p>
+<p>Dans <code>targets</code>, cette opération est possible en ajoutant l’argument <code>garbage_collection = TRUE</code> à la définition de la cible :</p>
+<div class="cell">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_target.html">tar_target</a></span><span class="op">(</span></span>
+<span>    <span class="va">grandes_villes</span>, <span class="fu">garde_grandes_villes</span><span class="op">(</span><span class="va">raw_filosofi_epci</span><span class="op">)</span>,</span>
+<span>    garbage_collection <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</section></section><section id="intégrer-un-rapport-en-rmarkdown" class="level2" data-number="10.5"><h2 data-number="10.5" class="anchored" data-anchor-id="intégrer-un-rapport-en-rmarkdown">
+<span class="header-section-number">10.5</span> Intégrer un rapport en Rmarkdown</h2>
+<p>L’un des principaux gains à utiliser <code>targets</code> est dans la fiabilisation du processus de production de fichiers markdown à l’issue d’une chaîne de traitement.</p>
+<p>Deux philosophies existent pour produire un fichier reproductible dans une chaîne de traitement :</p>
+<ul>
+<li>Intégrer directement le fichier à la chaîne comme une étape finale du processus de production. Cela revient à produire le <code>RMarkdown</code> via un <code>tar_target</code> particulier ;</li>
+<li>Exécuter la chaîne de traitement, ou les parties nouvelles de la chaîne de traitement, directement depuis le fichier <code>RMarkdown</code>. Dans ce cas, le fichier <code>.Rmd</code> n’est plus exécuté depuis le <code>_targets.R</code> mais au contraire sert à l’exécuter.</li>
+</ul>
+<section id="concevoir-un-rapport-en-sortie-de-chaîne-de-traitement" class="level3" data-number="10.5.1"><h3 data-number="10.5.1" class="anchored" data-anchor-id="concevoir-un-rapport-en-sortie-de-chaîne-de-traitement">
+<span class="header-section-number">10.5.1</span> Concevoir un rapport en sortie de chaîne de traitement</h3>
+<p>Le <em>package</em> <code>tarchetypes</code> est un complément utile. Ce <em>package</em> permet d’intégrer simplement des rapports <code>Rmarkdown</code> dans la pipeline avec <code>tarchetypes::tar_render()</code>. L’essentiel des calculs doit être en amont du rapport markdown, qui doit être rapide à exécuter.</p>
+<p>Par exemple, on peut écrire un Rmarkdown <code>report.Rmd</code> considéré comme une des cibles de l’analyse (par exemple, c’est le compte-rendu de l’analyse), et qui dépend d’autres cibles. On souhaite également qu’il soit reproductible, et mis à jour automatiquement en fonction des modifications sur les cibles dont il dépend.</p>
+<p>Il suffit d’intégrer ces cibles via <code>tar_read(data)</code> ou <code>tar_load(data)</code> appelé dans un chunk du <code>.Rmd</code>, et de spécifier un <code>_targets.R</code> sur le modèle suivant :</p>
+<div class="cell">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Fichier _targets.R</span></span>
+<span><span class="co"># report.Rmd est présent dans le projet.</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/targets/">targets</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/tarchetypes/">tarchetypes</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_target.html">tar_target</a></span><span class="op">(</span><span class="va">data</span>, <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>a <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">9</span><span class="op">)</span>, b <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">9</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  <span class="fu">tar_render</span><span class="op">(</span><span class="va">report</span>, path <span class="op">=</span> <span class="st">'report.Rmd'</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="utiliser-des-objets-issus-dune-chaîne-de-traitement-dans-un-r-markdown" class="level3" data-number="10.5.2"><h3 data-number="10.5.2" class="anchored" data-anchor-id="utiliser-des-objets-issus-dune-chaîne-de-traitement-dans-un-r-markdown">
+<span class="header-section-number">10.5.2</span> Utiliser des objets issus d’une chaîne de traitement dans un <code>R Markdown</code>
+</h3>
+<p>Cette méthode est particulièrement appropriée lorsqu’on désire prototyper un rapport en utilisant un ou plusieurs objets de la chaîne de traitement.</p>
+<p>Plus d’éléments sont disponibles <a href="https://books.ropensci.org/targets/literate-programming.html#target-markdown">dans la documentation officielle</a></p>
+</section></section><section id="les-branches" class="level2" data-number="10.6"><h2 data-number="10.6" class="anchored" data-anchor-id="les-branches">
+<span class="header-section-number">10.6</span> Les branches</h2>
+<p>Souvent, les cibles d’une analyse (étapes intermédiaires) sont nombreuses et ont un certain degré de redondance.</p>
+<p>Comment créer des cibles automatiquement (sans écrire explicitement dans <code>_targets.R</code> chacune d’entre elles) ? <code>targets</code> propose de décliner les cibles en <em>“branches”</em>.</p>
+<p>On distingue :</p>
+<ul>
+<li>les branches définies dynamiquement : avant l’exécution, le nombre de branches est inconnu ;</li>
+<li>les branches définies statiquement : le nombre de branche est défini précisément avant l’exécution.</li>
+</ul>
+<p>Le premier cas correspond à la répétition d’un grand nombre de tâches homogènes, le second plutôt à un petit nombre de tâches hétérogènes.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Les branches statiques, qui nécessitent l’usage du package <code>tarchetypes</code>, ne sont pas abordées ici.</p>
+</div>
+</div>
+<section id="les-branches-dynamiques" class="level3" data-number="10.6.1"><h3 data-number="10.6.1" class="anchored" data-anchor-id="les-branches-dynamiques">
+<span class="header-section-number">10.6.1</span> Les branches dynamiques</h3>
+<p>Certaines cibles peuvent être le résultat de l’application d’une même fonction à des variantes d’arguments (par exemple, un graphique de restitution pour plusieurs populations d’intérêt).</p>
+<p>Pour cela, <code>targets</code> propose les <em>branches dynamiques</em>.</p>
+</section><section id="un-exemple" class="level3" data-number="10.6.2"><h3 data-number="10.6.2" class="anchored" data-anchor-id="un-exemple">
+<span class="header-section-number">10.6.2</span> Un exemple</h3>
+<p>Voici un exemple minimal de pipeline qui va itérer sur <em>N</em> couples d’arguments une même <em>“simulation”</em>, en évitant de créer <em>N</em> cibles distinctes pour les <em>N</em> résultats, et plutôt créer une seule cible résultats qui donnera lieu à autant de branches que de <em>“simulations”</em> :</p>
+<div class="cell">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">#_targets.R</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/targets/">targets</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">simulation</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span> <span class="va">x</span> <span class="op">*</span> <span class="va">y</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_target.html">tar_target</a></span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">20</span>, <span class="fl">30</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_target.html">tar_target</a></span><span class="op">(</span><span class="va">y</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_target.html">tar_target</a></span><span class="op">(</span></span>
+<span>    <span class="va">resultat</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>argument_1 <span class="op">=</span> <span class="va">x</span>, argument_2 <span class="op">=</span> <span class="va">y</span>, res <span class="op">=</span> <span class="fu">simulation</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    pattern <span class="op">=</span> <span class="fu">map</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Ce qui distingue ici la cible <code>resultat</code> de ce qui a été vu précédemment, c’est l’utilisation de l’argument <code>pattern</code>, qui a vocation à itérer sur les vecteurs cibles <code>x</code> et <code>y</code> grâce à <code>map</code>.</p>
+<p>Dans la console <code>R</code>, l’utilisateur qui fait appel à <code><a href="https://docs.ropensci.org/targets/reference/tar_make.html">tar_make()</a></code> voit apparaître la déclinaison de <code>resultat</code> en trois branches, exécutées en parallèle.</p>
+<div class="cell">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_make.html">tar_make</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<pre><code>● run target x
+● run target y
+● run branch resultat_1851c9ee
+● run branch resultat_445bc859
+● run branch resultat_1a0263ff
+● end pipeline</code></pre>
+<p>On obtient le résultat suivant:</p>
+<div class="cell">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_read.html">tar_read</a></span><span class="op">(</span><span class="va">resultat</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<pre><code>argument_1 argument_2 res
+1         10          1  10
+2         20          2  40
+3         30          3  90</code></pre>
+</section><section id="itérer-croiser-les-arguments-pour-créer-des-branches" class="level3" data-number="10.6.3"><h3 data-number="10.6.3" class="anchored" data-anchor-id="itérer-croiser-les-arguments-pour-créer-des-branches">
+<span class="header-section-number">10.6.3</span> Itérer, croiser les arguments pour créer des branches</h3>
+<p>Les patterns peuvent être de plusieurs types : <code>map</code> (itérer sur les arguments ligne à ligne), <code>cross</code> (produit cartésien des arguments), <code>head</code> (pour récupérer les premiers arguments), <code>select</code> (pour récupérer certains arguments) …</p>
+<p>Par exemple, remplacer <code>map</code> par <code>cross</code> dans la pipeline précédente donne lieu après un <code><a href="https://docs.ropensci.org/targets/reference/tar_make.html">tar_make()</a></code> à</p>
+<pre><code>✓ skip target x
+✓ skip target y
+✓ skip branch resultat_1851c9ee
+● run branch resultat_cca1045b
+● run branch resultat_3b73d14e
+● run branch resultat_fe2f6b6a
+✓ skip branch resultat_66951ce8
+● run branch resultat_ff612dde
+● run branch resultat_d0a65303
+● run branch resultat_0a18e8b1
+✓ skip branch resultat_7fd56d9a
+● end pipeline</code></pre>
+<p>Plutôt que d’appliquer la fonction simulation itérativement aux couples d’<code>x</code> et <code>y</code> (3 branches), la fonction est appliquée au produit cartésien de <code>x</code> et <code>y</code> (3 x 3 branches). On remarque d’ailleurs que <code>targets</code> a compris que cela ne changeait pas certains résultats précédents (3 branches strictement identiques, qui ne sont pas recalculées).</p>
+<div class="cell">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_read.html">tar_read</a></span><span class="op">(</span><span class="va">resultat</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<pre><code>argument_1 argument_2 res
+1         10          1  10
+2         10          2  20
+3         10          3  30
+4         20          1  20
+5         20          2  40
+6         20          3  60
+7         30          1  30
+8         30          2  60
+9         30          3  90</code></pre>
+<p>Les <em>pattern</em> peuvent être combinés, avec par exemple <code>pattern = cross(x, map(y, z))</code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">#_targets.R</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/targets/">targets</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">simulation</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, <span class="va">z</span><span class="op">)</span> <span class="va">x</span> <span class="op">*</span> <span class="va">y</span> <span class="op">+</span> <span class="va">z</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_target.html">tar_target</a></span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">20</span>, <span class="fl">30</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_target.html">tar_target</a></span><span class="op">(</span><span class="va">y</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_target.html">tar_target</a></span><span class="op">(</span><span class="va">z</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">4</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_target.html">tar_target</a></span><span class="op">(</span></span>
+<span>    <span class="va">resultat</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>argument_1 <span class="op">=</span> <span class="va">x</span>, argument_2 <span class="op">=</span> <span class="va">y</span>, argument_3 <span class="op">=</span> <span class="va">z</span>, res <span class="op">=</span> <span class="fu">simulation</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, <span class="va">z</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    pattern <span class="op">=</span> <span class="fu">cross</span><span class="op">(</span><span class="va">x</span>, <span class="fu">map</span><span class="op">(</span><span class="va">y</span>, <span class="va">z</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>qui donne le résultat :</p>
+<pre><code>argument_1 argument_2 argument_3 res
+1         10          1          2  12
+2         10          2          4  24
+3         10          3          6  36
+4         20          1          2  22
+5         20          2          4  44
+6         20          3          6  66
+7         30          1          2  32
+8         30          2          4  64
+9         30          3          6  96</code></pre>
+<p>Si l’on souhaite itérer sur des listes, plutôt que sur des vecteurs, on peut spécifier à la création de la cible qui sert d’argument aux branches, par exemple une liste de <code>data.frames</code>, que l’on veut itérer sur les éléments <code>"list"</code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">#_targets.R</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/targets/">targets</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#' Multiplie la colonne "a" de df par un facteur</span></span>
+<span><span class="co">#' @param: df: data.frame</span></span>
+<span><span class="co">#' @param: factor: int</span></span>
+<span><span class="va">multiply</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">df</span>, <span class="va">factor</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="va">df</span><span class="op">$</span><span class="va">a</span> <span class="op">&lt;-</span> <span class="va">df</span><span class="op">$</span><span class="va">a</span> <span class="op">*</span> <span class="va">factor</span></span>
+<span>  <span class="va">df</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_target.html">tar_target</a></span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'Marie'</span>,<span class="st">'Marwan'</span><span class="op">)</span>, a <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                     <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'Bill'</span>,<span class="st">'Boule'</span><span class="op">)</span>, a <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>, iteration <span class="op">=</span> <span class="st">'list'</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_target.html">tar_target</a></span><span class="op">(</span><span class="va">y</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_target.html">tar_target</a></span><span class="op">(</span></span>
+<span>    <span class="va">resultat</span>,</span>
+<span>    <span class="fu">multiply</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span>,</span>
+<span>    pattern <span class="op">=</span> <span class="fu">map</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Etc…</p>
+</section></section><section id="pour-en-savoir-plus" class="level2" data-number="10.7"><h2 data-number="10.7" class="anchored" data-anchor-id="pour-en-savoir-plus">
+<span class="header-section-number">10.7</span> Pour en savoir plus</h2>
+<ul>
+<li><a href="https://books.ropensci.org/targets/">Manuel d’utilisation de <code>targets</code></a></li>
+<li>
+<a href="https://juba.github.io/tidyverse/21-targets.html">Organiser un projet avec <code>targets</code></a>, une chapitre de <em>Introduction à R et au tidyverse</em> de Julien Barnier</li>
+<li><a href="https://books.ropensci.org/targets/hpc.html"><em>High Performance Computing avec <code>targets</code></em></a></li>
+<li>Landau, W. M., (2021). The targets R package: a dynamic Make-like function-oriented pipeline toolkit for reproducibility and high-performance computing. <em>Journal of Open Source Software</em>, 6(57), 2959, https://doi.org/10.21105/joss.02959</li>
+<li><a href="https://www.youtube.com/watch?v=FODSavXGjYg&amp;t=598s">Vidéo de présentation de <code>targets</code> par Will Landau au meetup R Lille de juin 2021</a></li>
+<li>https://cran.r-project.org/web/packages/targets/targets.pdf</li>
+<li>https://docs.ropensci.org/tarchetypes/</li>
+<li>Un exemple https://github.com/InseeFrLab/lockdown-maps-R/</li>
+<li>Les “target factories”: https://wlandau.github.io/targetopia/contributing.html</li>
+<li>Un tutoriel de Noam Ross présentant l’usage de <code>targets</code> avec un système de stockage de type AWS (similaire au principe du <code>SSPCloud</code>): https://github.com/noamross/targets-minio-versioning</li>
+</ul>
+
+
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script><nav class="page-navigation"><div class="nav-page nav-page-previous">
+      <a href="../03_Fiches_thematiques/Fiche_resoudre_un_probleme.html" class="pagination-link  aria-label=" un="" probl="" avec="">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Résoudre un problème avec <code>R</code></span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../03_Fiches_thematiques/Fiche_import_fichiers_plats.html" class="pagination-link" aria-label="<span class='chapter-number'>11</span>&nbsp; <span class='chapter-title'>Importer des fichiers plats (`.csv`, `.tsv`, `.txt`)</span>">
+        <span class="nav-page-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Importer des fichiers plats (<code>.csv</code>, <code>.tsv</code>, <code>.txt</code>)</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer">
+    <div class="nav-footer-left">
+<p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/InseeFrLab/utilitR/edit/master/03_Fiches_thematiques/Fiche_targets.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/InseeFrLab/utilitR/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<li>
+<a href="https://github.com/InseeFrLab/utilitR.git" target="blank">Code source</a>
+</li>
+</div>
+  </div>
+</footer>
+
+
+</body></html>

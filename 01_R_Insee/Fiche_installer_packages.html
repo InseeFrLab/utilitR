@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.549">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>5&nbsp; Utiliser des packages R</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../03_Fiches_thematiques/Fiche_comment_choisir_un_package.html" rel="next">
+<link href="../03_Fiches_thematiques/Fiche_git_utilisation.html" rel="prev">
+<link href="../resources/logo-utilitr.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark"><script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><script async="" src="https://hypothes.is/embed.js"></script><script>
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    document.body.classList.add('hypothesis-enabled');
+  });
+</script>
+</head>
+<body class="nav-sidebar docked nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="navbar navbar-expand-lg " data-bs-theme="dark"><div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../resources/logo-utilitr.png" alt="Logo du projet utilitR" class="navbar-logo"></a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+<li class="nav-item">
+    <a class="nav-link active" href="../01_R_Insee/presentation_utilitr.html" aria-current="page"> 
+<span class="menu-text">Introduction</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_rprojects.html"> 
+<span class="menu-text">Mener un projet statistique</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_import_fichiers_plats.html"> 
+<span class="menu-text">Importer des données</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_tidyverse.html"> 
+<span class="menu-text">Choisir son paradigme</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_joindre_donnees.html"> 
+<span class="menu-text">Manipuler des données</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_graphiques.html"> 
+<span class="menu-text">Produire des sorties</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../02_Bonnes_pratiques/01-qualite-code.html"> 
+<span class="menu-text">Bonnes pratiques</span></a>
+  </li>  
+</ul>
+</div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools tools-wide">
+    <a href="https://github.com/InseeFrLab/utilitR" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <div class="dropdown">
+      <a href="" title="Share" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Share"><i class="bi bi-share"></i></a>
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="quarto-navigation-tool-dropdown-0">
+<li>
+            <a class="dropdown-item quarto-navbar-tools-item" href="https://twitter.com/intent/tweet?url=%7Curl%7C">
+              <i class="bi bi-bi-twitter pe-1"></i>
+            Twitter
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item quarto-navbar-tools-item" href="https://www.linkedin.com/sharing/share-offsite/?url=%7Curl%7C">
+              <i class="bi bi-bi-linkedin pe-1"></i>
+            LinkedIn
+            </a>
+          </li>
+      </ul>
+</div>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_rprojects.html">Mener un projet statistique avec R</a></li><li class="breadcrumb-item"><a href="../01_R_Insee/Fiche_installer_packages.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Utiliser des <em>packages</em> <code>R</code></span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="../resources/logo-utilitr.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none"></a>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Principales parties</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Introduction</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/presentation_utilitr.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Présentation du projet <code>utilitR</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_utilitR.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Comment utiliser la documentation <code>utilitR</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">Mener un projet statistique avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_rprojects.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Utiliser les projets <code>RStudio</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_git_utilisation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Utiliser <code>Git</code> avec RStudio</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_installer_packages.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Utiliser des <em>packages</em> <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_comment_choisir_un_package.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Comment choisir un <em>package</em> ?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_gerer_dependances.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Gérer les dépendances</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_se_documenter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Se documenter sur <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_resoudre_un_probleme.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Résoudre un problème avec <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_targets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Construire une chaîne de traitement reproductible avec <code>targets</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">Importer des données avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_fichiers_plats.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Importer des fichiers plats (<code>.csv</code>, <code>.tsv</code>, <code>.txt</code>)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_tables_sas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Importer des tables SAS®</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_tableurs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Importer des fichiers issus de tableurs (Excel, Calc)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_fichiers_parquet.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Lire et écrire des fichiers Parquet</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_api.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Travailler avec des API</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_connexion_bdd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Se connecter à une base de données</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true">
+ <span class="menu-text">Choisir son paradigme d’analyse des données avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_tidyverse.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Manipuler des données avec le <code>tidyverse</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_datatable.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Manipuler des données avec <code>data.table</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_arrow.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Manipuler des données avec <code>arrow</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text">Manipuler des données avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_joindre_donnees.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Joindre des tables de données</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_donnees_textuelles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Manipuler des données textuelles</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_survey.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Utiliser des données d’enquêtes</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_donnees_spatiales.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Manipuler des données spatiales</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_donnees_temporelles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Manipuler des données temporelles</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_analyse_de_donnees.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">L’analyse de données (ACP, ACM, ACF…)</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text">Produire des sorties avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_graphiques.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Faire des graphiques avec <code>ggplot2</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_rmarkdown.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Produire des documents avec <code>R Markdown</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_rmarkdown_param_report.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Produire des rapports automatisés avec <code>R Markdown</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text">Bonnes pratiques</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_Bonnes_pratiques/01-qualite-code.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Qualité du code</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_Bonnes_pratiques/02-structure-code.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Structure des projets</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true">
+ <span class="menu-text">Éléments de configuration</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_Rstudio_AUSv3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Utiliser RStudio sur l’environnement AUSv3</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_Rstudio_SSPCloud.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Utiliser <code>RStudio</code> sur l’environnement SSP Cloud</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_configurer_git.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Configurer <code>Git</code> sur son poste de travail</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche-personnaliser-R.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Personnaliser la configuration de <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_ressources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Superviser sa session <code>R</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+    </ul>
+</div>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+<li>
+<a href="#introduction-aux-packages-r" id="toc-introduction-aux-packages-r" class="nav-link active" data-scroll-target="#introduction-aux-packages-r"><span class="header-section-number">5.1</span> Introduction aux <em>packages</em> <code>R</code></a>
+  <ul class="collapse">
+<li><a href="#quest-ce-quun-package-r" id="toc-quest-ce-quun-package-r" class="nav-link" data-scroll-target="#quest-ce-quun-package-r"><span class="header-section-number">5.1.1</span> Qu’est-ce qu’un <em>package</em> <code>R</code> ?</a></li>
+  <li><a href="#o%C3%B9-peut-on-trouver-des-packages-r" id="toc-où-peut-on-trouver-des-packages-r" class="nav-link" data-scroll-target="#o%C3%B9-peut-on-trouver-des-packages-r"><span class="header-section-number">5.1.2</span> Où peut-on trouver des <em>packages</em> <code>R</code> ?</a></li>
+  <li><a href="#comment-utiliser-un-package-r" id="toc-comment-utiliser-un-package-r" class="nav-link" data-scroll-target="#comment-utiliser-un-package-r"><span class="header-section-number">5.1.3</span> Comment utiliser un <em>package</em> <code>R</code> ?</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#installer-un-package-r" id="toc-installer-un-package-r" class="nav-link" data-scroll-target="#installer-un-package-r"><span class="header-section-number">5.2</span> Installer un <em>package</em> <code>R</code></a>
+  <ul class="collapse">
+<li><a href="#la-m%C3%A9thode-standard-la-fonction-install.packages" id="toc-la-méthode-standard-la-fonction-install.packages" class="nav-link" data-scroll-target="#la-m%C3%A9thode-standard-la-fonction-install.packages"><span class="header-section-number">5.2.1</span> La méthode standard : la fonction <code>install.packages</code></a></li>
+  <li><a href="#utilisation-de-la-fonction-install.packages" id="toc-utilisation-de-la-fonction-install.packages" class="nav-link" data-scroll-target="#utilisation-de-la-fonction-install.packages"><span class="header-section-number">5.2.2</span> Utilisation de la fonction <code>install.packages</code></a></li>
+  <li><a href="#installation-avanc%C3%A9e" id="toc-installation-avancée" class="nav-link" data-scroll-target="#installation-avanc%C3%A9e"><span class="header-section-number">5.2.3</span> Installation avancée</a></li>
+  <li><a href="#installer-depuis-un-fichier" id="toc-installer-depuis-un-fichier" class="nav-link" data-scroll-target="#installer-depuis-un-fichier"><span class="header-section-number">5.2.4</span> Installer depuis un fichier</a></li>
+  <li><a href="#mettre-%C3%A0-jour-les-packages" id="toc-mettre-à-jour-les-packages" class="nav-link" data-scroll-target="#mettre-%C3%A0-jour-les-packages"><span class="header-section-number">5.2.5</span> Mettre à jour les <em>packages</em></a></li>
+  <li><a href="#gestion-des-packages-avec-rstudio" id="toc-gestion-des-packages-avec-rstudio" class="nav-link" data-scroll-target="#gestion-des-packages-avec-rstudio"><span class="header-section-number">5.2.6</span> Gestion des <em>packages</em> avec RStudio</a></li>
+  </ul>
+</li>
+  <li><a href="#utiliser-un-package-r" id="toc-utiliser-un-package-r" class="nav-link" data-scroll-target="#utiliser-un-package-r"><span class="header-section-number">5.3</span> Utiliser un <em>package</em> <code>R</code></a></li>
+  <li><a href="#pour-en-savoir-plus" id="toc-pour-en-savoir-plus" class="nav-link" data-scroll-target="#pour-en-savoir-plus"><span class="header-section-number">5.4</span> Pour en savoir plus</a></li>
+  </ul><div class="toc-actions"><ul><li><a href="https://github.com/InseeFrLab/utilitR/edit/master/01_R_Insee/Fiche_installer_packages.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/InseeFrLab/utilitR/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_rprojects.html">Mener un projet statistique avec R</a></li><li class="breadcrumb-item"><a href="../01_R_Insee/Fiche_installer_packages.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Utiliser des <em>packages</em> <code>R</code></span></a></li></ol></nav><div class="quarto-title">
+<h1 class="title"><span id="utiliser-packages" class="quarto-section-identifier"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Utiliser des <em>packages</em> <code>R</code></span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header><div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tâche concernée et recommandation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>Avant d’installer un <em>package</em>, il est indispensable de déterminer précisément quel est le <em>package</em> dont vous avez besoin. Pour cela, vous pouvez consulter les autres fiches de la documentation <code>utilitR</code>, et la fiche [Comment choisir un <em>package</em> ?].</li>
+<li>Il est recommandé d’utiliser la fonction <code>install.packages</code> pour installer et mettre à jour les <em>packages</em>, sans modifier les arguments <code>repos</code>, <code>lib</code>, <code>type</code> et <code>dependencies</code>. L’usage de la fonction <code>update.packages</code> est destiné à des usages avancés.</li>
+<li>Il est recommandé d’utiliser la fonction <code>library</code> pour charger les <em>packages</em> sans modifier l’argument <code>lib.loc</code>.</li>
+</ul>
+</div>
+</div>
+<section id="introduction-aux-packages-r" class="level2" data-number="5.1"><h2 data-number="5.1" class="anchored" data-anchor-id="introduction-aux-packages-r">
+<span class="header-section-number">5.1</span> Introduction aux <em>packages</em> <code>R</code>
+</h2>
+<section id="quest-ce-quun-package-r" class="level3" data-number="5.1.1"><h3 data-number="5.1.1" class="anchored" data-anchor-id="quest-ce-quun-package-r">
+<span class="header-section-number">5.1.1</span> Qu’est-ce qu’un <em>package</em> <code>R</code> ?</h3>
+<p>Un <em>package</em> est un ensemble de fonctions développées par des utilisateurs de <code>R</code>, qui améliorent ou étendent les fonctionnalités de base de <code>R</code>.</p>
+<p>Par exemple, le <em>package</em> <code>ggplot2</code> propose des fonctions pour réaliser toutes sortes de graphiques avec <code>R</code>. Les <em>packages</em> sont au coeur de la logique collaborative de <code>R</code>, car ils permettent de bénéficier des contributions d’autres utilisateurs de <code>R</code>. Début 2021, il existe plus de 14 000 <em>packages</em> disponibles pour <code>R</code>, qui couvrent une multitude de tâches. Il est donc primordial de savoir où chercher des <em>packages</em> et comment les utiliser.</p>
+<p>D’un point de vue technique, un <em>package</em> est constitué d’objets <code>R</code> (la plupart du temps des fonctions, parfois des données) et d’une documentation empaquetés en un seul fichier, dans le but d’être partagé facilement. En outre, les <em>packages</em> <code>R</code> ont trois caractéristiques importantes :</p>
+<ul>
+<li>Un <em>package</em> <code>R</code> peut exiger une version minimale de <code>R</code> pour fonctionner. Par exemple, le <em>package</em> <code>ggplot2</code> (qui sert à faire des graphiques) ne peut fonctionner qu’avec <code>R 3.2</code> au minimum. Vous pouvez donc être contraints de modifier la version de <code>R</code> que vous utilisez pour pouvoir installer un <em>package</em>. En pratique cela arrive rarement.</li>
+<li>Les <em>packages</em> <code>R</code> sont spécifiques à la version de <code>R</code> avec laquelle ils ont été installés. Ainsi, un <em>package</em> installé avec la version 3.6 de <code>R</code> peut ne pas fonctionner avec les versions 3.5 ou 4.0. La principale conséquence pratique de cette caractéristique est que vous devrez réinstaller les <em>packages</em> si vous modifiez la version de <code>R</code> que vous utilisez. Cette réinstallation ne présente généralement aucune difficulté technique, mais elle peut prendre du temps.</li>
+<li>Les <em>packages</em> <code>R</code> font fréquemment appel à d’autres <em>packages</em> appelés <strong>dépendances</strong> : la fonction <code>fonction1()</code> du <em>package</em> <code>package1</code> fait appel à la fonction <code>fonction2()</code> du <em>package</em> <code>package2</code>, et ainsi de suite. Un <em>package</em> <code>R</code> ne pourra être utilisé que si ses dépendances sont également installées. Fort heureusement, la plupart du temps vous n’avez pas à vous préoccuper des dépendances de <em>packages</em> car <code>R</code> installe par défaut toutes les dépendances nécessaires.</li>
+</ul></section><section id="où-peut-on-trouver-des-packages-r" class="level3" data-number="5.1.2"><h3 data-number="5.1.2" class="anchored" data-anchor-id="où-peut-on-trouver-des-packages-r">
+<span class="header-section-number">5.1.2</span> Où peut-on trouver des <em>packages</em> <code>R</code> ?</h3>
+<p>Les <em>packages</em> <code>R</code> sont disponibles sur des sites spécialisés appelés dépôts (<em>repositories</em> ou <em>repo</em> en anglais). Le principal dépôt est le dépôt officiel du projet <code>R</code>, le <a href="https://cran.r-project.org">CRAN</a> (<em>Comprehensive R Archive Network</em>).</p>
+<p>Les <em>packages</em> peuvent également être mis à disposition par leurs auteurs sur les forges logicielles (telles que Github et Gitlab), mais il s’agit alors la plupart du temps de versions expérimentales dont l’usage est principalement destiné aux utilisateurs avancés de <code>R</code>.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Le CRAN dispose de plusieurs copies, appelées <em>miroirs</em>, dont la plupart sont hébergés sur des <a href="https://cran.r-project.org/mirrors.html">serveurs d’universités ou d’établissements de recherche</a>. Télécharger un <em>package</em> sur un miroir ou un autre est strictement équivalent. L’intérêt de choisir un miroir proche de sa localisation permet simplement de gagner en vitesse et de réduire les flux sur le réseau.</p>
+</div>
+</div>
+</section><section id="comment-utiliser-un-package-r" class="level3" data-number="5.1.3"><h3 data-number="5.1.3" class="anchored" data-anchor-id="comment-utiliser-un-package-r">
+<span class="header-section-number">5.1.3</span> Comment utiliser un <em>package</em> <code>R</code> ?</h3>
+<p>Pour utiliser un <em>package</em> <code>R</code>, il est nécessaire de réaliser deux actions, qui sont détaillées dans la suite de cette fiche :</p>
+<ul>
+<li>l’<strong>installation</strong> consiste à télécharger le <em>package</em> sur internet, puis à l’installer sur l’ordinateur, dans un dossier connu de <code>R</code>. La fonction principale pour installer un <em>package</em> est <code>install.packages</code> ;</li>
+<li>le <strong>chargement</strong> consiste à indiquer à <code>R</code> que l’on souhaite utiliser le <em>package</em> dans la session courante. La fonction principale pour charger un <em>package</em> est <code>library</code>.</li>
+</ul>
+<p>Il est important de comprendre que ces deux actions sont complètement distinctes. L’installation est une opération qu’on ne réalise qu’<em>une seule fois</em> : une fois qu’un <em>package</em> a été installé sur un ordinateur, il y est présent <strong>de façon permanente</strong>. A noter qu’il existe toutefois des raisons de réinstaller un <em>package</em>, par exemple pour le mettre à jour. Inversement, le chargement d’un <em>package</em> est une opération qu’il faut réaliser <em>à chaque fois</em> que vous ouvrez une session <code>R</code>.</p>
+</section></section><section id="installer-un-package-r" class="level2" data-number="5.2"><h2 data-number="5.2" class="anchored" data-anchor-id="installer-un-package-r">
+<span class="header-section-number">5.2</span> Installer un <em>package</em> <code>R</code>
+</h2>
+<section id="la-méthode-standard-la-fonction-install.packages" class="level3" data-number="5.2.1"><h3 data-number="5.2.1" class="anchored" data-anchor-id="la-méthode-standard-la-fonction-install.packages">
+<span class="header-section-number">5.2.1</span> La méthode standard : la fonction <code>install.packages</code>
+</h3>
+<p>La façon la plus commune (et commode) d’installer un <em>package</em> est d’utiliser la fonction <code>install.packages</code>. Cette fonction réalise successivement deux actions :</p>
+<ol type="1">
+<li>Elle télécharge la dernière version du <em>package</em> sur un dépôt distant de <em>packages</em> <code>R</code> (typiquement le dépôt officiel) ;</li>
+<li>Elle installe le <em>package</em> sur la machine de l’utilisateur, dans un dossier appelé librairie.</li>
+</ol>
+<p>La fonction <code>install.packages</code> propose de multiples options, dont les principales sont décrites ci-dessous. <strong>Il est toutefois recommandé de ne pas modifier les réglages par défaut et d’utiliser cette fonction sous sa forme la plus simple :</strong></p>
+<div class="cell">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"monBeauPackage"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Trois points sont à noter sur l’utilisation de la fonction <code>install.packages</code> :</p>
+<ul>
+<li><p>Cette fonction requiert que vous disposiez d’un accès à internet (pour télécharger les <em>packages</em>) ;</p></li>
+<li><p>Les noms des <em>packages</em> sont sensibles à la casse : il est donc important de bien respecter majuscules et minuscules. Par exemple, la commande <code>install.packages("Ggplot2")</code> ne fonctionnera pas, car le <em>package</em> s’appelle en réalité <code>ggplot2</code> (en minuscules) ;</p></li>
+<li>
+<p>Cette fonction accepte en paramètre un vecteur de noms de <em>packages</em>, afin d’installer plusieurs <em>packages</em> en une seule fois :</p>
+<div class="cell">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"package1"</span>, <span class="st">"package2"</span>, <span class="st">"package3"</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</li>
+</ul>
+<div class="conseil">
+<p>Une fois qu’un <em>package</em> a été installé sur un ordinateur, il y est présent <strong>de façon permanente</strong>. Il est donc conseillé de ne pas inclure les instructions d’installation des <em>packages</em> dans les programmes <code>R</code>, pour éviter des réinstallations superflues.</p>
+</div>
+</section><section id="utilisation-de-la-fonction-install.packages" class="level3" data-number="5.2.2"><h3 data-number="5.2.2" class="anchored" data-anchor-id="utilisation-de-la-fonction-install.packages">
+<span class="header-section-number">5.2.2</span> Utilisation de la fonction <code>install.packages</code>
+</h3>
+<section id="choix-du-dépôt" class="level4" data-number="5.2.2.1"><h4 data-number="5.2.2.1" class="anchored" data-anchor-id="choix-du-dépôt">
+<span class="header-section-number">5.2.2.1</span> Choix du dépôt</h4>
+<p>Par défaut, la fonction <code>install.packages</code> télécharge le <em>package</em> demandé sur le dépôt officiel du projet <code>R</code>, le <a href="https://cran.r-project.org">CRAN</a>. Il est possible de modifier le dépôt utilisé grâce à l’argument <code>repos</code> de <code>install.packages</code>, mais vous n’avez normalement pas besoin de le faire dans le cadre d’un usage standard de <code>R</code>.</p>
+<div class="insee">
+<p>L’installation de <em>packages</em> dans AUS fonctionne de façon légèrement différente. En effet, une session <code>R</code> ne peut pas se connecter au site du CRAN depuis AUS car les serveurs AUS n’ont pas accès à internet pour des raisons de sécurité. Pour contourner cette difficulté, l’Insee dispose de son propre dépôt de <em>packages</em> <code>R</code>, accessible uniquement depuis le réseau interne. Ce dépôt est un miroir du CRAN, et est mis à jour quotidiennement. La configuration de <code>R</code> dans AUS est définie de sorte que <code>R</code> utilise par défaut le dépôt interne. Par conséquent, vous n’avez donc aucun réglage à faire par vous-même pour utiliser ce dépôt.</p>
+</div>
+</section><section id="installation-des-dépendances" class="level4" data-number="5.2.2.2"><h4 data-number="5.2.2.2" class="anchored" data-anchor-id="installation-des-dépendances">
+<span class="header-section-number">5.2.2.2</span> Installation des dépendances</h4>
+<p>Par défaut, la fonction <code>install.packages</code> installe également toutes les dépendances nécessaires. Il est possible de modifier ce réglage grâce à l’argument <code>dependencies</code>, mais vous n’avez normalement pas besoin de le faire dans le cadre d’un usage standard de <code>R</code>.</p>
+</section><section id="libraries" class="level4" data-number="5.2.2.3"><h4 data-number="5.2.2.3" class="anchored" data-anchor-id="libraries">
+<span class="header-section-number">5.2.2.3</span> Emplacement des <em>packages</em> installés</h4>
+<p>Une fois qu’un <em>package</em> a été téléchargé, la fonction <code>install.packages</code> l’installe, c’est-à-dire qu’elle le copie dans un dossier local appelé <strong>librairie</strong> (ou parfois bibliothèque). Par défaut, les librairies dans lesquelles les <em>packages</em> sont installés sont situées dans le sous-dossier <code>library</code> de l’emplacement où est installé <code>R</code>.</p>
+<div class="insee">
+<p>Sur AUS, les packages sont installés dans le dossier <code>U:/R/win-library/x.y</code>, où <code>x.y</code> désigne le numéro de version de <code>R</code> (3.6 ou 4.0 par exemple).</p>
+</div>
+<p>Il est possible de modifier la librairie dans laquelle un <em>package</em> est installé grâce à l’argument <code>lib</code>, mais vous n’avez normalement pas besoin de le faire dans le cadre d’un usage standard de <code>R</code>.</p>
+</section><section id="type-de-packages" class="level4" data-number="5.2.2.4"><h4 data-number="5.2.2.4" class="anchored" data-anchor-id="type-de-packages">
+<span class="header-section-number">5.2.2.4</span> Type de <em>packages</em>
+</h4>
+<p>Sous Windows, les <em>packages</em> sont installés par défaut à partir de fichiers spécialement compilés pour ce système d’exploitation. Ces fichiers sont désignés sous le nom de fichiers binaires (<em>binary</em> en anglais).</p>
+<p>L’argument <code>type</code> de <code>install.packages</code> permet de choisir une méthode alternative à la valeur par défaut, <code>"win.binary"</code>. Utiliser <code>type = "source"</code> permet par exemple de récupérer une version plus récente d’un <em>package</em> (par exemple sur une forge logicielle), mais peut nécessiter l’installation d’outils de développement supplémentaires sous Windows. Ce type d’installation est plutôt destiné à des utilisateurs avancés ; il est donc conseillé de conserver la valeur par défaut de l’argument <code>type</code>.</p>
+</section></section><section id="installation-avancée" class="level3" data-number="5.2.3"><h3 data-number="5.2.3" class="anchored" data-anchor-id="installation-avancée">
+<span class="header-section-number">5.2.3</span> Installation avancée</h3>
+<p>Il existe d’autres méthodes pour installer des <em>packages</em> <code>R</code>, qui sont décrites ci-dessous. De façon générale, ces méthodes sont destinées aux utilisateurs avancés de <code>R</code>.</p>
+<section id="installer-depuis-une-forge-logicielle-github-gitlab" class="level4" data-number="5.2.3.1"><h4 data-number="5.2.3.1" class="anchored" data-anchor-id="installer-depuis-une-forge-logicielle-github-gitlab">
+<span class="header-section-number">5.2.3.1</span> Installer depuis une forge logicielle (GitHub, GitLab…)</h4>
+<p>Certains <em>packages</em> sont mis à disposition sur une <a href="https://fr.wikipedia.org/wiki/Forge_%28informatique%29">forge logicielle</a>, par exemple GitHub ou GitLab, et pas sur le CRAN. C’est notamment le cas des <em>packages</em> dont le développement est encore expérimental, ou dont l’usage est très spécifique.</p>
+<p>Le <em>package</em> <code>remotes</code> a pour finalité principale d’installer des <em>packages</em> depuis des forges logicielles. Pour installer un <em>package</em> depuis une forge, il faut utiliser la fonction dédiée : <code>install_github</code> pour GitHub, <code>install_gitlab</code> pour GitLab, <code>install_svn</code> pour SVN, etc… Voici un exemple :</p>
+<div class="cell">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># installe depuis `https://github.com/InseeFrLab/doremifasolData`</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span>repo <span class="op">=</span> <span class="st">"InseeFrLab/doremifasolData"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Seul le premier argument (<code>repo</code>) est obligatoire. Il est formé du nom du compte sur la forge logicielle, suivi du nom du dépôt. Le <em>package</em> installé contiendra les modifications les plus récentes. Installer depuis une forge permet ainsi de récupérer la version de développement d’un <em>package</em> (seules les versions stables sont en général disponibles sur le CRAN). Pour installer un <em>package</em> tel qu’il était à un moment donné, il est également possible de faire suivre le nom du dépôt par une référence à un <abbr title="Modification validée à un instant donné, par extension état du projet à cet instant"><b>commit</b></abbr>, à un <em>tag</em> (une version) ou à une <abbr title="Ligne de développement parallèle au sein du dossier"><b>branche</b></abbr>. Voici un exemple avec un <em>tag</em> : <code>remotes::install_gitlab("py_b/funprog@v-0.3.0")</code>. Voici un exemple avec un commit : <code>remotes::install_github("InseeFrLab/doremifasolData@a9df2d3d0e372")</code>.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Lorsque vous installez un <em>package</em> depuis une forge logicielle, <code>R</code> crée automatiquement une archive temporaire (un fichier <code>.tar.gz</code>), puis installe le <em>package</em> à partir de celle-ci. Si vous travaillez dans un environnement Windows, il est nécessaire que <code>Rtools</code> soit installé sur votre poste pour que <code>R</code> puisse construire l’archive.</p>
+<p><code>Rtools</code> est un logiciel (pas un <em>package</em>) qui contient un certain nombre d’outils pour construire des <em>packages</em> <code>R</code> sous Windows. <code>Rtools</code> n’est en revanche pas nécessaire sur les systèmes Mac ou Linux. Vous pouvez vérifier si <code>Rtools</code> est installé en exécutant la fonction <code><a href="https://pkgbuild.r-lib.org/reference/has_rtools.html">pkgbuild::has_rtools()</a></code>. Celle-ci renvoie <code>TRUE</code> si <code>Rtools</code> est installé, <code>FALSE</code> sinon. Si <code>Rtools</code> n’est pas installé, vous pouvez l’installer facilement en le téléchargeant sur internet.</p>
+</div>
+</div>
+</section></section><section id="installer-depuis-un-fichier" class="level3" data-number="5.2.4"><h3 data-number="5.2.4" class="anchored" data-anchor-id="installer-depuis-un-fichier">
+<span class="header-section-number">5.2.4</span> Installer depuis un fichier</h3>
+<p>Il est aussi possible d’installer un <em>package</em> depuis une archive compressée (fichiers “.zip” pour les binaires Windows ou “.tar.gz” pour les <em>packages</em> <em>source</em>). Pour indiquer que la source est un fichier local, il est obligatoire de spécifier <code>repos = NULL</code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"chemin/en/local/package1_x.y.z.zip"</span>, repos <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Si le fichier est de type “source” (extension .tar.gz), Rtools peut s’avérer nécessaire, notamment si certaines fonctions sont écrites en <code>C</code> ou en <code>C++</code>.</p>
+<p>Installer un <em>package</em> depuis un fichier peut être utilisé dans les cas suivants :</p>
+<ul>
+<li>le <em>package</em> n’est pas sur un dépôt distant (CRAN ou une forge logicielle) ;</li>
+<li>on souhaite installer une version plus ancienne que celle actuellement sur le dépôt distant ;</li>
+<li>aucune connexion internet n’est possible (par exemple, transmission du fichier compressé via une clé usb).</li>
+</ul>
+<p>Il est à noter que cette méthode atteint rapidement ses limites dès lors que des dépendances non installées sont requises. En effet, il faudra installer manuellement ces dépendances (et éventuellement les dépendances des dépendances…).</p>
+</section><section id="mettre-à-jour-les-packages" class="level3" data-number="5.2.5"><h3 data-number="5.2.5" class="anchored" data-anchor-id="mettre-à-jour-les-packages">
+<span class="header-section-number">5.2.5</span> Mettre à jour les <em>packages</em>
+</h3>
+<p>Il peut arriver qu’un de vos programmes génère une erreur parce que vous utilisez un <em>package</em> dans une version trop ancienne. Pour mettre à jour un <em>package</em>, il suffit de le réinstaller avec <code>install.packages</code>. Cette méthode de mise à jour est la plus simple, et résout la très grande majorité des problèmes de version de <em>packages</em>.</p>
+<p>Il existe également la fonction <code>update.packages</code>. Cette fonction ne sert pas à mettre un <em>package</em> particulier, mais à mettre à jour <strong>tous</strong> les <em>packages</em> d’une librairie. Vous pouvez utiliser cette fonction si vous le souhaitez, mais son usage est plus complexe que celui d’<code>install.packages</code>. Vous pouvez en apprendre davantage sur cette fonction en consultant l’aide associée (<code><a href="https://rdrr.io/r/utils/update.packages.html">?update.packages</a></code>).</p>
+</section><section id="gestion-des-packages-avec-rstudio" class="level3" data-number="5.2.6"><h3 data-number="5.2.6" class="anchored" data-anchor-id="gestion-des-packages-avec-rstudio">
+<span class="header-section-number">5.2.6</span> Gestion des <em>packages</em> avec RStudio</h3>
+<p><code>RStudio</code> dispose d’un onglet “Packages” (par défaut dans le cadran en bas à droite) où l’on peut gérer les <em>packages</em> sans saisir des instructions dans la console. Les fonctionnalités principales sont les suivantes :</p>
+<ul>
+<li>affichage des <em>packages</em> installés sur le système (correspond au résultat de la fonction <code>installed_packages</code>). Cocher un <em>package</em> dans cette liste permet de le charger en mémoire (<code>library</code>).</li>
+<li>le bouton <kbd> Install </kbd> permet de chercher un <em>package</em> sur le CRAN (ou un autre dépôt) ou de sélectionner un <em>package</em> sous forme de fichier. L’auto-complétion sur le nom du <em>package</em> est proposée lors de la recherche, ce qui la rend plus aisée et prévient les problèmes de casse (majuscules / minuscules).</li>
+<li>le bouton <kbd> Update </kbd> permet de lister les <em>packages</em> pour lesquels il existe une version plus récente et d’éventuellement les mettre à jour.</li>
+</ul>
+<p>Chacune de ces manipulations effectuées par l’intermédiaire de l’interface graphique génère (et exécute) la commande correspondante dans la console.</p>
+<p>Lors de l’ouverture d’un script, <code>RStudio</code> tente aussi de détecter automatiquement si les <em>packages</em> utilisés dans celui-ci sont installés. Dans le cas contraire, il affiche un bandeau en haut du script proposant d’installer les <em>packages</em> manquants : <code>▲ _package_ --- required but is not installed. Install Don't show again</code></p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Spécificité Insee
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Il ne faut pas essayer d’installer des <em>packages</em> en cliquant sur le bouton <kbd> Install </kbd> du bandeau si vous travaillez dans AUS. En effet, si vous cliquez sur ce bouton, RStudio essaie de télécharger le <em>package</em> depuis le CRAN (qui n’est pas accessible depuis AUS). Il faut utiliser la fonction <code>install.packages</code> à la place.</p>
+</div>
+</div>
+</section></section><section id="utiliser-un-package-r" class="level2" data-number="5.3"><h2 data-number="5.3" class="anchored" data-anchor-id="utiliser-un-package-r">
+<span class="header-section-number">5.3</span> Utiliser un <em>package</em> <code>R</code>
+</h2>
+<p><strong>Une fois qu’un <em>package</em> est installé sur votre machine, il est pratique de procéder au chargement du <em>package</em> avec la fonction <code><a href="https://rdrr.io/r/base/library.html">library()</a></code> pour pouvoir l’utiliser.</strong> Charger un <em>package</em> consiste à indiquer à <code>R</code> qu’on souhaite l’utiliser dans la session courante. Ceci rend possible l’utilisation des fonctions implémentées par le <em>package</em>. Par exemple, pour charger le <em>package</em> <code>ggplot2</code>, il est nécessaire d’exécuter la commande suivante :</p>
+<div class="cell">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Par défaut, la fonction <code>library</code> cherche le <em>package</em> dans la librairie d’installation des <em>packages</em> (voir le paragraphe @ref(libraries)). <code>R</code> renvoie une erreur s’il ne trouve pas le <em>package</em> considéré dans la librairie. Il est possible de modifier la librairie dans laquelle la fonction <code>library</code> cherche les <em>packages</em> grâce à l’argument <code>lib.loc</code>, mais vous n’avez normalement pas besoin de le faire dans le cadre d’un usage standard de <code>R</code>.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Il est indispensable de rassembler les instructions de chargement de <em>package</em> au début des programmes <code>R</code>, car cela permet à un utilisateur qui ne connaît pas les programmes de repérer facilement les <em>packages</em> utilisés.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Même si un <em>package</em> n’a pas été chargé à l’aide de la fonction <code><a href="https://rdrr.io/r/base/library.html">library()</a></code>, il est possible d’appeler ses fonctions avec l’opérateur <code>::</code>. Par exemple, même sans avoir chargé le <em>package</em> <code>ggplot2</code>, il est possible d’initialiser un plot avec la commande suivante :</p>
+<div class="cell">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">df</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>L’opérateur <code>::</code> est particulièrement utile en cas de conflits entre <em>packages</em>, comme détaillé dans la fiche sur <a href="#reproducibility">les bonnes pratiques pour améliorer la reproductibilité</a>.</p>
+</div>
+</div>
+</section><section id="pour-en-savoir-plus" class="level2" data-number="5.4"><h2 data-number="5.4" class="anchored" data-anchor-id="pour-en-savoir-plus">
+<span class="header-section-number">5.4</span> Pour en savoir plus</h2>
+<ul>
+<li>Le livre <a href="https://r-pkgs.org"><em>R Packages</em></a> par Hadley Wickham et Jenny Brian (en anglais). Il porte principalement sur le développement de <em>packages</em>, mais l’introduction du livre détaille les concepts abordés dans cette fiche.</li>
+<li>La fiche sur la <a href="../03_Fiches_thematiques/Fiche_gerer_dependances.html">gestion des dépendances</a>.</li>
+</ul>
+
+
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script><nav class="page-navigation"><div class="nav-page nav-page-previous">
+      <a href="../03_Fiches_thematiques/Fiche_git_utilisation.html" class="pagination-link  aria-label=" avec="" rstudio="">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Utiliser <code>Git</code> avec RStudio</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../03_Fiches_thematiques/Fiche_comment_choisir_un_package.html" class="pagination-link" aria-label="<span class='chapter-number'>6</span>&nbsp; <span class='chapter-title'>Comment choisir un _package_ ?</span>">
+        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Comment choisir un <em>package</em> ?</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer">
+    <div class="nav-footer-left">
+<p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/InseeFrLab/utilitR/edit/master/01_R_Insee/Fiche_installer_packages.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/InseeFrLab/utilitR/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<li>
+<a href="https://github.com/InseeFrLab/utilitR.git" target="blank">Code source</a>
+</li>
+</div>
+  </div>
+</footer>
+
+
+</body></html>

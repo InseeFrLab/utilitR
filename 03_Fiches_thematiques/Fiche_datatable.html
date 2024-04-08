@@ -1,0 +1,2312 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.549">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>18&nbsp; Manipuler des données avec data.table</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../03_Fiches_thematiques/Fiche_arrow.html" rel="next">
+<link href="../03_Fiches_thematiques/Fiche_tidyverse.html" rel="prev">
+<link href="../resources/logo-utilitr.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark"><script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><script async="" src="https://hypothes.is/embed.js"></script><script>
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    document.body.classList.add('hypothesis-enabled');
+  });
+</script>
+</head>
+<body class="nav-sidebar docked nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="navbar navbar-expand-lg " data-bs-theme="dark"><div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../resources/logo-utilitr.png" alt="Logo du projet utilitR" class="navbar-logo"></a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+<li class="nav-item">
+    <a class="nav-link active" href="../01_R_Insee/presentation_utilitr.html" aria-current="page"> 
+<span class="menu-text">Introduction</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_rprojects.html"> 
+<span class="menu-text">Mener un projet statistique</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_import_fichiers_plats.html"> 
+<span class="menu-text">Importer des données</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_tidyverse.html"> 
+<span class="menu-text">Choisir son paradigme</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_joindre_donnees.html"> 
+<span class="menu-text">Manipuler des données</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_graphiques.html"> 
+<span class="menu-text">Produire des sorties</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../02_Bonnes_pratiques/01-qualite-code.html"> 
+<span class="menu-text">Bonnes pratiques</span></a>
+  </li>  
+</ul>
+</div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools tools-wide">
+    <a href="https://github.com/InseeFrLab/utilitR" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <div class="dropdown">
+      <a href="" title="Share" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Share"><i class="bi bi-share"></i></a>
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="quarto-navigation-tool-dropdown-0">
+<li>
+            <a class="dropdown-item quarto-navbar-tools-item" href="https://twitter.com/intent/tweet?url=%7Curl%7C">
+              <i class="bi bi-bi-twitter pe-1"></i>
+            Twitter
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item quarto-navbar-tools-item" href="https://www.linkedin.com/sharing/share-offsite/?url=%7Curl%7C">
+              <i class="bi bi-bi-linkedin pe-1"></i>
+            LinkedIn
+            </a>
+          </li>
+      </ul>
+</div>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_tidyverse.html">Choisir son paradigme d’analyse des données avec R</a></li><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_datatable.html"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Manipuler des données avec <code>data.table</code></span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="../resources/logo-utilitr.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none"></a>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Principales parties</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Introduction</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/presentation_utilitr.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Présentation du projet <code>utilitR</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_utilitR.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Comment utiliser la documentation <code>utilitR</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">Mener un projet statistique avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_rprojects.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Utiliser les projets <code>RStudio</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_git_utilisation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Utiliser <code>Git</code> avec RStudio</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_installer_packages.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Utiliser des <em>packages</em> <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_comment_choisir_un_package.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Comment choisir un <em>package</em> ?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_gerer_dependances.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Gérer les dépendances</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_se_documenter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Se documenter sur <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_resoudre_un_probleme.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Résoudre un problème avec <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_targets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Construire une chaîne de traitement reproductible avec <code>targets</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">Importer des données avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_fichiers_plats.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Importer des fichiers plats (<code>.csv</code>, <code>.tsv</code>, <code>.txt</code>)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_tables_sas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Importer des tables SAS®</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_tableurs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Importer des fichiers issus de tableurs (Excel, Calc)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_fichiers_parquet.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Lire et écrire des fichiers Parquet</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_api.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Travailler avec des API</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_connexion_bdd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Se connecter à une base de données</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true">
+ <span class="menu-text">Choisir son paradigme d’analyse des données avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_tidyverse.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Manipuler des données avec le <code>tidyverse</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_datatable.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Manipuler des données avec <code>data.table</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_arrow.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Manipuler des données avec <code>arrow</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text">Manipuler des données avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_joindre_donnees.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Joindre des tables de données</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_donnees_textuelles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Manipuler des données textuelles</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_survey.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Utiliser des données d’enquêtes</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_donnees_spatiales.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Manipuler des données spatiales</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_donnees_temporelles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Manipuler des données temporelles</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_analyse_de_donnees.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">L’analyse de données (ACP, ACM, ACF…)</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text">Produire des sorties avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_graphiques.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Faire des graphiques avec <code>ggplot2</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_rmarkdown.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Produire des documents avec <code>R Markdown</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_rmarkdown_param_report.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Produire des rapports automatisés avec <code>R Markdown</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text">Bonnes pratiques</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_Bonnes_pratiques/01-qualite-code.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Qualité du code</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_Bonnes_pratiques/02-structure-code.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Structure des projets</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true">
+ <span class="menu-text">Éléments de configuration</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_Rstudio_AUSv3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Utiliser RStudio sur l’environnement AUSv3</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_Rstudio_SSPCloud.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Utiliser <code>RStudio</code> sur l’environnement SSP Cloud</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_configurer_git.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Configurer <code>Git</code> sur son poste de travail</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche-personnaliser-R.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Personnaliser la configuration de <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_ressources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Superviser sa session <code>R</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+    </ul>
+</div>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+<li><a href="#t%C3%A2ches-concern%C3%A9es-et-recommandations" id="toc-tâches-concernées-et-recommandations" class="nav-link active" data-scroll-target="#t%C3%A2ches-concern%C3%A9es-et-recommandations"><span class="header-section-number">18.1</span> Tâches concernées et recommandations</a></li>
+  <li>
+<a href="#pr%C3%A9sentation-de-data.table" id="toc-présentation-de-data.table" class="nav-link" data-scroll-target="#pr%C3%A9sentation-de-data.table"><span class="header-section-number">18.2</span> Présentation de <code>data.table</code></a>
+  <ul class="collapse">
+<li><a href="#principes-structurants" id="toc-principes-structurants" class="nav-link" data-scroll-target="#principes-structurants"><span class="header-section-number">18.2.1</span> Principes structurants</a></li>
+  <li><a href="#quelles-fonctions-peut-on-utiliser-avec-un-data.table" id="toc-quelles-fonctions-peut-on-utiliser-avec-un-data.table" class="nav-link" data-scroll-target="#quelles-fonctions-peut-on-utiliser-avec-un-data.table"><span class="header-section-number">18.2.2</span> Quelles fonctions peut-on utiliser avec un <code>data.table</code> ?</a></li>
+  <li><a href="#encha%C3%AEner-les-op%C3%A9rations-en-data.table" id="toc-enchaîner-les-opérations-en-data.table" class="nav-link" data-scroll-target="#encha%C3%AEner-les-op%C3%A9rations-en-data.table"><span class="header-section-number">18.2.3</span> Enchaîner les opérations en <code>data.table</code></a></li>
+  </ul>
+</li>
+  <li>
+<a href="#manipuler-des-tables-de-donn%C3%A9es-avec-data.table" id="toc-manipuler-des-tables-de-données-avec-data.table" class="nav-link" data-scroll-target="#manipuler-des-tables-de-donn%C3%A9es-avec-data.table"><span class="header-section-number">18.3</span> Manipuler des tables de données avec <code>data.table</code></a>
+  <ul class="collapse">
+<li><a href="#mettre-des-donn%C3%A9es-dans-un-data.table" id="toc-mettre-des-données-dans-un-data.table" class="nav-link" data-scroll-target="#mettre-des-donn%C3%A9es-dans-un-data.table"><span class="header-section-number">18.3.1</span> Mettre des données dans un <code>data.table</code></a></li>
+  <li><a href="#manipuler-une-seule-table-avec-data.table" id="toc-manipuler-une-seule-table-avec-data.table" class="nav-link" data-scroll-target="#manipuler-une-seule-table-avec-data.table"><span class="header-section-number">18.3.2</span> Manipuler une seule table avec <code>data.table</code></a></li>
+  <li><a href="#joindre-des-tables-avec-data.table" id="toc-joindre-des-tables-avec-data.table" class="nav-link" data-scroll-target="#joindre-des-tables-avec-data.table"><span class="header-section-number">18.3.3</span> Joindre des tables avec <code>data.table</code></a></li>
+  <li><a href="#indexer-une-table-avec-data.table" id="toc-indexer-une-table-avec-data.table" class="nav-link" data-scroll-target="#indexer-une-table-avec-data.table"><span class="header-section-number">18.3.4</span> Indexer une table avec <code>data.table</code></a></li>
+  <li><a href="#r%C3%A9organiser-les-donn%C3%A9es-en-data.table" id="toc-réorganiser-les-données-en-data.table" class="nav-link" data-scroll-target="#r%C3%A9organiser-les-donn%C3%A9es-en-data.table"><span class="header-section-number">18.3.5</span> Réorganiser les données en <code>data.table</code></a></li>
+  </ul>
+</li>
+  <li>
+<a href="#assignation-reference" id="toc-assignation-reference" class="nav-link" data-scroll-target="#assignation-reference"><span class="header-section-number">18.4</span> La fonction d’assignation par référence (ou <code>:=</code>)</a>
+  <ul class="collapse">
+<li><a href="#la-sp%C3%A9cificit%C3%A9-de-data.table-la-modification-par-r%C3%A9f%C3%A9rence" id="toc-la-spécificité-de-data.table-la-modification-par-référence" class="nav-link" data-scroll-target="#la-sp%C3%A9cificit%C3%A9-de-data.table-la-modification-par-r%C3%A9f%C3%A9rence"><span class="header-section-number">18.4.1</span> La spécificité de <code>data.table</code> : la modification par référence</a></li>
+  <li><a href="#les-usages-de" id="toc-les-usages-de" class="nav-link" data-scroll-target="#les-usages-de"><span class="header-section-number">18.4.2</span> Les usages de <code>:=</code></a></li>
+  <li><a href="#attention-en-utilisant" id="toc-attention-en-utilisant" class="nav-link" data-scroll-target="#attention-en-utilisant"><span class="header-section-number">18.4.3</span> Attention en utilisant <code>:=</code></a></li>
+  </ul>
+</li>
+  <li>
+<a href="#programmer-des-fonctions-avec-data.table" id="toc-programmer-des-fonctions-avec-data.table" class="nav-link" data-scroll-target="#programmer-des-fonctions-avec-data.table"><span class="header-section-number">18.5</span> Programmer des fonctions avec <code>data.table</code></a>
+  <ul class="collapse">
+<li><a href="#utiliser-.sd-et-lapply" id="toc-utiliser-.sd-et-lapply" class="nav-link" data-scroll-target="#utiliser-.sd-et-lapply"><span class="header-section-number">18.5.1</span> Utiliser <code>.SD</code> et <code>lapply</code></a></li>
+  <li><a href="#d%C3%A9finir-des-fonctions-modifiant-un-data.table" id="toc-définir-des-fonctions-modifiant-un-data.table" class="nav-link" data-scroll-target="#d%C3%A9finir-des-fonctions-modifiant-un-data.table"><span class="header-section-number">18.5.2</span> Définir des fonctions modifiant un <code>data.table</code></a></li>
+  </ul>
+</li>
+  <li><a href="#Ressourcesdatatable" id="toc-Ressourcesdatatable" class="nav-link" data-scroll-target="#Ressourcesdatatable"><span class="header-section-number">18.6</span> Pour en savoir plus</a></li>
+  </ul><div class="toc-actions"><ul><li><a href="https://github.com/InseeFrLab/utilitR/edit/master/03_Fiches_thematiques/Fiche_datatable.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/InseeFrLab/utilitR/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_tidyverse.html">Choisir son paradigme d’analyse des données avec R</a></li><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_datatable.html"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Manipuler des données avec <code>data.table</code></span></a></li></ol></nav><div class="quarto-title">
+<h1 class="title"><span id="datatable" class="quarto-section-identifier"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Manipuler des données avec <code>data.table</code></span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header><section id="tâches-concernées-et-recommandations" class="level2" data-number="18.1"><h2 data-number="18.1" class="anchored" data-anchor-id="tâches-concernées-et-recommandations">
+<span class="header-section-number">18.1</span> Tâches concernées et recommandations</h2>
+<p>L’utilisateur souhaite manipuler des données structurées sous forme de <code>data.frame</code> (sélectionner des variables, sélectionner des observations, créer des variables, joindre des tables).</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tâche concernée et recommandation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>Pour des tables de données de taille petite et moyenne (inférieure à 1 Go ou moins d’un million d’observations), il est recommandé d’utiliser les <em>packages</em> <code>tibble</code>, <code>dplyr</code> et <code>tidyr</code> qui sont présentés dans la fiche <a href="Fiche_tidyverse.html">Manipuler des données avec le <code>tidyverse</code></a>;</li>
+<li>Pour des tables de données de grande taille (plus de 1 Go ou plus d’un million d’observations), il est recommandé d’utiliser soit le <em>package</em> <code>data.table</code> qui fait l’objet de la présente fiche, soit les <em>packages</em> <code>arrow</code> et <code>duckdb</code> présentés dans les fiches <a href="Fiche_arrow.html">Manipuler des données avec <code>arrow</code></a> et <a href="#duckdb">Manipuler des données avec <code>duckdb</code></a>.</li>
+</ul>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Certains exemples de cette fiche utilisent les données disponibles dans le <em>package</em> <code>doremifasolData</code> ; vous ne pourrez reproduire ces exemples que si ce <em>package</em> est installé sur la machine sur laquelle vous travaillez. Si vous ne savez pas si ce <em>package</em> est déjà installé, consultez la fiche <a href="../01_R_Insee/Fiche_utiliser_utilitR.html">Comment utiliser la documentation <code>utilitR</code></a>.</p>
+</div>
+</div>
+</section><section id="présentation-de-data.table" class="level2" data-number="18.2"><h2 data-number="18.2" class="anchored" data-anchor-id="présentation-de-data.table">
+<span class="header-section-number">18.2</span> Présentation de <code>data.table</code>
+</h2>
+<p>Ne pas oublier de charger le <em>package</em> avec <code><a href="https://r-datatable.com">library(data.table)</a></code>.</p>
+<section id="principes-structurants" class="level3" data-number="18.2.1"><h3 data-number="18.2.1" class="anchored" data-anchor-id="principes-structurants">
+<span class="header-section-number">18.2.1</span> Principes structurants</h3>
+<p><strong>Le <em>package</em> <code>data.table</code> propose une version améliorée du <code>data.frame</code> de base : le <code>data.table</code>.</strong> La principale différence visible est que la visualisation d’un objet <code>data.table</code> est meilleure que celle d’un <code>data.frame</code> standard : le data.table indique automatiquement le type des variables (sous le nom de variable), et donne le nombre total d’observations de la table.</p>
+<div class="cell">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">dt</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span><span class="op">)</span>,</span>
+<span>                 y <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">12</span>,</span>
+<span>                 z <span class="op">=</span> <span class="fl">3</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span></span>
+<span><span class="va">dt</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         x     y     z
+    &lt;char&gt; &lt;int&gt; &lt;int&gt;
+ 1:      A     1     3
+ 2:      B     2     4
+ 3:      C     3     5
+ 4:      A     4     6
+ 5:      B     5     3
+ 6:      C     6     4
+ 7:      A     7     5
+ 8:      B     8     6
+ 9:      C     9     3
+10:      A    10     4
+11:      B    11     5
+12:      C    12     6</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Il est possible de modifier les options globales de <code>data.table</code> pour avoir un affichage plus informatif avec les classes de chaque colonne et l’éventuelle clé de la base (voir plus bas) :</p>
+<div class="cell">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span></span>
+<span>  <span class="st">"datatable.print.keys"</span> <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  <span class="st">"datatable.print.class"</span> <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="va">dt</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         x     y     z
+    &lt;char&gt; &lt;int&gt; &lt;int&gt;
+ 1:      A     1     3
+ 2:      B     2     4
+ 3:      C     3     5
+ 4:      A     4     6
+ 5:      B     5     3
+ 6:      C     6     4
+ 7:      A     7     5
+ 8:      B     8     6
+ 9:      C     9     3
+10:      A    10     4
+11:      B    11     5
+12:      C    12     6</code></pre>
+</div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span></span>
+<span>  <span class="st">"datatable.print.keys"</span> <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="st">"datatable.print.class"</span> <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+<p><strong>La fonction fondamentale de <code>data.table</code> est l’opérateur <code>[...]</code> (crochets).</strong> Lorsqu’on les applique à un objet <code>data.frame</code> de base, les crochets <code>df[...]</code> servent uniquement à sélectionner des lignes ou des colonnes. Dans un <code>data.table</code>, les crochets <code>dt[...]</code> permettent de faire beaucoup plus de choses (quasiment tout, en pratique). En fait, les instructions à l’intérieur des crochets peuvent être envisagées comme des requêtes <code>SQL</code> mises en forme différemment.</p>
+<p><strong>La forme générale de l’opérateur <code>[...]</code> est la suivante : <code>DT[i, j, by]</code></strong>. Cette grammaire peut se lire comme ceci : “on part du <code>data.table</code> <code>DT</code>, on sélectionne certaines lignes avec <code>i</code>, puis on calcule <code>j</code> pour chaque groupe défini par <code>by</code>. Si on fait un parallèle avec <code>SQL</code>, <code>i</code> correspond au <code>WHERE</code>, <code>j</code> au <code>SELECT</code> et <code>by</code> au <code>GROUP BY</code>. La fonction <code>[...]</code> présente deux grands avantages :</p>
+<ul>
+<li>Il n’est pas nécessaire d’utiliser le préfixe <code>DT$</code> pour se référer aux variables à l’intérieur de <code>[...]</code> ;</li>
+<li>Le code est très concis, ce qui aide à le rendre lisible.</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Cette syntaxe compacte est aussi un des atouts fondamentaux de <code>data.table</code> pour sa rapidité : <code>data.table</code> ne manipule que les colonnes mentionnées dans l’opérateur <code>[...]</code>, ce qui réduit le temps de traitement des données.</p>
+</div>
+</div>
+<p>Voici un exemple simple. A partir des données générées ci-dessus, on veut calculer la moyenne de <code>y</code> par groupe défini par <code>x</code>, uniquement sur les observations pour lesquelles <code>x</code> est supérieur à 3. Voici comment on peut réaliser cette opération avec <code>Base R</code>, <code>dplyr</code> et <code>data.table</code>. Vous pouvez juger vous-même de la concision du code.</p>
+<div>
+<p><!----Encapsuler dans div permet d'éviter que ce soit dans latex ----></p>
+<table class="table" style="width : 70%;">
+<tbody><tr>
+<td>
+<strong><code>Base R</code></strong>
+</td>
+<td>
+<div class="cell">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html">aggregate</a></span><span class="op">(</span></span>
+<span>  <span class="va">dt</span><span class="op">[</span><span class="va">dt</span><span class="op">[[</span><span class="st">"x"</span><span class="op">]</span><span class="op">]</span> <span class="op">&gt;</span> <span class="fl">3</span><span class="op">]</span><span class="op">$</span><span class="va">y</span>,</span>
+<span>  by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">dt</span><span class="op">[</span><span class="va">dt</span><span class="op">[[</span><span class="st">"x"</span><span class="op">]</span><span class="op">]</span> <span class="op">&gt;</span> <span class="fl">3</span><span class="op">]</span><span class="op">$</span><span class="va">z</span><span class="op">)</span>,</span>
+<span>  FUN <span class="op">=</span> <span class="va">sum</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</td>
+</tr>
+<tr>
+<td>
+<strong><code>dplyr</code></strong>
+</td>
+<td>
+<div class="cell">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">dt</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">x</span> <span class="op">&gt;</span> <span class="fl">3</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">z</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</td>
+</tr>
+<tr>
+<td>
+<strong><code>data.table</code></strong>
+</td>
+<td>
+<div class="cell">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">dt</span><span class="op">[</span><span class="va">x</span> <span class="op">&gt;</span> <span class="fl">3</span>, <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span>, by <span class="op">=</span> <span class="va">z</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</td>
+</tr>
+</tbody></table>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>L’utilisation du <em>package</em> <code>data.table</code> peut paraître plus déroutante pour les débutants que l’utilisation de <code>dplyr</code>. Toutefois, l’apprentissage de <code>data.table</code> est particulièrement recommandé si vous avez l’intention d’utiliser <code>R</code> avec des données volumineuses car <code>data.table</code> est <em>beaucoup</em> plus rapide et puissant que <code>dplyr</code>. Des remarques et conseils sont présents dans cette fiche pour vous aider à vous familiariser avec la syntaxe de <code>data.table</code>.</p>
+</div>
+</div>
+</section><section id="quelles-fonctions-peut-on-utiliser-avec-un-data.table" class="level3" data-number="18.2.2"><h3 data-number="18.2.2" class="anchored" data-anchor-id="quelles-fonctions-peut-on-utiliser-avec-un-data.table">
+<span class="header-section-number">18.2.2</span> Quelles fonctions peut-on utiliser avec un <code>data.table</code> ?</h3>
+<p><strong>Les <code>data.tables</code> sont simplement des <code>data.frames</code> particuliers, donc on peut normalement leur appliquer toutes les méthodes valables pour les <code>data.frames</code>.</strong> En particulier, on peut utiliser avec <code>data.table</code> toutes les fonctions des <em>packages</em> habituellement associés à <code>dplyr</code> : <code>stringr</code> pour le maniement de chaînes de caractères, <code>lubridate</code> pour les colonnes temporelles, <code>forcats</code> pour les colonnes de type <code>factor</code>, <em>etc</em>. Toutefois, il est utile de vérifier que le <em>package</em> <code>data.table</code> ne propose pas déjà une fonction adaptée. Par exemple, plutôt que d’utiliser la fonction <code>str_split_fixed()</code> du <em>package</em> <code>stringr</code> pour séparer une colonne en fonction d’un caractère, on utilisera <code>tstrsplit()</code> de <code>data.table</code>.</p>
+</section><section id="enchaîner-les-opérations-en-data.table" class="level3" data-number="18.2.3"><h3 data-number="18.2.3" class="anchored" data-anchor-id="enchaîner-les-opérations-en-data.table">
+<span class="header-section-number">18.2.3</span> Enchaîner les opérations en <code>data.table</code>
+</h3>
+<section id="le-principe-est-simple" class="level4" data-number="18.2.3.1"><h4 data-number="18.2.3.1" class="anchored" data-anchor-id="le-principe-est-simple">
+<span class="header-section-number">18.2.3.1</span> Le principe est simple…</h4>
+<p><strong>Il est facile d’enchaîner des opérations avec <code>data.table</code> : il suffit d’accoler les opérateurs <code>[]</code>.</strong> Votre code <code>data.table</code> prendra alors la forme suivante : <code>dt[opération 1][opération 2][opération 3][...]</code>. Voici un exemple simple, dans lequel on calcule la moyenne d’une variable par groupe, puis on trie la table.</p>
+<div class="cell">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># En chaînant</span></span>
+<span><span class="va">ans</span> <span class="op">&lt;-</span> <span class="va">dt</span><span class="op">[</span> , <span class="fu">.</span><span class="op">(</span>moyenne <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">y</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>, by <span class="op">=</span> <span class="va">x</span><span class="op">]</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="va">moyenne</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="va">ans</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   x moyenne
+1: A     5.5
+2: B     6.5
+3: C     7.5</code></pre>
+</div>
+</div>
+</section><section id="mais-il-faut-que-le-code-reste-lisible" class="level4" data-number="18.2.3.2"><h4 data-number="18.2.3.2" class="anchored" data-anchor-id="mais-il-faut-que-le-code-reste-lisible">
+<span class="header-section-number">18.2.3.2</span> … mais il faut que le code reste lisible…</h4>
+<p>Le problème avec l’enchaînement d’opérations multiples est qu’on aboutit rapidement à des lignes de codes extrêmement longues. C’est pourquoi <strong>il est préférable de revenir régulièrement à la ligne, de façon à garder un code qui reste lisible.</strong> Il y a évidemment plusieurs façons d’organiser le code. La seule obligation est que le crochet qui commence une nouvelle opération doit être accolé au crochet qui termine l’opération précédente (<code>...][...</code>). Voici deux organisations possibles, à vous de choisir celle qui vous paraît la plus claire et la plus adaptée à votre travail.</p>
+<p>La première organisation enchaîne toutes les opérations en une seule fois :</p>
+<div class="cell">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">resultat</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="va">dt</span><span class="op">[</span>i <span class="op">=</span> <span class="va">...</span>,</span>
+<span>     j <span class="op">=</span> <span class="va">...</span>,</span>
+<span>     by <span class="op">=</span> <span class="va">...</span></span>
+<span>     <span class="op">]</span><span class="op">[</span>i <span class="op">=</span> <span class="va">...</span>,</span>
+<span>       j <span class="op">=</span> <span class="va">...</span>,</span>
+<span>       by <span class="op">=</span> <span class="va">...</span></span>
+<span>       <span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>La seconde organisation sépare les opérations en utilisant une table intermédiaire nommée <code>resultat</code> :</p>
+<div class="cell">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">resultat</span> <span class="op">&lt;-</span> <span class="va">dt</span><span class="op">[</span>i <span class="op">=</span> <span class="va">...</span>,</span>
+<span>               j <span class="op">=</span> <span class="va">...</span>,</span>
+<span>               by <span class="op">=</span> <span class="va">...</span></span>
+<span>               <span class="op">]</span></span>
+<span><span class="va">resultat</span> <span class="op">&lt;-</span> <span class="va">resultat</span><span class="op">[</span>i <span class="op">=</span> <span class="va">...</span>,</span>
+<span>                     j <span class="op">=</span> <span class="va">...</span>,</span>
+<span>                     by <span class="op">=</span> <span class="va">...</span></span>
+<span>                     <span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Comme indiqué précédemment, <code>i</code>, <code>j</code> et <code>by</code> ne sont pas forcément présents dans toutes les étapes. Voici ce que cette organisation du code donne sur un exemple légèrement plus complexe que le précédent :</p>
+<div class="cell">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">dt</span><span class="op">[</span> , <span class="va">total</span> <span class="op">:=</span> <span class="va">y</span> <span class="op">+</span> <span class="va">z</span><span class="op">]</span></span>
+<span><span class="va">resultat</span> <span class="op">&lt;-</span> <span class="va">dt</span><span class="op">[</span> ,</span>
+<span>                <span class="fu">.</span><span class="op">(</span>moyenne <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">total</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                by <span class="op">=</span> <span class="va">x</span></span>
+<span>                <span class="op">]</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="va">moyenne</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="va">resultat</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   x moyenne
+1: A      10
+2: B      11
+3: C      12</code></pre>
+</div>
+</div>
+</section><section id="car-on-peut-facilement-faire-des-erreurs" class="level4" data-number="18.2.3.3"><h4 data-number="18.2.3.3" class="anchored" data-anchor-id="car-on-peut-facilement-faire-des-erreurs">
+<span class="header-section-number">18.2.3.3</span> … car on peut facilement faire des erreurs</h4>
+<p><strong>L’enchaînement des opérations en <code>data.table</code> est puissant, mais peut aboutir à des résultats non désirés si on ne fait pas attention.</strong> Les exemples de ce paragraphe utilisent la fonction <code>:=</code> ; si vous ne la connaissez pas encore, il est fortement conseillé de lire la section <a href="#assignation-reference">La fonction d’assignation par référence (ou <code>:=</code>)</a> avant de poursuivre la lecture.</p>
+<p>Voici deux exemples d’opérations enchaînées en <code>data.table</code> dont les codes sont très similaires et qui aboutissent à des résultats très différents. Le premier exemple ne conserve qu’une partie de la table <code>dt</code> puis crée une variable, tandis que le second crée une variable avec une valeur non manquante pour une partie de la table uniquement.</p>
+<!-- output html -->
+<div>
+<table class="table">
+<tbody><tr>
+<th>
+</th>
+<th>
+<strong>Exemple 1</strong>
+</th>
+<th>
+<strong>Exemple 2</strong>
+</th>
+</tr>
+<tr></tr>
+<tr>
+<td>
+<strong>Code</strong>
+</td>
+<td>
+<div class="cell">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">dt</span><span class="op">[</span><span class="va">y</span> <span class="op">&gt;</span> <span class="fl">3</span><span class="op">]</span><span class="op">[</span> , <span class="va">newvar</span> <span class="op">:=</span> <span class="fl">1</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</td>
+<td>
+<div class="cell">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">dt</span><span class="op">[</span><span class="va">y</span> <span class="op">&gt;</span> <span class="fl">3</span>, <span class="va">newvar</span> <span class="op">:=</span> <span class="fl">1</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</td>
+</tr>
+<tr>
+<th>
+<div class="cell">
+<p><strong>Signification</strong></p>
+</div>
+</th>
+<th>
+<div class="cell">
+<p>Partir de <code>dt</code>, conserver uniquement les observations pour lesquelles <code>x &gt; 3</code>, et créer une nouvelle variable <code>newvar</code> qui vaut 1 partout</p>
+</div>
+</th>
+<th>
+<div class="cell">
+Partir de <code>dt</code>, créer une nouvelle variable <code>newvar</code> qui vaut 1 pour les observations pour lesquelles <code>x &gt; 3</code> et <code>NA</code> ailleurs
+</div>
+</th>
+
+</tr>
+<tr></tr>
+</tbody></table>
+</div>
+</section></section></section><section id="manipuler-des-tables-de-données-avec-data.table" class="level2" data-number="18.3"><h2 data-number="18.3" class="anchored" data-anchor-id="manipuler-des-tables-de-données-avec-data.table">
+<span class="header-section-number">18.3</span> Manipuler des tables de données avec <code>data.table</code>
+</h2>
+<p>Nous allons illustrer les fonctions de manipulation de données de <code>data.table</code> avec les jeux de données du <em>package</em> <code>doremifasolData</code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData">doremifasolData</a></span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="mettre-des-données-dans-un-data.table" class="level3" data-number="18.3.1"><h3 data-number="18.3.1" class="anchored" data-anchor-id="mettre-des-données-dans-un-data.table">
+<span class="header-section-number">18.3.1</span> Mettre des données dans un <code>data.table</code>
+</h3>
+<p>Il y a principalement deux méthodes pour mettre des données sous forme d’un <code>data.table</code> :</p>
+<ul>
+<li>la fonction <code>fread()</code> importe un fichier plat comme les <code>.csv</code> (voir la fiche <a href="Fiche_import_fichiers_plats.html">Importer des fichiers plats (<code>.csv</code>, <code>.tsv</code>, <code>.txt</code>)</a> ;</li>
+<li>Les fonctions <code>setDT()</code> et <code>as.data.table()</code> convertissent un <code>data.frame</code> en <code>data.table</code>.</li>
+</ul>
+<p>Dans la suite de cette section, on va illustrer les opérations de base en <code>data.table</code> avec la base permanente des équipements (table <code>bpe_ens_2018</code>), qu’on transforme en <code>data.table</code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Charger la base permanente des équipements</span></span>
+<span><span class="va">bpe_ens_2018</span> <span class="op">&lt;-</span> <span class="fu">doremifasolData</span><span class="fu">::</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData/reference/bpe_ens_2018.html">bpe_ens_2018</a></span></span>
+<span><span class="co"># Convertir ce data.frame en data.table</span></span>
+<span><span class="va">bpe_ens_2018_dt</span> <span class="op">&lt;-</span> <span class="fu">as.data.table</span><span class="op">(</span><span class="va">bpe_ens_2018</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="manipuler-une-seule-table-avec-data.table" class="level3" data-number="18.3.2"><h3 data-number="18.3.2" class="anchored" data-anchor-id="manipuler-une-seule-table-avec-data.table">
+<span class="header-section-number">18.3.2</span> Manipuler une seule table avec <code>data.table</code>
+</h3>
+<section id="sélectionner-des-lignes" class="level4" data-number="18.3.2.1"><h4 data-number="18.3.2.1" class="anchored" data-anchor-id="sélectionner-des-lignes">
+<span class="header-section-number">18.3.2.1</span> Sélectionner des lignes</h4>
+<p><strong>On peut sélectionner des lignes dans un <code>data.table</code> avec <code>dt[i]</code>.</strong> Voici un exemple de code qui sélectionne les magasins de chaussures (<code>TYPEQU == "B304"</code>) dans le premier arrondissement de Paris (<code>DEPCOM == "75101"</code>) dans la table <code>bpe_ens_2018_dt</code> :</p>
+<div class="cell">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">selection</span> <span class="op">&lt;-</span> <span class="va">bpe_ens_2018_dt</span><span class="op">[</span><span class="va">DEPCOM</span> <span class="op">==</span> <span class="st">"75101"</span> <span class="op">&amp;</span> <span class="va">TYPEQU</span> <span class="op">==</span> <span class="st">"B304"</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Voici une remarque très importante sur le fonctionnement de <code>data.table</code> : <strong>lorsqu’on souhaite conserver toutes les lignes d’un <code>data.table</code>, il faut laisser vide l’emplacement pour <code>i</code>, sans oublier la virgule.</strong> Par exemple, pour connaître le nombre de lignes de <code>iris_dt</code>, on écrit : <code>iris_dt[ , .N]</code>. Notez bien l’emplacement vide et la virgule après <code>[</code>.</p>
+</div>
+</div>
+</section><section id="sélectionner-des-colonnes" class="level4" data-number="18.3.2.2"><h4 data-number="18.3.2.2" class="anchored" data-anchor-id="sélectionner-des-colonnes">
+<span class="header-section-number">18.3.2.2</span> Sélectionner des colonnes</h4>
+<p><strong>On peut sélectionner des colonnes dans un <code>data.table</code> et renvoyer un <code>data.table</code> de plusieurs façons</strong>.</p>
+<ul>
+<li>La première consiste à indiquer les colonnes à conserver sous forme de liste. La notation <code>.()</code> est un alias pour <code><a href="https://rdrr.io/r/base/list.html">list()</a></code> qui est pratique et concis dans un code <code>data.table</code>. Le code suivant sélectionne le code commune, le type d’équipement et le nombre d’équipement dans la base permanente des équipements, de deux façons équivalentes :</li>
+</ul>
+<div class="cell">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">DEPCOM</span>, <span class="va">TYPEQU</span>, <span class="va">NB_EQUIP</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , <span class="fu">.</span><span class="op">(</span><span class="va">DEPCOM</span>, <span class="va">TYPEQU</span>, <span class="va">NB_EQUIP</span><span class="op">)</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li>La seconde méthode consiste à utiliser un mot-clé de <code>data.table</code>, <code>.SD</code> qui signifie <code>Subset of Data</code>. On indique les colonnes qui seront aliasées par <code>.SD</code> avec la dimension <code>.SDcols</code>.</li>
+</ul>
+<div class="cell">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , <span class="va">.SD</span>, .SDcols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"DEPCOM"</span>, <span class="st">"TYPEQU"</span>, <span class="st">"NB_EQUIP"</span><span class="op">)</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>La seconde méthode peut vous sembler inutilement complexe. C’est vrai dans l’exemple donné ci-dessus, mais les fonctions <code>.SD</code> et <code>.SDcols</code> s’avèrent très puissantes dans un grand nombre de situations (notamment quand on veut programmer des fonctions qui font appel à <code>data.table</code>).</p>
+</div>
+</div>
+</section><section id="trier-un-data.table" class="level4" data-number="18.3.2.3"><h4 data-number="18.3.2.3" class="anchored" data-anchor-id="trier-un-data.table">
+<span class="header-section-number">18.3.2.3</span> Trier un <code>data.table</code>
+</h4>
+<p><strong>On peut trier un <code>data.table</code> avec la fonction <code><a href="https://rdrr.io/r/base/order.html">order()</a></code>.</strong> Le code suivant trie la BPE selon le code commune et le type d’équipement.</p>
+<div class="cell">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="va">DEPCOM</span>, <span class="va">TYPEQU</span><span class="op">)</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         REG DEP DEPCOM DCIRIS   AN TYPEQU NB_EQUIP
+      1:  84  01  01001  01001 2018   A401        2
+      2:  84  01  01001  01001 2018   A404        4
+      3:  84  01  01001  01001 2018   A504        1
+      4:  84  01  01001  01001 2018   A507        1
+     ---                                           
+1035561:  06 976  97617  97617 2018   F113        4
+1035562:  06 976  97617  97617 2018   F114        1
+1035563:  06 976  97617  97617 2018   F120        1
+1035564:  06 976  97617  97617 2018   F121        3</code></pre>
+</div>
+</div>
+<p>Il suffit d’ajouter un signe <code>-</code> devant une variable pour trier par ordre décroissant. Le code suivant trie la BPE par code commune croissant et type d’équipement décroissant.</p>
+<div class="cell">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="va">DEPCOM</span>, <span class="op">-</span><span class="va">TYPEQU</span><span class="op">)</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="calculer-des-statistiques" class="level4" data-number="18.3.2.4"><h4 data-number="18.3.2.4" class="anchored" data-anchor-id="calculer-des-statistiques">
+<span class="header-section-number">18.3.2.4</span> Calculer des statistiques</h4>
+<p><strong>La méthode pour sélectionner des colonnes est également valable pour calculer des statistiques, car <code>data.table</code> accepte les expressions dans <code>j</code>.</strong> Le code suivant calcule le nombre total d’équipements dans la BPE, <code>sum(NB_EQUIP, na.rm = TRUE)</code> :</p>
+<div class="cell">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , <span class="fu">.</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        V1
+1: 2504782</code></pre>
+</div>
+</div>
+<p>Il est possible de calculer plusieurs statistiques à la fois, et de donner des noms aux variables ; il suffit de séparer les formules par une virgule. Le code suivant calcule le nombre total d’équipements dans la BPE <code>sum(NB_EQUIP, na.rm = TRUE)</code>, et le nombre total de boulangeries <code>sum(NB_EQUIP * (TYPEQU == "B203"), na.rm = TRUE)</code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , </span>
+<span>                 <span class="fu">.</span><span class="op">(</span>NB_EQUIP_TOT   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>                   NB_BOULANG_TOT <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span> <span class="op">*</span> <span class="op">(</span><span class="va">TYPEQU</span> <span class="op">==</span> <span class="st">"B203"</span><span class="op">)</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   NB_EQUIP_TOT NB_BOULANG_TOT
+1:      2504782          48568</code></pre>
+</div>
+</div>
+<p><strong>On peut évidemment combiner <code>i</code> et <code>j</code> pour calculer des statistiques sur un sous-ensemble d’observations.</strong> Dans l’exemple suivant, on sélectionne les boulangeries avec <code>i</code>, <code>(TYPEQU == "B203")</code>, et on calcule le nombre total d’équipements avec <code>j</code>, <code>sum(NB_EQUIP, na.rm = TRUE)</code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span><span class="va">TYPEQU</span> <span class="op">==</span> <span class="st">"B203"</span>, <span class="fu">.</span><span class="op">(</span>NB_BOULANG_TOT <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   NB_BOULANG_TOT
+1:          48568</code></pre>
+</div>
+</div>
+</section><section id="les-fonctions-statistiques-utiles-de-data.table" class="level4" data-number="18.3.2.5"><h4 data-number="18.3.2.5" class="anchored" data-anchor-id="les-fonctions-statistiques-utiles-de-data.table">
+<span class="header-section-number">18.3.2.5</span> Les fonctions statistiques utiles de <code>data.table</code>
+</h4>
+<p>Vous pouvez utiliser toutes les fonctions statistiques de <code>R</code> avec <code>data.table</code>. Le <em>package</em> <code>data.table</code> propose par ailleurs des fonctions optimisées qui peuvent vous être utiles. En voici quelques-unes :</p>
+<table class="table">
+<colgroup>
+<col style="width: 13%">
+<col style="width: 39%">
+<col style="width: 47%">
+</colgroup>
+<thead><tr class="header">
+<th>Fonction</th>
+<th>Opération</th>
+<th>Exemple</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>.N</code></td>
+<td>Nombre d’observations</td>
+<td><code>dt[ , .N, by = 'group_var']</code></td>
+</tr>
+<tr class="even">
+<td><code>uniqueN()</code></td>
+<td>Nombre de valeurs uniques de la variable <code>x</code>
+</td>
+<td><code>dt[ , uniqueN(x), by = 'group_var']</code></td>
+</tr>
+<tr class="odd">
+<td><code>nafill</code></td>
+<td>Remplit les valeurs manquantes d’une variable numérique, par exemple par <code>123</code> (pour plus d’options, voir l’aide <code>?nafill</code>)</td>
+<td><code>dt[ , nafill(y, fill = 123)]</code></td>
+</tr>
+<tr class="even">
+<td><code>%chin%</code></td>
+<td>Chaîne de caractères dans la liste</td>
+<td><code>dt[x %chin% c("a", "b")]</code></td>
+</tr>
+<tr class="odd">
+<td><code>%between%</code></td>
+<td>Valeur entre deux nombres</td>
+<td><code>dt[x %between% c(5,13)]</code></td>
+</tr>
+<tr class="even">
+<td><code>%like%</code></td>
+<td>Reconnaissance d’une chaîne de caractères (expression régulière)</td>
+<td><code>dt[departement %like% "^Haute"]</code></td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>La fonction <code>.N</code> permet de créer facilement des compteurs avec la syntaxe <code>1:.N</code> ou <code>seq(.N)</code>. Par exemple <code>dt[ , compteur := seq(.N), by = 'x']</code> permet de créer une variable <code>compteur</code> qui vaut de 1 à N pour chaque groupe d’observations défini par <code>x</code>.</p>
+</div>
+</div>
+</section><section id="opérations-par-groupe" class="level4" data-number="18.3.2.6"><h4 data-number="18.3.2.6" class="anchored" data-anchor-id="opérations-par-groupe">
+<span class="header-section-number">18.3.2.6</span> Opérations par groupe</h4>
+<p><strong>Toutes les opérations précédentes peuvent être réalisées par groupe.</strong> Il suffit d’ajouter le nom des variables de groupe dans <code>by</code> (c’est l’équivalent du <code>group_by()</code> du <em>package</em> <code>dplyr</code>). Lorsqu’il y a plusieurs variables de groupe, on peut écrire l’argument <code>by</code> de deux façons :</p>
+<ul>
+<li>soit <code>by = c("var1", "var2", "var3")</code> (attention aux guillemets) ;</li>
+<li>soit <code>by = .(var1, var2, var3)</code> (attention à la notation <code>.()</code>).</li>
+</ul>
+<p>Le code suivant groupe les données de la BPE par département, <code>by = .(DEP)</code>, puis calcule le nombre total d’équipements, <code>sum(NB_EQUIP, na.rm = TRUE)</code> et le nombre total de boulangeries, <code>sum(NB_EQUIP * (TYPEQU == "B203"), na.rm = TRUE)</code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , </span>
+<span>                 <span class="fu">.</span><span class="op">(</span>NB_EQUIP_TOT <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>                   NB_BOULANG_TOT <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span> <span class="op">*</span> <span class="op">(</span><span class="va">TYPEQU</span> <span class="op">==</span> <span class="st">"B203"</span><span class="op">)</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>, </span>
+<span>                 by <span class="op">=</span> <span class="fu">.</span><span class="op">(</span><span class="va">DEP</span><span class="op">)</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     DEP NB_EQUIP_TOT NB_BOULANG_TOT
+  1:  01        21394            401
+  2:  02        15534            339
+  3:  03        12216            299
+  4:  04         8901            185
+ ---                                
+ 98: 972        19068            370
+ 99: 973         7852             98
+100: 974        30767            646
+101: 976         7353            101</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>L’argument <code>by</code> fonctionne également avec l’opérateur <code>:=</code>. Vous pouvez en apprendre davantage sur l’usage de cet opérateur dans la partie <a href="#assignation-reference">La fonction d’assignation par référence (ou <code>:=</code>)</a>.</p>
+</div>
+</div>
+</section></section><section id="joindre-des-tables-avec-data.table" class="level3" data-number="18.3.3"><h3 data-number="18.3.3" class="anchored" data-anchor-id="joindre-des-tables-avec-data.table">
+<span class="header-section-number">18.3.3</span> Joindre des tables avec <code>data.table</code>
+</h3>
+<p>Pour joindre des données, <code>data.table</code> propose une fonction <code><a href="https://rdrr.io/r/base/merge.html">merge()</a></code> plus rapide que la fonction de base. La syntaxe générale est <code>z &lt;- merge(x, y, [options])</code>. Voici une liste des principales options (les autres options sont consultables avec <code><a href="https://rdatatable.gitlab.io/data.table/reference/merge.html">?data.table::merge</a></code>) :</p>
+<table class="table">
+<colgroup>
+<col style="width: 36%">
+<col style="width: 63%">
+</colgroup>
+<thead><tr class="header">
+<th><strong>Option</strong></th>
+<th><strong>Signification</strong></th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>by = var_jointure</code></td>
+<td>Joindre sur la variable <code>var_jointure</code> (présente dans <code>x</code> et dans <code>y</code>)</td>
+</tr>
+<tr class="even">
+<td><code>by.x = "identx", by.y = "identy"</code></td>
+<td>Joindre sur la condition <code>identx == identy</code>
+</td>
+</tr>
+<tr class="odd">
+<td><code>all.x = TRUE</code></td>
+<td>
+<em>Left join</em> (garder toutes les lignes de <code>x</code>)</td>
+</tr>
+<tr class="even">
+<td><code>all.y = TRUE</code></td>
+<td>
+<em>Right join</em> (garder toutes les lignes de <code>y</code>)</td>
+</tr>
+<tr class="odd">
+<td><code>all = TRUE</code></td>
+<td>
+<em>Full join</em> (garder toutes les lignes de <code>x</code> et de <code>y</code>)</td>
+</tr>
+</tbody>
+</table>
+<p>Enfin, il est possible de réaliser des jointures plus sophistiquées avec <code>data.table</code>. Ces méthodes sont présentées dans la <a href="https://rstudio-pubs-static.s3.amazonaws.com/52230_5ae0d25125b544caab32f75f0360e775.html">vignette sur le sujet</a>.</p>
+</section><section id="indexer-une-table-avec-data.table" class="level3" data-number="18.3.4"><h3 data-number="18.3.4" class="anchored" data-anchor-id="indexer-une-table-avec-data.table">
+<span class="header-section-number">18.3.4</span> Indexer une table avec <code>data.table</code>
+</h3>
+<p><strong>L’indexation est une fonctionnalité très puissante pour accélérer les opérations sur les lignes (filtres, jointures, etc.) en <code>data.table</code></strong>. Pour indexer une table il faut déclarer les variables faisant office de clé (appelées <code>key</code>). C’est possible de la manière suivante : <code>setkey(dt, a)</code> ou <code>setkeyv(dt, "a")</code>. Le <code>data.table</code> sera réordonné en fonction de cette variable et l’algorithme de recherche sur les lignes sera ainsi beaucoup plus efficace. Lorsqu’il y a plusieurs variables-clé, on écrit <code>setkey(dt, a, b)</code> ou <code>setkeyv(dt, c("a","b"))</code>.</p>
+<p>Pour savoir si <code>un data.table</code> est déjà indexé, on peut exécuter la commande <code>key(dt)</code> qui renvoie le nom des clés s’il y en a, et <code>NULL</code> sinon.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>L’exécution de la fonction <code><a href="https://rdatatable.gitlab.io/data.table/reference/setkey.html">data.table::setkey()</a></code> peut prendre un peu de temps</strong> (parfois quelques minutes sur une table de plus de 10 millions de lignes), car <code>data.table</code> trie toute la table en fonction des variables-clé. Toutefois, c’est une étape vraiment utile car elle accélère considérablement les opérations ultérieures sur les lignes. Il est vivement recommandé de l’utiliser si une ou plusieurs variables vont régulièrement servir à filtrer ou combiner des données. Pour aller plus loin, voir cette <a href="https://cran.r-project.org/web/packages/data.table/vignettes/datatable-keys-fast-subset.html">vignette</a>.</p>
+</div>
+</div>
+</section><section id="réorganiser-les-données-en-data.table" class="level3" data-number="18.3.5"><h3 data-number="18.3.5" class="anchored" data-anchor-id="réorganiser-les-données-en-data.table">
+<span class="header-section-number">18.3.5</span> Réorganiser les données en <code>data.table</code>
+</h3>
+<p><strong>Le <em>package</em> <code>data.table</code> permet de réorganiser facilement une table de données avec les fonctions <code>dcast()</code> et <code>melt()</code>.</strong> La fonction <code>melt()</code> réorganise les données dans un format <code>long</code>. La fonction <code>dcast()</code> réorganise les données dans un format <code>wide</code>.</p>
+<table class="table">
+<colgroup>
+<col style="width: 52%">
+<col style="width: 48%">
+</colgroup>
+<thead><tr class="header">
+<th style="text-align: center;"><strong><code>melt()</code></strong></th>
+<th style="text-align: center;"><strong><code>dcast()</code></strong></th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">Réorganiser les données dans un format <code>long</code>
+</td>
+<td style="text-align: center;">Réorganise les données dans un format <code>wide</code>
+</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><img src="../pics/datatable/widetolong.png" class="img-fluid" style="width:85.0%"></td>
+<td style="text-align: center;"><img src="../pics/datatable/longtowide.png" class="img-fluid" style="width:93.0%"></td>
+</tr>
+</tbody>
+</table>
+<section id="melt-transformer-des-colonnes-en-lignes" class="level4" data-number="18.3.5.1"><h4 data-number="18.3.5.1" class="anchored" data-anchor-id="melt-transformer-des-colonnes-en-lignes">
+<span class="header-section-number">18.3.5.1</span> <code>melt</code> : transformer des colonnes en lignes</h4>
+<p>La fonction <code>melt()</code> réorganise les donnée dans un format long. Elle prend les arguments suivants :</p>
+<ul>
+<li>
+<code>data</code> : les données ;</li>
+<li>
+<code>id.vars</code> : les variables qui identifient les lignes de table d’arrivée ; elles restent inchangées lors de l’utilisation de <code>melt()</code> ;</li>
+<li>
+<code>measure.vars</code> : les variables qui sont transposées ;</li>
+<li>
+<code>variable.name</code> : le nom de la nouvelle colonne qui contient le nom des variables transposées ;</li>
+<li>
+<code>value.name</code> : le nom de la nouvelle colonne qui contient la valeur des variables transposées.</li>
+</ul>
+<p>Pour illustrer l’usage de cette fonction, nous allons utiliser les données du répertoire Filosofi 2016 agrégées au niveau des EPCI (table <code>filosofi_epci_2016</code>), et disponibles dans le package <code>doremifasolData</code>. On convertit cette table en <code>data.table</code> et on conserve uniquement certaines variables.</p>
+<div class="cell">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Charger la table de Filosofi</span></span>
+<span><span class="va">filosofi_epci_2016</span> <span class="op">&lt;-</span> <span class="fu">doremifasolData</span><span class="fu">::</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData/reference/filosofi_epci_2016.html">filosofi_epci_2016</a></span></span>
+<span><span class="co"># Convertir la table en data.table</span></span>
+<span><span class="va">filosofi_epci_2016_dt</span> <span class="op">&lt;-</span> <span class="fu">as.data.table</span><span class="op">(</span><span class="va">filosofi_epci_2016</span><span class="op">)</span></span>
+<span><span class="co"># Sélectionner des colonnes</span></span>
+<span><span class="va">filosofi_epci_2016_dt</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="va">filosofi_epci_2016_dt</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span><span class="va">CODGEO</span>, <span class="va">TP6016</span>, <span class="va">TP60AGE116</span>, <span class="va">TP60AGE216</span>, </span>
+<span>                            <span class="va">TP60AGE316</span>, <span class="va">TP60AGE416</span>, <span class="va">TP60AGE516</span>, <span class="va">TP60AGE616</span><span class="op">)</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Nous allons restructurer cette table pour obtenir une nouvelle table, avec une observation par EPCI et par tranche d’âge. Voici le code qui permet d’obtenir cette table : on indique dans <code>measure.vars</code> le nom des colonnes qui seront transposées, le nom des colonnes transposées sera indiqué dans la nouvelle colonne “tranche_age” (<code>variable.name = "tranche_age"</code>) et les valeurs des colonnes transposées seront stockées dans la colonne “taux_pauvrete” (<code>value.name = "taux_pauvrete"</code>).</p>
+<div class="cell">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">donnees_pauvrete_long</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu">melt</span><span class="op">(</span>data <span class="op">=</span> <span class="va">filosofi_epci_2016_dt</span>, </span>
+<span>       id.vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"CODGEO"</span><span class="op">)</span>, </span>
+<span>       measure.vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"TP6016"</span>, <span class="st">"TP60AGE116"</span>, <span class="st">"TP60AGE216"</span>, </span>
+<span>                        <span class="st">"TP60AGE316"</span>, <span class="st">"TP60AGE416"</span>, <span class="st">"TP60AGE516"</span>, <span class="st">"TP60AGE616"</span><span class="op">)</span>,</span>
+<span>       variable.name <span class="op">=</span> <span class="st">"tranche_age"</span>,</span>
+<span>       value.name    <span class="op">=</span> <span class="st">"taux_pauvrete"</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="va">donnees_pauvrete_long</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         CODGEO tranche_age taux_pauvrete
+   1: 200000172      TP6016           8.8
+   2: 200000438      TP6016           8.0
+   3: 200000545      TP6016          23.7
+   4: 200000628      TP6016          20.1
+  ---                                    
+8705: 249740085  TP60AGE616          41.5
+8706: 249740093  TP60AGE616          43.4
+8707: 249740101  TP60AGE616          39.8
+8708: 249740119  TP60AGE616          31.7</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Il est recommandé de travailler avec des données en format <code>long</code> plutôt qu’en format <code>wide</code>, notamment lorsque vous voulez faire des graphiques.</strong> En effet, le <em>package</em> de visualisation graphique <code>ggplot2</code> est optimisé pour manipuler des données en format <code>long</code> (voir la fiche [Faire des graphiques avec <code>ggplot2</code>]). Ce conseil est particulièrement important si vous voulez représenter un graphique avec des groupes : il est préférable que les groupes soient empilés (format <code>long</code>) plutôt que juxtaposés (format <code>wide</code>), car le code est plus rapide et facile à écrire.</p>
+</div>
+</div>
+</section><section id="dcast-transformer-des-lignes-en-colonnes" class="level4" data-number="18.3.5.2"><h4 data-number="18.3.5.2" class="anchored" data-anchor-id="dcast-transformer-des-lignes-en-colonnes">
+<span class="header-section-number">18.3.5.2</span> <code>dcast</code> : transformer des lignes en colonnes</h4>
+<p>La fonction <code>dcast()</code> réorganise les donnée dans un format large. Elle prend les arguments suivants :</p>
+<ul>
+<li>
+<code>data</code> : les données ;</li>
+<li>
+<code>formula</code> : une formule de la forme <code>var_ligne ~ var_colonne</code> qui définit la structure de la nouvelle table ;
+<ul>
+<li>s’il y a plusieurs variables, la formule prend la forme <code>var1 + var2 ~ var3</code> ;</li>
+<li>
+<code>dcast()</code> conserve une ligne par valeur de la partie gauche, et crée (au moins) une colonne par valeur de la partie droite ;</li>
+</ul>
+</li>
+<li>
+<code>fun.aggregate</code> : une liste contenant la ou les fonction(s) utilisées pour agréger les données le cas échéant ; exemple : <code>list(mean, sum, sd)</code> ;</li>
+<li>
+<code>value.var</code> : un vecteur contenant le nom de la ou des colonne(s) dont les valeurs vont être transposées ; exemple : <code>c("var1", "var2")</code>.</li>
+</ul>
+<p>Dans l’exemple qui suit, on réorganise la table <code>bpe_ens_2018_dt</code> de façon à obtenir une table qui contient une ligne par type d’équipement et une colonne par région (<code>TYPEQU ~ REG</code>). Ces colonnes vont contenir la somme (<code>fun.aggregate = sum</code>) du nombre d’équipements (<code>value.var = "NB_EQUIP"</code>).</p>
+<div class="cell">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_wide</span> <span class="op">&lt;-</span> <span class="fu">dcast</span><span class="op">(</span><span class="va">bpe_ens_2018_dt</span>, </span>
+<span>                           <span class="va">TYPEQU</span> <span class="op">~</span> <span class="va">REG</span>, </span>
+<span>                           value.var <span class="op">=</span> <span class="st">"NB_EQUIP"</span>, </span>
+<span>                           fun.aggregate <span class="op">=</span> <span class="va">sum</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">bpe_ens_2018_wide</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   TYPEQU 01 02 03 04 06  11  24  27  28  32  44  52  53  75  76  84  93 94
+1:   A101  2  2  1  7  0 191  28  23  54 127  80  15  20  66  55  69  34  3
+2:   A104 20 21 16 28  5  91 153 230 183 214 319 173 157 407 406 423 179 39
+3:   A105  1  1  1  1  1   2   2   2   2   2   4   1   1   5   3   4   1  1
+4:   A106  2  1  2  2  1  10   7  12  10  17  17   8   8  19  19  21  11  2
+5:   A107  2  1  1  4  1  60   9  19  15  26  30  11  12  28  26  34  23  2
+6:   A108  2  1  1  2  1  19   9  13  13  25  21   8  10  21  20  28  14  2</code></pre>
+</div>
+</div>
+<p><strong>Il est possible d’utiliser <code>dcast()</code> avec plusieurs variables à transposer et plusieurs fonctions pour transposer.</strong> Dans l’exemple qui suit, on obtient une ligne par type d’équipement, et une colonne par région et par fonction d’agrégation (<code>mean</code> et <code>sum</code>).</p>
+<div class="cell">
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_wide2</span> <span class="op">&lt;-</span> <span class="fu">dcast</span><span class="op">(</span><span class="va">bpe_ens_2018_dt</span>, </span>
+<span>                            <span class="va">TYPEQU</span> <span class="op">~</span> <span class="va">REG</span>, </span>
+<span>                            value.var <span class="op">=</span> <span class="st">"NB_EQUIP"</span>, </span>
+<span>                            fun.aggregate <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">sum</span>, <span class="va">mean</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">bpe_ens_2018_wide2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     TYPEQU NB_EQUIP_sum_01 NB_EQUIP_sum_02 NB_EQUIP_sum_03 NB_EQUIP_sum_04
+  1:   A101               2               2               1               7
+  2:   A104              20              21              16              28
+  3:   A105               1               1               1               1
+  4:   A106               2               1               2               2
+ ---                                                                       
+183:   G101             105              79              48             136
+184:   G102              49              49              29             112
+185:   G103               0               0               0               0
+186:   G104             110             104              46              98
+     NB_EQUIP_sum_06 NB_EQUIP_sum_11 NB_EQUIP_sum_24 NB_EQUIP_sum_27
+  1:               0             191              28              23
+  2:               5              91             153             230
+  3:               1               2               2               2
+  4:               1              10               7              12
+ ---                                                                
+183:              20            3351             213             256
+184:              11            2478             670             890
+185:               0              96             238             330
+186:               6            2993             293             339
+     NB_EQUIP_sum_28 NB_EQUIP_sum_32 NB_EQUIP_sum_44 NB_EQUIP_sum_52
+  1:              54             127              80              15
+  2:             183             214             319             173
+  3:               2               2               4               1
+  4:              10              17              17               8
+ ---                                                                
+183:             272             495             593             376
+184:             845             698            1318             762
+185:             378             521             368             646
+186:             401             354             533             330
+     NB_EQUIP_sum_53 NB_EQUIP_sum_75 NB_EQUIP_sum_76 NB_EQUIP_sum_84
+  1:              20              66              55              69
+  2:             157             407             406             423
+  3:               1               5               3               4
+  4:               8              19              19              21
+ ---                                                                
+183:             345             720             786            1166
+184:             943            1908            1982            2797
+185:             751            1408            1437            1265
+186:             374             926             932            1099
+     NB_EQUIP_sum_93 NB_EQUIP_sum_94 NB_EQUIP_mean_01 NB_EQUIP_mean_02
+  1:              34               3         1.000000         1.000000
+  2:             179              39         1.000000         1.000000
+  3:               1               1         1.000000         1.000000
+  4:              11               2         1.000000         1.000000
+ ---                                                                  
+183:            1016             120         2.282609         1.975000
+184:            2111             438         2.450000         2.130435
+185:             718             187              NaN              NaN
+186:             876             182         1.718750         1.575758
+     NB_EQUIP_mean_03 NB_EQUIP_mean_04 NB_EQUIP_mean_06 NB_EQUIP_mean_11
+  1:         1.000000         1.000000              NaN         1.091429
+  2:         1.000000         1.000000         1.000000         1.000000
+  3:         1.000000         1.000000         1.000000         1.000000
+  4:         1.000000         1.000000         1.000000         1.000000
+ ---                                                                    
+183:         1.714286         1.837838         5.000000         2.080074
+184:         1.318182         2.036364         1.833333         2.250681
+185:              NaN              NaN              NaN         1.103448
+186:         1.533333         1.400000         1.500000         1.780488
+     NB_EQUIP_mean_24 NB_EQUIP_mean_27 NB_EQUIP_mean_28 NB_EQUIP_mean_32
+  1:         1.037037         1.000000         1.018868         1.058333
+  2:         1.000000         1.004367         1.000000         1.014218
+  3:         1.000000         1.000000         1.000000         1.000000
+  4:         1.000000         1.000000         1.000000         1.000000
+ ---                                                                    
+183:         1.601504         1.422222         1.511111         1.633663
+184:         1.763158         1.666667         1.978923         1.681928
+185:         1.048458         1.103679         1.330986         1.527859
+186:         1.140078         1.232727         1.297735         1.156863
+     NB_EQUIP_mean_44 NB_EQUIP_mean_52 NB_EQUIP_mean_53 NB_EQUIP_mean_75
+  1:         1.025641         1.000000         1.000000         1.157895
+  2:         1.009494         1.005814         1.000000         1.007426
+  3:         1.000000         1.000000         1.000000         1.000000
+  4:         1.000000         1.000000         1.000000         1.000000
+ ---                                                                    
+183:         1.694286         1.748837         1.674757         1.578947
+184:         1.734211         1.836145         2.063457         1.927273
+185:         1.153605         2.044304         1.891688         1.733990
+186:         1.230947         1.274131         1.307692         1.293296
+     NB_EQUIP_mean_76 NB_EQUIP_mean_84 NB_EQUIP_mean_93 NB_EQUIP_mean_94
+  1:         1.145833         1.029851         1.000000         1.000000
+  2:         1.015000         1.011962         1.028736         1.083333
+  3:         1.000000         1.000000         1.000000         1.000000
+  4:         1.000000         1.000000         1.000000         1.000000
+ ---                                                                    
+183:         1.526214         1.707174         1.785589         2.000000
+184:         2.045408         2.109351         2.507126         3.369231
+185:         1.600223         1.408686         1.681499         2.101124
+186:         1.226316         1.345165         1.364486         1.857143</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><p>La fonction <code>dcast()</code> crée une colonne par valeur des variables utilisées dans la partie droite de la formule. <strong>Il faut donc faire attention à ce que ces variables aient un nombre limité de valeurs</strong>, pour ne pas obtenir une table <em>extrêmement</em> large. On peut éventuellement discrétiser les variables continues, ou regrouper les modalités avant d’utiliser <code>dcast()</code>.</p></li>
+<li>
+<p>On peut obtenir des <strong>noms de colonnes peu significatifs</strong> lorsqu’on utilise <code>dcast()</code> avec une fonction d’agrégation. Il est conseillé de modifier légèrement la partie droite de la formule pour obtenir des noms plus significatifs. Voici un exemple où on ajoute le préfixe <code>resultat_region</code> :</p>
+<div class="cell">
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_wide2</span> <span class="op">&lt;-</span> <span class="fu">dcast</span><span class="op">(</span><span class="va">bpe_ens_2018_dt</span>, </span>
+<span>                         <span class="va">TYPEQU</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"resultat_region"</span>,<span class="va">REG</span><span class="op">)</span>, </span>
+<span>                         value.var <span class="op">=</span> <span class="st">"NB_EQUIP"</span>, </span>
+<span>                         fun.aggregate <span class="op">=</span> <span class="va">sum</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">bpe_ens_2018_wide2</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   TYPEQU resultat_region01 resultat_region02 resultat_region03
+1:   A101                 2                 2                 1
+2:   A104                20                21                16
+3:   A105                 1                 1                 1
+4:   A106                 2                 1                 2
+5:   A107                 2                 1                 1
+6:   A108                 2                 1                 1
+   resultat_region04 resultat_region06 resultat_region11 resultat_region24
+1:                 7                 0               191                28
+2:                28                 5                91               153
+3:                 1                 1                 2                 2
+4:                 2                 1                10                 7
+5:                 4                 1                60                 9
+6:                 2                 1                19                 9
+   resultat_region27 resultat_region28 resultat_region32 resultat_region44
+1:                23                54               127                80
+2:               230               183               214               319
+3:                 2                 2                 2                 4
+4:                12                10                17                17
+5:                19                15                26                30
+6:                13                13                25                21
+   resultat_region52 resultat_region53 resultat_region75 resultat_region76
+1:                15                20                66                55
+2:               173               157               407               406
+3:                 1                 1                 5                 3
+4:                 8                 8                19                19
+5:                11                12                28                26
+6:                 8                10                21                20
+   resultat_region84 resultat_region93 resultat_region94
+1:                69                34                 3
+2:               423               179                39
+3:                 4                 1                 1
+4:                21                11                 2
+5:                34                23                 2
+6:                28                14                 2</code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Il est conseillé de bien réfléchir avant de restructurer des données en format <em>wide</em>, et de ne le faire que lorsque cela paraît indispensable</strong>. En effet, s’il est tentant de restructurer les données sous format <em>wide</em> car ce format peut paraître plus intuitif, il est généralement plus simple et plus rigoureux de traiter les données en format <em>long</em>. Ceci dit, il existe des situations dans lesquelles il est indiqué de restructurer les données en format <em>wide</em>. Voici deux exemples :</p>
+<ul>
+<li>produire un tableau synthétique de résultats, prêt à être diffusé, avec quelques colonnes donnant des indicateurs par catégorie (exemple : la table <code>filosofi_epci_2016</code> du <em>package</em> <code>doremifasolData</code>) ;</li>
+<li>produire une table avec une colonne par année, de façon à calculer facilement un taux d’évolution entre deux dates.</li>
+</ul>
+</div>
+</div>
+<!-- ::: {.callout-tip} -->
+<!-- **Conseils** -->
+<!-- * La fonction `dcast()` crée une colonne par valeur des variables utilisées dans la partie droite de la formule (trois colonnes pour les trois valeurs de `cyl` dans l'exemple qui précède). **Il faut donc faire attention à ce que ces variables aient un nombre limité de valeurs**, pour ne pas obtenir une table *extrêmement* large. On peut éventuellement discrétiser les variables continues, ou regrouper les modalités avant d'utiliser `dcast()`. -->
+<!-- * On peut obtenir des **noms de colonnes peu significatifs** lorsqu'on utilise `dcast()` avec une colonne numérique et une fonction d'agrégation (`4`, `6`, `8` dans l'exemple précédent). Il est conseillé de modifier légèrement la partie droite de la formule pour obtenir des noms plus significatifs. Voici un exemple où on ajoute le préfixe "cyl" : -->
+<!--   ```{r} -->
+<!--   head(mtcars_dt_casted2 <- dcast(mtcars_dt, -->
+<!--                                   gear ~ paste0("cyl", cyl), -->
+<!--                                   value.var = "disp", -->
+<!--                                   fun.aggregate = mean)) -->
+<!--   ``` -->
+<!-- ::: -->
+</section></section></section><section id="assignation-reference" class="level2" data-number="18.4"><h2 data-number="18.4" class="anchored" data-anchor-id="assignation-reference">
+<span class="header-section-number">18.4</span> La fonction d’assignation par référence (ou <code>:=</code>)</h2>
+<p>Jusqu’à présent, nous avons manipulé un <code>data.table</code> existant, mais nous ne lui avons pas ajouté de nouvelles colonnes. Pour ce faire, nous allons utiliser la fonction <code>:=</code> qui s’appelle “<em>assignation par référence</em>” et qui peut également s’appeler comme une fonction <code>`:=`()</code>, prenant ses arguments entre parenthèses. Voici comment on crée une nouvelle colonne dans <code>bpe_ens_2018_dt</code> :</p>
+<div class="cell">
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , <span class="va">nouvelle_colonne</span> <span class="op">:=</span>  <span class="va">NB_EQUIP</span> <span class="op">*</span> <span class="fl">10</span><span class="op">]</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">bpe_ens_2018_dt</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   REG DEP DEPCOM DCIRIS   AN TYPEQU NB_EQUIP nouvelle_colonne
+1:  84  01  01001  01001 2018   A401        2               20
+2:  84  01  01001  01001 2018   A404        4               40
+3:  84  01  01001  01001 2018   A504        1               10
+4:  84  01  01001  01001 2018   A507        1               10
+5:  84  01  01001  01001 2018   B203        1               10
+6:  84  01  01001  01001 2018   C104        1               10</code></pre>
+</div>
+</div>
+<section id="la-spécificité-de-data.table-la-modification-par-référence" class="level3" data-number="18.4.1"><h3 data-number="18.4.1" class="anchored">
+<span class="header-section-number">18.4.1</span> La spécificité de <code>data.table</code> : la modification par référence</h3>
+<p><strong>A première vue, on peut penser que la fonction <code>:=</code> est l’équivalent de la fonction <code><a href="https://dplyr.tidyverse.org/reference/mutate.html">dplyr::mutate()</a></code> dans la grammaire <code>data.table</code>.</strong> C’est vrai dans la mesure où elle permet de faire des choses similaires, mais il faut garder en tête que son fonctionnement est complètement différent de celui de <code><a href="https://dplyr.tidyverse.org/reference/mutate.html">dplyr::mutate()</a></code>. En effet, <strong>la grande spécificité de <code>data.table</code> par rapport à <code>dplyr</code> est que l’utilisation de la fonction <code>:=</code> modifie directement la table de données</strong>, car <code>data.table</code> fonctionne sur le principe de la modification par référence (voir <a href="https://gitlab.com/linogaliana/bigr/-/blob/master/04-datatable.Rmd">ce lien</a> pour plus de détails). Cela signifie en pratique qu’<strong>il ne faut pas réassigner l’objet lorsqu’on modifie une de ses colonnes</strong>. C’est ce comportement qui permet à <code>data.table</code> d’être très rapide et très économe en mémoire vive, rendant son usage approprié pour des données volumineuses.</p>
+<p>Pour créer une colonne, on écrit donc directement <code>dt[ , nouvelle_colonne := une_formule]</code> et non <code>dt &lt;- dt[ , nouvelle_colonne := une_formule]</code>. Voici un exemple qui compare <code>dplyr</code> et <code>data.table</code> :</p>
+<!-- Output html -->
+<div>
+<table class="table">
+<colgroup>
+<col span="1" style="width: 10%;">
+<col span="1" style="width: 50%;">
+<col span="1" style="width: 40%;">
+</colgroup>
+<tbody><tr>
+<th>
+<em>Package</em>
+</th>
+<th>
+Code
+</th>
+<th>
+Commentaire
+</th>
+</tr>
+<tr>
+<td>
+<div class="cell">
+<p><code>dplyr</code></p>
+</div>
+</td>
+<td>
+<div class="cell">
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="va">bpe_ens_2018</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>nouvelle_colonne <span class="op">=</span>  <span class="va">NB_EQUIP</span> <span class="op">*</span> <span class="fl">10</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</td>
+<td>
+Il faut utiliser une assignation (<code>&lt;-</code>) pour modifier la table.
+</td>
+</tr>
+<tr>
+<td>
+<div class="cell">
+<p><code>data.table</code></p>
+</div>
+</td>
+<td>
+<div class="cell">
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , <span class="va">nouvelle_colonne</span> <span class="op">:=</span>  <span class="va">NB_EQUIP</span> <span class="op">*</span> <span class="fl">10</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</td>
+<td>
+Il ne faut pas d’assignation pour modifier la table, qui est modifiée par référence.
+</td>
+</tr>
+</tbody></table>
+<section id="les-usages-de" class="level3" data-number="18.4.2"><h3 data-number="18.4.2" class="anchored" data-anchor-id="les-usages-de">
+<span class="header-section-number">18.4.2</span> Les usages de <code>:=</code>
+</h3>
+<p>On peut se servir de la fonction <code>:=</code> de multiples façons, et avec plusieurs notations.</p>
+<section id="créer-plusieurs-variables-à-la-fois" class="level4" data-number="18.4.2.1"><h4 data-number="18.4.2.1" class="anchored" data-anchor-id="créer-plusieurs-variables-à-la-fois">
+<span class="header-section-number">18.4.2.1</span> Créer plusieurs variables à la fois</h4>
+<p>Voici comment créer plusieurs variables à la fois avec <code>:=</code>, en utilisant une notation vectorielle :</p>
+<div class="cell">
+<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"nouvelle_colonne1"</span>, <span class="st">"nouvelle_colonne2"</span><span class="op">)</span> <span class="op">:=</span>  </span>
+<span>                   <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">NB_EQUIP</span> <span class="op">*</span> <span class="fl">2</span>, <span class="va">NB_EQUIP</span> <span class="op">+</span> <span class="fl">3</span><span class="op">)</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>On peut faire exactement la même chose en utilisant la notation <code>`:=`()</code>. Voici le même exemple écrit avec <code>`:=`()</code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , <span class="fu">`:=`</span><span class="op">(</span>nouvelle_colonne1 <span class="op">=</span> <span class="va">NB_EQUIP</span> <span class="op">*</span> <span class="fl">2</span>,</span>
+<span>                        nouvelle_colonne2 <span class="op">=</span> <span class="va">NB_EQUIP</span> <span class="op">+</span> <span class="fl">3</span><span class="op">)</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Si vous utilisez la notation<code>`:=`()</code>, alors il faut utiliser uniquement <code>=</code> à l’intérieur des parenthèses pour créer ou modifier des variables, et non <code>:=</code>. Par exemple,</p>
+<div class="cell">
+<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">dt</span><span class="op">[</span> , <span class="fu">`:=`</span><span class="op">(</span>var1 <span class="op">=</span> <span class="st">"Hello"</span>, var2 <span class="op">=</span> <span class="st">"world"</span><span class="op">)</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</section><section id="supprimer-une-colonne" class="level4" data-number="18.4.2.2"><h4 data-number="18.4.2.2" class="anchored" data-anchor-id="supprimer-une-colonne">
+<span class="header-section-number">18.4.2.2</span> Supprimer une colonne</h4>
+<p>On peut facilement supprimer une colonne en lui assignant la valeur <code>NULL</code> (c’est hyper rapide !). Voici un exemple :</p>
+<div class="cell">
+<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , <span class="va">NB_EQUIP</span> <span class="op">:=</span> <span class="cn">NULL</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="faire-un-remplacement-conditionnel" class="level4" data-number="18.4.2.3"><h4 data-number="18.4.2.3" class="anchored" data-anchor-id="faire-un-remplacement-conditionnel">
+<span class="header-section-number">18.4.2.3</span> Faire un remplacement conditionnel</h4>
+<p>La fonction <code>:=</code> peut être utilisée pour modifier une colonne pour certaines lignes seulement, en fonction d’une condition logique. C’est beaucoup plus efficace qu’un terme <code><a href="https://dplyr.tidyverse.org/reference/if_else.html">dplyr::if_else()</a></code> ou <code><a href="https://dplyr.tidyverse.org/reference/case_when.html">dplyr::case_when()</a></code>. Imaginons qu’on veuille créer une colonne <code>EQUIP_HORS_CHAUSS</code> égale au nombre d’équipements (<code>NB_EQUIP</code>) sauf pour les lignes correspondantes à des magasins de chaussures (<code>TYPEQU == "B304"</code>) où elle vaut <code>NA</code>. Dans ce cas, le code <code>dplyr</code> serait :</p>
+<div class="cell">
+<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018</span> <span class="op">%&gt;%</span> </span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>NB_EQUIP_HORS_CHAUSS <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html">case_when</a></span><span class="op">(</span></span>
+<span>    <span class="va">TYPEQU</span> <span class="op">==</span> <span class="st">"B304"</span> <span class="op">~</span> <span class="cn">NA_real_</span>,</span>
+<span>    <span class="cn">TRUE</span> <span class="op">~</span> <span class="va">NB_EQUIP</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Deux alternatives existent en <code>data.table</code> nécessitant toutes deux beaucoup moins de mémoire vive :</p>
+<div class="cell">
+<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , <span class="va">NB_EQUIP_HORS_CHAUSS</span> <span class="op">:=</span> <span class="va">NB_EQUIP</span></span>
+<span>                 <span class="op">]</span><span class="op">[</span><span class="va">TYPEQU</span> <span class="op">==</span> <span class="st">"B304"</span>, <span class="va">NB_EQUIP_HORS_CHAUSS</span> <span class="op">:=</span> <span class="cn">NA_real_</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>ou bien en utilisant la fonction <code><a href="https://rdatatable.gitlab.io/data.table/reference/fcase.html">data.table::fcase</a></code> dont le fonctionnement ressemble à celui de <code><a href="https://dplyr.tidyverse.org/reference/case_when.html">dplyr::case_when</a></code> :</p>
+<div class="cell">
+<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , <span class="va">NB_EQUIP_HORS_CHAUSS</span> <span class="op">:=</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/fcase.html">fcase</a></span><span class="op">(</span><span class="va">TYPEQU</span> <span class="op">==</span> <span class="st">"B304"</span>, <span class="cn">NA_real_</span>,</span>
+<span>                                                   <span class="va">TYPEQU</span> <span class="op">!=</span> <span class="st">"B304"</span>, <span class="va">NB_EQUIP</span><span class="op">)</span></span>
+<span>                                                   <span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section></section><section id="attention-en-utilisant" class="level3" data-number="18.4.3"><h3 data-number="18.4.3" class="anchored" data-anchor-id="attention-en-utilisant">
+<span class="header-section-number">18.4.3</span> Attention en utilisant <code>:=</code>
+</h3>
+<p>L’utilisation de la fonction <code>:=</code> est déroutante lorsqu’on découvre <code>data.table</code>. Voici trois remarques qui vous feront gagner du temps :</p>
+<ul>
+<li>
+<p><strong>Vous pouvez faire appel à d’autres fonctions à l’intérieur de la fonction <code>:=</code>.</strong> Par exemple, si on veut mettre la variable <code>name</code> en minuscules, on peut utiliser la fonction <code><a href="https://rdrr.io/r/base/chartr.html">tolower()</a></code>. On écrit alors :</p>
+<div class="cell">
+<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">dt</span><span class="op">[</span> , <span class="va">name_minuscule</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/chartr.html">tolower</a></span><span class="op">(</span><span class="va">name</span><span class="op">)</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</li>
+<li>
+<p>Lorsque l’on crée plusieurs variables avec la fonction <code>:=</code>, elles sont créées en même temps. <strong>On ne peut donc pas faire appel dans une formule à une variable qu’on crée dans le même appel à la fonction <code>:=</code>.</strong> Par exemple, le code suivant <em>ne fonctionne pas</em> :</p>
+<div class="cell">
+<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , <span class="fu">`:=`</span><span class="op">(</span>nouvelle_colonne1 <span class="op">=</span>  <span class="va">NB_EQUIP</span> <span class="op">*</span> <span class="fl">2</span>,</span>
+<span>                        nouvelle_colonne2 <span class="op">=</span>  <span class="va">nouvelle_colonne1</span> <span class="op">+</span> <span class="fl">3</span><span class="op">)</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>En effet, au moment où la fonction <code>:=</code> est exécutée, la colonne <code>nouvelle_colonne1</code> n’existe pas encore, donc la formule <code>nouvelle_colonne2 = nouvelle_colonne1 + 3</code> n’a pas encore de sens. Si vous créez des variables en chaîne, il faut décomposer l’opération en plusieurs étapes enchaînées. Voici le code qui permet de créer les deux colonnes à la suite :</p>
+<div class="cell">
+<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , <span class="va">nouvelle_colonne1</span> <span class="op">:=</span>  <span class="va">NB_EQUIP</span> <span class="op">*</span> <span class="fl">2</span></span>
+<span>                <span class="op">]</span><span class="op">[</span> , <span class="va">nouvelle_colonne2</span> <span class="op">:=</span>  <span class="va">nouvelle_colonne1</span> <span class="op">+</span> <span class="fl">3</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</li>
+<li>
+<p><strong>Un mauvais usage de la fonction <code>:=</code> peut vous amener à écraser par erreur vos données.</strong> En effet, si vous exécuter par erreur la commande <code>dt[ , ma_variable_importante := 0]</code>, vous écrasez la variable <code>ma_variable_importante</code>. Vous devez alors recharger vos données… Il faut donc bien réfléchir à ce que vous voulez faire avant de remplacer ou modifier une variable existante avec la fonction <code>:=</code>. Si vous modifiez un <code>data.table</code> dans une fonction, un filet de sécurité consiste à d’abord copier le <code>data.table</code> initial et ainsi faire les modifications sur le nouvel objet, de la manière suivante :</p>
+<div class="cell">
+<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span>  <span class="va">dt_copy</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/copy.html">copy</a></span><span class="op">(</span><span class="va">dt</span><span class="op">)</span></span>
+<span>  <span class="va">dt_copy</span><span class="op">[</span>, <span class="va">ma_variable_importante</span> <span class="op">:=</span> <span class="st">"Nouvelle valeur"</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</li>
+</ul></section><section id="programmer-des-fonctions-avec-data.table" class="level2" data-number="18.5"><h2 data-number="18.5" class="anchored" data-anchor-id="programmer-des-fonctions-avec-data.table">
+<span class="header-section-number">18.5</span> Programmer des fonctions avec <code>data.table</code>
+</h2>
+<p>Une des forces de <code>data.table</code> est qu’il est relativement simple d’utiliser ce <em>package</em> dans des fonctions. Pour illustrer l’usage des fonctions, nous allons utiliser la table <code>filosofi_com_2016</code> disponible dans le <em>package</em> <code>doremifasolData</code>. Cette table donne des informations sur les revenus des ménages au niveau communal. Nous créons une variable donnant le numéro du département (<code>departement</code>) en extrayant les deux premiers caractères du code commune (<code>CODGEO</code>) avec la fonction <code>str_sub</code> du <em>package</em> <code>stringr</code> (vous pouvez consulter la fiche [Manipuler des données textuelles pour en apprendre davantage sur <code>stringr</code>]). Enfin, nous utilisons la fonction <code>.SD</code> pour sélectionner uniquement quelques variables.</p>
+<div class="cell">
+<div class="sourceCode" id="cb57"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Charger la table de données et la transformer en data.table</span></span>
+<span><span class="va">filosofi_com_2016_dt</span> <span class="op">&lt;-</span> <span class="fu">as.data.table</span><span class="op">(</span><span class="fu">doremifasolData</span><span class="fu">::</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData/reference/filosofi_com_2016.html">filosofi_com_2016</a></span><span class="op">)</span></span>
+<span><span class="co"># Créer une variable donnant le département</span></span>
+<span><span class="va">filosofi_com_2016_dt</span><span class="op">[</span>, <span class="va">departement</span> <span class="op">:=</span> <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_sub.html">str_sub</a></span><span class="op">(</span><span class="va">CODGEO</span>, start <span class="op">=</span> <span class="fl">1L</span>, end <span class="op">=</span> <span class="fl">2L</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co"># Supprimer les départements d'outre-mer</span></span>
+<span><span class="va">filosofi_com_2016_dt</span> <span class="op">&lt;-</span> <span class="va">filosofi_com_2016_dt</span><span class="op">[</span><span class="va">departement</span>  <span class="op">!=</span> <span class="st">"97"</span><span class="op">]</span></span>
+<span><span class="co"># Alléger la table en ne conservant que quelques variables</span></span>
+<span><span class="va">filosofi_com_2016_dt</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="va">filosofi_com_2016_dt</span><span class="op">[</span>, <span class="va">.SD</span>, .SDcols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"departement"</span>, <span class="st">"CODGEO"</span>, <span class="st">"NBMENFISC16"</span>,</span>
+<span>                                          <span class="st">"NBPERSMENFISC16"</span><span class="op">)</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="utiliser-.sd-et-lapply" class="level3" data-number="18.5.1"><h3 data-number="18.5.1" class="anchored" data-anchor-id="utiliser-.sd-et-lapply">
+<span class="header-section-number">18.5.1</span> Utiliser <code>.SD</code> et <code>lapply</code>
+</h3>
+<p>Le mot clé <code>.SD</code> (<em>Subset of Data</em>) permet d’appliquer la même opération sur plusieurs colonnes. Les colonnes auxquelles l’opération s’applique sont contrôlées par l’argument <code>.SDcols</code> (par défaut, toutes les colonnes sont traitées). Le mot clé <code>.SD</code> est régulièrement utilisé en conjonction avec la fonction <code>lapply</code>. <strong>Cette syntaxe, très puissante, permet également d’avoir des codes assez compacts, ce qui les rend plus lisible.</strong></p>
+<p>Un usage classique de ce duo <code>lapply</code>+<code>.SD</code> consiste à écrire des fonctions de statistiques descriptives. Par exemple, imaginons qu’on souhaite calculer la moyenne, l’écart-type et les quantiles (P25, P50 et P75) de nombreuses colonnes. On peut alors définir la fonction suivante :</p>
+<div class="cell">
+<div class="sourceCode" id="cb58"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">mes_statistiques</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">x</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, </span>
+<span>                       <span class="fu"><a href="https://rdrr.io/r/stats/sd.html">sd</a></span><span class="op">(</span><span class="va">x</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, </span>
+<span>                       <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html">quantile</a></span><span class="op">(</span><span class="va">x</span>, probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">.25</span>,<span class="fl">.5</span>,<span class="fl">.75</span><span class="op">)</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Voici comment on peut appliquer cette fonction aux colonnes <code>NBMENFISC16</code> (nombre de ménages fiscaux) et <code>NBPERSMENFISC16</code> (nombre de personnes dans les ménages fiscaux) de la table <code>filosofi_com_2016_dt</code> :</p>
+<div class="cell">
+<div class="sourceCode" id="cb59"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">data_agregee</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="va">filosofi_com_2016_dt</span><span class="op">[</span> ,</span>
+<span>                        <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">.SD</span>, <span class="va">mes_statistiques</span><span class="op">)</span>, </span>
+<span>                        .SDcols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"NBMENFISC16"</span>, <span class="st">"NBPERSMENFISC16"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="va">data_agregee</span><span class="op">[</span>, <span class="st">'stat'</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"moyenne"</span>,<span class="st">"écart-type"</span>,<span class="st">"P25"</span>,<span class="st">"P50"</span>,<span class="st">"P75"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="va">data_agregee</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   NBMENFISC16 NBPERSMENFISC16       stat
+1:    916.3269         2097.18    moyenne
+2:   7382.4628        15245.60 écart-type
+3:    105.0000          250.50        P25
+4:    218.0000          527.00        P50
+5:    526.0000         1278.25        P75</code></pre>
+</div>
+</div>
+<p><strong>Il est également très simple d’effectuer des calculs par groupe avec la méthode <code>lapply</code>+<code>.SD</code>.</strong> On peut par facilement adapter le code précédent pour calculer des statistiques descriptives par département (variable <code>departement</code>).</p>
+<div class="cell">
+<div class="sourceCode" id="cb61"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">data_agregee</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="va">filosofi_com_2016_dt</span><span class="op">[</span> ,</span>
+<span>                        <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">.SD</span>, <span class="va">mes_statistiques</span><span class="op">)</span>, </span>
+<span>                        by <span class="op">=</span> <span class="va">departement</span>,</span>
+<span>                        .SDcols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"NBMENFISC16"</span>, <span class="st">"NBPERSMENFISC16"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="va">data_agregee</span><span class="op">[</span>, <span class="st">'stat'</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"moyenne"</span>,<span class="st">"écart-type"</span>,<span class="st">"P25"</span>,<span class="st">"P50"</span>,<span class="st">"P75"</span><span class="op">)</span>, by <span class="op">=</span> <span class="va">departement</span><span class="op">]</span></span>
+<span><span class="va">data_agregee</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="définir-des-fonctions-modifiant-un-data.table" class="level3" data-number="18.5.2"><h3 data-number="18.5.2" class="anchored" data-anchor-id="définir-des-fonctions-modifiant-un-data.table">
+<span class="header-section-number">18.5.2</span> Définir des fonctions modifiant un <code>data.table</code>
+</h3>
+<p><strong>Il est très facile d’écrire avec <code>data.table</code> des fonctions génériques faisant appel à des noms de variables en arguments.</strong> Pour déclarer à <code>data.table</code> qu’un nom fait référence à une colonne, la manière la plus simple est d’utiliser la fonction <code>get</code>. Dans l’exemple suivant, on définit la fonction <code>creation_var</code> qui crée dans la table <code>data</code> une nouvelle variable (dont le nom est l’argument <code>nouveau_nom</code>) égale à une autre variable incrémentée (dont le nom est l’argument <code>nom_variable</code>) de 1. L’utilisation de la fonction <code>get</code> permet d’indiquer à <code>data.table</code> que la chaîne de caractères <code>nom_variable</code> désigne une colonne de la table <code>data</code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb62"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">creation_var</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">nom_variable</span>, <span class="va">nouveau_nom</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="va">data</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">nouveau_nom</span><span class="op">)</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/get.html">get</a></span><span class="op">(</span><span class="va">nom_variable</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span><span class="op">]</span></span>
+<span><span class="op">}</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fu">creation_var</span><span class="op">(</span><span class="va">filosofi_com_2016_dt</span>, </span>
+<span>                  nom_variable <span class="op">=</span> <span class="st">"NBMENFISC16"</span>,</span>
+<span>                  nouveau_nom  <span class="op">=</span> <span class="st">"nouvelle_variable"</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   departement CODGEO NBMENFISC16 NBPERSMENFISC16 nouvelle_variable
+1:          01  01001         313           795.5               314
+2:          01  01002         101           248.0               102</code></pre>
+</div>
+</div>
+<p><code>c(nouveau_nom)</code> permet de s’assurer que <code>data.table</code> crée une nouvelle colonne dont le nom est défini en argument (et qui ne s’appelle donc pas <code>nouveau_nom</code>).</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>La version <code>1.14.1</code> de data.table (encore en développement) apporte une syntaxe améliorée dans ce cas et considère l’utilisation de <code>get</code> comme désuète. Le <code>[...]</code> admet un nouvel argument <code>env</code> à qui on donne tous les remplacements que l’on souhaite. L’exemple devient :</p>
+<pre><code>creation_var &lt;- function(data, nom_variable, nouveau_nom){
+  data[, nouveau_nom := nom_variable + 1, 
+    env = list(nouveau_nom = nouveau_nom, nom_variable = nom_variable)]
+}
+head(creation_var(filosofi_com_2016_dt, 
+                  nom_variable = "NBMENFISC16",
+                  nouveau_nom  = "nouvelle_variable"), 2)</code></pre>
+<p>L’avantage c’est qu’on peut effectuer de tels remplacements dans <code>i</code> (dimension ligne) et qu’on peut même remplacer des fonctions :</p>
+<pre><code>creation_var &lt;- function(data, nom_variable, nouveau_nom, fonction){
+  data[, nouveau_nom := fonction(nom_variable), 
+    env = list(nouveau_nom = nouveau_nom, nom_variable = nom_variable, fonction= fonction)]
+  head(creation_var(filosofi_com_2016_dt, 
+                  nom_variable = "NBMENFISC16",
+                  nouveau_nom  = "nouvelle_variable",
+                  fonction = "sqrt"), 2)
+}</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Lorsqu’on définit des fonctions pour effectuer des traitements génériques, une précaution est nécessaire pour ne pas modifier les données en entrée de la fonction si l’opérateur <code>:=</code> est utilisée. Il est recommandé dans ce cas de créer une copie du dataframe en entrée (<code>data.table::copy(df)</code>) et d’effectuer les traitements sur cette copie.</p>
+</div>
+</div>
+</section></section><section id="Ressourcesdatatable" class="level2" data-number="18.6"><h2 data-number="18.6" class="anchored" data-anchor-id="Ressourcesdatatable">
+<span class="header-section-number">18.6</span> Pour en savoir plus</h2>
+<ul>
+<li>la <a href="https://www.rdocumentation.org/packages/data.table">documentation officielle</a> de <code>data.table</code> (en anglais) ;</li>
+<li>les <a href="https://github.com/Rdatatable/data.table/wiki/Getting-started">vignettes</a> de <code>data.table</code> :
+<ul>
+<li>
+<a href="https://cloud.r-project.org/web/packages/data.table/vignettes/datatable-intro.html">Introduction à <code>data.table</code></a> (en anglais) ;</li>
+<li>
+<a href="https://cloud.r-project.org/web/packages/data.table/vignettes/datatable-reference-semantics.html">Modification par référence</a> (en anglais) ;</li>
+<li>
+<a href="https://cran.r-project.org/web/packages/data.table/vignettes/datatable-faq.html">la foire aux questions de <code>data.table</code></a> (en anglais) ;</li>
+</ul>
+</li>
+<li>une <a href="https://github.com/rstudio/cheatsheets/raw/master/datatable.pdf"><em>cheatsheet</em></a> sur <code>data.table</code> (en anglais) ;</li>
+<li>une <a href="https://stt4230.rbind.io/tutoriels_etudiants/hiver_2017/data.table">introduction à l’utilisation de l’opérateur <code>[...]</code></a> (en français) ;</li>
+<li>Ce <a href="https://gitlab.com/linogaliana/bigr/-/blob/master/04-datatable.Rmd">cours complet sur <code>data.table</code></a> (en français).</li>
+<li>Cette <a href="https://dreamrs.github.io/talks/20180528_RAddicts_datatable.pdf">présentation des fonctionnalités du package</a> (en français) ;</li>
+<li>Ce <a href="https://linogaliana.netlify.com/post/datatable/datatable-nse/">post sur les fonctions utilisant data.table</a>.</li>
+</ul>
+
+
+</section><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script><nav class="page-navigation"><div class="nav-page nav-page-previous">
+      <a href="../03_Fiches_thematiques/Fiche_tidyverse.html" class="pagination-link  aria-label=" des="" donn="" avec="" le="">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Manipuler des données avec le <code>tidyverse</code></span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../03_Fiches_thematiques/Fiche_arrow.html" class="pagination-link" aria-label="<span class='chapter-number'>19</span>&nbsp; <span class='chapter-title'>Manipuler des données avec `arrow`</span>">
+        <span class="nav-page-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Manipuler des données avec <code>arrow</code></span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer">
+    <div class="nav-footer-left">
+<p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/InseeFrLab/utilitR/edit/master/03_Fiches_thematiques/Fiche_datatable.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/InseeFrLab/utilitR/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<li>
+<a href="https://github.com/InseeFrLab/utilitR.git" target="blank">Code source</a>
+</li>
+</div>
+  </div>
+</footer></section></section></main>
+</div>
+
+
+</body></html>

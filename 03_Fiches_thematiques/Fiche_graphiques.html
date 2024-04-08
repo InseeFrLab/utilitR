@@ -1,0 +1,1696 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.549">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>26&nbsp; Faire des graphiques avec ggplot2</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../03_Fiches_thematiques/Fiche_rmarkdown.html" rel="next">
+<link href="../03_Fiches_thematiques/Fiche_analyse_de_donnees.html" rel="prev">
+<link href="../resources/logo-utilitr.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark"><script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><script async="" src="https://hypothes.is/embed.js"></script><script>
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    document.body.classList.add('hypothesis-enabled');
+  });
+</script><script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script><script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+</head>
+<body class="nav-sidebar docked nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="navbar navbar-expand-lg " data-bs-theme="dark"><div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../resources/logo-utilitr.png" alt="Logo du projet utilitR" class="navbar-logo"></a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+<li class="nav-item">
+    <a class="nav-link active" href="../01_R_Insee/presentation_utilitr.html" aria-current="page"> 
+<span class="menu-text">Introduction</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_rprojects.html"> 
+<span class="menu-text">Mener un projet statistique</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_import_fichiers_plats.html"> 
+<span class="menu-text">Importer des données</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_tidyverse.html"> 
+<span class="menu-text">Choisir son paradigme</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_joindre_donnees.html"> 
+<span class="menu-text">Manipuler des données</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_graphiques.html"> 
+<span class="menu-text">Produire des sorties</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../02_Bonnes_pratiques/01-qualite-code.html"> 
+<span class="menu-text">Bonnes pratiques</span></a>
+  </li>  
+</ul>
+</div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools tools-wide">
+    <a href="https://github.com/InseeFrLab/utilitR" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <div class="dropdown">
+      <a href="" title="Share" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Share"><i class="bi bi-share"></i></a>
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="quarto-navigation-tool-dropdown-0">
+<li>
+            <a class="dropdown-item quarto-navbar-tools-item" href="https://twitter.com/intent/tweet?url=%7Curl%7C">
+              <i class="bi bi-bi-twitter pe-1"></i>
+            Twitter
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item quarto-navbar-tools-item" href="https://www.linkedin.com/sharing/share-offsite/?url=%7Curl%7C">
+              <i class="bi bi-bi-linkedin pe-1"></i>
+            LinkedIn
+            </a>
+          </li>
+      </ul>
+</div>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_graphiques.html">Produire des sorties avec R</a></li><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_graphiques.html"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Faire des graphiques avec <code>ggplot2</code></span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="../resources/logo-utilitr.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none"></a>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Principales parties</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Introduction</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/presentation_utilitr.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Présentation du projet <code>utilitR</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_utilitR.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Comment utiliser la documentation <code>utilitR</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">Mener un projet statistique avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_rprojects.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Utiliser les projets <code>RStudio</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_git_utilisation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Utiliser <code>Git</code> avec RStudio</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_installer_packages.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Utiliser des <em>packages</em> <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_comment_choisir_un_package.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Comment choisir un <em>package</em> ?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_gerer_dependances.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Gérer les dépendances</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_se_documenter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Se documenter sur <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_resoudre_un_probleme.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Résoudre un problème avec <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_targets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Construire une chaîne de traitement reproductible avec <code>targets</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">Importer des données avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_fichiers_plats.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Importer des fichiers plats (<code>.csv</code>, <code>.tsv</code>, <code>.txt</code>)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_tables_sas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Importer des tables SAS®</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_tableurs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Importer des fichiers issus de tableurs (Excel, Calc)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_fichiers_parquet.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Lire et écrire des fichiers Parquet</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_api.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Travailler avec des API</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_connexion_bdd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Se connecter à une base de données</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true">
+ <span class="menu-text">Choisir son paradigme d’analyse des données avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_tidyverse.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Manipuler des données avec le <code>tidyverse</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_datatable.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Manipuler des données avec <code>data.table</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_arrow.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Manipuler des données avec <code>arrow</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text">Manipuler des données avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_joindre_donnees.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Joindre des tables de données</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_donnees_textuelles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Manipuler des données textuelles</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_survey.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Utiliser des données d’enquêtes</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_donnees_spatiales.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Manipuler des données spatiales</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_donnees_temporelles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Manipuler des données temporelles</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_analyse_de_donnees.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">L’analyse de données (ACP, ACM, ACF…)</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text">Produire des sorties avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_graphiques.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Faire des graphiques avec <code>ggplot2</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_rmarkdown.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Produire des documents avec <code>R Markdown</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_rmarkdown_param_report.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Produire des rapports automatisés avec <code>R Markdown</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text">Bonnes pratiques</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_Bonnes_pratiques/01-qualite-code.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Qualité du code</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_Bonnes_pratiques/02-structure-code.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Structure des projets</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true">
+ <span class="menu-text">Éléments de configuration</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_Rstudio_AUSv3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Utiliser RStudio sur l’environnement AUSv3</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_Rstudio_SSPCloud.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Utiliser <code>RStudio</code> sur l’environnement SSP Cloud</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_configurer_git.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Configurer <code>Git</code> sur son poste de travail</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche-personnaliser-R.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Personnaliser la configuration de <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_ressources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Superviser sa session <code>R</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+    </ul>
+</div>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+<li><a href="#t%C3%A2ches-concern%C3%A9es-et-recommandations" id="toc-tâches-concernées-et-recommandations" class="nav-link active" data-scroll-target="#t%C3%A2ches-concern%C3%A9es-et-recommandations"><span class="header-section-number">26.1</span> Tâches concernées et recommandations</a></li>
+  <li>
+<a href="#d%C3%A9couvrir-ggplot2-avec-ladd-in-esquisse" id="toc-découvrir-ggplot2-avec-ladd-in-esquisse" class="nav-link" data-scroll-target="#d%C3%A9couvrir-ggplot2-avec-ladd-in-esquisse"><span class="header-section-number">26.2</span> Découvrir <code>ggplot2</code> avec l’<em>add-in</em> <code>esquisse</code></a>
+  <ul class="collapse">
+<li><a href="#a-quoi-sert-esquisse" id="toc-a-quoi-sert-esquisse" class="nav-link" data-scroll-target="#a-quoi-sert-esquisse"><span class="header-section-number">26.2.1</span> A quoi sert <code>esquisse</code> ?</a></li>
+  <li><a href="#comment-utiliser-esquisse" id="toc-comment-utiliser-esquisse" class="nav-link" data-scroll-target="#comment-utiliser-esquisse"><span class="header-section-number">26.2.2</span> Comment utiliser <code>esquisse</code></a></li>
+  </ul>
+</li>
+  <li>
+<a href="#les-concepts-clefs-de-ggplot2" id="toc-les-concepts-clefs-de-ggplot2" class="nav-link" data-scroll-target="#les-concepts-clefs-de-ggplot2"><span class="header-section-number">26.3</span> Les concepts clefs de <code>ggplot2</code></a>
+  <ul class="collapse">
+<li><a href="#introduction" id="toc-introduction" class="nav-link" data-scroll-target="#introduction"><span class="header-section-number">26.3.1</span> Introduction</a></li>
+  <li><a href="#mapping" id="toc-mapping" class="nav-link" data-scroll-target="#mapping"><span class="header-section-number">26.3.2</span> Le <em>mapping</em> et l’utilisation d’<code>aes()</code></a></li>
+  <li><a href="#les-formes-g%C3%A9om%C3%A9triques" id="toc-les-formes-géométriques" class="nav-link" data-scroll-target="#les-formes-g%C3%A9om%C3%A9triques"><span class="header-section-number">26.3.3</span> Les formes géométriques</a></li>
+  <li><a href="#combiner-plusieurs-formes-g%C3%A9om%C3%A9triques" id="toc-combiner-plusieurs-formes-géométriques" class="nav-link" data-scroll-target="#combiner-plusieurs-formes-g%C3%A9om%C3%A9triques"><span class="header-section-number">26.3.4</span> Combiner plusieurs formes géométriques</a></li>
+  <li><a href="#cr%C3%A9er-un-graphique-par-modalit%C3%A9-dune-variable" id="toc-créer-un-graphique-par-modalité-dune-variable" class="nav-link" data-scroll-target="#cr%C3%A9er-un-graphique-par-modalit%C3%A9-dune-variable"><span class="header-section-number">26.3.5</span> Créer un graphique par modalité d’une variable</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#comment-personnaliser-un-graphique" id="toc-comment-personnaliser-un-graphique" class="nav-link" data-scroll-target="#comment-personnaliser-un-graphique"><span class="header-section-number">26.4</span> Comment personnaliser un graphique</a>
+  <ul class="collapse">
+<li><a href="#les-options-des-graphiques" id="toc-les-options-des-graphiques" class="nav-link" data-scroll-target="#les-options-des-graphiques"><span class="header-section-number">26.4.1</span> Les options des graphiques</a></li>
+  <li><a href="#utiliser-un-th%C3%A8me" id="toc-utiliser-un-thème" class="nav-link" data-scroll-target="#utiliser-un-th%C3%A8me"><span class="header-section-number">26.4.2</span> Utiliser un thème</a></li>
+  </ul>
+</li>
+  <li><a href="#exporter-un-graphique" id="toc-exporter-un-graphique" class="nav-link" data-scroll-target="#exporter-un-graphique"><span class="header-section-number">26.5</span> Exporter un graphique</a></li>
+  <li><a href="#ggplot2Ressources" id="toc-ggplot2Ressources" class="nav-link" data-scroll-target="#ggplot2Ressources"><span class="header-section-number">26.6</span> Pour en savoir plus</a></li>
+  </ul><div class="toc-actions"><ul><li><a href="https://github.com/InseeFrLab/utilitR/edit/master/03_Fiches_thematiques/Fiche_graphiques.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/InseeFrLab/utilitR/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_graphiques.html">Produire des sorties avec R</a></li><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_graphiques.html"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Faire des graphiques avec <code>ggplot2</code></span></a></li></ol></nav><div class="quarto-title">
+<h1 class="title"><span id="ggplot2" class="quarto-section-identifier"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Faire des graphiques avec <code>ggplot2</code></span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header><section id="tâches-concernées-et-recommandations" class="level2" data-number="26.1"><h2 data-number="26.1" class="anchored" data-anchor-id="tâches-concernées-et-recommandations">
+<span class="header-section-number">26.1</span> Tâches concernées et recommandations</h2>
+<p>L’utilisateur souhaite réaliser des graphiques (nuages de points, histogrammes, densité…) et les personnaliser (légendes, titres, échelles…).</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tâche concernée et recommandation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>Il est recommandé d’utiliser le <em>package</em> <code>ggplot2</code> qui permet de réaliser et de personnaliser un grand nombre de représentations graphiques ;</li>
+<li>Il est conseillé aux utilisateurs débutants d’utiliser l’<em>add-in</em> <code>esquisse</code> pour se familiariser avec <code>ggplot2</code>.</li>
+</ul>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Certains exemples de cette fiche utilisent les données disponibles dans le <em>package</em> <code>doremifasolData</code> ; vous ne pourrez reproduire ces exemples que si ce <em>package</em> est installé sur la machine sur laquelle vous travaillez. Si vous ne savez pas si ce <em>package</em> est déjà installé, consultez la fiche <a href="../01_R_Insee/Fiche_utiliser_utilitR.html">Comment utiliser la documentation <code>utilitR</code></a>.</p>
+</div>
+</div>
+</section><section id="découvrir-ggplot2-avec-ladd-in-esquisse" class="level2" data-number="26.2"><h2 data-number="26.2" class="anchored" data-anchor-id="découvrir-ggplot2-avec-ladd-in-esquisse">
+<span class="header-section-number">26.2</span> Découvrir <code>ggplot2</code> avec l’<em>add-in</em> <code>esquisse</code>
+</h2>
+<section id="a-quoi-sert-esquisse" class="level3" data-number="26.2.1"><h3 data-number="26.2.1" class="anchored" data-anchor-id="a-quoi-sert-esquisse">
+<span class="header-section-number">26.2.1</span> A quoi sert <code>esquisse</code> ?</h3>
+<p>Le <em>package</em> <code>esquisse</code> propose une interface graphique qui facilite la construction de graphiques avec <code>ggplot2</code>. L’objectif de ce <em>package</em> est de vous aider à construire rapidement un code <code>ggplot2</code> pour faire le graphique que vous voulez. En revanche, <strong>l’utilisation d’<code>esquisse</code> ne remplace pas l’écriture d’un code <code>ggplot2</code>, et cet <em>add-in</em> ne doit pas être utilisé pour réaliser et exporter un graphique sans sauvegarder le code qui le produit</strong> (sinon vous ne pourrez ni reproduire ni modifier votre graphique par la suite).</p>
+<p>Vous pouvez en apprendre davantage sur les <em>add-ins</em> dans le paragraphe de <a href="https://www.book.utilitr.org/03_fiches_thematiques/fiche_rprojects#les-addins-rstudio">présentation des <em>add-ins</em></a>.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>L’interface graphique d’<code>esquisse</code> est assez gourmande en ressources, il est donc déconseillé de l’utiliser avec des données volumineuses (plus de 100&nbsp;000&nbsp;observations). Si vous êtes dans cette situation, <strong>il est fortement conseillé d’utiliser <code>esquisse</code> sur une petite partie de vos données</strong> (les 1&nbsp;000 ou 10&nbsp;000&nbsp;premières lignes par exemple). Une fois que vous avez construit le code <code>ggplot2</code>, vous pouvez le copier-coller dans un script <code>R</code> et réaliser le graphique sur l’ensemble des données.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>L’<em>add-in</em> <code>esquisse</code> ne fonctionne qu’avec une version récente de RStudio (version égale ou supérieure à 1.2). Si votre version de RStudio est plus ancienne, vous devrez procéder à une mise à jour avant d’utiliser <code>esquisse</code>.</p>
+</div>
+</div>
+</section><section id="comment-utiliser-esquisse" class="level3" data-number="26.2.2"><h3 data-number="26.2.2" class="anchored" data-anchor-id="comment-utiliser-esquisse">
+<span class="header-section-number">26.2.2</span> Comment utiliser <code>esquisse</code>
+</h3>
+<p>L’<em>add-in</em> <code>esquisse</code> est disponible sous la forme d’un <em>package</em>, qu’il faut installer le cas échéant :</p>
+<div class="cell">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"esquisse"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Cette section illustre l’utilisation d’<code>esquisse</code> avec la table <code>data_iris_paris_2017</code> du <em>package</em> <code>doremifasolData</code>, qui contient des données économiques et sociales sur les iris de la ville de Paris en 2017. Il faut donc charger ces données dans <code>R</code> :</p>
+<div class="cell">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData">doremifasolData</a></span><span class="op">)</span></span>
+<span><span class="va">data_iris_paris2017</span> <span class="op">&lt;-</span> <span class="fu">doremifasolData</span><span class="fu">::</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData/reference/data_iris_paris_2017.html">data_iris_paris_2017</a></span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Une fois qu’il est installé, vous pouvez accéder à cet <em>add-in</em> en cliquant sur <em>‘ggplot2’ builder</em> dans le menu <em>Addins</em> de RStudio.</p>
+<p><img src="../pics/intro_graphiques/addin_rstudio.png" class="img-fluid"></p>
+<p><img src="../pics/intro_graphiques/addin_rstudio2.png" class="img-fluid"></p>
+<p>Vous pouvez également accéder à <code>esquisse</code> en exécutant le code suivant :</p>
+<div class="cell">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dreamrs.github.io/esquisse/">esquisse</a></span><span class="op">)</span></span>
+<span><span class="fu">esquisser</span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Dans la première boîte de dialogue, vous devez sélectionner le <code>data.frame</code> qui contient les données que vous voulez représenter sur le graphique. Vous pouvez éventuellement sélectionner certaines variables, et modifier le type de certaines variables.</p>
+<p><img src="../pics/intro_graphiques/choix_dataframe.png" class="img-fluid" style="width:75.0%"></p>
+<p>Une nouvelle boîte de dialogue s’affiche, grâce à laquelle vous pouvez construire un graphique. Les variables présentes dans vos données sont listées en haut.</p>
+<p><img src="../pics/intro_graphiques/esquisse_vide.png" class="img-fluid" style="width:75.0%"></p>
+<p>Vous pouvez déplacer les variables dans les différentes catégories (dans le cadre vert) : <code>x</code> pour les abscisses, <code>y</code> pour les ordonnées, <code>color</code> et <code>size</code> pour la couleur et la taille des éléments graphiques… <code>esquisse</code> vous propose automatiquement le type de graphique le plus adapté à vos données, mais vous pouvez changer le type de graphique en cliquant sur la petite icône graphique en haut à gauche (cadre rouge).</p>
+<p><img src="../pics/intro_graphiques/esquisse_champs.png" class="img-fluid" style="width:75.0%"></p>
+<p>Enfin, il est possible de modifier l’apparence du graphique (titres des axes, légende…) avec les menus en bas.</p>
+<p><img src="../pics/intro_graphiques/esquisse_options.png" class="img-fluid" style="width:75.0%"></p>
+<p>Une fois que le graphique est terminé, vous pouvez récupérer le code <code>ggplot2</code> qui produit ce graphique en cliquant sur <em>Export &amp; code</em> (cadre rouge).Vous pouvez le copier-coller dans un script <code>R</code>. <strong>Il n’est pas recommandé d’exporter directement le graphique</strong>, car en ce cas vous ne pourrez ni reproduire ni modifier votre graphique par la suite.</p>
+<p><img src="../pics/intro_graphiques/esquisse_code.png" class="img-fluid" style="width:75.0%"></p>
+</section></section><section id="les-concepts-clefs-de-ggplot2" class="level2" data-number="26.3"><h2 data-number="26.3" class="anchored" data-anchor-id="les-concepts-clefs-de-ggplot2">
+<span class="header-section-number">26.3</span> Les concepts clefs de <code>ggplot2</code>
+</h2>
+<p>L’objectif du <em>package</em> <code>ggplot2</code> est de fournir une approche unique pour produire quasiment toute représentation graphique de données. Ce <em>package</em> propose un grand nombre de fonctions permettant de personnaliser finement les représentations graphiques. Cette fiche n’est donc qu’une introduction succincte à <code>ggplot2</code>. Pour des formations plus détaillées, se référer à {#ggplot2Ressources}.</p>
+<p>Pour commencer, il faut charger le <em>package</em> avec <code>library</code>. Cette fiche illustre l’utilisation de <code>ggplot2</code> avec la table <code>data_iris_paris_2017</code> du <em>package</em> <code>doremifasolData</code>, qui contient des données économiques et sociales sur les iris de la ville de Paris en 2017.</p>
+<div class="cell">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData">doremifasolData</a></span><span class="op">)</span></span>
+<span><span class="va">data_iris_paris_2017</span> <span class="op">&lt;-</span> <span class="fu">doremifasolData</span><span class="fu">::</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData/reference/data_iris_paris_2017.html">data_iris_paris_2017</a></span></span>
+<span><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme_get.html">theme_set</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="introduction" class="level3" data-number="26.3.1"><h3 data-number="26.3.1" class="anchored" data-anchor-id="introduction">
+<span class="header-section-number">26.3.1</span> Introduction</h3>
+<p><strong>La fonction essentielle de <code>ggplot2</code> est <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot()</a></code>.</strong> Il faut définir quatre éléments pour construire un graphique avec <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot()</a></code> :</p>
+<ul>
+<li>la <strong>table de données</strong> ;</li>
+<li>le <strong><em>mapping</em></strong> : on définit dans l’<em>aesthetic</em> (ou <code>aes</code>) le lien entre les variables des données et ce que l’on veut représenter sur le graphique (quelle variable sur l’axe <code>x</code>, sur l’axe <code>y</code>, quelle variable pour définir une graduation de couleurs…) ;</li>
+<li>la <strong>forme géométrique ou <em>geometry</em> </strong> : on définit la représentation graphique qu’on souhaite utiliser. Les géométries ont toutes un nom qui commence par <code>geom_</code> ; par exemple, il faut utiliser la géométrie <code><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point()</a></code> pour réaliser un nuage de points ;</li>
+<li>les <strong>paramètres</strong> : on définit les autres paramètres qui dépendent de constantes (par exemple : je veux que toutes mes lignes soient rouges ou de taille 2 pixels).</li>
+</ul>
+<p><strong>La construction d’un graphique repose sur le principe de couches successives.</strong> Les différentes couches graphiques se superposent et s’enchaînent grâce à l’<strong>opérateur <code>+</code></strong>, comme un pipe. Il est possible d’aller à la ligne dans une instruction <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot()</a></code>, il suffit que l’opérateur <code>+</code> figure à la fin de la ligne.</p>
+<p>Voici un exemple de code qui crée un nuage de points (géométrie <code><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point()</a></code>) à partir des données <code>mes_donnees</code>, avec les variables <code>variable1</code> en abscisse et <code>variable2</code> en ordonnée :</p>
+<div class="cell">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">mes_donnees</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span>mapping <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">variable1</span>, y <span class="op">=</span> <span class="va">variable2</span><span class="op">)</span>, <span class="va">...</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="mapping" class="level3" data-number="26.3.2"><h3 data-number="26.3.2" class="anchored" data-anchor-id="mapping">
+<span class="header-section-number">26.3.2</span> Le <em>mapping</em> et l’utilisation d’<code>aes()</code>
+</h3>
+<p>Le <em>mapping</em> désigne dans <code>ggplot2</code> la relation entre un <strong>attribut graphique</strong> de la <code>geometry</code> (abscisse, ordonnée, couleur…) et <strong>une variable</strong> présente dans la table de données. On déclare le <em>mapping</em> grâce à la fonction <code><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes()</a></code> (pour <em>aesthetic</em>), qui sert donc à identifier les variables que l’on souhaite représenter sur le graphique.</p>
+<p><strong>Les arguments fondamentaux de <code><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes()</a></code> sont les variables représentées sur l’axe des abscisses et l’axe des ordonnées (<code>x</code> et <code>y</code>).</strong> Par exemple, on écrit <code>aes(x = niveau_vie_median, y = taux_chomage)</code> si l’on souhaite représenter pour chaque iris le taux de chômage (sur l’axe <code>y</code>) en fonction du niveau de vie médian (sur l’axe <code>x</code>).</p>
+<div class="cell">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">data_iris_paris_2017</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">niveau_vie_median</span>, y <span class="op">=</span> <span class="va">taux_chomage</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Fiche_graphiques_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Par ailleurs, la fonction <code><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes()</a></code> admet d’autres arguments qui permettent de modifier l’apparence des attributs graphiques selon une troisième variable du jeu de données. Voici les arguments supplémentaires les plus courants :</p>
+<table class="table">
+<thead><tr class="header">
+<th>Attribut</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><strong><code>color</code></strong></td>
+<td>Couleur des lignes ou des points</td>
+</tr>
+<tr class="even">
+<td><strong><code>shape</code></strong></td>
+<td>Forme des points</td>
+</tr>
+<tr class="odd">
+<td><strong><code>size</code></strong></td>
+<td>Taille des points</td>
+</tr>
+<tr class="even">
+<td><strong><code>alpha</code></strong></td>
+<td>Transparence des points</td>
+</tr>
+<tr class="odd">
+<td><strong><code>fill</code></strong></td>
+<td>Couleur des surfaces</td>
+</tr>
+<tr class="even">
+<td><strong><code>linetype</code></strong></td>
+<td>Type de ligne (continue, pointillée, …)</td>
+</tr>
+</tbody>
+</table>
+<p>Dans l’exemple qui suit, on représente pour chaque iris le taux de chômage (sur l’axe <code>y</code>) en fonction du niveau de vie médian (sur l’axe <code>x</code>), en colorant les points en fonction de la part des cadres et professions intellectuelles supérieures parmi les actifs de l’iris (<code>color = part_cadres</code>).</p>
+<div class="cell">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">data_iris_paris_2017</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">niveau_vie_median</span>, y <span class="op">=</span> <span class="va">taux_chomage</span>, color <span class="op">=</span> <span class="va">part_cadres</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Fiche_graphiques_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Il est également possible d’utiliser ces mêmes arguments pour modifier un attribut graphique sans le lier à une variable. En ce cas, on définit l’attribut <strong>à l’extérieur de l’<em>aesthetic</em></strong> (donc à l’extérieur de <code><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes()</a></code>). Voici l’exemple précédent, modifié pour que tous les points soient (rouge), et non en fonction d’une variable. L’argument <code>color</code> est donc à l’extérieur de <code><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes()</a></code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">data_iris_paris_2017</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">niveau_vie_median</span>, y <span class="op">=</span> <span class="va">taux_chomage</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Fiche_graphiques_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>La notion de <em>mapping</em> et la définition des attributs graphiques à l’intérieur et à l’extérieur d’<code><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes()</a></code> sont une des principales difficultés de <code>ggplot2</code>. Il est normal de tâtonner lorsqu’on commence à les utiliser. Pour s’y retrouver, il suffit de suivre la règle suivante. <strong>Si on établit un lien entre les valeurs d’une variable et un attribut graphique, il s’agit d’un <em>mapping</em> qui doit être défini à <em>l’intérieur</em> de la fonction <code><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes()</a></code>. Dans le cas contraire, il s’agit d’un simple paramètre du graphique, qui doit être défini à <em>l’extérieur</em> de la fonction <code><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes()</a></code>.</strong></p>
+</div>
+</div>
+</section><section id="les-formes-géométriques" class="level3" data-number="26.3.3"><h3 data-number="26.3.3" class="anchored" data-anchor-id="les-formes-géométriques">
+<span class="header-section-number">26.3.3</span> Les formes géométriques</h3>
+<p>La forme géométrique ou <em>geometry</em> désigne le type de représentation graphique utilisée (nuage de points, histogrammes…). On spécifie le type de représentation que l’on souhaite en utilisant une fonction dont le nom commence par <strong><code>geom_</code></strong>. Le tableau ci-dessous présente quelques représentations graphiques classiques.</p>
+<table class="table">
+<colgroup>
+<col style="width: 23%">
+<col style="width: 32%">
+<col style="width: 44%">
+</colgroup>
+<thead><tr class="header">
+<th><em>geometry</em></th>
+<th>Description</th>
+<th>Arguments</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point()</a></code></td>
+<td>Nuage de points</td>
+<td>
+<code>x</code>, <code>y</code>, <code>shape</code>, <code>fill</code>, <code>size</code>
+</td>
+</tr>
+<tr class="even">
+<td><code><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line()</a></code></td>
+<td>Ligne</td>
+<td>
+<code>x</code>, <code>y</code>, <code>linetype</code>
+</td>
+</tr>
+<tr class="odd">
+<td><code><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html">geom_bar()</a></code></td>
+<td>Diagramme en barres</td>
+<td>
+<code>x</code>, <code>fill</code>, <code>linetype</code>, <code>weight</code>
+</td>
+</tr>
+<tr class="even">
+<td><code><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html">geom_histogram()</a></code></td>
+<td>Histogramme</td>
+<td>
+<code>x</code>, <code>fill</code>, <code>linetype</code>, <code>weight</code>
+</td>
+</tr>
+<tr class="odd">
+<td><code><a href="https://ggplot2.tidyverse.org/reference/geom_boxplot.html">geom_boxplot()</a></code></td>
+<td>Boîte à moustaches</td>
+<td>
+<code>x</code>, <code>y</code>, <code>fill</code>, <code>weight</code>
+</td>
+</tr>
+<tr class="even">
+<td><code><a href="https://ggplot2.tidyverse.org/reference/geom_density.html">geom_density()</a></code></td>
+<td>Courbe de densité</td>
+<td>
+<code>x</code>, <code>y</code>, <code>fill</code>, <code>color</code>, <code>linetype</code>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Voici deux exemples d’utilisation.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Il existe un grand nombre de géométries dans <code>ggplot2</code>. Vous pouvez en afficher la liste en exécutant la commande <code>help.search("^geom_", package = "ggplot2")</code>.</p>
+<p>Par ailleurs, de très nombreux <em>packages</em> proposent encore d’autres géométries pour réaliser des représentations graphiques particulières (cartes avec <code>ggmap</code>, arbres généalogiques avec <code>ggtree</code> et <code>ggenealogy</code>, résultats d’élections avec <code>ggparliament</code>…).</p>
+</div>
+</div>
+</section><section id="combiner-plusieurs-formes-géométriques" class="level3" data-number="26.3.4"><h3 data-number="26.3.4" class="anchored" data-anchor-id="combiner-plusieurs-formes-géométriques">
+<span class="header-section-number">26.3.4</span> Combiner plusieurs formes géométriques</h3>
+<p>On peut représenter plusieurs formes géométriques simultanément sur un même graphique (un nuage de points et une droite de régression par exemple). il suffit de les ajouter les unes aux autres avec l’opérateur <code>+</code>. Voici un exemple :</p>
+<div class="cell">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">data_iris_paris_2017</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">niveau_vie_median</span>, y <span class="op">=</span> <span class="va">taux_chomage</span><span class="op">)</span>, alpha <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_smooth.html">geom_smooth</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">niveau_vie_median</span>, y <span class="op">=</span> <span class="va">taux_chomage</span><span class="op">)</span>, method <span class="op">=</span> <span class="st">"lm"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Fiche_graphiques_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Il peut arriver qu’on définisse le même <em>mapping</em> dans plusieurs formes géométriques, c’est-à-dire qu’on utilise les mêmes relations entre les variables et les attributs graphiques dans des formes géométriques différents (exemple : les variables <code>x</code> et <code>y</code> sont les mêmes dans un nuage de points et dans la droite de régression). Dans ce cas, il est possible de déclarer le <em>mapping</em> directement dans l’appel à <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot()</a></code> plutôt que de le répéter dans chaque forme géométrique. Le <em>mapping</em> sera alors valable pour toutes les formes géométriques du graphique (sauf si celles-ci redéfinissent explicitement le <em>mapping</em>). Le code suivant produit exactement le même graphique que l’exemple précédent :</p>
+<div class="cell">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">data_iris_paris_2017</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">niveau_vie_median</span>, y <span class="op">=</span> <span class="va">taux_chomage</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_smooth.html">geom_smooth</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"lm"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</section><section id="créer-un-graphique-par-modalité-dune-variable" class="level3" data-number="26.3.5"><h3 data-number="26.3.5" class="anchored" data-anchor-id="créer-un-graphique-par-modalité-dune-variable">
+<span class="header-section-number">26.3.5</span> Créer un graphique par modalité d’une variable</h3>
+<p>La fonction <code><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap()</a></code> permet de représenter des données <em>en facettes</em>, c’est-à-dire décomposées par une variable de croisement. Chaque modalité de la variable catégorielle servira à découper les données pour générer un graphique. Par défaut, les échelles des axes <span class="math inline">\(x\)</span> et <span class="math inline">\(y\)</span> sont identiques mais il est possible de les distinguer avec le paramètre <code>scales</code> (qui prend la valeur <code>"free_x"</code> pour libérer l’axe des abscisses, <code>"free_y"</code> pour l’axe des ordonnées ou <code>"free"</code> pour les deux axes). Les arguments optionnels <code>nrow</code> et <code>ncol</code> permettent de contrôler le nombre lignes et de colonnes. Voici un exemple sur les iris parisiens :</p>
+<div class="cell">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">data_iris_paris_2017</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span>mapping <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">niveau_vie_median</span>, y <span class="op">=</span> <span class="va">taux_chomage</span>, color <span class="op">=</span> <span class="va">part_cadres</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="op">~</span> <span class="va">categorie_arrondissement</span>, scales <span class="op">=</span> <span class="st">'free'</span>, ncol <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Fiche_graphiques_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section></section><section id="comment-personnaliser-un-graphique" class="level2" data-number="26.4"><h2 data-number="26.4" class="anchored" data-anchor-id="comment-personnaliser-un-graphique">
+<span class="header-section-number">26.4</span> Comment personnaliser un graphique</h2>
+<p>Il est possible de personnaliser un graphique <code>ggplot2</code> de deux façons :</p>
+<ul>
+<li>en modifiant les options une à une (titres du graphique et des axes, graduation des axe…) ;</li>
+<li>en utilisant un <code>theme</code> prédéfini ou en le définissant soi-même.</li>
+</ul>
+<p>Avec <code>ggplot</code>, il est possible d’aboutir au même résultat avec plusieurs instructions, en particulier lorsqu’il est question de customisation du thème. Il ne faut ainsi pas hésiter à chercher une solution sur le site <a href="https://stackoverflow.com/questions/tagged/ggplot2?sort=faq">StackOverflow</a>.</p>
+<section id="les-options-des-graphiques" class="level3" data-number="26.4.1"><h3 data-number="26.4.1" class="anchored" data-anchor-id="les-options-des-graphiques">
+<span class="header-section-number">26.4.1</span> Les options des graphiques</h3>
+<p>Les graphiques réalisés avec <code>ggplot2</code> peuvent être personnalisés finement. Chaque nouvel élément graphique est à rajouter à l’objet <code>ggplot</code> avec l’opérateur <code>+</code>.</p>
+<section id="définir-les-titres-du-graphique-et-des-axes" class="level4" data-number="26.4.1.1"><h4 data-number="26.4.1.1" class="anchored" data-anchor-id="définir-les-titres-du-graphique-et-des-axes">
+<span class="header-section-number">26.4.1.1</span> Définir les titres du graphique et des axes</h4>
+<p>La fonction <code><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs()</a></code> permet de définir les titres : le titre général du graphique (<code>title</code>), le sous-titre (<code>subtitle</code>), la note de bas de graphique (<code>caption</code>), les axes (<code>x</code>, <code>y</code>)… Il existe d’autres façons de définir les titres (<code>ggtitle</code>, <code>xlab</code>, <code>ylab</code>).</p>
+<div class="cell">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">data_iris_paris_2017</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">niveau_vie_median</span>, y <span class="op">=</span> <span class="va">taux_chomage</span>, color <span class="op">=</span> <span class="va">part_cadres</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title<span class="op">=</span><span class="st">"Taux de chômage par iris à Paris en fonction du niveau de vie médian"</span>,</span>
+<span>       x<span class="op">=</span><span class="st">"Taux de chômage"</span>,</span>
+<span>       y<span class="op">=</span><span class="st">"Niveau de vie médian"</span>,</span>
+<span>       color <span class="op">=</span> <span class="st">"Part de cadres parmi les actifs"</span>,</span>
+<span>       caption<span class="op">=</span><span class="st">"Sources : Filosofi 2017, RP 2017"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Fiche_graphiques_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section><section id="utilisation-des-scales" class="level4" data-number="26.4.1.2"><h4 data-number="26.4.1.2" class="anchored" data-anchor-id="utilisation-des-scales">
+<span class="header-section-number">26.4.1.2</span> Utilisation des <em>scales</em>
+</h4>
+<p>Les fonctions <em>scales</em> dans <code>ggplot2</code> permettent de modifier la manière dont un attribut graphique est relié aux valeurs d’une variable, et dont la légende correspondante va être affichée. L’utilisation des <em>scales</em> permet de définir facilement un grand nombre d’options. Par exemple, pour les attributs <code>x</code> et <code>y</code>, on peut définir la nature des variables (discrètes ou continues), les graduations, l’unité des étiquettes (pourcentage, euros…), et pour l’attribut <code>color</code> on peut contrôler la palette de couleur utilisée.</p>
+<p>Pour modifier une <em>scale</em> existante, on ajoute à l’objet <code>ggplot</code> un élément qui prend la forme <code>scale_&lt;attribut&gt;_&lt;échelle&gt;</code>. Les attributs sont listés dans le tableau de la section @ref(mapping) (<code>size</code>, <code>color</code>, <code>fill</code>…). Les échelles sont listées dans le tableau suivant :</p>
+<table class="table">
+<colgroup>
+<col style="width: 39%">
+<col style="width: 60%">
+</colgroup>
+<thead><tr class="header">
+<th>Paramétrage</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>continuous</td>
+<td>gérer les variables continues</td>
+</tr>
+<tr class="even">
+<td>discrete</td>
+<td>gérer les variables discrètes</td>
+</tr>
+<tr class="odd">
+<td>date</td>
+<td>gérer une variable au format date</td>
+</tr>
+<tr class="even">
+<td>reverse</td>
+<td>inverser l’axe</td>
+</tr>
+<tr class="odd">
+<td>log</td>
+<td>convertir l’échelle d’une variable continue en échelle logarithmique</td>
+</tr>
+<tr class="even">
+<td>log10</td>
+<td>convertir l’échelle d’une variable continue en échelle logarithmique décimale</td>
+</tr>
+<tr class="odd">
+<td>viridis</td>
+<td>utiliser une palette de couleur viridis</td>
+</tr>
+<tr class="even">
+<td>brewer</td>
+<td>utiliser une palette de couleur brewer (variable discrète)</td>
+</tr>
+<tr class="odd">
+<td>distiller</td>
+<td>utiliser une palette de couleur brewer (variable continue)</td>
+</tr>
+<tr class="even">
+<td>gradient</td>
+<td>utiliser un gradient de 2 couleurs</td>
+</tr>
+<tr class="odd">
+<td>gradient2</td>
+<td>utiliser un gradient divergent de 3 couleurs</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Le <em>package</em> <code>scales</code> est très utile pour mettre en forme les étiquettes des échelles (pourcentage, euro, dollar…) et est développé par les auteurs de <code>ggplot2</code>. Il est vivement conseillé de l’utiliser lorsqu’on veut produire des graphiques pour une publication.</p>
+</div>
+</div>
+<p>Dans l’exemple suivant, on utilise deux <em>scales</em> :</p>
+<ul>
+<li>la fonction <code><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_log10()</a></code> pour mettre en forme l’axe des abscisses : les valeurs sont représentées selon une échelle logarithmique, qui va de 10&nbsp;000 à 70&nbsp;000&nbsp;euros, avec une graduation tous les 10&nbsp;000&nbsp;euros ;</li>
+<li>la fonction <code><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous()</a></code> pour mettre en forme l’axe des ordonnées : l’axe va de 0 à 0.3, les étiquettes sont exprimées en pourcentage et on gradue tous les 5 points.</li>
+</ul>
+<div class="cell">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://scales.r-lib.org">scales</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">data_iris_paris_2017</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">niveau_vie_median</span>, y <span class="op">=</span> <span class="va">taux_chomage</span>, color <span class="op">=</span> <span class="va">part_cadres</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_log10</a></span><span class="op">(</span></span>
+<span>    limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">10000</span>, <span class="fl">70000</span><span class="op">)</span>, breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">10000</span>, <span class="fl">60000</span>, <span class="fl">10000</span><span class="op">)</span>,</span>
+<span>    labels <span class="op">=</span> <span class="fu"><a href="https://scales.r-lib.org/reference/dollar_format.html">dollar_format</a></span><span class="op">(</span>prefix <span class="op">=</span> <span class="st">""</span>, suffix <span class="op">=</span> <span class="st">" €"</span>, </span>
+<span>                           big.mark <span class="op">=</span> <span class="st">" "</span>, accuracy <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span><span class="op">(</span></span>
+<span>    limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.3</span><span class="op">)</span>, breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.3</span>, <span class="fl">0.05</span><span class="op">)</span>, </span>
+<span>    labels <span class="op">=</span> <span class="fu"><a href="https://scales.r-lib.org/reference/percent_format.html">percent_format</a></span><span class="op">(</span>accuracy <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Fiche_graphiques_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section><section id="modifier-les-échelles-de-couleur" class="level4" data-number="26.4.1.3"><h4 data-number="26.4.1.3" class="anchored" data-anchor-id="modifier-les-échelles-de-couleur">
+<span class="header-section-number">26.4.1.3</span> Modifier les échelles de couleur</h4>
+<p>Un cas particulier de la section précédente porte sur les échelles de couleur, utilisés principalement avec les attributs <code>color</code> (pour la couleur des points ou des courbes) et <code>fill</code> (pour le remplissage des barres dans un histogramme). Il existe un grand nombre d’échelles de couleur, utilisables avec les fonctions <code>scale_color_&lt;paramétrage&gt;</code> et <code>scale_fill_&lt;paramétrage&gt;</code> :</p>
+<ul>
+<li>
+<code>scale_color_brewer</code> et <code>scale_fill_brewer</code> permettent d’utiliser les nombreuses échelles de couleur du <em>package</em> <code>RColorBrewer</code> (plus d’informations <a href="http://www.sthda.com/french/wiki/couleurs-dans-r#utilisation-des-palettes-de-couleurs-rcolorbrewer">ici</a>) ;</li>
+<li>
+<code>scale_color_grey</code> et <code>scale_fill_grey</code> permettent d’utiliser des échelles de gris ;</li>
+<li>
+<code>scale_color_gradient</code> et <code>scale_fill_gradient</code> permettent d’utiliser des gradients de couleur personnalisés ;</li>
+<li>
+<code>scale_color_viridis</code> et <code>scale_fill_viridis</code> permettent d’utiliser les échelles de couleur du <em>package</em> <code>viridis</code>. Ces échelles de couleur présentent deux grands avantages : elles conviennent aux daltoniens et restent lisibles lorsque le graphique est imprimé en noir et blanc (plus d’informations sur <code>viridis</code> dans <a href="https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html">cette vignette</a>).</li>
+</ul>
+<p>Voici un exemple avec le graphique précédent, dans lequel on indique que la variable représentée sur l’axe des ordonnées est exprimée en pourcentage, de même que la variable indiquant la couleur des points. On choisit par ailleurs une autre échelle de couleur.</p>
+<div class="cell">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://sjmgarnier.github.io/viridis/">viridis</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">data_iris_paris_2017</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">niveau_vie_median</span>, y <span class="op">=</span> <span class="va">taux_chomage</span>, color <span class="op">=</span> <span class="va">part_cadres</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_log10</a></span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">10000</span>, <span class="fl">70000</span><span class="op">)</span>, breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">10000</span>, <span class="fl">60000</span>, <span class="fl">10000</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://sjmgarnier.github.io/viridis/reference/scale_viridis.html">scale_color_viridis</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Fiche_graphiques_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section><section id="modifier-la-légende" class="level4" data-number="26.4.1.4"><h4 data-number="26.4.1.4" class="anchored" data-anchor-id="modifier-la-légende">
+<span class="header-section-number">26.4.1.4</span> Modifier la légende</h4>
+<p>Les fonctions <code>guide()</code> et <code><a href="https://ggplot2.tidyverse.org/reference/guides.html">guides()</a></code> permettent de modifier finement la légende. Les guides peuvent être spécifiés dans chaque <em>scale</em> ou dans une instruction <code><a href="https://ggplot2.tidyverse.org/reference/guides.html">guides()</a></code>. Voici un exemple :</p>
+<div class="cell">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">data_iris_paris_2017</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">niveau_vie_median</span>, y <span class="op">=</span> <span class="va">taux_chomage</span>, color <span class="op">=</span> <span class="va">part_cadres</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="va"><a href="https://scales.r-lib.org/reference/percent_format.html">percent</a></span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://sjmgarnier.github.io/viridis/reference/scale_viridis.html">scale_color_viridis</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="va"><a href="https://scales.r-lib.org/reference/percent_format.html">percent</a></span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html">guides</a></span><span class="op">(</span>color<span class="op">=</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_colourbar.html">guide_colorbar</a></span><span class="op">(</span>direction<span class="op">=</span><span class="st">"horizontal"</span>,</span>
+<span>                           title.position<span class="op">=</span><span class="st">"top"</span>,</span>
+<span>                           label.position<span class="op">=</span><span class="st">"bottom"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Fiche_graphiques_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section></section><section id="utiliser-un-thème" class="level3" data-number="26.4.2"><h3 data-number="26.4.2" class="anchored" data-anchor-id="utiliser-un-thème">
+<span class="header-section-number">26.4.2</span> Utiliser un thème</h3>
+<section id="utiliser-un-thème-existant" class="level4" data-number="26.4.2.1"><h4 data-number="26.4.2.1" class="anchored" data-anchor-id="utiliser-un-thème-existant">
+<span class="header-section-number">26.4.2.1</span> Utiliser un thème existant</h4>
+<p>Lorsqu’on veut donner une apparence homogène à un grand nombre de graphiques, il est préférable de définir un thème plutôt que de personnaliser tous les graphiques avec des options identiques. Il existe dans <code>ggplot2</code> des <a href="http://ggplot2.tidyverse.org/reference/index.html#section-themes">thèmes prédéfinis</a> que l’on peut utiliser facilement. Par exemple : <code><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal()</a></code>, <code><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_classic()</a></code>, <code><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw()</a></code>, <code><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_dark()</a></code>… Des <em>packages</em> externes permettent d’enrichir cette collection de thèmes, par exemple <code>ggthemes</code> ou <code>hrbrthemes</code>.</p>
+<p>Pour utiliser un thème prédéfini, il suffit d’utiliser la fonction <code><a href="https://ggplot2.tidyverse.org/reference/theme_get.html">theme_set()</a></code>comme ceci :</p>
+<div class="cell">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme_get.html">theme_set</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="définir-un-thème-personnalisé" class="level4" data-number="26.4.2.2"><h4 data-number="26.4.2.2" class="anchored" data-anchor-id="définir-un-thème-personnalisé">
+<span class="header-section-number">26.4.2.2</span> Définir un thème personnalisé</h4>
+<p>La fonction <strong><code><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme()</a></code></strong> permet de créer des templates, c’est-à-dire de définir tout ce qui n’est pas lié directement aux données sur un graphique, notamment la position, la taille, la couleur et la police des éléments textuels (légende, titres du graphique et des axes), ainsi que la couleur des grilles primaires et secondaires du graphique. La définition d’un thème personnalisé dépasse largement le cadre de la présente fiche, mais doit vous intéresser si vous devez produire des graphiques avec une apparence homogène. Voici quelques références pour les utilisateurs intéressés :</p>
+<ul>
+<li>une <a href="https://mtes-mct.github.io/parcours-r/m5/les-th%C3%A8mes.html">introduction en français</a> à la définition des thèmes ;</li>
+<li>le <a href="https://r-graphics.org/chapter-appearance">chapitre 9 de <em>R Graphics Cookbook</em></a> (en anglais) aborde la question des thèmes ;</li>
+<li>l’<a href="https://calligross.github.io/2016-03-28-ggthemeassist-an-add-in-for-rstudio.html"><em>addin</em> RStudio <code>ggThemeAssist</code></a> est très utile pour se familiariser avec tous les éléments personnalisables des thèmes.</li>
+</ul></section></section></section><section id="exporter-un-graphique" class="level2" data-number="26.5"><h2 data-number="26.5" class="anchored" data-anchor-id="exporter-un-graphique">
+<span class="header-section-number">26.5</span> Exporter un graphique</h2>
+<p>La fonction <code><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave()</a></code> de <code>ggplot2</code> permet d’exporter des graphiques dans un fichier externe. Les formats recommandés sont le <code>pdf</code> et le <code>png</code>. Il est néanmoins possible d’utiliser d’autres formats : <code>eps</code>, <code>ps</code>, <code>jpeg</code>, <code>tiff</code>, <code>bmp</code>, <code>svg</code>… Les options <code>width</code> et <code>height</code> contrôlent la taille du graphique. Attention, par défaut, ces paramètres correspondent à la taille de la fenêtre graphique de <code>R</code>, en bas à droite. Il est probable que les valeurs par défaut de ces paramètres ne vous conviennent pas, voire modifient le message de votre graphique ; n’hésitez pas à leur donner des valeurs adaptées.</p>
+<p>Voici un exemple :</p>
+<div class="cell">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">data_iris_paris_2017</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">niveau_vie_median</span>, y <span class="op">=</span> <span class="va">taux_chomage</span>, color <span class="op">=</span> <span class="va">part_cadres</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title<span class="op">=</span><span class="st">"Taux de chômage par iris à Paris en fonction du niveau de vie médian"</span>,</span>
+<span>       x<span class="op">=</span><span class="st">"Taux de chômage"</span>,</span>
+<span>       y<span class="op">=</span><span class="st">"Niveau de vie médian"</span>,</span>
+<span>       color <span class="op">=</span> <span class="st">"Part de cadres parmi les actifs"</span>,</span>
+<span>       caption<span class="op">=</span><span class="st">"Sources : Filosofi 2017, RP 2017"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave</a></span><span class="op">(</span><span class="st">"dossier/export/graphiques/graphique_iris_paris.pdf"</span>, <span class="va">p</span>, width<span class="op">=</span><span class="fl">12</span>, height <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="ggplot2Ressources" class="level2" data-number="26.6"><h2 data-number="26.6" class="anchored" data-anchor-id="ggplot2Ressources">
+<span class="header-section-number">26.6</span> Pour en savoir plus</h2>
+<ul>
+<li>
+<a href="http://ggplot2.tidyverse.org/index.html">La documentation officielle</a> (en anglais) de <code>ggplot2</code> est très complète et accessible en ligne.</li>
+<li>Une “antisèche” (en français) résumant en deux pages l’ensemble des fonctions et arguments et disponible <a href="https://thinkr.fr/pdf/ggplot2-french-cheatsheet.pdf">ici</a>.</li>
+<li>Les parties <a href="http://r4ds.had.co.nz/data-visualisation.html">Data visualisation</a> et <a href="http://r4ds.had.co.nz/graphics-for-communication.html">Graphics for communication</a> de l’ouvrage en ligne <em>R for data science</em>, de Hadley Wickham, sont une très bonne introduction à <code>ggplot2</code>.</li>
+<li>
+<a href="https://juba.github.io/tidyverse/08-ggplot2.html">Partie <code>ggplot2</code></a> de l’introduction à <code>R</code> et au <code>tidyverse</code> ;</li>
+<li>
+<a href="https://mtes-mct.github.io/parcours_r_module_datavisualisation/package-ggplot2.html">Partie <code>ggplot2</code></a> de la formation à <code>R</code> du Ministère de la Transition écologique et solidaire.</li>
+<li>Plusieurs ouvrages, toujours en anglais, abordent en détail l’utilisation de <code>ggplot2</code> :
+<ul>
+<li>
+<a href="http://www.amazon.fr/ggplot2-Elegant-Graphics-Data-Analysis/dp/0387981403/">ggplot2 : Elegant Graphics for Data Analysis</a> de Hadley Wickham ;</li>
+<li>
+<a href="http://www.amazon.fr/R-Graphics-Cookbook-Winston-Chang/dp/1449316956"><em>R Graphics Cookbook</em></a> de Winston Chang. Le <a href="https://r-graphics.org/">site associé</a> à ce dernier ouvrage comporte aussi pas mal d’exemples et d’informations intéressantes ;</li>
+</ul>
+</li>
+<li>Enfin, si <code>ggplot2</code> présente déjà un très grand nombre de fonctionnalités, il existe aussi un système d’extensions permettant d’ajouter des <em>geometries</em>, des thèmes, etc. Le site <a href="http://exts.ggplot2.tidyverse.org/">ggplot2 extensions</a> est une très bonne ressource pour les parcourir et les découvrir, notamment grâce à sa <a href="http://exts.ggplot2.tidyverse.org/">galerie</a>.</li>
+</ul>
+
+
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script><nav class="page-navigation"><div class="nav-page nav-page-previous">
+      <a href="../03_Fiches_thematiques/Fiche_analyse_de_donnees.html" class="pagination-link  aria-label=" de="" donn="" acm="" acf...="">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">L’analyse de données (ACP, ACM, ACF…)</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../03_Fiches_thematiques/Fiche_rmarkdown.html" class="pagination-link" aria-label="<span class='chapter-number'>27</span>&nbsp; <span class='chapter-title'>Produire des documents avec `R Markdown`</span>">
+        <span class="nav-page-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Produire des documents avec <code>R Markdown</code></span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer">
+    <div class="nav-footer-left">
+<p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/InseeFrLab/utilitR/edit/master/03_Fiches_thematiques/Fiche_graphiques.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/InseeFrLab/utilitR/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<li>
+<a href="https://github.com/InseeFrLab/utilitR.git" target="blank">Code source</a>
+</li>
+</div>
+  </div>
+</footer>
+
+
+</body></html>

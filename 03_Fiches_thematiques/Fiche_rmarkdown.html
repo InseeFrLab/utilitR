@@ -1,0 +1,1910 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.549">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>27&nbsp; Produire des documents avec R Markdown</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../03_Fiches_thematiques/Fiche_rmarkdown_param_report.html" rel="next">
+<link href="../03_Fiches_thematiques/Fiche_graphiques.html" rel="prev">
+<link href="../resources/logo-utilitr.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark"><script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><script async="" src="https://hypothes.is/embed.js"></script><script>
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    document.body.classList.add('hypothesis-enabled');
+  });
+</script>
+</head>
+<body class="nav-sidebar docked nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="navbar navbar-expand-lg " data-bs-theme="dark"><div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../resources/logo-utilitr.png" alt="Logo du projet utilitR" class="navbar-logo"></a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+<li class="nav-item">
+    <a class="nav-link active" href="../01_R_Insee/presentation_utilitr.html" aria-current="page"> 
+<span class="menu-text">Introduction</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_rprojects.html"> 
+<span class="menu-text">Mener un projet statistique</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_import_fichiers_plats.html"> 
+<span class="menu-text">Importer des données</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_tidyverse.html"> 
+<span class="menu-text">Choisir son paradigme</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_joindre_donnees.html"> 
+<span class="menu-text">Manipuler des données</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_graphiques.html"> 
+<span class="menu-text">Produire des sorties</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../02_Bonnes_pratiques/01-qualite-code.html"> 
+<span class="menu-text">Bonnes pratiques</span></a>
+  </li>  
+</ul>
+</div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools tools-wide">
+    <a href="https://github.com/InseeFrLab/utilitR" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <div class="dropdown">
+      <a href="" title="Share" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Share"><i class="bi bi-share"></i></a>
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="quarto-navigation-tool-dropdown-0">
+<li>
+            <a class="dropdown-item quarto-navbar-tools-item" href="https://twitter.com/intent/tweet?url=%7Curl%7C">
+              <i class="bi bi-bi-twitter pe-1"></i>
+            Twitter
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item quarto-navbar-tools-item" href="https://www.linkedin.com/sharing/share-offsite/?url=%7Curl%7C">
+              <i class="bi bi-bi-linkedin pe-1"></i>
+            LinkedIn
+            </a>
+          </li>
+      </ul>
+</div>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_graphiques.html">Produire des sorties avec R</a></li><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_rmarkdown.html"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Produire des documents avec <code>R Markdown</code></span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="../resources/logo-utilitr.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none"></a>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Principales parties</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Introduction</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/presentation_utilitr.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Présentation du projet <code>utilitR</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_utilitR.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Comment utiliser la documentation <code>utilitR</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">Mener un projet statistique avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_rprojects.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Utiliser les projets <code>RStudio</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_git_utilisation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Utiliser <code>Git</code> avec RStudio</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_installer_packages.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Utiliser des <em>packages</em> <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_comment_choisir_un_package.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Comment choisir un <em>package</em> ?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_gerer_dependances.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Gérer les dépendances</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_se_documenter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Se documenter sur <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_resoudre_un_probleme.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Résoudre un problème avec <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_targets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Construire une chaîne de traitement reproductible avec <code>targets</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">Importer des données avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_fichiers_plats.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Importer des fichiers plats (<code>.csv</code>, <code>.tsv</code>, <code>.txt</code>)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_tables_sas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Importer des tables SAS®</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_tableurs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Importer des fichiers issus de tableurs (Excel, Calc)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_fichiers_parquet.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Lire et écrire des fichiers Parquet</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_api.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Travailler avec des API</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_connexion_bdd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Se connecter à une base de données</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true">
+ <span class="menu-text">Choisir son paradigme d’analyse des données avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_tidyverse.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Manipuler des données avec le <code>tidyverse</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_datatable.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Manipuler des données avec <code>data.table</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_arrow.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Manipuler des données avec <code>arrow</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text">Manipuler des données avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_joindre_donnees.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Joindre des tables de données</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_donnees_textuelles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Manipuler des données textuelles</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_survey.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Utiliser des données d’enquêtes</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_donnees_spatiales.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Manipuler des données spatiales</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_donnees_temporelles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Manipuler des données temporelles</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_analyse_de_donnees.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">L’analyse de données (ACP, ACM, ACF…)</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text">Produire des sorties avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_graphiques.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Faire des graphiques avec <code>ggplot2</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_rmarkdown.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Produire des documents avec <code>R Markdown</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_rmarkdown_param_report.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Produire des rapports automatisés avec <code>R Markdown</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text">Bonnes pratiques</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_Bonnes_pratiques/01-qualite-code.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Qualité du code</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_Bonnes_pratiques/02-structure-code.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Structure des projets</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true">
+ <span class="menu-text">Éléments de configuration</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_Rstudio_AUSv3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Utiliser RStudio sur l’environnement AUSv3</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_Rstudio_SSPCloud.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Utiliser <code>RStudio</code> sur l’environnement SSP Cloud</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_configurer_git.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Configurer <code>Git</code> sur son poste de travail</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche-personnaliser-R.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Personnaliser la configuration de <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_ressources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Superviser sa session <code>R</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+    </ul>
+</div>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+<li><a href="#t%C3%A2ches-concern%C3%A9es-et-recommandations" id="toc-tâches-concernées-et-recommandations" class="nav-link active" data-scroll-target="#t%C3%A2ches-concern%C3%A9es-et-recommandations"><span class="header-section-number">27.1</span> Tâches concernées et recommandations</a></li>
+  <li>
+<a href="#pr%C3%A9sentation-g%C3%A9n%C3%A9rale-de-r-markdown" id="toc-présentation-générale-de-r-markdown" class="nav-link" data-scroll-target="#pr%C3%A9sentation-g%C3%A9n%C3%A9rale-de-r-markdown"><span class="header-section-number">27.2</span> Présentation générale de <code>R Markdown</code></a>
+  <ul class="collapse">
+<li><a href="#de-markdown-%C3%A0-r-markdown" id="toc-de-markdown-à-r-markdown" class="nav-link" data-scroll-target="#de-markdown-%C3%A0-r-markdown"><span class="header-section-number">27.2.1</span> De <code>Markdown</code> à <code>R Markdown</code></a></li>
+  <li><a href="#que-peut-produire-r-markdown" id="toc-que-peut-produire-r-markdown" class="nav-link" data-scroll-target="#que-peut-produire-r-markdown"><span class="header-section-number">27.2.2</span> Que peut produire <code>R Markdown</code> ?</a></li>
+  <li><a href="#pourquoi-utiliser-r-markdown" id="toc-pourquoi-utiliser-r-markdown" class="nav-link" data-scroll-target="#pourquoi-utiliser-r-markdown"><span class="header-section-number">27.2.3</span> Pourquoi utiliser <code>R Markdown</code> ?</a></li>
+  <li><a href="#comment-fonctionne-r-markdown" id="toc-comment-fonctionne-r-markdown" class="nav-link" data-scroll-target="#comment-fonctionne-r-markdown"><span class="header-section-number">27.2.4</span> Comment fonctionne <code>R Markdown</code> ?</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#comment-construire-un-document-r-markdown" id="toc-comment-construire-un-document-r-markdown" class="nav-link" data-scroll-target="#comment-construire-un-document-r-markdown"><span class="header-section-number">27.3</span> Comment construire un document <code>R Markdown</code> ?</a>
+  <ul class="collapse">
+<li><a href="#anatomie-de-la-structure-dun-document-r-markdown" id="toc-anatomie-de-la-structure-dun-document-r-markdown" class="nav-link" data-scroll-target="#anatomie-de-la-structure-dun-document-r-markdown"><span class="header-section-number">27.3.1</span> Anatomie de la structure d’un document <code>R Markdown</code></a></li>
+  <li><a href="#ecrire-des-blocs-de-texte-en-r-markdown" id="toc-ecrire-des-blocs-de-texte-en-r-markdown" class="nav-link" data-scroll-target="#ecrire-des-blocs-de-texte-en-r-markdown"><span class="header-section-number">27.3.2</span> Ecrire des blocs de texte en <code>R Markdown</code></a></li>
+  <li><a href="#ins%C3%A9rer-un-r%C3%A9sultat-r-dans-du-texte" id="toc-insérer-un-résultat-r-dans-du-texte" class="nav-link" data-scroll-target="#ins%C3%A9rer-un-r%C3%A9sultat-r-dans-du-texte"><span class="header-section-number">27.3.3</span> Insérer un résultat <code>R</code> dans du texte</a></li>
+  <li><a href="#ecrire-des-blocs-de-code" id="toc-ecrire-des-blocs-de-code" class="nav-link" data-scroll-target="#ecrire-des-blocs-de-code"><span class="header-section-number">27.3.4</span> Ecrire des blocs de code</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#param%C3%A9trer-un-document-r-markdown" id="toc-paramétrer-un-document-r-markdown" class="nav-link" data-scroll-target="#param%C3%A9trer-un-document-r-markdown"><span class="header-section-number">27.4</span> Paramétrer un document <code>R Markdown</code></a>
+  <ul class="collapse">
+<li><a href="#personnaliser-les-options-de-len-t%C3%AAte" id="toc-personnaliser-les-options-de-len-tête" class="nav-link" data-scroll-target="#personnaliser-les-options-de-len-t%C3%AAte"><span class="header-section-number">27.4.1</span> Personnaliser les options de l’en-tête</a></li>
+  <li><a href="#gestion-automatique-de-la-bibliographie" id="toc-gestion-automatique-de-la-bibliographie" class="nav-link" data-scroll-target="#gestion-automatique-de-la-bibliographie"><span class="header-section-number">27.4.2</span> Gestion automatique de la bibliographie</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#int%C3%A9grer-des-tableaux-dans-un-document-r-markdown" id="toc-intégrer-des-tableaux-dans-un-document-r-markdown" class="nav-link" data-scroll-target="#int%C3%A9grer-des-tableaux-dans-un-document-r-markdown"><span class="header-section-number">27.5</span> Intégrer des tableaux dans un document <code>R Markdown</code></a>
+  <ul class="collapse">
+<li><a href="#construction-dune-table-markdown" id="toc-construction-dune-table-markdown" class="nav-link" data-scroll-target="#construction-dune-table-markdown"><span class="header-section-number">27.5.1</span> Construction d’une table <code>Markdown</code></a></li>
+  <li><a href="#une-table-basique-en-r-markdown" id="toc-une-table-basique-en-r-markdown" class="nav-link" data-scroll-target="#une-table-basique-en-r-markdown"><span class="header-section-number">27.5.2</span> Une table basique en <code>R Markdown</code></a></li>
+  <li><a href="#des-tables-plus-complexes" id="toc-des-tables-plus-complexes" class="nav-link" data-scroll-target="#des-tables-plus-complexes"><span class="header-section-number">27.5.3</span> Des tables plus complexes</a></li>
+  </ul>
+</li>
+  <li><a href="#extensionsrmd" id="toc-extensionsrmd" class="nav-link" data-scroll-target="#extensionsrmd"><span class="header-section-number">27.6</span> Extensions de <code>rmarkdown</code> et modèles de documents</a></li>
+  <li>
+<a href="#int%C3%A9grer-des-figures-dans-r-markdown" id="toc-intégrer-des-figures-dans-r-markdown" class="nav-link" data-scroll-target="#int%C3%A9grer-des-figures-dans-r-markdown"><span class="header-section-number">27.7</span> Intégrer des figures dans <code>R Markdown</code></a>
+  <ul class="collapse">
+<li><a href="#depuis-un-fichier-image" id="toc-depuis-un-fichier-image" class="nav-link" data-scroll-target="#depuis-un-fichier-image"><span class="header-section-number">27.7.1</span> Depuis un fichier image</a></li>
+  <li><a href="#sans-passer-par-un-fichier-image" id="toc-sans-passer-par-un-fichier-image" class="nav-link" data-scroll-target="#sans-passer-par-un-fichier-image"><span class="header-section-number">27.7.2</span> Sans passer par un fichier image</a></li>
+  </ul>
+</li>
+  <li><a href="#RessourcesRMarkdown" id="toc-RessourcesRMarkdown" class="nav-link" data-scroll-target="#RessourcesRMarkdown"><span class="header-section-number">27.8</span> Pour en savoir plus</a></li>
+  </ul><div class="toc-actions"><ul><li><a href="https://github.com/InseeFrLab/utilitR/edit/master/03_Fiches_thematiques/Fiche_rmarkdown.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/InseeFrLab/utilitR/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_graphiques.html">Produire des sorties avec R</a></li><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_rmarkdown.html"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Produire des documents avec <code>R Markdown</code></span></a></li></ol></nav><div class="quarto-title">
+<h1 class="title"><span id="rmarkdown" class="quarto-section-identifier"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Produire des documents avec <code>R Markdown</code></span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header><section id="tâches-concernées-et-recommandations" class="level2" data-number="27.1"><h2 data-number="27.1" class="anchored" data-anchor-id="tâches-concernées-et-recommandations">
+<span class="header-section-number">27.1</span> Tâches concernées et recommandations</h2>
+<p>L’utilisateur souhaite produire avec <code>R</code> des documents contenant à la fois du texte, des extraits de code <code>R</code> et les résultats de l’exécution de programmes <code>R</code>.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tâche concernée et recommandation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>Il est conseillé d’utiliser le <em>package</em> <code>rmarkdown</code> qui permet de produire des documents avec <code>R</code> en utilisant la syntaxe <code>R Markdown</code> ;</li>
+<li>Pour aller plus loin et s’exercer sur <code>R Markdown</code>, il est recommandé de lire le chapitre sur <code>R Markdown</code> dans la formation <a href="https://linogaliana.gitlab.io/collaboratif/rmd.html">Travail collaboratif avec <code>R</code></a>.</li>
+</ul>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Certains exemples de cette fiche utilisent les données disponibles dans le <em>package</em> <code>doremifasolData</code> ; vous ne pourrez reproduire ces exemples que si ce <em>package</em> est installé sur la machine sur laquelle vous travaillez. Si vous ne savez pas si ce <em>package</em> est déjà installé, consultez la fiche <a href="../01_R_Insee/Fiche_utiliser_utilitR.html">Comment utiliser la documentation <code>utilitR</code></a>.</p>
+</div>
+</div>
+</section><section id="présentation-générale-de-r-markdown" class="level2" data-number="27.2"><h2 data-number="27.2" class="anchored" data-anchor-id="présentation-générale-de-r-markdown">
+<span class="header-section-number">27.2</span> Présentation générale de <code>R Markdown</code>
+</h2>
+<p><code>R Markdown</code> est une extension de <code>R</code> qui se présente sous la forme d’un <em>package</em>. <code>R Markdown</code> permet de produire des documents texte en y intégrant nativement des morceaux de code <code>R</code> (pour le rendre public, pour générer des sorties…). <code>R Markdown</code> permet de fluidifier le processus de rédaction d’une publication, en réduisant fortement le nombre de gestes manuels nécessaires pour inclure des graphiques ou du code dans un document : plutôt qu’avoir un code <code>SAS</code> ou <code>Stata</code> ayant généré des sorties <code>Excel</code>/<code>Calc</code> intégrées dans un document <code>Word</code> ou transformées en table <code>LaTeX</code>, on dispose d’un unique document-source qui contient à la fois le texte et les codes qui produisent les sorties du document final. L’utilisation de <code>R Markdown</code> facilite la production de publications reproductibles.</p>
+<section id="de-markdown-à-r-markdown" class="level3" data-number="27.2.1"><h3 data-number="27.2.1" class="anchored" data-anchor-id="de-markdown-à-r-markdown">
+<span class="header-section-number">27.2.1</span> De <code>Markdown</code> à <code>R Markdown</code>
+</h3>
+<p><strong><code>Markdown</code> est un système d’édition doté d’une syntaxe simplifiée souvent utilisé pour faire de la documentation de projet.</strong> Le format est utilisé sur de nombreux sites internet, notamment <code>Gitlab</code> et <code>Stackoverflow</code>. L’extension de ce type de fichier est <code>.md</code>. <code>Markdown</code> présente deux avantages. D’une part, il est facile d’inclure des blocs de code informatique et des équations mathématiques dans un document <code>Markdown</code>. D’autre part, le formatage de blocs de code est simple et très bien fait (et beaucoup plus léger qu’en LaTeX par exemple).</p>
+<p><strong>Comme son nom l’indique, <code>R Markdown</code> permet de lier du texte (<code>Markdown</code>) avec du code <code>R</code>.</strong> A la différence d’un fichier <code>Markdown</code> classique, un document <code>R Markdown</code> peut à la fois présenter <strong>et</strong> exécuter du code <code>R</code>, et peut donc intégrer facilement les sorties de ce code (graphiques, tableaux, cartes…). La présente documentation est ainsi entièrement rédigée avec <code>R Markdown</code>, comme on peut le voir en jetant un coup d’oeil au <a href="https://github.com/InseeFrLab/utilitR/tree/master/03_Fiches_thematiques">code source de cette fiche</a>.</p>
+<p><strong>Il est toutefois possible de produire un document <code>R Markdown</code> sans exécuter les codes <code>R</code> qu’il contient</strong> (comme dans un <code>Markdown</code> classique). En outre, <code>R Markdown</code> propose de <a href="https://bookdown.org/yihui/rmarkdown/language-engines.html#shell-scripts">plus en plus de langages</a> pour aller au-delà de <code>R</code>, parmi lesquels <code>Python</code>, <code>SQL</code>, <code>C++</code>…</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>R Markdown</code> est une alternative aux <a href="https://jupyter.org/">notebooks Jupyter</a> qui permettent de lier du code et du texte. Du point de vue de la reproductibilité des résultats, les fichiers <code>R Markdown</code> sont préférables car l’exécution du code dans le document est linéaire alors que les blocs de code des <code>notebook jupyter</code> peuvent être exécutés dans le désordre.</p>
+</div>
+</div>
+</section><section id="que-peut-produire-r-markdown" class="level3" data-number="27.2.2"><h3 data-number="27.2.2" class="anchored" data-anchor-id="que-peut-produire-r-markdown">
+<span class="header-section-number">27.2.2</span> Que peut produire <code>R Markdown</code> ?</h3>
+<p>Il y a une grande liberté dans les formats de sortie disponibles pour un fichier <code>Markdown</code>. Parmi les principaux types de sorties :</p>
+<ul>
+<li>Des rapports ou articles en <code>pdf</code>, <code>html</code>, <code>doc</code>, <code>odt</code>, etc. ;</li>
+<li>Des présentations sous forme de slides <code>pdf</code> ou <code>html</code> ;</li>
+<li>Des sites <em>web</em> (comme celui associé à <a href="https://www.book.utilitr.org">cet ouvrage</a> ou comme <a href="https://www.utilitr.org">la page d’accueil d’utilitR</a>).</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Pour la génération d’un document au format <code>pdf</code>, vous devez avoir une installation fonctionnelle de LaTeX sur votre système. Si ça n’est pas le cas, le <em>package</em> <code>tinytex</code> de Yihui Xie vise à faciliter l’installation d’une distribution LaTeX minimale quel que soit le système d’exploitation de votre machine. Pour l’utiliser il vous faut d’abord installer le <em>package</em> <code>tinytex</code>, puis lancer l”installation de LaTeX (prévoir un téléchargement d’environ 200Mo). Voici les instructions à exécuter :</p>
+<div class="cell">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"tinytex"</span><span class="op">)</span></span>
+<span><span class="fu">tinytex</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tinytex/man/install_tinytex.html">install_tinytex</a></span><span class="op">(</span><span class="op">)</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Sous AUS, il n’est pas possible d’installer ce package car il a besoin d’internet. Une distribution <code>MiKTeX</code> (plus riche que <code>tinytex</code>) est disponible et permet de compiler en <code>pdf</code>.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Il existe une manière d’obtenir une sortie en <code>pdf</code> qui n’implique pas de passer par LaTeX grâce au package <code>pagedown</code> (<a href="#extensionsrmd">présentation plus bas</a>). Par l’intermédiaire de Google Chrome ou Chromium (sa version <em>open-source</em>), <code>pagedown</code> transforme directement le <code>html</code> en <code>pdf</code>. Dans ce cas, il faut ajouter la ligne <code>knit : pagedown::chrome_print</code> dans l’en-tête du document (<a href="https://pagedown.rbind.io/">documentation</a>).</p>
+</div>
+</div>
+</section><section id="pourquoi-utiliser-r-markdown" class="level3" data-number="27.2.3"><h3 data-number="27.2.3" class="anchored" data-anchor-id="pourquoi-utiliser-r-markdown">
+<span class="header-section-number">27.2.3</span> Pourquoi utiliser <code>R Markdown</code> ?</h3>
+<p><code>R Markdown</code> présente plusieurs avantages pour la production de documents statistiques :</p>
+<ol type="1">
+<li>L’utilisation de <code>R Markdown</code> amène l’utilisateur à se préoccuper de la reproductibilité des productions statistiques.</li>
+<li>La dissociation du fond et de la forme du document permise par <code>R Markdown</code> a de nombreuses vertus, parmi lesquelles :
+<ul>
+<li>elle allège les mises à jour ou correctifs du texte ou du code générant des sorties ;</li>
+<li>elle donne de la visibilité au code ayant généré les résultats et illustrations ;</li>
+<li>il est facile de changer le format du document final (par exemple produire un fichier <code>html</code> plutôt que <code>pdf</code>), et la gestion de multiples formats de publication est peu coûteuse (puisque le document source reste le même pour tous les formats).</li>
+</ul>
+</li>
+<li>Il est possible de mettre des commentaires partout dans le document, ce qui permet de détailler les résultats et les choix de méthode, et facilite le suivi de l’analyse ou l’appropriation par une personne extérieure.</li>
+<li>La syntaxe <code>R Markdown</code> a été pensée pour avoir deux grandes qualités :
+<ul>
+<li>Elle est simple et rapide à prendre en main ; elle est notamment beaucoup plus simple que la syntaxe <code>html</code> ;</li>
+<li>Elle est très légère visuellement, ce qui fait qu’un code brut <code>R Markdown</code> reste lisible même pour des personnes qui ne connaissent pas la syntaxe (contrairement à <code>LaTeX</code>…).</li>
+</ul>
+</li>
+<li>Lorsqu’on associe <code>R Markdown</code> et un outil de <em>versioning</em> tel que Git, les modifications successives apportées au document sont facilement traçables, ce qui permet de :
+<ul>
+<li>maîtriser l’évolution du document, par exemple sur la succession de corrections, apportées tout au long d’un circuit de relecture ;</li>
+<li>ne pas multiplier les versions d’un même document ;</li>
+<li>combiner facilement les modifications apportées par plusieurs utilisateurs.</li>
+</ul>
+</li>
+<li>
+<code>R Markdown</code> est bien intégré à <code>RStudio</code>. Les extensions <code>.Rmd</code> sont reconnues automatiquement par <code>RStudio</code> ce qui permet d’avoir de l’autocomplétion également lors de la rédaction de blocs de texte, la possibilité d’exécuter des bouts de code uniquement lors d’une phase d’exploration…</li>
+</ol></section><section id="comment-fonctionne-r-markdown" class="level3" data-number="27.2.4"><h3 data-number="27.2.4" class="anchored" data-anchor-id="comment-fonctionne-r-markdown">
+<span class="header-section-number">27.2.4</span> Comment fonctionne <code>R Markdown</code> ?</h3>
+<section id="dissociation-du-fond-et-de-la-forme" class="level4" data-number="27.2.4.1"><h4 data-number="27.2.4.1" class="anchored" data-anchor-id="dissociation-du-fond-et-de-la-forme">
+<span class="header-section-number">27.2.4.1</span> Dissociation du fond et de la forme</h4>
+<p><strong><code>R Markdown</code> dissocie le fond et la forme du document, contrairement aux logiciels de type Office qui fonctionnent selon le principe du <em>WYSIWYG</em> </strong> (<em>What you see is what you get</em>). Le fichier <code>.Rmd</code> contient donc à la fois le texte brut et des commandes de mise en forme. On parle de <em>WYSIWYW</em> (<em>What you see is what you want</em>). Le fichier est composé de texte brut et éventuellement de code informatique, et doit être compilé pour produire le fichier de sortie. <strong>Le document final ne peut être visualisé qu’après compilation.</strong> A noter que les illustrations (graphiques, tableaux, cartes) peuvent être générées dynamiquement à partir des blocs de code <code>R</code> intégrés dans le document <code>Rmd</code>, ou insérées par des liens.</p>
+<p>Les connaisseurs du format <code>LaTeX</code> reconnaîtront une grande proximité entre <code>LaTeX</code> et <code>Markdown</code>. En effet, dans les deux cas, la mise en forme est appelée par des commandes spéciales. Toutefois, <code>Markdown</code> se distingue de <code>LaTeX</code> par des commandes de mise en forme beaucoup plus légères. Par exemple, il faut utiliser la fonction <code>\textit{italique}</code> en <code>LaTeX</code> pour mettre du texte en italique, alors qu’en <code>Markdown</code> il suffit de mettre le texte entre deux astériques <code>*italique*</code>.</p>
+</section><section id="comment-r-markdown-produit-il-un-document" class="level4" data-number="27.2.4.2"><h4 data-number="27.2.4.2" class="anchored" data-anchor-id="comment-r-markdown-produit-il-un-document">
+<span class="header-section-number">27.2.4.2</span> Comment <code>R Markdown</code> produit-il un document ?</h4>
+<p><strong>La compilation d’un document <code>R Markdown</code> se déroule en deux étapes qui sont gérées de manière interne par le package <code>rmarkdown</code></strong> :</p>
+<ul>
+<li>Transformation du <code>.Rmd</code> (<code>R Markdown</code>) en <code>.md</code> (<code>Markdown</code>) : le <em>package</em> <code>knitr</code> se charge de transformer le texte et les sorties <code>R</code> en un document <code>markdown</code> standard.</li>
+<li>Transformation du <code>.md</code> en un format de sortie standard (<code>html</code>, <code>pdf</code>, etc.) : tâche effectuée par le logiciel nommé <code>pandoc</code>. Ce dernier est automatiquement installé lorsqu’on a installé le package <code>rmarkdown</code>, il n’y a donc pas à le télécharger.</li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="../pics_resized/rmarkdown/schema_rmd.png" class="img-fluid figure-img" style="width:75.0%"></p>
+<figcaption>Comment R Markdown produit-il un document ?</figcaption></figure>
+</div>
+</div>
+</div>
+<p>Pour obtenir la sortie désirée d’un document <code>R Markdown</code> on peut utiliser deux méthodes :</p>
+<ul>
+<li>Pour les usages courants, le bouton <code>Knit</code> de RStudio convient bien :</li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="../pics_resized/rmarkdown/knit.png" class="img-fluid figure-img" width="135"></p>
+<figcaption>Le bouton knit</figcaption></figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Pour des processus de production des fichiers plus complexes, il est possible d’exécuter la commande <code><a href="https://pkgs.rstudio.com/rmarkdown/reference/render.html">rmarkdown::render</a></code> pour générer de manière automatique un fichier <code>R Markdown</code>.</li>
+</ul>
+<!-----
+Cela donne, par exemple, le rendu suivant :
+
+![](../pics/rmarkdown/rmd-temp.png)
+-----><div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Pour assurer la <strong>reproductibilité</strong> des résultats, le document doit pouvoir être généré par chacun des membres de l’équipe projet. Voici quelques bonnes pratiques pour y parvenir :</p>
+<p>Tout comme pour un script <code>R</code>, les ressources (images, données…) doivent être appelées via des chemins d’accès relatifs. Par défaut, le dossier de travail de travail est celui où se situe le document. Il faut donc utiliser des chemins relatifs, et non absolus :</p>
+<pre><code>- **A ne pas faire :** inclure un lien vers `D:/projets_Gitlab/my_project/donnees/mesdonnees.csv` ;
+- **mais faire plutôt :** inclure un lien vers `./donnees/mesdonnees.csv` ;</code></pre>
+<p>Si un fichier <code>R Markdown</code> se situe dans l’arborescence d’un <code>R Project</code>, il faut faire attention à la question du chemin relatif. Il peut être pratique de fixer comme chemin de départ, l’emplacement du <code>R Project</code>. Les avantages et inconvénients d’un tel choix sont développés <a href="https://bookdown.org/yihui/rmarkdown-cookbook/working-directory.html">ici</a></p>
+<p>Quelle que soit la configuration, l’emplacement des ressources doit respecter une arborescence connue et utilisée par tous.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Les fichiers <code>.Rmd</code> s’intègrent bien avec <code>git</code> car il s’agit de fichiers texte. En revanche, il faut éviter de mettre sous contrôle de version les fichiers de sortie (<code>pdf</code>, <code>html</code>). Pour ce faire, on peut ajouter au fichier <code>.gitignore</code> les extensions associées, par exemple <code>*.pdf</code> ou <code>*.html</code></p>
+</div>
+</div>
+</section></section></section><section id="comment-construire-un-document-r-markdown" class="level2" data-number="27.3"><h2 data-number="27.3" class="anchored" data-anchor-id="comment-construire-un-document-r-markdown">
+<span class="header-section-number">27.3</span> Comment construire un document <code>R Markdown</code> ?</h2>
+<section id="anatomie-de-la-structure-dun-document-r-markdown" class="level3" data-number="27.3.1"><h3 data-number="27.3.1" class="anchored" data-anchor-id="anatomie-de-la-structure-dun-document-r-markdown">
+<span class="header-section-number">27.3.1</span> Anatomie de la structure d’un document <code>R Markdown</code>
+</h3>
+<p>Un document <code>R Markdown</code> comprend deux parties principales :</p>
+<ul>
+<li>L’en-tête (<em>YAML header</em>) qui gère les éléments de style ;</li>
+<li>Le contenu qui gère le fond et permet d’alterner librement texte et code.</li>
+</ul>
+<section id="len-tête" class="level4" data-number="27.3.1.1"><h4 data-number="27.3.1.1" class="anchored" data-anchor-id="len-tête">
+<span class="header-section-number">27.3.1.1</span> L’en-tête</h4>
+<p>L’en-tête d’un document <code>R Markdown</code> (parfois appelé <code>YAML header</code>) est délimité par deux lignes de pointillés et contient les métadonnées du document (titre, auteurs, options générales de mise en page…). Il contient au minimum le titre du document et le format de sortie. Il peut être enrichi d’autres champs pour modifier certaines métadonnées (par exemple la date) ou le style du document compilé. Voici un exemple d’en-tête :</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="pp">--- </span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">title </span><span class="kw">:</span><span class="at"> </span><span class="st">"Produire des documents avec R Markdown"</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">author </span><span class="kw">:</span><span class="at"> </span><span class="st">"Daffy Duck"</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">date </span><span class="kw">:</span><span class="at"> </span><span class="st">"2024-04-08"</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">output </span><span class="kw">:</span><span class="at"> </span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">html_document </span><span class="kw">:</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">keep_md </span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">self_contained </span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="fu">bibliography </span><span class="kw">:</span><span class="at"> book.bib</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="fu">description </span><span class="kw">:</span><span class="at"> </span><span class="st">"Un document où je révèle que je ne suis pas un canard"</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="pp">---</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Les éléments obligatoires sont présents (titres et format de sortie, dans le cas un livre) mais de nombreux champs supplémentaires peuvent être ajoutés. Par exemple, les références bibliograhiques sont listées dans un fichier séparé et c’est <code>R Markdown</code> lui-même qui se charge de la mettre en forme et de la lier à des références dans le texte.</p>
+</section><section id="corps-dun-document-r-markdown" class="level4" data-number="27.3.1.2"><h4 data-number="27.3.1.2" class="anchored" data-anchor-id="corps-dun-document-r-markdown">
+<span class="header-section-number">27.3.1.2</span> Corps d’un document <code>R Markdown</code>
+</h4>
+<p>Le corps d’un document <code>R Markdown</code> comprend deux types de <strong>blocs</strong>, qu’on peut alterner librement :</p>
+<ul>
+<li>Des <strong>blocs de texte brut</strong> mis en forme selon la syntaxe <em>markdown</em> ;</li>
+<li>Des <strong>blocs de code <code>R</code></strong> (appelés <em>chunks</em>) encadrés par les balises ``` :
+<ul>
+<li>ces <em>chunks</em> peuvent être nommés (il est même recommandé de le faire) ;</li>
+<li>des options peuvent être spécifiées. Ces options (détaillées plus bas) permettent par exemple de ne pas faire figurer l’<em>output</em> du code dans le document final ou inversement de ne montrer que l’<em>output</em> du code et non le code l’ayant généré.</li>
+</ul>
+</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Il est possible d’ajouter en dessous de l’en-tête un tout premier <em>chunk</em> nommé <em>setup</em>, qui permet de définir des options par défaut pour tous les <em>chunks</em> du document. Par exemple, on peut souhaiter par défaut ne pas afficher le code <code>R</code> de chaque bloc dans le document final.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```</code></pre>
+</div>
+</div>
+</div>
+</div>
+</section></section><section id="ecrire-des-blocs-de-texte-en-r-markdown" class="level3" data-number="27.3.2"><h3 data-number="27.3.2" class="anchored" data-anchor-id="ecrire-des-blocs-de-texte-en-r-markdown">
+<span class="header-section-number">27.3.2</span> Ecrire des blocs de texte en <code>R Markdown</code>
+</h3>
+<p>Le corps d’un document contient presque toujours des blocs de texte qui suivent la syntaxe <code>Markdown</code>. Voici un exemple :</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>Ceci est du texte avec *de l'italique* et **du gras**.</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>On peut définir des listes à puces :</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>premier élément</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>deuxième élément</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Ce code génèrera le texte mis en forme suivant :</p>
+<blockquote class="blockquote">
+<p>Ceci est du texte avec de l’<em>italique</em> et du <strong>gras</strong>.</p>
+<p>On peut définir des listes à puces :</p>
+<ul>
+<li>premier élément</li>
+<li>deuxième élément</li>
+</ul>
+</blockquote>
+<p>On peut définir des titres de différents niveaux en faisant débuter une ligne par un ou plusieurs <code>#</code> :</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># Titre de niveau 1
+
+## Titre de niveau 2
+
+### Titre de niveau 3</code></pre>
+</div>
+</div>
+<p>Quand des titres ont été définis, si vous cliquez sur l’icône <code>Show document outline</code> totalement à droite de la barre d’outils associée au fichier <code>R Markdown</code>, une table des matières générée automatiquement à partir des titres s’affiche et vous permet de naviguer facilement dans le document :</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="../pics_resized/rmarkdown/toc.png" class="img-fluid figure-img" width="198"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>La syntaxe Markdown permet d’autres mises en forme, comme la possibilité d’insérer des liens ou des images. Par exemple, le code suivant :</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Exemple de lien</span><span class="co">](https://example.com)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Prendra la forme suivante, une fois compilé :</p>
+<blockquote class="blockquote">
+<p><a href="https://example.com">Exemple de lien</a></p>
+</blockquote>
+<p>Dans RStudio, le menu <code>Help &gt; Markdown quick reference</code> donne un aperçu plus complet de la syntaxe.</p>
+<p>À partir de <a href="https://www.rstudio.com/blog/announcing-rstudio-1-4/">la version 1.4</a>, <code>RStudio</code> propose de nombreux outils pour faciliter l’édition de fichiers <code>R Markdown</code>. La principale innovation est <a href="https://rstudio.github.io/visual-markdown-editing/#/">l’éditeur visuel de Markdown</a>, accessible grâce au bouton</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="../pics_resized/rmarkdown/inline_pics/bouton_visual_rmarkdown.png" class="img-fluid figure-img" style="display: inline-block; padding: 0; width: 30px;" width="11"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>&nbsp;situé en haut à droite de l’éditeur, qui propose une pré-visualisation du document compilé en <em>live</em> mais aussi des fonctionnalités qui facilitent l’écriture de <code>Markdown</code> (correcteur orthographique amélioré, ajout de citations bibliographiques facilité, plus de raccourcis claviers, etc.).</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="https://www.rstudio.com/blog/rstudio-v1-4-preview-visual-markdown-editing/images/visualmode-demo.gif" class="img-fluid figure-img"></p>
+<figcaption>Présentation de l’éditeur visuel de RStudio</figcaption></figure>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>L’<em>addin</em> <code>Remedy</code> est également pratique et facilite l’écriture de fichiers <code>R Markdown</code> grâce à un menu qui permet de cliquer directement sur le type de balise désiré :</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="https://raw.githubusercontent.com/ThinkR-open/remedy/master/reference/figures/remedy_example.gif" class="img-fluid figure-img"></p>
+<figcaption>Présentation de l’addin disponible sur github</figcaption></figure>
+</div>
+<p>Pour l’installer</p>
+<div class="cell">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"ThinkR-open/remedy"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Pour compter le nombre de mots dans un fichier <code>.Rmd</code>, on peut utiliser le très pratique <em>addin</em> nommé <code>Wordcountaddin</code> :</p>
+<div class="cell">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"benmarwick/wordcountaddin"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</section><section id="insérer-un-résultat-r-dans-du-texte" class="level3" data-number="27.3.3"><h3 data-number="27.3.3" class="anchored" data-anchor-id="insérer-un-résultat-r-dans-du-texte">
+<span class="header-section-number">27.3.3</span> Insérer un résultat <code>R</code> dans du texte</h3>
+<p>Pour renforcer la reproductibilité d’un document <code>R Markdown</code>, il est possible de faire appel à <code>R</code> pour insérer des résultats dans du texte. C’est le principe du <em>inline code</em> dans <code>R Markdown</code>.</p>
+<p>Il suffit, pour cela, d’adopter la structure suivante : <code>`r 2+2`</code> . Le résultat sera automatiquement inséré par <code>R</code> en substitution de l’expression.</p>
+<blockquote class="blockquote">
+<p>2 + 2 = <code>`r 2+2`</code></p>
+</blockquote>
+<p>deviendra ainsi</p>
+<blockquote class="blockquote">
+<p>2 + 2 = 4</p>
+</blockquote>
+</section><section id="ecrire-des-blocs-de-code" class="level3" data-number="27.3.4"><h3 data-number="27.3.4" class="anchored" data-anchor-id="ecrire-des-blocs-de-code">
+<span class="header-section-number">27.3.4</span> Ecrire des blocs de code</h3>
+<section id="insérer-un-bloc-de-code" class="level4" data-number="27.3.4.1"><h4 data-number="27.3.4.1" class="anchored" data-anchor-id="insérer-un-bloc-de-code">
+<span class="header-section-number">27.3.4.1</span> Insérer un bloc de code</h4>
+<p>Outre du texte libre au format <code>Markdown</code>, un document <code>R Markdown</code> peut également contenir du code <code>R</code>. Celui-ci est inclus dans des blocs (<em>chunks</em>) délimités par la syntaxe suivante :</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>```{r}
+x &lt;- 1:5
+```</code></pre>
+</div>
+</div>
+<p>Vous pouvez utiliser le menu <code>Code &gt; Insert Chunk</code> de RStudio ou utiliser le raccourci clavier <code>Ctrl+Alt+I</code> pour automatiquement insérer un bloc <code>R</code> à remplir. Quand votre curseur se trouve dans un bloc, vous pouvez saisir le code <code>R</code> que vous souhaitez, l’exécuter, utiliser l’autocomplétion, etc… exactement comme si vous vous trouviez dans un script <code>R</code>. Vous pouvez également exécuter l’ensemble du code contenu dans un bloc à l’aide du raccourci clavier <code>Ctrl+Maj+Entrée</code>.</p>
+</section><section id="exécuter-des-blocs-de-code" class="level4" data-number="27.3.4.2"><h4 data-number="27.3.4.2" class="anchored" data-anchor-id="exécuter-des-blocs-de-code">
+<span class="header-section-number">27.3.4.2</span> Exécuter des blocs de code</h4>
+<p>Dans RStudio les blocs de code <code>R</code> sont en général affichés avec une couleur de fond légèrement différente pour les distinguer du reste du document. En haut à droite du bloc, des boutons sont disponibles si on désire :</p>
+<ol type="1">
+<li>ajouter des options au bloc ;</li>
+<li>exécuter tous les blocs avant celui-ci ;</li>
+<li>exécuter ce bloc exclusivement.</li>
+</ol>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="../pics_resized/rmarkdown/chunk.png" class="img-fluid figure-img" width="286"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Lorsque le document est compilé au format HTML, PDF ou docx, chaque bloc est exécuté tour à tour, et le résultat inclus dans le document final, qu’il s’agisse de texte, d’un tableau ou d’un graphique. Les blocs sont liés entre eux, dans le sens où les données importées ou calculées dans un bloc sont accessibles aux blocs suivants. On peut donc aussi concevoir un document <code>R Markdown</code> comme un script <code>R</code> dans lequel on aurait intercalé des blocs de texte au format <code>Markdown</code>.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Le bouton <code>Knit</code> ou le raccourci clavier <code>CTRL+SHIFT+K</code> lancent automatiquement l’exécution du code <code>R</code> dans une nouvelle session. Cela signifie que les objets appartenant à l’environnement global de l’utilisateur sont ignorés, par défaut. C’est une bonne pratique parce qu’elle aboutit à des documents plus reproductibles.</p>
+<p>Par défaut, la commande <code><a href="https://pkgs.rstudio.com/rmarkdown/reference/render.html">rmarkdown::render</a></code> n’utilise pas cette option. Si le fichier <code>R Markdown</code> est compilé en utilisant <code><a href="https://pkgs.rstudio.com/rmarkdown/reference/render.html">rmarkdown::render</a></code>, il est recommandé d’utiliser la syntaxe <code>rmarkdown::render(..., envir = new.env())</code></p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Par défaut, dans <code>RStudio</code>, le résultat du bloc de code ne s’affiche pas dans la console mais sous le bloc, dans l’interface visuelle du document. Si vous n’appréciez pas ce fonctionnement, vous pouvez le modifier de la façon suivante : aller dans le panneau <code>Tools &gt; Global Options...</code>, onglet <code>R Markdown</code>, puis décocher l’option <code>Show output inline for all R Markdown documents</code>.</p>
+</div>
+</div>
+</section><section id="définir-les-options-des-blocs-de-code" class="level4" data-number="27.3.4.3"><h4 data-number="27.3.4.3" class="anchored" data-anchor-id="définir-les-options-des-blocs-de-code">
+<span class="header-section-number">27.3.4.3</span> Définir les options des blocs de code</h4>
+<p><strong>Il est possible (et recommandé) de nommer un bloc en utilisant un <em>label</em> avant les options.</strong> Le nom du bloc se place dans la première ligne du bloc, juste après la lettre <code>r</code> : <code>{r nom_du_bloc}</code>.</p>
+<p>Un point important est que deux blocs ne peuvent pas porter le même nom, il faut donc être rigoureux dans le choix du nom. Nommer les blocs de code présente plusieurs avantages :</p>
+<ul>
+<li>en cas d’erreur lors de la compilation du document, <code>R</code> donne le nom du bloc qui provoque l’erreur. Avec des blocs non nommés, on a pour seule information <code>unnamed-chunk-XX</code> ce qui rend difficile d’identifier la source de l’erreur dans un document très long ;</li>
+<li>le bloc peut facilement être retrouvé dans l’arborescence RStudio (voir capture d’écran).</li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="../pics_resized/rmarkdown/namedbloc.png" class="img-fluid figure-img" width="213"></p>
+<figcaption>Le nom des blocs figure dans l’arboresence RStudio</figcaption></figure>
+</div>
+</div>
+</div>
+<p><strong>Outre un nom, on peut passer à un bloc une série d’options sous la forme <code>option = valeur</code>.</strong> Ces options permettent de contrôler le comportement du bloc lors de la compilation du document. Les blocs de code acceptent de nombreuses options. Les principales options sont les suivantes :</p>
+<table class="table">
+<thead><tr class="header">
+<th>Option</th>
+<th>Valeurs possibles</th>
+<th>Valeur par défaut</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>echo</td>
+<td><code>TRUE/FALSE</code></td>
+<td><code>TRUE</code></td>
+</tr>
+<tr class="even">
+<td>eval</td>
+<td><code>TRUE/FALSE</code></td>
+<td><code>TRUE</code></td>
+</tr>
+<tr class="odd">
+<td>include</td>
+<td><code>TRUE/FALSE</code></td>
+<td><code>TRUE</code></td>
+</tr>
+<tr class="even">
+<td>results</td>
+<td><em><code>'hide'/'asis'/'markup'/'hold'</code></em></td>
+<td><code>'markup'</code></td>
+</tr>
+<tr class="odd">
+<td>error</td>
+<td><code>TRUE/FALSE</code></td>
+<td><code>TRUE</code></td>
+</tr>
+<tr class="even">
+<td>warning</td>
+<td><code>TRUE/FALSE</code></td>
+<td><code>TRUE</code></td>
+</tr>
+<tr class="odd">
+<td>message</td>
+<td><code>TRUE/FALSE</code></td>
+<td><code>TRUE</code></td>
+</tr>
+</tbody>
+</table>
+<p>Voici un exemple de bloc avec un nom et des options :</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>```{r mon_bloc, echo = FALSE, warning = TRUE}
+x &lt;- 1:5
+```</code></pre>
+</div>
+</div>
+<p>Dans ce bloc, l’option <code>echo = FALSE</code> implique que le code <code>R</code> n’est pas inséré dans le document compilé, et que seul le résultat du code est visible ; l’option <code>warning = TRUE</code> implique que les éventuels avertissements générés par l’exécution du code sont insérés dans le document compilé.</p>
+<p><strong>Les options permettent également de contrôler la nature de la sortie <code>R</code>.</strong> En particulier, les options <code>fig.height</code> et <code>fig.width</code> permettent de définir la taille de la sortie. Par exemple, le bloc suivant génèrera un graphique plus large que haut :</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>```{r, fig.width=12, fig.height=8}
+hist(iris$Sepal.Length)
+```</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Fiche_rmarkdown_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>alors que le bloc suivant génèrera une figure aux dimensions différentes :</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>```{r, fig.width=6, fig.height=12}
+hist(iris$Sepal.Length)
+```</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="Fiche_rmarkdown_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="288"></p>
+</figure>
+</div>
+</div>
+</div>
+</section></section></section><section id="paramétrer-un-document-r-markdown" class="level2" data-number="27.4"><h2 data-number="27.4" class="anchored" data-anchor-id="paramétrer-un-document-r-markdown">
+<span class="header-section-number">27.4</span> Paramétrer un document <code>R Markdown</code>
+</h2>
+<section id="personnaliser-les-options-de-len-tête" class="level3" data-number="27.4.1"><h3 data-number="27.4.1" class="anchored" data-anchor-id="personnaliser-les-options-de-len-tête">
+<span class="header-section-number">27.4.1</span> Personnaliser les options de l’en-tête</h3>
+<p>L’en-tête fonctionne selon un système de clé-valeur indenté, format appelé <code>YAML</code>. Le nom de l’option (clé) est suivi de <code>:</code> qui permet de spécifier sa valeur (par exemple <code>true</code>).</p>
+<p>Au premier niveau (sans indentation) se trouvent les options générales, par exemple le titre ou l’auteur du document. S’il est nécessaire d’amender le comportement par défaut de l’option générale, on introduit un niveau d’indentation (une tabulation ou quatre espaces).</p>
+<p>La personnalisation du document généré se fait en modifiant des options dans le préambule du document. RStudio propose également une petite interface graphique permettant de changer ces options plus facilement. Pour cela, cliquez sur l’icône en forme d’engrenage à droite du bouton <code>Knit</code> et choisissez <code>Output Options</code> :</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="../pics_resized/rmarkdown/perso_options.png" class="img-fluid figure-img" width="217"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Lorsque vous changez des options par cette interface, RStudio va en fait modifier le préambule de votre document. Ainsi, si vous choisissez d’afficher une table des matières et de modifier le thème de coloration syntaxique, votre en-tête va devenir quelque chose comme :</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="pp">---</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">title </span><span class="kw">:</span><span class="at"> </span><span class="st">"Test R Markdown"</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">output </span><span class="kw">:</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="at">   </span><span class="fu">html_document </span><span class="kw">:</span><span class="at"> </span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="at">     </span><span class="fu">highlight </span><span class="kw">:</span><span class="at"> kate</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="at">     </span><span class="fu">toc </span><span class="kw">:</span><span class="at"> </span><span class="ch">yes</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="pp">---</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Vous pouvez également modifier les options directement en éditant le préambule. À noter qu’il est possible de spécifier des options différentes selon les formats. Dans ce cas, le format représente le premier niveau d’indentation et les options de celui-ci le second. Par exemple,</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="pp">---</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">title </span><span class="kw">:</span><span class="at"> </span><span class="st">"Test R Markdown"</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">output </span><span class="kw">:</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">html_document </span><span class="kw">:</span><span class="at"> </span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">highlight </span><span class="kw">:</span><span class="at"> kate</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">toc </span><span class="kw">:</span><span class="at"> </span><span class="ch">yes</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">pdf_document </span><span class="kw">:</span><span class="at"> </span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">fig_caption </span><span class="kw">:</span><span class="at"> </span><span class="ch">yes</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">highlight </span><span class="kw">:</span><span class="at"> kate</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="pp">---</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>La liste complète des options possibles est présente sur le site de la documentation officielle (très complet et bien fait) et sur l’antisèche et le guide de référence, accessibles depuis RStudio via le menu <code>Help</code> puis <code>Cheatsheets.</code></p>
+</section><section id="gestion-automatique-de-la-bibliographie" class="level3" data-number="27.4.2"><h3 data-number="27.4.2" class="anchored" data-anchor-id="gestion-automatique-de-la-bibliographie">
+<span class="header-section-number">27.4.2</span> Gestion automatique de la bibliographie</h3>
+<p>Parmi les tâches les plus pénibles dans un document <em>WYSIWYG</em> (<em>What you see is what you get</em>), la bibliographie tient une place de premier choix. Les utilisateurs de</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="../pics_resized/rmarkdown/inline_pics/LaTeX_logo.png" class="img-fluid figure-img" style="display: inline-block; padding: 0; width: 30px;" width="160"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>&nbsp;connaissent le temps que peut faire gagner un module adapté de gestion des ressources bibliographiques, à savoir <code>bibtex</code>. Un module adapté de bibliographie repose sur des métadonnées avec un système ressemblant au format <code>JSON</code>, c’est-à-dire des champs (par exemple <code>author</code>) associé à des valeurs au format prédéfini (par exemple <code>Dumas, Alexandre</code>).</p>
+<p>Le format <code>bibtex</code> constitue un standard dans le domaine. Il s’agit de définir le type de publication (livre, article, rapport, etc.) qui déterminera la manière dont sera citée le document dans la norme bibliographique adoptée et les champs informatifs (auteur, année, etc.). Le principal avantage d’une gestion bibliographique avec <code>bibtex</code> est que formattage de la référence bibliographique n’est pas fait par l’utilisateur mais est fait automatiquement en fonction d’une norme qui met en forme les champs de la référence bibliographique. Ce sont ainsi des heures pénibles de travail économisées. Une référence bibliographique prend la forme suivante :</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="er">@book</span><span class="fu">{</span><span class="er">dumascomte</span><span class="fu">,</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="er">title={Le</span> <span class="er">Comte</span> <span class="er">de</span> <span class="er">Monte-Cristo</span> <span class="er">tome</span> <span class="er">1</span><span class="fu">}</span><span class="er">,</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="er">author=</span><span class="fu">{</span><span class="er">Dumas</span><span class="fu">,</span> <span class="er">Alexandre</span><span class="fu">}</span><span class="er">,</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="er">volume=</span><span class="fu">{</span><span class="er">1</span><span class="fu">}</span><span class="er">,</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="er">year=</span><span class="fu">{</span><span class="er">2011</span><span class="fu">}</span><span class="er">,</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="er">publisher=</span><span class="fu">{</span><span class="er">Le</span> <span class="er">Livre</span> <span class="er">de</span> <span class="er">Poche</span><span class="fu">}</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="er">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Un fichier séparé, généralement au format <code>.bib</code>, centralise les références. L’ajout du champ <code>bibliography</code> au yaml permet à <code>R Markdown</code> d’automatiquement construire la bibliographie à la fin du document.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>La bibliographie se trouve généralement à la fin du document, sauf si un fichier de style [lien vers partie template] en modifie l’emplacement. En général, on ajoute ainsi un titre de section du type <code># Références</code>à la fin du <code>.Rmd</code> pour dissocier la bibliographie de la fin du texte.</p>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>---
+title : "Un document d'exemple"
+output : html_document
+bibliography : bibliography.bib
+---
+
+Les citations sont appelées grâce à la balise `@`. 
+
+Il est possible d'appeler une citation de différentes manières :
+
+* [@dumascomte] pour citer une référence ; 
+* [@dumascomte ; @Balzacillusions] pour en citer plusieurs ;
+* @dumascomte fonctionne également ;
+* Un signe moins (-) avant le symbole @ supprime la mention du
+nom de l'auteur :
+
+Victor Hugo a marqué son siècle en publiant Les Misérables [-@hugo1863miserables].
+
+
+# Références</code></pre>
+</div>
+</div>
+<p>donnera l’<em>output</em> suivant :</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="../resources/rmarkdown/chunk07.png" class="img-fluid figure-img" width="606"></p>
+<figcaption>Exemple de rendu de la bibliographie</figcaption></figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Il est rare qu’il soit nécessaire de devoir écrire soi-même la bibliographie lorsqu’on écrit un article académique. En effet, on trouve souvent des références au format <code>bibtex</code> sur les bases de données scientifiques, notamment sur <a href="https://scholar.google.fr/">google scholar</a> ou sur le site <a href="https://ideas.repec.org/">ideas.repec</a> (pour les articles d’économie). Sur <code>scholar</code>, pour récupérer une citation, on clique sur le guillemet puis sur <code>bibtex</code> :</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="../pics_resized/rmarkdown/googlescholar.png" class="img-fluid figure-img" width="307"></p>
+<figcaption>Google Scholar</figcaption></figure>
+</div>
+</div>
+</div>
+<p>Cela ouvre alors un onglet vierge avec la citation en question, en l’occurrence</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="er">@book</span><span class="fu">{</span><span class="er">dumascomte</span><span class="fu">,</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="er">title={Le</span> <span class="er">Comte</span> <span class="er">de</span> <span class="er">Monte-Cristo</span> <span class="er">tome</span> <span class="er">1</span><span class="fu">}</span><span class="er">,</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="er">author=</span><span class="fu">{</span><span class="er">Dumas</span><span class="fu">,</span> <span class="er">Alexandre</span><span class="fu">}</span><span class="er">,</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="er">volume=</span><span class="fu">{</span><span class="er">1</span><span class="fu">}</span><span class="er">,</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="er">year=</span><span class="fu">{</span><span class="er">2011</span><span class="fu">}</span><span class="er">,</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="er">publisher=</span><span class="fu">{</span><span class="er">Le</span> <span class="er">Livre</span> <span class="er">de</span> <span class="er">Poche</span><span class="fu">}</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="er">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</section></section><section id="intégrer-des-tableaux-dans-un-document-r-markdown" class="level2" data-number="27.5"><h2 data-number="27.5" class="anchored" data-anchor-id="intégrer-des-tableaux-dans-un-document-r-markdown">
+<span class="header-section-number">27.5</span> Intégrer des tableaux dans un document <code>R Markdown</code>
+</h2>
+<p>Il existe plusieurs manières de faire des tableaux avec <code>R Markdown</code>. L’écosystème dans ce domaine n’est pas encore stabilisé et évolue rapidement, notamment du fait du développement récent du package <code>gt</code>.</p>
+<p>L’approche la plus appropriée dépend de la structure du besoin :</p>
+<ul>
+<li>Pour une table de présentation simple, le tableau peut être construit en <code>Markdown</code>
+</li>
+<li>Pour une table construite à partir de données, des packages spécialisés sont plus adaptés. L’utilisation de ces derniers permet de ne pas écrire les valeurs numériques et améliore ainsi la reproductibilité des tables construites.</li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Pour des tables simples, notamment de statistiques agrégées, la fonction <code>kable</code> (du <em>package</em> <code>knitr</code>) et le <em>package</em> d’extension <code>kableExtra</code> peuvent être utilisés.</p>
+<p>Pour des tables plus complexes, les packages <code>gt</code> et <code>flextable</code> peuvent être mobilisés.</p>
+<p>Pour des tables de régressions économétriques, le package <code>stargazer</code> peut être utilisé.</p>
+</div>
+</div>
+<!----
+autopromo tablelight en footnote ? :)
+  
+----->
+<p>Pour aller plus loin, il est possible de se référer à <a href="https://thinkr.fr/les-tableaux-statiques-pour-vos-rapports-en-r/">ce tutoriel</a></p>
+<section id="construction-dune-table-markdown" class="level3" data-number="27.5.1"><h3 data-number="27.5.1" class="anchored" data-anchor-id="construction-dune-table-markdown">
+<span class="header-section-number">27.5.1</span> Construction d’une table <code>Markdown</code>
+</h3>
+<p>Le balisage des tables en <code>Markdown</code> est très intuitif. Il suffit d’adopter la structure suivante</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>| Titre colonne 1    | Titre colonne 2  |</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>| ------------------ | ---------------- |</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>| Texte              | Encore du texte  |</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>| Texte              | Encore du texte  |</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>et on obtient ainsi le tableau mis en forme</p>
+<table class="table">
+<thead><tr class="header">
+<th>Titre colonne 1</th>
+<th>Titre colonne 2</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Texte</td>
+<td>Encore du texte</td>
+</tr>
+<tr class="even">
+<td>Texte</td>
+<td>Encore du texte</td>
+</tr>
+</tbody>
+</table>
+<p>L’alignement des colonnes n’est pas obligatoire mais est une bonne pratique pour rendre plus lisible le fichier source.</p>
+<p>Des éléments supplémentaires de stylisation sont disponibles dans le <a href="https://www.markdownguide.org/extended-syntax/#tables">guide de la syntaxe Markdown</a>.</p>
+</section><section id="une-table-basique-en-r-markdown" class="level3" data-number="27.5.2"><h3 data-number="27.5.2" class="anchored" data-anchor-id="une-table-basique-en-r-markdown">
+<span class="header-section-number">27.5.2</span> Une table basique en <code>R Markdown</code>
+</h3>
+<p>Supposons, par exemple, qu’on désire faire la liste de toutes les communes dont le libellé contient “Montreuil-sur”. On commence par récupérer les données du Code officiel géographique 2019, disponibles dans le <em>package</em> <code>doremifasolData</code>. On utilise ensuite le <em>package</em> <code>stringr</code> pour repérer les communes dont le libellé contient “Montreuil-sur” (l’usage de ce package est détaillé dans la fiche [Manipuler des données textuelles]).</p>
+<div class="cell">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData">doremifasolData</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://stringr.tidyverse.org">stringr</a></span><span class="op">)</span></span>
+<span><span class="co"># Charger les données du COG</span></span>
+<span><span class="va">cog_com_2019</span> <span class="op">&lt;-</span> <span class="fu">doremifasolData</span><span class="fu">::</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData/reference/cog_com_2019.html">cog_com_2019</a></span></span>
+<span><span class="va">montreuil</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="va">cog_com_2019</span><span class="op">[</span><span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html">str_detect</a></span><span class="op">(</span><span class="va">cog_com_2019</span><span class="op">$</span><span class="va">libelle</span>, <span class="st">"Montreuil-sur"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"libelle"</span>,<span class="st">"com"</span><span class="op">)</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Dans ce cas, on peut représenter les résultats avec la fonction <code>kable</code> du package <code>knitr</code> :</p>
+<div class="cell">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://yihui.org/knitr/">knitr</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">montreuil</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Le package <code>kableExtra</code> fournit un ensemble de fonctions de style pour personnaliser le tableau. Une documentation complète peut être trouvée <a href="https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html#Overview">ici</a>.</p>
+</section><section id="des-tables-plus-complexes" class="level3" data-number="27.5.3"><h3 data-number="27.5.3" class="anchored" data-anchor-id="des-tables-plus-complexes">
+<span class="header-section-number">27.5.3</span> Des tables plus complexes</h3>
+<ul>
+<li>Le package <a href="https://gt.rstudio.com/">gt</a> peut être mobilisé pour construire des tables plus complexes, notamment proposant des éléments à cheval sur plusieurs lignes ou plusieurs colonnes.</li>
+<li>Pour constuire des tables de régression, la référence est le <em>package</em> <code>stargazer</code>. Celui-ci propose une grande variété d’options et de nombreux modèles, issus de <em>packages</em> multiples.</li>
+</ul></section></section><section id="extensionsrmd" class="level2" data-number="27.6"><h2 data-number="27.6" class="anchored" data-anchor-id="extensionsrmd">
+<span class="header-section-number">27.6</span> Extensions de <code>rmarkdown</code> et modèles de documents</h2>
+<p>A la création d’un document (<code>File -&gt; New File -&gt; R Markdown</code>), un modèle de document minimal est créé. Des modèles plus riches peuvent être utilisés, à partir de packages comme</p>
+<ul>
+<li>
+<a href="https://github.com/rstudio/rticles">rticles</a> dont la vocation est de proposer des modèles de journaux académiques, au format pdf</li>
+<li>
+<a href="https://github.com/rstudio/pagedown">pagedown</a> qui offre d’autres modèles et plus de marges de liberté dans l’édition du modèle</li>
+</ul>
+<p>Des extensions de <code>R Mardown</code> permettent également de construire un ensemble structuré de documents à partir d’un ensemble de fichiers <code>Markdown</code> ou <code>R Markdown</code></p>
+<ul>
+<li>
+<code>bookdown</code> : ce package permet de construire des sites de documentations ou des livres au format pdf. Le présent ouvrage est, par exemple, construit à partir de ce package ;</li>
+<li>
+<code>blogdown</code> : ce package permet de construire des sites <em>web</em> plus généraux que <code>bookdown</code>. Le site web <a href="www.utilitr.org">utilitR</a> est, par exemple, construit à partir de ce package ;</li>
+<li>
+<code>pkgdown</code> : ce package permet de construire de manière automatique des sites de documentation de packages.</li>
+</ul>
+<p>Il existe également de nombreuses initiatives, par exemple <a href="https://github.com/spyrales/gouvdown">gouvdown</a>, pour proposer des modèles de documents dans l’administration française, harmonisés notamment avec les chartes graphiques de certaines institutions. <!---- à quand publinsee ? -----></p>
+</section><section id="intégrer-des-figures-dans-r-markdown" class="level2" data-number="27.7"><h2 data-number="27.7" class="anchored" data-anchor-id="intégrer-des-figures-dans-r-markdown">
+<span class="header-section-number">27.7</span> Intégrer des figures dans <code>R Markdown</code>
+</h2>
+<section id="depuis-un-fichier-image" class="level3" data-number="27.7.1"><h3 data-number="27.7.1" class="anchored" data-anchor-id="depuis-un-fichier-image">
+<span class="header-section-number">27.7.1</span> Depuis un fichier image</h3>
+<p>Il existe deux manières canoniques d’introduire des graphiques dans un document <code>R Markdown</code> :</p>
+<ol type="1">
+<li>
+<code>![Titre de la Figure](monfichier.png)</code> est une syntaxe héritée de <code>Markdown</code>. Elle offre des possibilités de customisation limitée mais elle a l’avantage de ne pas dépendre de <code>R</code> et ainsi, de fonctionner quelque soit le constructeur de document utilisé. Les options supplémentaires s’intègrent dans des accolades <code>![Titre de la Figure](monfichier.png){width=50%}</code> ;</li>
+<li>
+<code><a href="https://rdrr.io/pkg/knitr/man/include_graphics.html">knitr::include_graphics</a></code> permet, en conjonction d’options de blocs, d’aller plus loin.</li>
+</ol></section><section id="sans-passer-par-un-fichier-image" class="level3" data-number="27.7.2"><h3 data-number="27.7.2" class="anchored" data-anchor-id="sans-passer-par-un-fichier-image">
+<span class="header-section-number">27.7.2</span> Sans passer par un fichier image</h3>
+<p><code>R Markdown</code> présente l’avantage de pouvoir créer un document sans générer de sorties intermédiaires (tableaux, graphiques…). Si un bloc de code propose d’inséer un graphique dans le document final, le graphique sera automatiquement et directement intégré au document. Par exemple, le bloc suivant permet de représenter l’histogramme des populations communales (avec une échelle logarithmique) à partir des données Filosofi agrégées, disponibles dans le <em>package</em> <code>doremifasolData</code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData">doremifasolData</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span></span>
+<span><span class="va">filosofi_com_2016</span> <span class="op">&lt;-</span> <span class="fu">doremifasolData</span><span class="fu">::</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData/reference/filosofi_com_2016.html">filosofi_com_2016</a></span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">filosofi_com_2016</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html">geom_histogram</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">NBPERSMENFISC16</span>, y <span class="op">=</span> <span class="va">..density..</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span><span class="op">(</span><span class="st">"Nombre de personnes"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span><span class="op">(</span><span class="st">"Densité"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_log10</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section></section><section id="RessourcesRMarkdown" class="level2" data-number="27.8"><h2 data-number="27.8" class="anchored" data-anchor-id="RessourcesRMarkdown">
+<span class="header-section-number">27.8</span> Pour en savoir plus</h2>
+<ul>
+<li>Les ouvrages <a href="https://bookdown.org/yihui/rmarkdown-cookbook/">Cookbook R Markdown</a> et <a href="https://bookdown.org/yihui/rmarkdown/">R Markdown Definitive Guide</a> ;</li>
+<li>Le <a href="https://bookdown.org/">manuel de référence bookdown</a> ;</li>
+<li>La partie <code>R Markdown</code> de la formation <a href="https://linogaliana.gitlab.io/collaboratif/rmd.html">Travail collaboratif avec <code>R</code></a> ;</li>
+<li>
+<a href="https://rmarkdown.rstudio.com/authoring_basics.html">Guide de la syntaxe <code>R Markdown</code></a> ;</li>
+<li><a href="https://rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf"><code>R Markdown Cheatsheet</code></a></li>
+<li>
+<a href="https://juba.github.io/tidyverse/13-rmarkdown.html">Cours de Julien Barnier sur le sujet</a> ;</li>
+<li>
+<a href="https://r4ds.had.co.nz/r-markdown.html">Chapitre sur le sujet dans le livre <em><code>R</code> For Data Science</em></a> ;</li>
+<li><a href="https://thinkr.fr/les-tableaux-statiques-pour-vos-rapports-en-r/">Tutoriel de ThinkR sur les tableaux</a></li>
+</ul>
+
+
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script><nav class="page-navigation"><div class="nav-page nav-page-previous">
+      <a href="../03_Fiches_thematiques/Fiche_graphiques.html" class="pagination-link  aria-label=" des="" graphiques="" avec="">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Faire des graphiques avec <code>ggplot2</code></span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../03_Fiches_thematiques/Fiche_rmarkdown_param_report.html" class="pagination-link" aria-label="<span class='chapter-number'>28</span>&nbsp; <span class='chapter-title'>Produire des rapports automatisés avec `R Markdown`</span>">
+        <span class="nav-page-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Produire des rapports automatisés avec <code>R Markdown</code></span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer">
+    <div class="nav-footer-left">
+<p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/InseeFrLab/utilitR/edit/master/03_Fiches_thematiques/Fiche_rmarkdown.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/InseeFrLab/utilitR/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<li>
+<a href="https://github.com/InseeFrLab/utilitR.git" target="blank">Code source</a>
+</li>
+</div>
+  </div>
+</footer>
+
+
+</body></html>

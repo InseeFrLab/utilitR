@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.549">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>14&nbsp; Lire et écrire des fichiers Parquet</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../03_Fiches_thematiques/Fiche_api.html" rel="next">
+<link href="../03_Fiches_thematiques/Fiche_import_tableurs.html" rel="prev">
+<link href="../resources/logo-utilitr.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark"><script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><script async="" src="https://hypothes.is/embed.js"></script><script>
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    document.body.classList.add('hypothesis-enabled');
+  });
+</script>
+</head>
+<body class="nav-sidebar docked nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="navbar navbar-expand-lg " data-bs-theme="dark"><div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../resources/logo-utilitr.png" alt="Logo du projet utilitR" class="navbar-logo"></a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+<li class="nav-item">
+    <a class="nav-link active" href="../01_R_Insee/presentation_utilitr.html" aria-current="page"> 
+<span class="menu-text">Introduction</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_rprojects.html"> 
+<span class="menu-text">Mener un projet statistique</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_import_fichiers_plats.html"> 
+<span class="menu-text">Importer des données</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_tidyverse.html"> 
+<span class="menu-text">Choisir son paradigme</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_joindre_donnees.html"> 
+<span class="menu-text">Manipuler des données</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_graphiques.html"> 
+<span class="menu-text">Produire des sorties</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../02_Bonnes_pratiques/01-qualite-code.html"> 
+<span class="menu-text">Bonnes pratiques</span></a>
+  </li>  
+</ul>
+</div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools tools-wide">
+    <a href="https://github.com/InseeFrLab/utilitR" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <div class="dropdown">
+      <a href="" title="Share" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Share"><i class="bi bi-share"></i></a>
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="quarto-navigation-tool-dropdown-0">
+<li>
+            <a class="dropdown-item quarto-navbar-tools-item" href="https://twitter.com/intent/tweet?url=%7Curl%7C">
+              <i class="bi bi-bi-twitter pe-1"></i>
+            Twitter
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item quarto-navbar-tools-item" href="https://www.linkedin.com/sharing/share-offsite/?url=%7Curl%7C">
+              <i class="bi bi-bi-linkedin pe-1"></i>
+            LinkedIn
+            </a>
+          </li>
+      </ul>
+</div>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_import_fichiers_plats.html">Importer des données avec R</a></li><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_import_fichiers_parquet.html"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Lire et écrire des fichiers Parquet</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="../resources/logo-utilitr.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none"></a>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Principales parties</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Introduction</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/presentation_utilitr.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Présentation du projet <code>utilitR</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_utilitR.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Comment utiliser la documentation <code>utilitR</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">Mener un projet statistique avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_rprojects.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Utiliser les projets <code>RStudio</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_git_utilisation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Utiliser <code>Git</code> avec RStudio</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_installer_packages.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Utiliser des <em>packages</em> <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_comment_choisir_un_package.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Comment choisir un <em>package</em> ?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_gerer_dependances.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Gérer les dépendances</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_se_documenter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Se documenter sur <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_resoudre_un_probleme.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Résoudre un problème avec <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_targets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Construire une chaîne de traitement reproductible avec <code>targets</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">Importer des données avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_fichiers_plats.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Importer des fichiers plats (<code>.csv</code>, <code>.tsv</code>, <code>.txt</code>)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_tables_sas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Importer des tables SAS®</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_tableurs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Importer des fichiers issus de tableurs (Excel, Calc)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_fichiers_parquet.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Lire et écrire des fichiers Parquet</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_api.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Travailler avec des API</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_connexion_bdd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Se connecter à une base de données</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true">
+ <span class="menu-text">Choisir son paradigme d’analyse des données avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_tidyverse.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Manipuler des données avec le <code>tidyverse</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_datatable.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Manipuler des données avec <code>data.table</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_arrow.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Manipuler des données avec <code>arrow</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text">Manipuler des données avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_joindre_donnees.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Joindre des tables de données</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_donnees_textuelles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Manipuler des données textuelles</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_survey.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Utiliser des données d’enquêtes</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_donnees_spatiales.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Manipuler des données spatiales</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_donnees_temporelles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Manipuler des données temporelles</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_analyse_de_donnees.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">L’analyse de données (ACP, ACM, ACF…)</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text">Produire des sorties avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_graphiques.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Faire des graphiques avec <code>ggplot2</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_rmarkdown.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Produire des documents avec <code>R Markdown</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_rmarkdown_param_report.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Produire des rapports automatisés avec <code>R Markdown</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text">Bonnes pratiques</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_Bonnes_pratiques/01-qualite-code.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Qualité du code</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_Bonnes_pratiques/02-structure-code.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Structure des projets</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true">
+ <span class="menu-text">Éléments de configuration</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_Rstudio_AUSv3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Utiliser RStudio sur l’environnement AUSv3</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_Rstudio_SSPCloud.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Utiliser <code>RStudio</code> sur l’environnement SSP Cloud</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_configurer_git.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Configurer <code>Git</code> sur son poste de travail</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche-personnaliser-R.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Personnaliser la configuration de <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_ressources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Superviser sa session <code>R</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+    </ul>
+</div>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+<li><a href="#t%C3%A2ches-concern%C3%A9es-et-recommandations" id="toc-tâches-concernées-et-recommandations" class="nav-link active" data-scroll-target="#t%C3%A2ches-concern%C3%A9es-et-recommandations"><span class="header-section-number">14.1</span> Tâches concernées et recommandations</a></li>
+  <li>
+<a href="#quest-ce-que-parquet-et-pourquoi-sen-servir" id="toc-quest-ce-que-parquet-et-pourquoi-sen-servir" class="nav-link" data-scroll-target="#quest-ce-que-parquet-et-pourquoi-sen-servir"><span class="header-section-number">14.2</span> Qu’est-ce que Parquet et pourquoi s’en servir?</a>
+  <ul class="collapse">
+<li><a href="#quest-ce-que-le-format-parquet" id="toc-quest-ce-que-le-format-parquet" class="nav-link" data-scroll-target="#quest-ce-que-le-format-parquet"><span class="header-section-number">14.2.1</span> Qu’est-ce que le format Parquet?</a></li>
+  <li><a href="#caract%C3%A9ristiques-du-format-parquet" id="toc-caractéristiques-du-format-parquet" class="nav-link" data-scroll-target="#caract%C3%A9ristiques-du-format-parquet"><span class="header-section-number">14.2.2</span> Caractéristiques du format Parquet</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#%C3%A9crire-des-fichiers-parquet" id="toc-écrire-des-fichiers-parquet" class="nav-link" data-scroll-target="#%C3%A9crire-des-fichiers-parquet"><span class="header-section-number">14.3</span> Écrire des fichiers Parquet</a>
+  <ul class="collapse">
+<li><a href="#donn%C3%A9es-peu-volumineuses-%C3%A9crire-un-seul-fichier-parquet" id="toc-données-peu-volumineuses-écrire-un-seul-fichier-parquet" class="nav-link" data-scroll-target="#donn%C3%A9es-peu-volumineuses-%C3%A9crire-un-seul-fichier-parquet"><span class="header-section-number">14.3.1</span> Données peu volumineuses: écrire un seul fichier Parquet</a></li>
+  <li><a href="#donn%C3%A9es-volumineuses-%C3%A9crire-un-fichier-parquet-partitionn%C3%A9" id="toc-données-volumineuses-écrire-un-fichier-parquet-partitionné" class="nav-link" data-scroll-target="#donn%C3%A9es-volumineuses-%C3%A9crire-un-fichier-parquet-partitionn%C3%A9"><span class="header-section-number">14.3.2</span> Données volumineuses: écrire un fichier Parquet partitionné</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#readparquet" id="toc-readparquet" class="nav-link" data-scroll-target="#readparquet"><span class="header-section-number">14.4</span> Lire et exploiter un fichier Parquet avec <code>R</code></a>
+  <ul class="collapse">
+<li><a href="#cas-des-donn%C3%A9es-peu-volumineuses-importer-les-donn%C3%A9es-en-m%C3%A9moire" id="toc-cas-des-données-peu-volumineuses-importer-les-données-en-mémoire" class="nav-link" data-scroll-target="#cas-des-donn%C3%A9es-peu-volumineuses-importer-les-donn%C3%A9es-en-m%C3%A9moire"><span class="header-section-number">14.4.1</span> Cas des données peu volumineuses: importer les données en mémoire</a></li>
+  <li><a href="#cas-des-donn%C3%A9es-volumineuses-utiliser-des-requ%C3%AAtes-dplyr" id="toc-cas-des-données-volumineuses-utiliser-des-requêtes-dplyr" class="nav-link" data-scroll-target="#cas-des-donn%C3%A9es-volumineuses-utiliser-des-requ%C3%AAtes-dplyr"><span class="header-section-number">14.4.2</span> Cas des données volumineuses: utiliser des requêtes <code>dplyr</code></a></li>
+  </ul>
+</li>
+  <li>
+<a href="#lire-et-exploiter-un-fichier-parquet-partitionn%C3%A9" id="toc-lire-et-exploiter-un-fichier-parquet-partitionné" class="nav-link" data-scroll-target="#lire-et-exploiter-un-fichier-parquet-partitionn%C3%A9"><span class="header-section-number">14.5</span> Lire et exploiter un fichier Parquet partitionné</a>
+  <ul class="collapse">
+<li><a href="#quel-est-lint%C3%A9r%C3%AAt-dutiliser-des-fichiers-parquet-partitionn%C3%A9s" id="toc-quel-est-lintérêt-dutiliser-des-fichiers-parquet-partitionnés" class="nav-link" data-scroll-target="#quel-est-lint%C3%A9r%C3%AAt-dutiliser-des-fichiers-parquet-partitionn%C3%A9s"><span class="header-section-number">14.5.1</span> Quel est l’intérêt d’utiliser des fichiers Parquet partitionnés?</a></li>
+  <li><a href="#comment-bien-utiliser-les-fichiers-parquet-partitionn%C3%A9s" id="toc-comment-bien-utiliser-les-fichiers-parquet-partitionnés" class="nav-link" data-scroll-target="#comment-bien-utiliser-les-fichiers-parquet-partitionn%C3%A9s"><span class="header-section-number">14.5.2</span> Comment bien utiliser les fichiers Parquet partitionnés?</a></li>
+  </ul>
+</li>
+  <li><a href="#pour-en-savoir-plus" id="toc-pour-en-savoir-plus" class="nav-link" data-scroll-target="#pour-en-savoir-plus"><span class="header-section-number">14.6</span> Pour en savoir plus</a></li>
+  </ul><div class="toc-actions"><ul><li><a href="https://github.com/InseeFrLab/utilitR/edit/master/03_Fiches_thematiques/Fiche_import_fichiers_parquet.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/InseeFrLab/utilitR/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_import_fichiers_plats.html">Importer des données avec R</a></li><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_import_fichiers_parquet.html"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Lire et écrire des fichiers Parquet</span></a></li></ol></nav><div class="quarto-title">
+<h1 class="title"><span id="importparquet" class="quarto-section-identifier"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Lire et écrire des fichiers Parquet</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header><section id="tâches-concernées-et-recommandations" class="level2" data-number="14.1"><h2 data-number="14.1" class="anchored" data-anchor-id="tâches-concernées-et-recommandations">
+<span class="header-section-number">14.1</span> Tâches concernées et recommandations</h2>
+<ul>
+<li>L’utilisateur souhaite importer et exploiter dans <code>R</code> des données stockées au format <strong>Parquet</strong>.</li>
+<li>L’utilisateur souhaite convertir des données au format <strong>Parquet</strong>.</li>
+</ul>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tâche concernée et recommandation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><p>Il est recommandé d’utiliser le format <strong>Parquet</strong> pour stocker des données volumineuses, car il est plus compact que le format csv. Le <strong>package</strong> <a href="https://arrow.apache.org/docs/r/"><code>arrow</code></a> permet de lire, d’écrire simplement les fichiers au format <strong>Parquet</strong> avec <code>R</code>;</p></li>
+<li>
+<p>Deux approches sont recommandées pour manipuler des données volumineuses stockées en format Parquet:</p>
+<ul>
+<li>les <em>packages</em> <code>arrow</code> et <code>dplyr</code> si vous maîtrisez la syntaxe <em>tidyverse</em>;</li>
+<li>les <em>packages</em> <code>DBI</code> et <code>duckdb</code> si vous maîtrisez le langage SQL;</li>
+</ul>
+</li>
+<li><p>Il est essentiel de travailler avec la dernière version d’<code>arrow</code>, de <code>duckdb</code> et de <code>R</code> car les <em>packages</em> <code>arrow</code> et <code>duckdb</code> sont en cours de développement;</p></li>
+<li><p>Il est préférable d’utiliser la fonction <code>open_dataset</code> pour accéder à des données stockées en format Parquet (plutôt que la fonction <code>read_parquet</code>);</p></li>
+<li><p>Il est recommandé de partitionner les fichiers <strong>Parquet</strong> lorsque les données sont volumineuses et lorsque les données peuvent être partitionnées selon une variable cohérente avec l’usage des données (département, secteur, année…);</p></li>
+<li><p>Lorsqu’on importe des données volumineuses, il est recommandé de sélectionner les observations (avec <code>filter</code>) et les variables (avec <code>select</code>) pour limiter la consommation de mémoire vive.</p></li>
+</ul>
+</div>
+</div>
+<p>Note: cette fiche n’a pas vocation à être exhaustive sur le format Parquet, mais plutôt à lister les points saillants à retenir lorsqu’un statisticien souhaite travailler avec ce format de fichier.</p>
+</section><section id="quest-ce-que-parquet-et-pourquoi-sen-servir" class="level2" data-number="14.2"><h2 data-number="14.2" class="anchored" data-anchor-id="quest-ce-que-parquet-et-pourquoi-sen-servir">
+<span class="header-section-number">14.2</span> Qu’est-ce que Parquet et pourquoi s’en servir?</h2>
+<section id="quest-ce-que-le-format-parquet" class="level3" data-number="14.2.1"><h3 data-number="14.2.1" class="anchored" data-anchor-id="quest-ce-que-le-format-parquet">
+<span class="header-section-number">14.2.1</span> Qu’est-ce que le format Parquet?</h3>
+<p><strong>Parquet</strong> est un format de stockage de données, au même titre que les fichiers CSV, RDS, FST… Ce format n’est pas nouveau (création en 2013), mais il a gagné en popularité dans le monde de la <em>data science</em> au cours des dernières années, notamment grâce au projet <em>open-source</em> <a href="https://arrow.apache.org/">Apache arrow</a>.</p>
+<p>Le format Parquet présente plusieurs avantages cruciaux qui en font un concurrent direct du format csv:</p>
+<ul>
+<li>il compresse efficacement les données, ce qui le rend très adapté au stockage de données volumineuses;</li>
+<li>il est conçu pour être indépendant d’un logiciel: on peut lire des fichiers Parquet avec <code>R</code>, Python, C++, JavaScript, Java…</li>
+<li>il est conçu pour que les données puissent être chargées très rapidement en mémoire.</li>
+</ul></section><section id="caractéristiques-du-format-parquet" class="level3" data-number="14.2.2"><h3 data-number="14.2.2" class="anchored" data-anchor-id="caractéristiques-du-format-parquet">
+<span class="header-section-number">14.2.2</span> Caractéristiques du format Parquet</h3>
+<p>Le format Parquet présente trois caractéristiques importantes du point de l’utilisateur:</p>
+<ul>
+<li><p><strong>Parquet stocke les données en un format binaire</strong>. Cela signifie qu’un fichier Parquet n’est pas lisible par un humain: contrairement au format <code>csv</code>, on ne peut pas ouvrir un fichier Parquet avec Excel, LibreOffice ou Notepad pour jeter un coup d’oeil au contenu.</p></li>
+<li><p>Parquet repose sur un <strong>stockage orienté colonne</strong>. Ainsi seront stockées dans un premier temps toutes les données de la première colonne de la table, puis seulement dans un second temps les données de la deuxième colonne et ainsi de suite… <a href="https://www.upsolver.com/blog/apache-parquet-why-use">Le blog d’upsolver</a> fournit une illustration pour bien visualiser la différence :</p></li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="../pics/parquet/stockage_colonne.png" class="img-fluid figure-img" width="547"></p>
+<figcaption>Différence entre le stockage orienté ligne et colonne</figcaption></figure>
+</div>
+</div>
+</div>
+<ul>
+<li>
+<strong>Un fichier Parquet contient à la fois les données et des métadonnées</strong>. Ces métadonnées écrites à la fin du fichier enregistrent une description du fichier (appelé <strong>schéma</strong>). Ces métadonnées contiennent notamment le type de chaque colonne (entier/réel/caractère). Ce sont ces métadonnées qui font en sorte que la lecture des données Parquet soit optimisée et sans risque d’altération (voir <a href="https://parquet.apache.org/docs/file-format/metadata/">ici</a> pour en savoir plus).</li>
+</ul>
+<p>Dans un contexte analytique, cette organisation des données génère plusieurs avantages dont les principaux sont:</p>
+<ul>
+<li>
+<strong>Un gain de vitesse lors de la lecture des données pour un usage statistique</strong>: <code>R</code> peut extraire directement les colonnes demandées sans avoir à scanner toutes les lignes comme ce serait le cas avec un fichier <code>csv</code> ;</li>
+<li>
+<strong>La possibilité d’avoir un haut niveau de compression</strong>. Le taux de compression moyen par rapport au format <code>csv</code> est souvent compris entre 5 et 10. Pour des fichiers volumineux il est même possible d’avoir des taux de compression bien supérieurs.</li>
+</ul>
+<p>Inversement, le format Parquet présente deux contraintes inhabituelles pour les utilisateurs des autres formats (CSV, SAS, FST…):</p>
+<ul>
+<li>Il n’est pas possible d’importer uniquement les 100 premières lignes d’un fichier Parquet (comme on peut facilement le faire pour un fichier CSV); en revanche, il est possible d’afficher les 100 premières lignes d’un fichier Parquet avec la commande: <code>open_dataset(mon_fichier_parquet) %&gt;% head(100)</code>;</li>
+<li>Il n’est pas possible d’ouvrir un fichier Parquet avec Excel, LibreOffice ou Notepad.</li>
+</ul>
+<p>Pour en savoir plus notamment sur la comparaison entre les formats Parquet et csv, consultez <a href="https://pythonds.linogaliana.fr/reads3/#le-format-parquet">le chapitre sur le sujet</a> dans le cours de l’ENSAE <em>“Python pour la data science”</em>. Grâce aux travaux du projet Arrow, <strong>les fichiers aux format Parquet sont inter-opérables</strong> c’est-à-dire qu’ils peuvent être lus par plusieurs langages informatiques : <a href="https://arrow.apache.org/docs/c_glib/">C</a>, <a href="https://arrow.apache.org/docs/cpp/">C++</a>, <a href="https://github.com/apache/arrow/blob/main/csharp/README.md">C#</a>, <a href="https://godoc.org/github.com/apache/arrow/go/arrow">Go</a>, <a href="https://arrow.apache.org/docs/java/">Java</a>, <a href="https://arrow.apache.org/docs/js/">JavaScript</a>, <a href="https://arrow.juliadata.org/stable/">Julia</a>, <a href="https://github.com/apache/arrow/blob/main/matlab/README.md">MATLAB</a>, <a href="https://arrow.apache.org/docs/python/">Python</a>, <a href="https://github.com/apache/arrow/blob/main/ruby/README.md">Ruby</a>, <a href="https://docs.rs/crate/arrow/">Rust</a> et bien entendu <a href="https://arrow.apache.org/docs/r/">R</a>. Le format Parquet est donc particulièrement adapté aux chaînes de traitement qui font appel à plusieurs langages (exemples: manipulation de données avec <code>R</code> puis <em>machine learning</em> avec Python).</p>
+<p>S’il est très efficace pour l’analyse de données, <strong>Parquet est en revanche peu adapté à l’ajout de données en continu ou à la modification fréquente de données existantes</strong>.<br>
+Pour cette utilisation, le statisticien privilégiera un système de gestion de base de données comme par exemple <a href="https://www.postgresql.org/"><code>PostgreSQL</code></a>.</p>
+</section></section><section id="écrire-des-fichiers-parquet" class="level2" data-number="14.3"><h2 data-number="14.3" class="anchored" data-anchor-id="écrire-des-fichiers-parquet">
+<span class="header-section-number">14.3</span> Écrire des fichiers Parquet</h2>
+<section id="données-peu-volumineuses-écrire-un-seul-fichier-parquet" class="level3" data-number="14.3.1"><h3 data-number="14.3.1" class="anchored" data-anchor-id="données-peu-volumineuses-écrire-un-seul-fichier-parquet">
+<span class="header-section-number">14.3.1</span> Données peu volumineuses: écrire un seul fichier Parquet</h3>
+<p>Les tables Parquet sont encore loin d’être majoritaires dans les liens de téléchargement notamment face au format csv. C’est la raison pour laquelle, nous allons dans cette section dérouler <strong>le processus pour obtenir un fichier Parquet à partir d’un fichier csv.</strong></p>
+<p>Dans un premier temps, on importe le fichier plat avec la fonction <strong>fread()</strong> du <em>package</em> <strong>data.table</strong>, conformément aux recommandations de <a href="https://www.book.utilitr.org/03_fiches_thematiques/fiche_import_fichiers_plats">la fiche sur les imports de fichiers plats</a>. On obtient un objet <code>data.table</code> en mémoire. Dans un second temps, on exporte ces données en format Parquet avec la fonction <code><a href="https://arrow.apache.org/docs/r/reference/write_parquet.html">write_parquet()</a></code> du <em>package</em> <code>arrow</code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com">data.table</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://magrittr.tidyverse.org">magrittr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/apache/arrow/">arrow</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Création du dossier "Data_parquet"</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/files2.html">dir.create</a></span><span class="op">(</span><span class="st">"Data_parquet"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Téléchargement du fichier zip</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/download.file.html">download.file</a></span><span class="op">(</span><span class="st">"https://www.insee.fr/fr/statistiques/fichier/2540004/dpt2021_csv.zip"</span>,</span>
+<span>              destfile <span class="op">=</span> <span class="st">"Data_parquet/dpt2021_csv.zip"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Décompression du fichier zip</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/unzip.html">unzip</a></span><span class="op">(</span><span class="st">"Data_parquet/dpt2021_csv.zip"</span>, exdir <span class="op">=</span> <span class="st">"Data_parquet"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Lecture du fichier CSV</span></span>
+<span><span class="va">dpt2021</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/fread.html">fread</a></span><span class="op">(</span><span class="st">"Data_parquet/dpt2021.csv"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Écriture des données en format Parquet</span></span>
+<span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/write_parquet.html">write_parquet</a></span><span class="op">(</span></span>
+<span>  x <span class="op">=</span> <span class="va">dpt2021</span>,</span>
+<span>  sink <span class="op">=</span> <span class="st">"Data_parquet/dpt2021.parquet"</span></span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>À l’issue de cette conversion, on peut noter que <strong>le fichier Parquet créé occupe un espace de stockage 10 fois moins important que le fichier csv initial (7,4 Mo contre 76,3 Mo) !</strong></p>
+<p>Pour les exemples qui suivent dans cette fiche, on utilise un fichier de <a href="https://www.insee.fr/fr/statistiques/3568629">la Base Permanente des Équipements de l’Insee</a> que l’on va convertir au format <strong>Parquet</strong>.<br>
+Vous pouvez télécharger ce fichier avec le package <a href="https://inseefrlab.github.io/DoReMIFaSol/index.html"><code>doremifasol</code></a> et plus particulièrement la fonction <a href="https://inseefrlab.github.io/DoReMIFaSol/reference/telechargerDonnees.html"><code>telechargerDonnees()</code></a> :</p>
+<div class="cell">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># remotes::install_github("InseeFrLab/doremifasol", build_vignettes = TRUE)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">doremifasol</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/apache/arrow/">arrow</a></span><span class="op">)</span>  </span>
+<span></span>
+<span><span class="co"># Téléchargement des données de la BPE</span></span>
+<span><span class="va">donnees_BPE</span> <span class="op">&lt;-</span> <span class="fu">telechargerDonnees</span><span class="op">(</span><span class="st">"BPE_ENS"</span>, date <span class="op">=</span> <span class="fl">2021</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Éecriture des données sous format Parquet</span></span>
+<span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/write_parquet.html">write_parquet</a></span><span class="op">(</span></span>
+<span>  x <span class="op">=</span> <span class="va">donnees_BPE</span>,</span>
+<span>  sink <span class="op">=</span> <span class="st">"Data_parquet/BPE_ENS.parquet"</span></span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="données-volumineuses-écrire-un-fichier-parquet-partitionné" class="level3" data-number="14.3.2"><h3 data-number="14.3.2" class="anchored" data-anchor-id="données-volumineuses-écrire-un-fichier-parquet-partitionné">
+<span class="header-section-number">14.3.2</span> Données volumineuses: écrire un fichier Parquet partitionné</h3>
+<p>Le package <code>arrow</code> présente une fonctionnalité supplémentaire qui consiste à créer et lire un fichier <strong>Parquet partitionné</strong>. Le partitionnement des fichiers Parquet présente des avantages pratiques qui sont expliqués dans la suite de cette fiche (voir partie <span id="readparquet">Lire et exploiter un fichier Parquet avec <code>R</code></span>).</p>
+<p>Partitionner un fichier revient à le “découper” selon une clé de partitionnement, qui prend la forme d’une ou de plusieurs variables. Cela signifie en pratique que l’ensemble des données sera stockée sous forme d’un grand nombre de fichiers Parquet (un fichier par valeur des variable de partitionnement). Par exemple, il est possible de partitionner un fichier national par département: on obtient alors un fichier Parquet par département.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>
+<strong>Il est important de bien choisir les variables de partitionnement</strong> d’un fichier <strong>Parquet</strong>. Il faut choisir des variables faciles à comprendre et qui soient cohérentes avec l’usage des données (année, département, secteur…). En effet, un partitionnement bien construit induit par la suite des gains d’efficacité sur les traitements et facilite la maintenance du fichier sur le long terme.</li>
+<li>
+<strong>Il est inutile de partitionner des données de petite taille</strong>. Si les données dépassent quelques millions d’observations et/ou si leur taille en CSV dépasse quelques giga-octets, il est utile de partitionner.</li>
+<li>
+<strong>Il ne faut pas partitionner les données en trop de fichiers</strong>. En pratique, il est rare d’avoir besoin de plus d’une ou deux variables de partitionnement.</li>
+</ul>
+</div>
+</div>
+<p>Pour créer des fichiers <strong>Parquet</strong> partitionnés, il faut utiliser la fonction <a href="https://arrow.apache.org/docs/r/reference/write_dataset.html"><code>write_dataset()</code></a> du <em>package</em> <code>arrow</code>. Voici ce que ça donne sur le fichier de la BPE :</p>
+<div class="cell">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/write_dataset.html">write_dataset</a></span><span class="op">(</span></span>
+<span>  dataset <span class="op">=</span> <span class="va">donnees_BPE</span>, </span>
+<span>  path <span class="op">=</span> <span class="st">"Data/"</span>, </span>
+<span>  partitioning <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"REG"</span><span class="op">)</span>, <span class="co"># la variable de partitionnement</span></span>
+<span>  format<span class="op">=</span><span class="st">"parquet"</span></span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Avec cette instruction, on a créé autant de répertoires que de modalités différentes de la variable <code>REG</code>. Vous pouvez noter la structure des dossiers nommés <code>REG==[valeur]</code>.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="../pics/parquet/fichier_partition.png" class="img-fluid figure-img" width="55"></p>
+<figcaption>Arborescence d’un fichier Parquet partitionné</figcaption></figure>
+</div>
+</div>
+</div>
+</section></section><section id="readparquet" class="level2" data-number="14.4"><h2 data-number="14.4" class="anchored" data-anchor-id="readparquet">
+<span class="header-section-number">14.4</span> Lire et exploiter un fichier Parquet avec <code>R</code>
+</h2>
+<section id="cas-des-données-peu-volumineuses-importer-les-données-en-mémoire" class="level3" data-number="14.4.1"><h3 data-number="14.4.1" class="anchored" data-anchor-id="cas-des-données-peu-volumineuses-importer-les-données-en-mémoire">
+<span class="header-section-number">14.4.1</span> Cas des données peu volumineuses: importer les données en mémoire</h3>
+<p><strong>La méthode présentée dans cette section est valable uniquement pour les fichiers peu volumineux.</strong> Elle implique en effet d’importer l’intégralité d’un fichier Parquet dans la mémoire vive de votre espace de travail avant de pouvoir travailler dessus. Il est possible d’effectuer des requêtes plus efficacement sur des fichiers Parquet. Pour cette raison, <strong>il est conseillé d’utiliser la fonction <code>open_dataset</code> (présentée plus bas) pour accéder à des données stockées en format Parquet, plutôt que la fonction <code>read_parquet</code>.</strong></p>
+<p>La fonction <a href="https://arrow.apache.org/docs/r/reference/read_parquet.html"><code>read_parquet()</code></a> du <em>package</em> <code>arrow</code> permet d’importer des fichiers Parquet dans <code>R</code>. Elle possède un argument très utile <code>col_select</code> qui permet de sélectionner les variables à importer (par défaut toutes). Cet argument accepte soit une liste de noms de variables, soit <a href="https://dplyr.tidyverse.org/reference/dplyr_tidy_select.html">une expression dite de <code>tidy selection</code> issue du <em>tidyverse</em></a>.</p>
+<p>Pour utiliser <code><a href="https://arrow.apache.org/docs/r/reference/read_parquet.html">read_parquet()</a></code>, il faut charger le <em>package</em> <code>arrow</code> :</p>
+<div class="cell">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/apache/arrow/">arrow</a></span><span class="op">)</span></span>
+<span><span class="va">donnees</span> <span class="op">&lt;-</span> <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/read_parquet.html">read_parquet</a></span><span class="op">(</span><span class="st">"Data/BPE_ENS.parquet"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li>Exemple en ne sélectionnant que quelques variables à l’aide d’un vecteur de caractères :</li>
+</ul>
+<div class="cell">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">donnees</span> <span class="op">&lt;-</span> <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/read_parquet.html">read_parquet</a></span><span class="op">(</span></span>
+<span>  <span class="st">"Data/BPE_ENS.parquet"</span>,</span>
+<span>  col_select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'AN'</span>,<span class="st">'REG'</span>,<span class="st">'DEP'</span>,<span class="st">'SDOM'</span>,<span class="st">'TYPEQU'</span>,<span class="st">'NB_EQUIP'</span><span class="op">)</span></span>
+<span><span class="op">)</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li>Exemple en ne sélectionnant que quelques variables à l’aide d’une <code>tidy selection</code> :</li>
+</ul>
+<div class="cell">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">donnees</span> <span class="op">&lt;-</span> <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/read_parquet.html">read_parquet</a></span><span class="op">(</span></span>
+<span>  <span class="st">"Data/BPE_ENS.parquet"</span>,</span>
+<span>  col_select <span class="op">=</span> <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">starts_with</a></span><span class="op">(</span><span class="st">"DEP"</span><span class="op">)</span></span>
+<span><span class="op">)</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Dans les trois cas, le résultat obtenu est un objet directement utilisable dans <code>R</code>.</p>
+</section><section id="cas-des-données-volumineuses-utiliser-des-requêtes-dplyr" class="level3" data-number="14.4.2"><h3 data-number="14.4.2" class="anchored" data-anchor-id="cas-des-données-volumineuses-utiliser-des-requêtes-dplyr">
+<span class="header-section-number">14.4.2</span> Cas des données volumineuses: utiliser des requêtes <code>dplyr</code>
+</h3>
+<p>Il arrive fréquemment que la méthode proposée dans la section précédente ne puisse pas être appliquée, car les données que l’on souhaite exploiter sont trop volumineuses pour être importées dans la mémoire vive dont on dispose. Par exemple, le fichier des données du <a href="https://www.insee.fr/fr/statistiques/6671801">recensement de la population 1968-2019</a> fait 3,2 Go et contient plus de 51,5 millions de lignes et 18 colonnes, ce qui est difficile à importer sur un ordinateur standard.</p>
+<p><strong>Les <em>packages</em> <code>arrow</code> et <code>dplyr</code> proposent une approche qui permet de traiter ces données très volumineuses sans les charger dans la mémoire vive</strong>. Cette approche nécessite de charger les <em>packages</em> <code>arrow</code> et <code>dplyr</code> et comprend trois étapes:</p>
+<ul>
+<li>On crée une connexion au fichier Parquet avec la fonction <code><a href="https://arrow.apache.org/docs/r/reference/open_dataset.html">open_dataset()</a></code>: comme la fonction <code><a href="https://arrow.apache.org/docs/r/reference/read_parquet.html">read_parquet()</a></code>, elle ouvre le fichier Parquet, mais elle n’importe pas les données contenues dans le fichier;</li>
+<li>On définit une chaîne de traitement (ou <strong>requête</strong>) avec la syntaxe du <em>tidyverse</em> (voir la fiche <a href="##tidyverse">Manipuler des données avec le <code>tidyverse</code></a>). Consultez <a href="https://arrow.apache.org/docs/dev/r/reference/acero.html">cette page</a> pour accéder à la liste des verbes issus du <em>tidyverse</em> connus par <code>arrow</code>;</li>
+<li>On termine la requête avec la fonction <code><a href="https://dplyr.tidyverse.org/reference/compute.html">collect()</a></code>, qui indique à <code>R</code> que l’on souhaite récupérer le résultat de la requête sous forme d’un <code>data.frame</code>.</li>
+</ul>
+<p>Voici un exemple avec une table peu volumineuse :</p>
+<div class="cell">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/apache/arrow/">arrow</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Établir la connexion aux données</span></span>
+<span><span class="va">donnees_BPE</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://arrow.apache.org/docs/r/reference/open_dataset.html">open_dataset</a></span><span class="op">(</span><span class="st">"Data/BPE_ENS.parquet"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Définir la requête</span></span>
+<span><span class="va">requete</span> <span class="op">&lt;-</span> <span class="va">donnees_BPE</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">REG</span> <span class="op">==</span> <span class="st">"76"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">DEP</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>nb_equipements_total <span class="op">=</span> <span class="fu">SUM</span><span class="op">(</span><span class="va">NB_EQUIP</span><span class="op">)</span><span class="op">)</span></span>
+<span>  </span>
+<span><span class="co"># Récupérer le résultat sous forme d'un data.frame</span></span>
+<span><span class="va">resultat</span> <span class="op">&lt;-</span> <span class="va">requete</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html">collect</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Avec cette syntaxe, la requête va automatiquement utiliser les variables du fichier <strong>Parquet</strong> dont elle a besoin (en l’occurence <code>REG</code>, <code>DEP</code> et <code>NB_EQUIP</code>) et minimiser l’occupation de la mémoire vive.</p>
+<ul>
+<li>Exemple avec une table volumineuse (Recensements 1968-2019, suivre ce <a href="https://gist.github.com/ddotta/acf6add0f2328f077791461ef4f37b84">lien</a> pour obtenir le code qui permet de générer “Ficdep19.parquet” de façon reproductible) :</li>
+</ul>
+<div class="cell">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Attention ce morceau de code n'est pas reproductible,</span></span>
+<span><span class="co"># Il faut suivre le lien dans le texte pour reconstruire le fichier de données</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Établir la connexion aux données</span></span>
+<span><span class="va">donnees_Ficdep19</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://arrow.apache.org/docs/r/reference/open_dataset.html">open_dataset</a></span><span class="op">(</span><span class="st">"Data/Ficdep19.parquet"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Définir la requête</span></span>
+<span><span class="va">requete2</span> <span class="op">&lt;</span> <span class="op">-</span> <span class="va">donnees_Ficdep19</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">DEP_RES_21</span> <span class="op">==</span> <span class="st">"11"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">SEXE</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>total <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">pond</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html">collect</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  </span>
+<span><span class="co"># Récupérer le résultat sous forme d'un data.frame</span></span>
+<span><span class="va">resultat2</span> <span class="op">&lt;-</span> <span class="va">requete2</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html">collect</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Cette instruction s’exécute sur un ordinateur standard en quelques secondes.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Les <em>packages</em> <code>arrow</code> et <code>duckdb</code> présentent une grande différence avec les <em>packages</em> standard de manipulation de données comme <code>dplyr</code> ou <code>data.table</code>: lorsqu’on exécute une requête sur une table de données, ces <em>packages</em> ne se contentent pas d’exécuter les commandes une à une, dans l’ordre du code, mais analysent le code pour <strong>optimiser le plan d’exécution de la requête</strong>. En pratique, cela signifie qu’<code>arrow</code> et <code>duckdb</code> essaient de n’importer que les observations nécessaires à la requête, de ne conserver que les colonnes nécessaires au calcul, etc. C’est cette optimisation du plan d’exécution (appelée <em>predicate push-down</em>) qui permet d’accélérer les traitements et de réduire la consommation de ressources informatiques.</p>
+</div>
+</div>
+<!-- ## Exploiter un fichier Parquet avec le _package_ `duckdb` -->
+<!-- Dans le cas de fichiers volumineux, il est également possible de les requêter avec le langage `SQL` grâce au _package_ [`duckdb`](https://duckdb.org/docs/api/r.html). Cette méthode est basée sur le moteur portable `DuckDB` qui permet à n'importe quel ordinateur d'accéder à des performances d'un moteur de base de données classique qui utilise un serveur. Pour plus d'informations sur la façon d'exécuter des requêtes sur des bases de données, consultez [cette fiche](https://www.book.utilitr.org/03_fiches_thematiques/fiche_connexion_bdd#ex%C3%A9cuter-des-requ%C3%AAtes). En fonction des cas d'usage, la méthode présentée ici peut être encore plus efficace que celle avec `arrow` et `dplyr`, mais elle implique de savoir exprimer les requêtes en langage SQL. -->
+<!-- L'approche avec `duckdb` comprend trois étapes similaires à celle de l'approche avec `arrow` et `dplyr`:  -->
+<!-- - On crée une connexion au moteur `DuckDB` avec la fonction `DBI::dbConnect()`; cela nécessite de charger les _package_ `DBI` et `duckdb`; -->
+<!-- - On définit une requête avec le langage SQL; -->
+<!-- - On exécute la requête avec la fonction `DBI::dbGetQuery()`, qui indique à `R` que l'on souhaite récupérer le résultat de la requête sous forme d'un `data.frame`. -->
+<!-- Voici un exemple avec une table peu volumineuse :  -->
+<!-- ```{r, eval = FALSE} -->
+<!-- library(DBI) -->
+<!-- library(duckdb) -->
+<!-- # Établir la connexion au moteur duckdb -->
+<!-- con <- dbConnect(duckdb::duckdb()) -->
+<!-- donnees_Ficdep19 <- open_dataset("Data/Ficdep19.parquet") -->
+<!-- # Définir la requête (en SQL) -->
+<!-- requete3 < - "SELECT SUM(NB_EQUIP) FROM 'Data/BPE_ENS.parquet' -->
+<!--                  WHERE REG='76' -->
+<!--                  GROUP BY DEP" -->
+<!-- # Récupérer le résultat sous forme d'un data.frame -->
+<!-- resultat3 <- dbGetQuery(con, requete3) -->
+<!-- ``` -->
+<!-- Voici un exemple avec une table volumineuse (RP 1968-2019) :  -->
+<!-- ```{r, eval = FALSE} -->
+<!-- # Établir la connexion au moteur duckdb -->
+<!-- con <- dbConnect(duckdb::duckdb()) -->
+<!-- # Définir la requête (en SQL) -->
+<!-- requete4 < - "SELECT SUM(POND) FROM 'Data/Ficdep19.parquet' -->
+<!--                  WHERE DEP_RES_21='11' -->
+<!--                  GROUP BY SEXE" -->
+<!-- # Récupérer le résultat sous forme d'un data.frame -->
+<!-- resultat4 <- dbGetQuery(con, requete4) -->
+<!-- ``` -->
+<!-- Cette instruction s'exécute également en quelques secondes sur un ordinateur standard. -->
+</section></section><section id="lire-et-exploiter-un-fichier-parquet-partitionné" class="level2" data-number="14.5"><h2 data-number="14.5" class="anchored" data-anchor-id="lire-et-exploiter-un-fichier-parquet-partitionné">
+<span class="header-section-number">14.5</span> Lire et exploiter un fichier Parquet partitionné</h2>
+<section id="quel-est-lintérêt-dutiliser-des-fichiers-parquet-partitionnés" class="level3" data-number="14.5.1"><h3 data-number="14.5.1" class="anchored" data-anchor-id="quel-est-lintérêt-dutiliser-des-fichiers-parquet-partitionnés">
+<span class="header-section-number">14.5.1</span> Quel est l’intérêt d’utiliser des fichiers Parquet partitionnés?</h3>
+<p>Comme indiqué précédemment, les <em>packages</em> <code>arrow</code> et <code>duckdb</code> ne se contentent pas d’exécuter les instructions de la requête une à une, dans l’ordre du code, mais analysent la requête dans son ensemble pour <strong>optimiser le plan d’exécution de la requête</strong>. Toutefois, il n’est pas possible de charger seulement quelques lignes d’un fichier Parquet: on importe nécessairement des colonnes entières. C’est principalement sur ce point qu’<strong>utiliser un fichier Parquet partitionné facilite ce travail d’optimisation du plan d’exécution.</strong> En effet, lorsque le fichier Parquet est partitionné, <code>arrow</code> est capable de filtrer les lignes à importer à l’aide des clés de partitionnement, ce qui permet d’accélérer l’importation des données.</p>
+<p><strong>Exemple :</strong> imaginons que la Base Permanente des Équipements soit stockée sous la forme d’un fichier Parquet partitionné par région (<code>REG</code>), et qu’on veuille compter le nombre d’équipements de chaque type dans chaque département de la région Hauts-de-France (<code>REG == "32"</code>). On utilisera le code suivant:</p>
+<div class="cell">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Établir la connexion au fichier Parquet partitionné</span></span>
+<span><span class="va">donnees_BPE_part</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://arrow.apache.org/docs/r/reference/open_dataset.html">open_dataset</a></span><span class="op">(</span></span>
+<span>  <span class="st">"Data/"</span>,</span>
+<span>  partitioning <span class="op">=</span> <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/schema.html">schema</a></span><span class="op">(</span>REG <span class="op">=</span> <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/data-type.html">utf8</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Définir la requête</span></span>
+<span><span class="va">requete_BPE</span> <span class="op">&lt;-</span> <span class="va">donnees_BPE_part</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">REG</span> <span class="op">==</span> <span class="st">"32"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="co"># Ici, on filtre selon la clé de partitionnement</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">DEP</span>, <span class="va">TYPEQU</span>, <span class="va">NB_EQUIP</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">DEP</span>, <span class="va">TYPEQU</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>nb_equipements <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Récupérer le résultat sous forme d'un data.frame</span></span>
+<span><span class="va">resultat_BPE</span> <span class="op">&lt;-</span> <span class="va">requete_BPE</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html">collect</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Au moment d’exécuter cette requête, <code>arrow</code> va utiliser la variable de partitionnement pour ne lire que la partie <code>REG == "32"</code> du fichier partitionné (donc seulement une partie des observations). Autrement dit, le fait que le fichier Parquet soit partitionné accélère la lecture des données.</p>
+<p>En conclusion, l’utilisation des fichiers Parquet partitionné présente deux avantages :</p>
+<ul>
+<li>Elle permet de travailler sur des fichiers <strong>Parquet</strong> de plus petite taille et de consommer moins de mémoire vive;</li>
+<li>Elle fait gagner du temps dans l’exécution des requêtes sur les fichiers volumineux (par rapport à un fichier <strong>Parquet</strong> unique).</li>
+</ul></section><section id="comment-bien-utiliser-les-fichiers-parquet-partitionnés" class="level3" data-number="14.5.2"><h3 data-number="14.5.2" class="anchored" data-anchor-id="comment-bien-utiliser-les-fichiers-parquet-partitionnés">
+<span class="header-section-number">14.5.2</span> Comment bien utiliser les fichiers Parquet partitionnés?</h3>
+<section id="avec-le-package-arrow" class="level4" data-number="14.5.2.1"><h4 data-number="14.5.2.1" class="anchored" data-anchor-id="avec-le-package-arrow">
+<span class="header-section-number">14.5.2.1</span> Avec le <em>package</em> <code>arrow</code>
+</h4>
+<p>La fonction <a href="https://arrow.apache.org/docs/r/reference/open_dataset.html"><code>open_dataset()</code></a> permet d’ouvrir une connexion vers un fichier Parquet partitionné. L’utilisation de la fonction <code><a href="https://arrow.apache.org/docs/r/reference/open_dataset.html">open_dataset()</a></code> est similaire au cas dans lequel on travaille avec un seul fichier Parquet. Il y a toutefois deux différences:</p>
+<ul>
+<li>Le chemin indiqué n’est pas celui d’un fichier <code>.parquet</code>, mais le chemin d’un répertoire, dans lequel se trouve le fichier Parquet partitionné;</li>
+<li>Il est préférable d’indiquer le nom et le type de la ou des variable(s) de partitionnement.</li>
+</ul>
+<p>Une fois que la connexion est établie avec le fichier partitionné, il est possible de l’utiliser exactement comme s’il s’agissait d’un seul fichier Parquet. Voici un exemple de code:</p>
+<div class="cell">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Établir la connexion au fichier Parquet partitionné</span></span>
+<span><span class="va">donnees_part</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://arrow.apache.org/docs/r/reference/open_dataset.html">open_dataset</a></span><span class="op">(</span></span>
+<span>  <span class="st">"Data/"</span>, <span class="co"># Ici, on met le chemin d'un répertoire</span></span>
+<span>  hive_style <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  partitioning <span class="op">=</span> <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/schema.html">schema</a></span><span class="op">(</span>REG <span class="op">=</span> <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/data-type.html">utf8</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="co"># La variable de partitionnement</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Définir la requête</span></span>
+<span><span class="va">requete5</span> <span class="op">&lt;-</span> <span class="va">donnees_part</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">REG</span> <span class="op">==</span> <span class="st">"32"</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="co"># Ici, on filtre selon la clé de partitionnement</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">DEP</span>, <span class="va">TYPEQU</span>, <span class="va">NB_EQUIP</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">DEP</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>nb_total <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Récupérer le résultat sous forme d'un data.frame</span></span>
+<span><span class="va">resultat5</span> <span class="op">&lt;-</span> <span class="va">requete5</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html">collect</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Pour bien utiliser un fichier Parquet partitionné, il est recommandé de suivre les deux conseils suivants:</p>
+<ul>
+<li>Afin de tirer au mieux profit du partitionnement, il est conseillé de <strong>filtrer les données</strong> de préférence <strong>selon les variables de partitionnement</strong> (dans notre exemple, la région);</li>
+<li>Il est fortement recommandé de spécifier le type des variables de partitionnement avec l’argument <code>partitioning</code>. Cela évite des erreurs typiques: le code du département est interprété à tort comme un nombre et aboutit à une erreur à cause de la Corse… L’argument <code>partitioning</code> s’utilise en construisant un schéma qui précise le type de chacune des variables de partitionnement:</li>
+</ul>
+<div class="cell">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">donnees_part</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://arrow.apache.org/docs/r/reference/open_dataset.html">open_dataset</a></span><span class="op">(</span></span>
+<span>  <span class="st">"Data/"</span>,</span>
+<span>  partitioning <span class="op">=</span> <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/schema.html">schema</a></span><span class="op">(</span>variable1 <span class="op">=</span> <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/data-type.html">utf8</a></span><span class="op">(</span><span class="op">)</span>, variable2 <span class="op">=</span> <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/data-type.html">int16</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Les types les plus fréquents sont: nombre entier (<code><a href="https://arrow.apache.org/docs/r/reference/data-type.html">int8()</a></code>, <code><a href="https://arrow.apache.org/docs/r/reference/data-type.html">int16()</a></code>, <code><a href="https://arrow.apache.org/docs/r/reference/data-type.html">int32()</a></code>, <code><a href="https://arrow.apache.org/docs/r/reference/data-type.html">int64()</a></code>), nombre réel (<code><a href="https://arrow.apache.org/docs/r/reference/data-type.html">float()</a></code>, <code><a href="https://arrow.apache.org/docs/r/reference/data-type.html">float32()</a></code>, <code><a href="https://arrow.apache.org/docs/r/reference/data-type.html">float64()</a></code>), et chaîne de caractère (<code><a href="https://arrow.apache.org/docs/r/reference/data-type.html">utf8()</a></code>, <code><a href="https://arrow.apache.org/docs/r/reference/data-type.html">large_utf8()</a></code>). Il existe beaucoup d’autres types, vous pouvez en consulter la liste en exécutant <code><a href="https://arrow.apache.org/docs/r/reference/data-type.html">?arrow::float</a></code> ou en consultant <a href="https://arrow.apache.org/docs/r/reference/data-type.html">cette page</a>.</p>
+<ul>
+<li>Il est recommandé de définir les deux options suivantes au début de votre script. Cela autorise <code>arrow</code> à utiliser plusieurs processeurs à la fois, ce qui accélère les traitements:</li>
+</ul>
+<div class="cell">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Autoriser arrow à utiliser plusieurs processeurs en même temps</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span>arrow.use_threads <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co"># Définir le nombre de processeurs utilisés par arrow</span></span>
+<span><span class="co"># 10 processeurs sont suffisants dans la plupart des cas</span></span>
+<span><span class="fu">arrow</span><span class="fu">:::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/cpu_count.html">set_cpu_count</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<!-- #### Avec le _package_ `duckdb` -->
+<!-- Il est tout à fait possible d'exploiter un fichier Parquet partitionné avec `duckdb`: il suffit d'utiliser la fonction `duckdb_register_arrow` pour indiquer au moteur `duckdb` qu'il existe une connexion au fichier Parquet partitionné. Voici un exemple: -->
+<!-- ```{r, eval = FALSE} -->
+<!-- library(arrow) -->
+<!-- library(DBI) -->
+<!-- library(duckdb) -->
+<!-- # Établir la connexion au moteur duckdb -->
+<!-- con <- dbConnect(duckdb::duckdb()) -->
+<!-- # Établir la connexion au fichier Parquet partitionné avec arrow -->
+<!-- donnees_part <- open_dataset( -->
+<!--   "Data/", # Ici, on met le chemin d'un répertoire -->
+<!--   hive_style = TRUE, -->
+<!--   partitioning = arrow::schema(REG = arrow::utf8()) # La variable de partitionnement -->
+<!-- ) -->
+<!-- # Indiquer au moteur duckdb qu'il existe une connexion au fichier Parquet  -->
+<!-- duckdb::duckdb_register_arrow(con_ddb, "donnees_part", donnees_part) -->
+<!-- # Exemple de requête: récupérer le nombre de lignes du fichier -->
+<!-- dbGetQuery(con_ddb, "SELECT count(1) as nb_lignes FROM donnees_part") -->
+<!-- ``` -->
+</section></section></section><section id="pour-en-savoir-plus" class="level2" data-number="14.6"><h2 data-number="14.6" class="anchored" data-anchor-id="pour-en-savoir-plus">
+<span class="header-section-number">14.6</span> Pour en savoir plus</h2>
+<ul>
+<li><a href="https://duckdb.org/">Page officielle de duckdb</a></li>
+<li><a href="https://www.cetic.be/Apache-Parquet-pour-le-stockage-de-donnees-volumineuses">Apache Parquet pour le stockage de données volumineuses</a></li>
+</ul>
+
+
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script><nav class="page-navigation"><div class="nav-page nav-page-previous">
+      <a href="../03_Fiches_thematiques/Fiche_import_tableurs.html" class="pagination-link  aria-label=" des="" fichiers="" issus="" de="" tableurs="" calc="">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Importer des fichiers issus de tableurs (Excel, Calc)</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../03_Fiches_thematiques/Fiche_api.html" class="pagination-link" aria-label="<span class='chapter-number'>15</span>&nbsp; <span class='chapter-title'>Travailler avec des API</span>">
+        <span class="nav-page-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Travailler avec des API</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer">
+    <div class="nav-footer-left">
+<p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/InseeFrLab/utilitR/edit/master/03_Fiches_thematiques/Fiche_import_fichiers_parquet.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/InseeFrLab/utilitR/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<li>
+<a href="https://github.com/InseeFrLab/utilitR.git" target="blank">Code source</a>
+</li>
+</div>
+  </div>
+</footer>
+
+
+</body></html>

@@ -1,0 +1,2108 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.549">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>21&nbsp; Manipuler des données textuelles</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../03_Fiches_thematiques/Fiche_survey.html" rel="next">
+<link href="../03_Fiches_thematiques/Fiche_joindre_donnees.html" rel="prev">
+<link href="../resources/logo-utilitr.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark"><script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><script async="" src="https://hypothes.is/embed.js"></script><script>
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    document.body.classList.add('hypothesis-enabled');
+  });
+</script>
+</head>
+<body class="nav-sidebar docked nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="navbar navbar-expand-lg " data-bs-theme="dark"><div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../resources/logo-utilitr.png" alt="Logo du projet utilitR" class="navbar-logo"></a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+<li class="nav-item">
+    <a class="nav-link active" href="../01_R_Insee/presentation_utilitr.html" aria-current="page"> 
+<span class="menu-text">Introduction</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_rprojects.html"> 
+<span class="menu-text">Mener un projet statistique</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_import_fichiers_plats.html"> 
+<span class="menu-text">Importer des données</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_tidyverse.html"> 
+<span class="menu-text">Choisir son paradigme</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_joindre_donnees.html"> 
+<span class="menu-text">Manipuler des données</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_graphiques.html"> 
+<span class="menu-text">Produire des sorties</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../02_Bonnes_pratiques/01-qualite-code.html"> 
+<span class="menu-text">Bonnes pratiques</span></a>
+  </li>  
+</ul>
+</div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools tools-wide">
+    <a href="https://github.com/InseeFrLab/utilitR" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <div class="dropdown">
+      <a href="" title="Share" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Share"><i class="bi bi-share"></i></a>
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="quarto-navigation-tool-dropdown-0">
+<li>
+            <a class="dropdown-item quarto-navbar-tools-item" href="https://twitter.com/intent/tweet?url=%7Curl%7C">
+              <i class="bi bi-bi-twitter pe-1"></i>
+            Twitter
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item quarto-navbar-tools-item" href="https://www.linkedin.com/sharing/share-offsite/?url=%7Curl%7C">
+              <i class="bi bi-bi-linkedin pe-1"></i>
+            LinkedIn
+            </a>
+          </li>
+      </ul>
+</div>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_joindre_donnees.html">Manipuler des données avec R</a></li><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_donnees_textuelles.html"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Manipuler des données textuelles</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="../resources/logo-utilitr.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none"></a>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Principales parties</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Introduction</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/presentation_utilitr.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Présentation du projet <code>utilitR</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_utilitR.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Comment utiliser la documentation <code>utilitR</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">Mener un projet statistique avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_rprojects.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Utiliser les projets <code>RStudio</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_git_utilisation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Utiliser <code>Git</code> avec RStudio</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_installer_packages.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Utiliser des <em>packages</em> <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_comment_choisir_un_package.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Comment choisir un <em>package</em> ?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_gerer_dependances.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Gérer les dépendances</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_se_documenter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Se documenter sur <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_resoudre_un_probleme.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Résoudre un problème avec <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_targets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Construire une chaîne de traitement reproductible avec <code>targets</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">Importer des données avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_fichiers_plats.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Importer des fichiers plats (<code>.csv</code>, <code>.tsv</code>, <code>.txt</code>)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_tables_sas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Importer des tables SAS®</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_tableurs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Importer des fichiers issus de tableurs (Excel, Calc)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_fichiers_parquet.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Lire et écrire des fichiers Parquet</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_api.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Travailler avec des API</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_connexion_bdd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Se connecter à une base de données</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true">
+ <span class="menu-text">Choisir son paradigme d’analyse des données avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_tidyverse.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Manipuler des données avec le <code>tidyverse</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_datatable.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Manipuler des données avec <code>data.table</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_arrow.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Manipuler des données avec <code>arrow</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text">Manipuler des données avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_joindre_donnees.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Joindre des tables de données</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_donnees_textuelles.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Manipuler des données textuelles</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_survey.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Utiliser des données d’enquêtes</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_donnees_spatiales.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Manipuler des données spatiales</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_donnees_temporelles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Manipuler des données temporelles</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_analyse_de_donnees.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">L’analyse de données (ACP, ACM, ACF…)</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text">Produire des sorties avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_graphiques.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Faire des graphiques avec <code>ggplot2</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_rmarkdown.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Produire des documents avec <code>R Markdown</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_rmarkdown_param_report.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Produire des rapports automatisés avec <code>R Markdown</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text">Bonnes pratiques</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_Bonnes_pratiques/01-qualite-code.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Qualité du code</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_Bonnes_pratiques/02-structure-code.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Structure des projets</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true">
+ <span class="menu-text">Éléments de configuration</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_Rstudio_AUSv3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Utiliser RStudio sur l’environnement AUSv3</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_Rstudio_SSPCloud.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Utiliser <code>RStudio</code> sur l’environnement SSP Cloud</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_configurer_git.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Configurer <code>Git</code> sur son poste de travail</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche-personnaliser-R.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Personnaliser la configuration de <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_ressources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Superviser sa session <code>R</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+    </ul>
+</div>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+<li><a href="#t%C3%A2ches-concern%C3%A9es-et-recommandations" id="toc-tâches-concernées-et-recommandations" class="nav-link active" data-scroll-target="#t%C3%A2ches-concern%C3%A9es-et-recommandations"><span class="header-section-number">21.1</span> Tâches concernées et recommandations</a></li>
+  <li>
+<a href="#manipuler-des-cha%C3%AEnes-de-caract%C3%A8res-avec-stringr" id="toc-manipuler-des-chaînes-de-caractères-avec-stringr" class="nav-link" data-scroll-target="#manipuler-des-cha%C3%AEnes-de-caract%C3%A8res-avec-stringr"><span class="header-section-number">21.2</span> Manipuler des chaînes de caractères avec <code>stringr</code></a>
+  <ul class="collapse">
+<li><a href="#pr%C3%A9sentation-du-package" id="toc-présentation-du-package" class="nav-link" data-scroll-target="#pr%C3%A9sentation-du-package"><span class="header-section-number">21.2.1</span> Présentation du <em>package</em></a></li>
+  <li><a href="#manipulations-simples" id="toc-manipulations-simples" class="nav-link" data-scroll-target="#manipulations-simples"><span class="header-section-number">21.2.2</span> Manipulations simples</a></li>
+  <li><a href="#manipuler-des-motifs-avec-stringr" id="toc-manipuler-des-motifs-avec-stringr" class="nav-link" data-scroll-target="#manipuler-des-motifs-avec-stringr"><span class="header-section-number">21.2.3</span> Manipuler des motifs avec <code>stringr</code></a></li>
+  </ul>
+</li>
+  <li>
+<a href="#regex" id="toc-regex" class="nav-link" data-scroll-target="#regex"><span class="header-section-number">21.3</span> Les expressions régulières en <code>R</code></a>
+  <ul class="collapse">
+<li><a href="#que-sont-les-expressions-r%C3%A9guli%C3%A8res" id="toc-que-sont-les-expressions-régulières" class="nav-link" data-scroll-target="#que-sont-les-expressions-r%C3%A9guli%C3%A8res"><span class="header-section-number">21.3.1</span> Que sont les expressions régulières ?</a></li>
+  <li><a href="#les-%C3%A9l%C3%A9ments-de-base-des-expressions-r%C3%A9guli%C3%A8res-en-r" id="toc-les-éléments-de-base-des-expressions-régulières-en-r" class="nav-link" data-scroll-target="#les-%C3%A9l%C3%A9ments-de-base-des-expressions-r%C3%A9guli%C3%A8res-en-r"><span class="header-section-number">21.3.2</span> Les éléments de base des expressions régulières en <code>R</code></a></li>
+  <li><a href="#quelques-exemples-dexpressions-r%C3%A9guli%C3%A8res" id="toc-quelques-exemples-dexpressions-régulières" class="nav-link" data-scroll-target="#quelques-exemples-dexpressions-r%C3%A9guli%C3%A8res"><span class="header-section-number">21.3.3</span> Quelques exemples d’expressions régulières</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#comment-construire-des-expressions-r%C3%A9guli%C3%A8res-en-r" id="toc-comment-construire-des-expressions-régulières-en-r" class="nav-link" data-scroll-target="#comment-construire-des-expressions-r%C3%A9guli%C3%A8res-en-r"><span class="header-section-number">21.4</span> Comment construire des expressions régulières en <code>R</code></a>
+  <ul class="collapse">
+<li><a href="#les-testeurs-dexpressions-r%C3%A9guli%C3%A8res-en-ligne" id="toc-les-testeurs-dexpressions-régulières-en-ligne" class="nav-link" data-scroll-target="#les-testeurs-dexpressions-r%C3%A9guli%C3%A8res-en-ligne"><span class="header-section-number">21.4.1</span> Les testeurs d’expressions régulières en ligne</a></li>
+  <li><a href="#composer-une-expression-r%C3%A9guli%C3%A8re-avec-le-package-rex" id="toc-composer-une-expression-régulière-avec-le-package-rex" class="nav-link" data-scroll-target="#composer-une-expression-r%C3%A9guli%C3%A8re-avec-le-package-rex"><span class="header-section-number">21.4.2</span> Composer une expression régulière avec le <em>package</em> <code>rex</code></a></li>
+  </ul>
+</li>
+  <li><a href="#les-fonctions-de-base-r" id="toc-les-fonctions-de-base-r" class="nav-link" data-scroll-target="#les-fonctions-de-base-r"><span class="header-section-number">21.5</span> Les fonctions de <code>base R</code></a></li>
+  <li><a href="#stringrRessources" id="toc-stringrRessources" class="nav-link" data-scroll-target="#stringrRessources"><span class="header-section-number">21.6</span> Pour en savoir plus</a></li>
+  </ul><div class="toc-actions"><ul><li><a href="https://github.com/InseeFrLab/utilitR/edit/master/03_Fiches_thematiques/Fiche_donnees_textuelles.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/InseeFrLab/utilitR/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_joindre_donnees.html">Manipuler des données avec R</a></li><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_donnees_textuelles.html"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Manipuler des données textuelles</span></a></li></ol></nav><div class="quarto-title">
+<h1 class="title"><span id="textdata" class="quarto-section-identifier"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Manipuler des données textuelles</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header><section id="tâches-concernées-et-recommandations" class="level2" data-number="21.1"><h2 data-number="21.1" class="anchored" data-anchor-id="tâches-concernées-et-recommandations">
+<span class="header-section-number">21.1</span> Tâches concernées et recommandations</h2>
+<p>L’utilisateur souhaite manipuler du texte (repérer et extraire une chaîne de caractères, concaténer, remplacer une chaîne par une autre, modifier la casse…).</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tâche concernée et recommandation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>Il est recommandé d’utiliser le <em>package</em> <code>stringr</code> qui répond à la plupart des besoins courants ;</li>
+<li>Pour les utilisateurs plus avancés, le <em>package</em> <code>stringi</code> propose un plus grand nombre de fonctionnalités ;</li>
+<li>L’usage du <em>package</em> <code>rex</code> est utile pour construire des expressions régulières complexes.</li>
+</ul>
+</div>
+</div>
+</section><section id="manipuler-des-chaînes-de-caractères-avec-stringr" class="level2" data-number="21.2"><h2 data-number="21.2" class="anchored" data-anchor-id="manipuler-des-chaînes-de-caractères-avec-stringr">
+<span class="header-section-number">21.2</span> Manipuler des chaînes de caractères avec <code>stringr</code>
+</h2>
+<section id="présentation-du-package" class="level3" data-number="21.2.1"><h3 data-number="21.2.1" class="anchored" data-anchor-id="présentation-du-package">
+<span class="header-section-number">21.2.1</span> Présentation du <em>package</em>
+</h3>
+<p>Les packages <code>stringi</code> et <code>stringr</code> facilitent beaucoup le travail sur les chaînes de caractères. <code>stringi</code> propose un grand nombre de fonctions avancées, et <code>stringr</code> propose un petit nombre de fonctions simples à utiliser (qui reposent sur les fonctions de <code>stringi</code>). Il est donc préférable de commencer à travailler avec <code>stringr</code>. Toutes les fonctions de <code>stringi</code> et <code>stringr</code> sont structurées de la même façon : le premier argument de la fonction est <strong>toujours</strong> une chaîne de caractères ; les arguments suivants sont des options.</p>
+<p>Pour utiliser <code>stringr</code>, il faut charger le <em>package</em> :</p>
+<div class="cell">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://stringr.tidyverse.org">stringr</a></span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="manipulations-simples" class="level3" data-number="21.2.2"><h3 data-number="21.2.2" class="anchored" data-anchor-id="manipulations-simples">
+<span class="header-section-number">21.2.2</span> Manipulations simples</h3>
+<section id="convertir-en-majuscules-minuscules" class="level4" data-number="21.2.2.1"><h4 data-number="21.2.2.1" class="anchored" data-anchor-id="convertir-en-majuscules-minuscules">
+<span class="header-section-number">21.2.2.1</span> Convertir en majuscules / minuscules</h4>
+<p>Les fonctions <code>str_to_lower</code>, <code>str_to_upper</code> et <code>str_to_title</code> permettent respectivement de mettre en minuscules, mettre en majuscules, ou de capitaliser les éléments d’un vecteur de chaînes de caractères :</p>
+<div class="cell">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://stringr.tidyverse.org/reference/case.html">str_to_lower</a></span><span class="op">(</span><span class="st">"Hello world"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "hello world"</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://stringr.tidyverse.org/reference/case.html">str_to_upper</a></span><span class="op">(</span><span class="st">"Hello world"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "HELLO WORLD"</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://stringr.tidyverse.org/reference/case.html">str_to_title</a></span><span class="op">(</span><span class="st">"Hello world"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Hello World"</code></pre>
+</div>
+</div>
+</section><section id="gérer-les-espaces" class="level4" data-number="21.2.2.2"><h4 data-number="21.2.2.2" class="anchored" data-anchor-id="gérer-les-espaces">
+<span class="header-section-number">21.2.2.2</span> Gérer les espaces</h4>
+<p>La fonction <code><a href="https://stringr.tidyverse.org/reference/str_pad.html">str_pad()</a></code> permet de compléter une chaîne de caractères pour qu’elle atteigne une taille fixe. Le caractère utilisé en complément est défini dans l’argument <code>pad</code> (espace par défaut). L’option <code>side</code> permet de choisir de compléter à gauche (<code>left</code>) ou à droite (<code>right</code>). Le cas typique d’usage est la gestion des codes communes Insee. Voici deux exemples :</p>
+<div class="cell">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">code_insee</span> <span class="op">&lt;-</span> <span class="fl">1001</span></span>
+<span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_pad.html">str_pad</a></span><span class="op">(</span><span class="va">code_insee</span>, <span class="fl">5</span>, pad <span class="op">=</span> <span class="st">"0"</span>, side <span class="op">=</span> <span class="st">"left"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "01001"</code></pre>
+</div>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_pad.html">str_pad</a></span><span class="op">(</span><span class="va">code_insee</span>, <span class="fl">5</span>, pad <span class="op">=</span> <span class="st">"Z"</span>, side <span class="op">=</span> <span class="st">"right"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "1001Z"</code></pre>
+</div>
+</div>
+<p>La fonction <code><a href="https://stringr.tidyverse.org/reference/str_trim.html">str_trim()</a></code> permet de supprimer les espaces aux extrémités d’une chaîne de caractères. On peut choisir de nettoyer à gauche (<code>left</code>), à droite (<code>right</code>) ou des deux côtés (<code>both</code>) avec l’option <code>side</code> (des deux côtés par défaut).</p>
+<div class="cell">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">string</span> <span class="op">&lt;-</span> <span class="st">"   Les espaces inutiles doivent être supprimés.  "</span></span>
+<span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_trim.html">str_trim</a></span><span class="op">(</span><span class="va">string</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Les espaces inutiles doivent être supprimés."</code></pre>
+</div>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_trim.html">str_trim</a></span><span class="op">(</span><span class="va">string</span>, side <span class="op">=</span> <span class="st">"left"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Les espaces inutiles doivent être supprimés.  "</code></pre>
+</div>
+</div>
+</section><section id="concaténer-des-chaînes-de-caractères" class="level4" data-number="21.2.2.3"><h4 data-number="21.2.2.3" class="anchored" data-anchor-id="concaténer-des-chaînes-de-caractères">
+<span class="header-section-number">21.2.2.3</span> Concaténer des chaînes de caractères</h4>
+<p>La fonction <code>str_c</code> permet de concaténer des chaînes de caractères entre elles, avec un délimiteur défini dans l’argument <code>sep</code>. Dans l’exemple suivant, on concatène les éléments de deux vecteurs deux à deux (le premier élément du premier vecteur avec le premier élément du second vecteur, etc.) :</p>
+<div class="cell">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_c.html">str_c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Hello"</span>, <span class="st">"Bonjour"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"World"</span>, <span class="st">"Monde"</span><span class="op">)</span>, sep <span class="op">=</span> <span class="st">" "</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Hello World"   "Bonjour Monde"</code></pre>
+</div>
+</div>
+<p>L’argument supplémentaire <code>collapse</code> permet de gérer la concaténation pour les éléments contenus dans un vecteur ou une liste (très utile en pratique, en particulier si on utilise la fonction <code>str_split</code> présentée ci-dessous). Ainsi, il est possible de concaténer l’ensemble des éléments d’un vecteur en une seule chaîne de caractère :</p>
+<div class="cell">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_c.html">str_c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"B"</span>, <span class="st">"o"</span>, <span class="st">"n"</span>, <span class="st">"j"</span>, <span class="st">"o"</span>, <span class="st">"u"</span>, <span class="st">"r"</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "B" "o" "n" "j" "o" "u" "r"</code></pre>
+</div>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_c.html">str_c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"B"</span>, <span class="st">"o"</span>, <span class="st">"n"</span>, <span class="st">"j"</span>, <span class="st">"o"</span>, <span class="st">"u"</span>, <span class="st">"r"</span><span class="op">)</span>, collapse <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Bonjour"</code></pre>
+</div>
+</div>
+</section><section id="scinder-des-chaînes-de-caractères" class="level4" data-number="21.2.2.4"><h4 data-number="21.2.2.4" class="anchored" data-anchor-id="scinder-des-chaînes-de-caractères">
+<span class="header-section-number">21.2.2.4</span> Scinder des chaînes de caractères</h4>
+<p>La fonction <code>str_sub</code> permet d’extraire une sous-chaîne de caractères en fonction de sa position dans une chaîne de caractères. On peut préciser les positions des premiers et derniers caractères extraits par les arguments <code>start</code> et <code>end</code>. Par défaut, l’extraction commence au premier caractère et se termine au dernier. Il est préférable d’ajouter un <code>L</code> aux nombres dans <code>start</code> et <code>end</code> pour indiquer clairement qu’il s’agit de nombres entiers.</p>
+<div class="cell">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_sub.html">str_sub</a></span><span class="op">(</span><span class="st">"abcdefghikl"</span>, start <span class="op">=</span> <span class="fl">3L</span>, end <span class="op">=</span> <span class="fl">5L</span><span class="op">)</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "cde"</code></pre>
+</div>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_sub.html">str_sub</a></span><span class="op">(</span><span class="st">"abcdefghikl"</span>, end <span class="op">=</span> <span class="fl">5L</span><span class="op">)</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "abcde"</code></pre>
+</div>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_sub.html">str_sub</a></span><span class="op">(</span><span class="st">"abcdefghikl"</span>, start <span class="op">=</span> <span class="fl">6L</span><span class="op">)</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "fghikl"</code></pre>
+</div>
+</div>
+<p>La fonction <code>str_split</code> permet de scinder une chaîne de caractères en fonction d’un délimiteur. Le délimiteur est défini par l’argument <code>pattern</code>. Il est possible d’utiliser une expression régulière (voir ci-après) pour définir le délimiteur. Voici un exemple simple :</p>
+<div class="cell">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_split.html">str_split</a></span><span class="op">(</span><span class="st">"Chat-Chien-Canari"</span>, pattern <span class="op">=</span> <span class="st">"-"</span><span class="op">)</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+[1] "Chat"   "Chien"  "Canari"</code></pre>
+</div>
+</div>
+<p>On peut appliquer la fonction à un vecteur de chaîne de caractères. Dans ce cas le résultat sera une liste :</p>
+<div class="cell">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_split.html">str_split</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Chat-Chien-Canari"</span>, <span class="st">"Dauphin-Dodo"</span><span class="op">)</span>, pattern <span class="op">=</span> <span class="st">"-"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+[1] "Chat"   "Chien"  "Canari"
+
+[[2]]
+[1] "Dauphin" "Dodo"   </code></pre>
+</div>
+</div>
+<p>On peut obtenir une matrice en ajoutant l’option <code>simplify = TRUE</code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_split.html">str_split</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Chat-Chien-Canari"</span>, <span class="st">"Dauphin-Dodo"</span><span class="op">)</span>, </span>
+<span>    pattern <span class="op">=</span> <span class="st">"-"</span>, simplify <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1]      [,2]    [,3]    
+[1,] "Chat"    "Chien" "Canari"
+[2,] "Dauphin" "Dodo"  ""      </code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>La fonction <code>tstrsplit</code> du <em>package</em> <code>data.table</code> permet de découper efficacement des chaînes de caractères et de transformer les sous-chaînes en variables dans un objet <code>data.table</code> (voir <code><a href="https://rdatatable.gitlab.io/data.table/reference/tstrsplit.html">?data.table::tstrsplit</a></code> pour les détails). Voici un exemple, dans lequel on découpe une chaîne de caractères pour récupérer une latitude et une longitude :</p>
+<div class="cell">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com">data.table</a></span><span class="op">)</span></span>
+<span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html">data.table</a></span><span class="op">(</span>string <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"48.853_2.35"</span>,<span class="st">"48.8162841_2.3082668"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">df</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"longitude"</span>,<span class="st">"latitude"</span><span class="op">)</span> <span class="op">:=</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/tstrsplit.html">tstrsplit</a></span><span class="op">(</span><span class="va">string</span>, <span class="st">"_"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="va">df</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                 string  longitude  latitude
+                 &lt;char&gt;     &lt;char&gt;    &lt;char&gt;
+1:          48.853_2.35     48.853      2.35
+2: 48.8162841_2.3082668 48.8162841 2.3082668</code></pre>
+</div>
+</div>
+</div>
+</div>
+</section></section><section id="manipuler-des-motifs-avec-stringr" class="level3" data-number="21.2.3"><h3 data-number="21.2.3" class="anchored" data-anchor-id="manipuler-des-motifs-avec-stringr">
+<span class="header-section-number">21.2.3</span> Manipuler des motifs avec <code>stringr</code>
+</h3>
+<section id="quest-ce-quun-motif-pattern" class="level4" data-number="21.2.3.1"><h4 data-number="21.2.3.1" class="anchored" data-anchor-id="quest-ce-quun-motif-pattern">
+<span class="header-section-number">21.2.3.1</span> Qu’est-ce qu’un motif (<code>pattern</code>) ?</h4>
+<p>Un grand nombre de fonctions de <code>stringr</code> prennent comme argument un <code>pattern</code> (ou motif en français), pour le détecter, l’extraire ou le modifier. <strong>Un motif est une description abstraite d’un ensemble de chaînes de caractères possibles.</strong> Rechercher un motif dans une chaîne de caractères revient donc à vérifier si cette chaîne (ou une partie de cette chaîne) correspond à cette description.</p>
+<p>Dans le cas le plus simple, un motif est une chaîne de caractères précise (par exemple le mot <code>voiture</code>). Toutefois, il prend le plus souvent la forme d’une règle logique (par exemple : une chaîne constituée uniquement de lettres minuscules sans espace, commençant par <code>v</code> et finissant par <code>ure</code>). Il est possible de décrire un motif à l’aide d’une expression régulière (<em>regular expressions</em> ou <em>regex</em> en anglais). La construction des expressions régulières en <code>R</code> est détaillée dans la section @ref(regex).</p>
+</section><section id="détecter-un-motif-dans-une-chaîne-de-caractères" class="level4" data-number="21.2.3.2"><h4 data-number="21.2.3.2" class="anchored" data-anchor-id="détecter-un-motif-dans-une-chaîne-de-caractères">
+<span class="header-section-number">21.2.3.2</span> Détecter un motif dans une chaîne de caractères</h4>
+<p>Le package <code>stringr</code> propose quatre fonctions pour vérifier si les éléments d’un vecteur de type <code>character</code> respectent un certain motif (<code>pattern</code>) :</p>
+<ul>
+<li>
+<strong><code><a href="https://stringr.tidyverse.org/reference/str_detect.html">str_detect()</a></code></strong> vérifie si chaque élément du vecteur respecte le <code>pattern</code> et renvoie un vecteur de valeurs logiques (<code>TRUE</code> et <code>FALSE</code>) ;</li>
+<li>
+<strong><code><a href="https://stringr.tidyverse.org/reference/str_count.html">str_count()</a></code></strong> compte le nombre de fois que le <code>pattern</code> est trouvé dans chaque élément du vecteur ;</li>
+<li>
+<strong><code><a href="https://stringr.tidyverse.org/reference/str_which.html">str_which()</a></code></strong> renvoie la position des éléments qui respectent le <code>pattern</code> ;</li>
+<li>
+<strong><code><a href="https://stringr.tidyverse.org/reference/str_subset.html">str_subset()</a></code></strong> sélectionne les éléments du vecteur qui respectent le <code>pattern</code>.</li>
+</ul>
+<p>Dans l’exemple qui suit, on cherche la lettre <code>a</code> dans chaque élément du vecteur <code>fruits</code> :</p>
+<div class="cell">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">fruits</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"pomme"</span>, <span class="st">"banane"</span>, <span class="st">"orange"</span>, <span class="st">"clémentine"</span><span class="op">)</span></span>
+<span><span class="co"># Chaque élément contient-il la lettre 'a' ?</span></span>
+<span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html">str_detect</a></span><span class="op">(</span><span class="va">fruits</span>, pattern <span class="op">=</span> <span class="st">"a"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] FALSE  TRUE  TRUE FALSE</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Combien de fois trouve-t-on la lettre 'a' dans chaque élément ?</span></span>
+<span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_count.html">str_count</a></span><span class="op">(</span><span class="va">fruits</span>, pattern <span class="op">=</span> <span class="st">"a"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0 2 1 0</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Quelle est la position des éléments qui contiennent la lettre 'a' ?</span></span>
+<span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_which.html">str_which</a></span><span class="op">(</span><span class="va">fruits</span>, pattern <span class="op">=</span> <span class="st">"a"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2 3</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Garder uniquement les éléments qui contiennent la lettre 'a'</span></span>
+<span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_subset.html">str_subset</a></span><span class="op">(</span><span class="va">fruits</span>, pattern <span class="op">=</span> <span class="st">"a"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "banane" "orange"</code></pre>
+</div>
+</div>
+</section><section id="extraire-un-motif" class="level4" data-number="21.2.3.3"><h4 data-number="21.2.3.3" class="anchored" data-anchor-id="extraire-un-motif">
+<span class="header-section-number">21.2.3.3</span> Extraire un motif</h4>
+<p>La fonction <strong><code><a href="https://stringr.tidyverse.org/reference/str_extract.html">str_extract()</a></code></strong> permet d’extraire une sous-chaîne de caractères correspondant à un motif. Cette fonction n’est vraiment utile que si l’on utilise une expression régulière pour décrire le motif des chaînes que l’on souhaite extraire. La construction des expressions régulières en <code>R</code> est détaillée dans la section @ref(regex). La fonction prend deux arguments : la chaîne de caractères analysée et le motif recherché.</p>
+<p>Dans l’exemple suivant, on recherche une sous-chaîne de caractères constituée uniquement de chiffres :</p>
+<div class="cell">
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_extract.html">str_extract</a></span><span class="op">(</span><span class="st">"J'habite au 12 rue des Arts"</span>, pattern <span class="op">=</span> <span class="st">"\\d+"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "12"</code></pre>
+</div>
+</div>
+<p>Si plusieurs sous-chaînes correspondent au motif recherché, <code><a href="https://stringr.tidyverse.org/reference/str_extract.html">str_extract()</a></code> n’extrait que la première occurrence du motif. On peut extraire toutes les occurrences du motif en utilisant <code><a href="https://stringr.tidyverse.org/reference/str_extract.html">str_extract_all()</a></code>. Dans l’exemple suivant, <code><a href="https://stringr.tidyverse.org/reference/str_extract.html">str_extract_all()</a></code> extrait les deux sous-chaînes numériques.</p>
+<div class="cell">
+<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_extract.html">str_extract_all</a></span><span class="op">(</span><span class="st">"J'habite au 12 rue des Arts 69000 Lyon"</span>, pattern <span class="op">=</span> <span class="st">"\\d+"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+[1] "12"    "69000"</code></pre>
+</div>
+</div>
+</section><section id="remplacer-un-motif" class="level4" data-number="21.2.3.4"><h4 data-number="21.2.3.4" class="anchored" data-anchor-id="remplacer-un-motif">
+<span class="header-section-number">21.2.3.4</span> Remplacer un motif</h4>
+<p>Les fonctions <code><a href="https://stringr.tidyverse.org/reference/str_replace.html">str_replace()</a></code> et <code><a href="https://stringr.tidyverse.org/reference/str_replace.html">str_replace_all()</a></code> permettent de remplacer un motif (spécifié dans l’argument <code>pattern</code>) par une autre chaîne de caractères (définie dans l’argument <code>replacement</code>). Attention, <code><a href="https://stringr.tidyverse.org/reference/str_replace.html">str_replace()</a></code> ne remplace que la première occurrence du motif rencontrée dans la chaîne de caractères. Si vous voulez remplacer toutes les occurrences, il faut utiliser la fonction <code><a href="https://stringr.tidyverse.org/reference/str_replace.html">str_replace_all()</a></code>. Voici quelques exemples :</p>
+<div class="cell">
+<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_replace.html">str_replace</a></span><span class="op">(</span><span class="st">"j'ai une voiture"</span>, </span>
+<span>            pattern <span class="op">=</span> <span class="st">"voiture"</span>, </span>
+<span>            replacement <span class="op">=</span> <span class="st">"bicyclette"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "j'ai une bicyclette"</code></pre>
+</div>
+<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_replace.html">str_replace</a></span><span class="op">(</span><span class="st">"j'ai une première voiture et une deuxième voiture"</span>, </span>
+<span>            pattern <span class="op">=</span> <span class="st">"voiture"</span>, </span>
+<span>            replacement <span class="op">=</span> <span class="st">"bicyclette"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "j'ai une première bicyclette et une deuxième voiture"</code></pre>
+</div>
+<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_replace.html">str_replace_all</a></span><span class="op">(</span><span class="st">"j'ai une première voiture et une deuxième voiture"</span>, </span>
+<span>                pattern <span class="op">=</span> <span class="st">"voiture"</span>, </span>
+<span>                replacement <span class="op">=</span> <span class="st">"bicyclette"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "j'ai une première bicyclette et une deuxième bicyclette"</code></pre>
+</div>
+</div>
+</section></section></section><section id="regex" class="level2" data-number="21.3"><h2 data-number="21.3" class="anchored" data-anchor-id="regex">
+<span class="header-section-number">21.3</span> Les expressions régulières en <code>R</code>
+</h2>
+<section id="que-sont-les-expressions-régulières" class="level3" data-number="21.3.1"><h3 data-number="21.3.1" class="anchored" data-anchor-id="que-sont-les-expressions-régulières">
+<span class="header-section-number">21.3.1</span> Que sont les expressions régulières ?</h3>
+<p><strong>Les expressions régulières sont un outil permettant de décrire un ensemble de chaînes de caractères possibles selon une syntaxe précise, et donc de définir un motif (ou <code>pattern</code>).</strong> Les expressions régulières servent par exemple lorsqu’on veut extraire une partie d’une chaîne de caractères, ou remplacer une partie d’une chaîne de caractères. Une expression régulière prend la forme d’une chaîne de caractères, qui peut contenir à la fois des éléments littéraux et des caractères spéciaux qui ont un sens logique.</p>
+<p>Par exemple, <code>"ch.+n"</code> est une expression régulière qui décrit le motif suivant : la chaîne littérale <code>ch</code>, suivi de n’importe quelle chaîne d’au moins un caractère (<code>.+</code>), suivie de la lettre <code>n</code>. Dans la chaîne <code>"J'ai un chien."</code>, la sous-chaîne <code>"chien"</code> correspond à ce motif. De même pour <code>"chapeau ron"</code> dans <code>"J'ai un chapeau rond"</code>. En revanche, dans la chaîne <code>"La soupe est chaude."</code>, aucune sous-chaîne ne correspond à ce motif (car aucun <code>n</code> n’apparaît après le <code>ch</code>).</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Les expressions régulières (<em>regex</em>) sont notoirement difficiles à maîtriser.</strong> Il existe des outils qui facilitent le travail avec les expressions régulières. Ils sont présentés dans la section <a href="#comment-construire-des-expressions-r%C3%A9guli%C3%A8res-en-r">Comment construire des expressions régulières en <code>R</code></a>.</p>
+</div>
+</div>
+</section><section id="les-éléments-de-base-des-expressions-régulières-en-r" class="level3" data-number="21.3.2"><h3 data-number="21.3.2" class="anchored" data-anchor-id="les-éléments-de-base-des-expressions-régulières-en-r">
+<span class="header-section-number">21.3.2</span> Les éléments de base des expressions régulières en <code>R</code>
+</h3>
+<section id="les-types-de-caractères" class="level4" data-number="21.3.2.1"><h4 data-number="21.3.2.1" class="anchored" data-anchor-id="les-types-de-caractères">
+<span class="header-section-number">21.3.2.1</span> Les types de caractères</h4>
+<table class="table">
+<colgroup>
+<col style="width: 34%">
+<col style="width: 65%">
+</colgroup>
+<thead><tr class="header">
+<th><strong>Symbole</strong></th>
+<th><strong>Signification</strong></th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>.</code></td>
+<td>N’importe quel caractère</td>
+</tr>
+<tr class="even">
+<td>
+<code>[:digit:]</code> ou <code>\\d</code>
+</td>
+<td>Tous les chiffres de 0 à 9</td>
+</tr>
+<tr class="odd">
+<td><code>[:alpha:]</code></td>
+<td>Toutes les lettres</td>
+</tr>
+<tr class="even">
+<td><code>[:lower:]</code></td>
+<td>Toutes les lettres minuscules</td>
+</tr>
+<tr class="odd">
+<td><code>[:upper:]</code></td>
+<td>Toutes les lettres majuscules</td>
+</tr>
+<tr class="even">
+<td><code>[:alnum:]</code></td>
+<td>Tous les caractères alphanumériques</td>
+</tr>
+<tr class="odd">
+<td><code>[:punct:]</code></td>
+<td>Tous les signes de ponctuation</td>
+</tr>
+</tbody>
+</table></section><section id="les-quantificateurs" class="level4" data-number="21.3.2.2"><h4 data-number="21.3.2.2" class="anchored" data-anchor-id="les-quantificateurs">
+<span class="header-section-number">21.3.2.2</span> Les quantificateurs</h4>
+<p>Les quantificateurs s’appliquent à l’élément qui précède. Par exemple, l’expression régulière <code>"abc\\d{3,5}"</code> décrit une chaîne constituée des lettres <code>abc</code> suivies de trois à cinq chiffres. Le quantificateur s’applique à <code>\\d</code>, pas à <code>abc</code>.</p>
+<table class="table">
+<colgroup>
+<col style="width: 26%">
+<col style="width: 73%">
+</colgroup>
+<thead><tr class="header">
+<th><strong>Quantificateur</strong></th>
+<th><strong>Signification</strong></th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>?</code></td>
+<td>l’élément précédent est présent zéro ou une seule fois</td>
+</tr>
+<tr class="even">
+<td><code>*</code></td>
+<td>l’élément précédent est éventuellement présent, une fois ou plus</td>
+</tr>
+<tr class="odd">
+<td><code>+</code></td>
+<td>l’élément précédent est présent une fois ou plus</td>
+</tr>
+<tr class="even">
+<td><code>{n}</code></td>
+<td>l’élément précédent est présent n fois</td>
+</tr>
+<tr class="odd">
+<td><code>{n,}</code></td>
+<td>l’élément précédent est présent au moins n fois</td>
+</tr>
+<tr class="even">
+<td><code>{n,m}</code></td>
+<td>l’élément précédent est présent entre n et m fois</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Les quantificateurs <code>+</code> et <code>*</code> peuvent être difficiles à distinguer. Ils ont pourtant un sens très différent :</p>
+<ul>
+<li>
+<code>+</code> signifie que l’élément précédent est <strong>nécessairement</strong> présent, et peut être répété. Exemple : <code>[\\d]+</code> décrit une suite de chiffres comprenant au moins un chiffre ;</li>
+<li>
+<code>*</code> signifie que l’élément précédent est <strong>éventuellement</strong> présent, et peut être répété. Exemple : <code>[\\d]*</code> décrit une suite de chiffres qui peut éventuellement être vide.</li>
+</ul>
+</div>
+</div>
+</section><section id="les-conditions-logiques" class="level4" data-number="21.3.2.3"><h4 data-number="21.3.2.3" class="anchored" data-anchor-id="les-conditions-logiques">
+<span class="header-section-number">21.3.2.3</span> Les conditions logiques</h4>
+<p>Certains caractères ont un sens particulier dans les expressions régulières, et permettent de coder des conditions logiques (ou, et…). Le petit tableau qui suit détaille ces caractères spéciaux. Deux points sont à garder en mémoire :</p>
+<ul>
+<li>
+<strong>les parenthèses <code>()</code> permettent de définir des groupes.</strong> Elles sont notamment utiles pour l’usage des quantificateurs. Voici deux exemples :
+<ul>
+<li>l’expression régulière <code>"^(a|b)\\d+"</code> décrit une chaîne qui commence par <code>a</code> ou <code>b</code> suivi d’au moins un chiffre ;</li>
+<li>l’expression régulière <code>"(abc\\d){3,5}"</code> décrit une chaîne constituée des lettres <code>abc</code> suivies d’un chiffre, le tout répété entre trois et cinq fois. Le quantificateur s’applique à <code>abc\\d</code>, en raison de la présence des parenthèses.</li>
+</ul>
+</li>
+<li><strong>les caractères <code>^</code> (début de chaîne) et <code>$</code> (fin de chaîne) sont souvent très utiles.</strong></li>
+</ul>
+<table class="table">
+<colgroup>
+<col style="width: 32%">
+<col style="width: 67%">
+</colgroup>
+<thead><tr class="header">
+<th><strong>Symbole</strong></th>
+<th><strong>Signification</strong></th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>^a</code></td>
+<td>La lettre “a” en première position</td>
+</tr>
+<tr class="even">
+<td><code>^abc</code></td>
+<td>La chaîne “abc” en première position</td>
+</tr>
+<tr class="odd">
+<td><code>a$</code></td>
+<td>La lettre “a” en dernière position</td>
+</tr>
+<tr class="even">
+<td><code>ab|de</code></td>
+<td>La chaîne <code>ab</code> ou la chaîne <code>de</code>
+</td>
+</tr>
+<tr class="odd">
+<td><code>[abc]</code></td>
+<td>L’un des caractères <code>a</code>, <code>b</code>, <code>c</code>
+</td>
+</tr>
+<tr class="even">
+<td><code>[^abc]</code></td>
+<td>Tous les caractères sauf <code>a</code>, <code>b</code>, et <code>c</code>
+</td>
+</tr>
+<tr class="odd">
+<td><code>[a-z]</code></td>
+<td>Tous les caractères de <code>a</code> à <code>z</code>
+</td>
+</tr>
+<tr class="even">
+<td><code>[A-Z]</code></td>
+<td>Tous les caractères de <code>A</code> à <code>Z</code>
+</td>
+</tr>
+</tbody>
+</table></section><section id="les-caractères-spéciaux" class="level4" data-number="21.3.2.4"><h4 data-number="21.3.2.4" class="anchored" data-anchor-id="les-caractères-spéciaux">
+<span class="header-section-number">21.3.2.4</span> Les caractères spéciaux</h4>
+<p>Certains caractères sont utilisés dans les expressions régulières pour décrire une caractéristique du motif (<code>^</code> pour le début de la chaîne, <code>.</code> pour désigner n’importe quel caractère, <code>$</code> pour la fin de la chaîne…). Mais il peut arriver que le motif que l’on recherche comprenne justement l’un de ces caractères spéciaux (exemple : <code>billet de 5$</code>). En ce cas, il faut utiliser <code>\</code> pour échapper ce caractère, pour que l’expression régulière le recherche exactement. Toutefois, le caractère <code>\</code> étant lui-même un caractère spécial, il faut l’échapper également, donc il faut utiliser <code>\\</code>. Ainsi pour indiquer dans une expression régulière que l’on recherche un <code>.</code>, on écrit <code>\\.</code>.</p>
+<p>Le tableau suivant présente le code de quelques caractères spéciaux :</p>
+<table class="table">
+<colgroup>
+<col style="width: 26%">
+<col style="width: 73%">
+</colgroup>
+<thead><tr class="header">
+<th><strong>Symbole</strong></th>
+<th><strong>Signification</strong></th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>\\.</code></td>
+<td>Le caractère <code>.</code>
+</td>
+</tr>
+<tr class="even">
+<td><code>\\!</code></td>
+<td>Le caractère <code>!</code>
+</td>
+</tr>
+<tr class="odd">
+<td><code>\\?</code></td>
+<td>Le caractère <code>?</code>
+</td>
+</tr>
+<tr class="even">
+<td><code>\\\\</code></td>
+<td>Le caractère <code>\</code>
+</td>
+</tr>
+<tr class="odd">
+<td><code>\\$</code></td>
+<td>Le caractère <code>$</code>
+</td>
+</tr>
+<tr class="even">
+<td><code>\\"</code></td>
+<td>Le caractère <code>"</code>
+</td>
+</tr>
+<tr class="odd">
+<td>
+<code>\\(</code> et <code>\\)</code>
+</td>
+<td>Les caractères <code>(</code> et <code>)</code>
+</td>
+</tr>
+<tr class="even">
+<td><code>\\s</code></td>
+<td>N’importe quel espace (tabulation, espace, retour à la ligne)</td>
+</tr>
+<tr class="odd">
+<td><code>\\d</code></td>
+<td>N’importe quel chiffre</td>
+</tr>
+<tr class="even">
+<td><code>\\w</code></td>
+<td>N’importe quel caractère figurant dans un mot, sauf <code>-</code> (équivalent à <code>[A-z0-9_]</code>)</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Si vous recherchez une chaîne de caractères qui contient des caractères spéciaux, vous pouvez utiliser la fonction <code>fixed</code>. Cette fonction permet de rechercher une chaîne de caractères telle quelle, sans aucune interprétation des caractères spéciaux. Ainsi, <code>fixed("20$")</code> désigne littéralement la chaîne <code>"20$"</code> (et est équivalente à l’expression régulière <code>"20\\$"</code>). Voici un exemple :</p>
+<div class="cell">
+<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html">str_detect</a></span><span class="op">(</span><span class="st">"Le chapeau coûte 20$."</span>, <span class="fu"><a href="https://stringr.tidyverse.org/reference/modifiers.html">fixed</a></span><span class="op">(</span><span class="st">"20$"</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+</div>
+</div>
+</section></section><section id="quelques-exemples-dexpressions-régulières" class="level3" data-number="21.3.3"><h3 data-number="21.3.3" class="anchored" data-anchor-id="quelques-exemples-dexpressions-régulières">
+<span class="header-section-number">21.3.3</span> Quelques exemples d’expressions régulières</h3>
+<p>Voici quelques exemples un peu complexes pour vous aider à construire vos propres expressions régulières :</p>
+<ul>
+<li>L’expression régulière <code>"(Mr|M|Mme)\\.?\\s+[\\w\\-]+"</code> permet de rechercher un nom de famille éventuellement composé, précédé de Mr, M ou Mme. Exemple : <code>str_detect("Mme Dupont-Durand habite au 21", pattern = "(Mr|M|Mme)\\.?\\s+[\\w\\-]+")</code> ;</li>
+<li>L’expression régulière <code>"([0-9]{2}\\.*){5}"</code> permet de rechercher cinq séries de deux chiffres éventuellement séparées par un point. Exemple : <code>str_detect("12.12.12.12.12.", pattern = "([0-9]{2}\\.*){5}")</code>.</li>
+</ul></section></section><section id="comment-construire-des-expressions-régulières-en-r" class="level2" data-number="21.4"><h2 data-number="21.4" class="anchored" data-anchor-id="comment-construire-des-expressions-régulières-en-r">
+<span class="header-section-number">21.4</span> Comment construire des expressions régulières en <code>R</code>
+</h2>
+<p><strong>Les expressions régulières (<em>regex</em>) sont notoirement difficiles à maîtriser.</strong> C’est pourquoi il existe de nombreux outils pour faciliter la construction des expressions régulières. Nous présentons ici deux types d’outils :</p>
+<ul>
+<li>les testeurs en ligne de <em>regex</em> ;</li>
+<li>le <em>package</em> <code>rex</code>.</li>
+</ul>
+<p>Il peut également être efficace pour ce genre de questions précises d’utiliser des outils d’intelligence artificielle générative, comme <em>ChatGPT</em>. La discussion avec l’intelligence artificielle permet d’accroître progressivement la complexité de la requête, pour prendre en compte des cas particuliers non envisagés initialement. Dans tous les cas, il est fortement conseillé de tester les suggestions de code sur les sites internet testeurs d’expressions régulières en ligne.</p>
+<section id="les-testeurs-dexpressions-régulières-en-ligne" class="level3" data-number="21.4.1"><h3 data-number="21.4.1" class="anchored" data-anchor-id="les-testeurs-dexpressions-régulières-en-ligne">
+<span class="header-section-number">21.4.1</span> Les testeurs d’expressions régulières en ligne</h3>
+<p>Plusieurs sites internet proposent des interfaces interactives pour construire, interpréter et tester des expressions régulières sur des exemples. Voici quelques sites :</p>
+<ul>
+<li>
+<a href="https://regex101.com/">https://regex101.com/</a> ;</li>
+<li>
+<a href="https://regexr.com/">https://regexr.com/</a> ;</li>
+<li>
+<a href="https://www.regextester.com/">https://www.regextester.com/</a>.</li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Un problème fréquent avec les testeurs d’expressions régulières est qu’ils utilisent des expressions régulières déjà interprétées. Cela signifie qu’une expression régulière valable dans le testeur ne le sera pas nécessairement dans <code>R</code>, en raison d’un traitement différent des caractères échappés. <strong>Si votre expression régulière est correcte d’après le testeur mais erronée dans <code>R</code>, faites attention aux caractères échappés : vous devez peut-être remplacer les <code>\</code> par <code>\\</code>.</strong> Par exemple, sur le site https://regex101.com/, l’expression régulière <code>([0-9]{2}\.*){5}</code> est correcte pour extraire la chaîne “12.12.12.12.12.”, mais elle ne fonctionne pas avec <code>R</code>. Il faut utiliser l’expression régulière <code>"([0-9]{2}\\.*){5}"</code>.</p>
+</div>
+</div>
+</section><section id="composer-une-expression-régulière-avec-le-package-rex" class="level3" data-number="21.4.2"><h3 data-number="21.4.2" class="anchored" data-anchor-id="composer-une-expression-régulière-avec-le-package-rex">
+<span class="header-section-number">21.4.2</span> Composer une expression régulière avec le <em>package</em> <code>rex</code>
+</h3>
+<section id="principe-la-fonction-rex" class="level4" data-number="21.4.2.1"><h4 data-number="21.4.2.1" class="anchored" data-anchor-id="principe-la-fonction-rex">
+<span class="header-section-number">21.4.2.1</span> Principe : la fonction <code>rex</code>
+</h4>
+<p>Le <em>package</em> <code>rex</code> permet de construire des expressions régulières complexes avec une syntaxe relativement facile à comprendre. Vous pouvez utiliser la fonction <code>rex</code> pour assembler les différents éléments qui décrivent un motif, en les séparant par des virgules. Une expression régulière construite avec <code>rex</code> ressemble à ceci : <code>rex(element1, element2, element3)</code>. Voici un exemple : <code>rex(start, "Le pivert", anything, n_times("toc", 3))</code> décrit le motif suivant : la chaîne de caractères commence par “Le pivert”, suivi de n’importe quelle chaîne de caractères (<code>anything</code>), suivie de “toc” répété trois fois (<code>n_times("toc", 3)</code>). Ce motif est équivalent à l’expression régulière <code>"^Le pivert.*(?:toc ){3}"</code>. La fonction <code>rex</code> peut être utilisée de deux façons :</p>
+<ul>
+<li>soit pour obtenir une expression régulière :</li>
+</ul>
+<div class="cell">
+<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rex.r-lib.org">rex</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rex.r-lib.org/reference/rex.html">rex</a></span><span class="op">(</span><span class="va">start</span>, <span class="st">"Le pivert"</span>, <span class="va">anything</span>, <span class="fu">n_times</span><span class="op">(</span><span class="st">"toc"</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>^Le pivert.*(?:toc){3}</code></pre>
+</div>
+</div>
+<ul>
+<li>soit directement dans une fonction du <em>package</em> <code>stringr</code> :</li>
+</ul>
+<div class="cell">
+<div class="sourceCode" id="cb58"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html">str_detect</a></span><span class="op">(</span><span class="st">"Le pivert fait toctoctoc."</span>, pattern <span class="op">=</span> <span class="fu"><a href="https://rex.r-lib.org/reference/rex.html">rex</a></span><span class="op">(</span><span class="va">start</span>, <span class="st">"Le pivert"</span>, <span class="va">anything</span>, <span class="fu">n_times</span><span class="op">(</span><span class="st">"toc"</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+</section><section id="la-syntaxe-de-rex" class="level4" data-number="21.4.2.2"><h4 data-number="21.4.2.2" class="anchored" data-anchor-id="la-syntaxe-de-rex">
+<span class="header-section-number">21.4.2.2</span> La syntaxe de <code>rex</code>
+</h4>
+<p>Trois types d’éléments peuvent être combinés dans la fonction <code>rex</code> :</p>
+<ul>
+<li>des suites de caractères : une suite de caractères précise, une suite de caractères composée de caractères figurant dans une liste (exemple : une suite composée des voyelles <code>aeiouy</code>), une suite de caractères d’un certain type (par exemple des lettres minuscules, ou des chiffres)… Le <em>package</em> <code>rex</code> propose des <em>shortcuts</em> pour désigner des ensembles cohérents de caractères (par exemple : tous les chiffres, tous les signes de ponctuation…) ;</li>
+<li>des quantificateurs : une certaine chaîne doit être répétée trois fois, ou entre deux et quatre fois ;</li>
+<li>des liens logiques. Par exemple : la chaîne de caractère doit commencer par “Madame” ou “Monsieur”, ou doit comprendre au moins l’une des chaînes “Sarl”, “Société anonyme” ou “Société par actions simplifiée”.</li>
+</ul>
+<p>Le tableau suivant présente quelques-uns des <em>shortcuts</em> de <code>rex</code>, avec leur signification. Pour la liste complète, vous pouvez consulter <code>names(shortcuts)</code>.</p>
+<table class="table">
+<colgroup>
+<col style="width: 31%">
+<col style="width: 24%">
+<col style="width: 44%">
+</colgroup>
+<thead><tr class="header">
+<th>Argument <code>rex</code>
+</th>
+<th>Expression régulière</th>
+<th>Signification</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>start</code></td>
+<td><code>"^"</code></td>
+<td>Début de la chaîne de caractères</td>
+</tr>
+<tr class="even">
+<td><code>end</code></td>
+<td><code>"$"</code></td>
+<td>Fin de la chaîne de caractères</td>
+</tr>
+<tr class="odd">
+<td><code>dot</code></td>
+<td><code>"\\."</code></td>
+<td>Un point</td>
+</tr>
+<tr class="even">
+<td><code>any</code></td>
+<td><code>"."</code></td>
+<td>N’importe quel caractère</td>
+</tr>
+<tr class="odd">
+<td><code>something</code></td>
+<td><code>".+"</code></td>
+<td>N’importe quelle suite de caractères non vide</td>
+</tr>
+<tr class="even">
+<td><code>anything</code></td>
+<td><code>".*"</code></td>
+<td>N’importe quelle suite de caractères, éventuellement vide</td>
+</tr>
+<tr class="odd">
+<td><code>alnum</code></td>
+<td><code>"[:alnum:]"</code></td>
+<td>Un caractère alphanumérique</td>
+</tr>
+<tr class="even">
+<td><code>alpha</code></td>
+<td><code>"[:alpha:]"</code></td>
+<td>Une lettre</td>
+</tr>
+<tr class="odd">
+<td><code>number</code></td>
+<td><code>"[:digit:]"</code></td>
+<td>Un chiffre</td>
+</tr>
+<tr class="even">
+<td><code>lower</code></td>
+<td><code>"[:lower:]"</code></td>
+<td>Une lettre minuscule</td>
+</tr>
+<tr class="odd">
+<td><code>punct</code></td>
+<td><code>"[:punct:]"</code></td>
+<td>Un signe de ponctuation</td>
+</tr>
+<tr class="even">
+<td><code>space</code></td>
+<td><code>"[:space:]"</code></td>
+<td>Un espace</td>
+</tr>
+<tr class="odd">
+<td><code>upper</code></td>
+<td><code>"[:upper:]"</code></td>
+<td>Une lettre majuscule</td>
+</tr>
+<tr class="even">
+<td><code>alnums</code></td>
+<td><code>"[[:alnum:]]+"</code></td>
+<td>Une suite d’au moins un caractère alphanumérique</td>
+</tr>
+<tr class="odd">
+<td><code>alphas</code></td>
+<td><code>"[[:alpha:]]+"</code></td>
+<td>Une suite d’au moins une lettre</td>
+</tr>
+<tr class="even">
+<td><code>digits</code></td>
+<td><code>"[[:digit:]]+"</code></td>
+<td>Une suite d’au moins un chiffre</td>
+</tr>
+<tr class="odd">
+<td><code>lowers</code></td>
+<td><code>"[[:lower:]]+"</code></td>
+<td>Une suite d’au moins une lettre minuscule</td>
+</tr>
+<tr class="even">
+<td><code>puncts</code></td>
+<td><code>"[[:punct:]]+"</code></td>
+<td>Une suite d’au moins un signe de ponctuation</td>
+</tr>
+<tr class="odd">
+<td><code>spaces</code></td>
+<td><code>"[[:space:]]+"</code></td>
+<td>Une suite d’au moins un espace</td>
+</tr>
+<tr class="even">
+<td><code>uppers</code></td>
+<td><code>"[[:upper:]]+"</code></td>
+<td>Une suite d’au moins une lettre majuscule</td>
+</tr>
+<tr class="odd">
+<td><code>any_alnums</code></td>
+<td><code>"[[:alnum:]]*"</code></td>
+<td>Une suite de caractères alphanumériques, éventuellement vide</td>
+</tr>
+<tr class="even">
+<td><code>any_alphas</code></td>
+<td><code>"[[:alpha:]]*"</code></td>
+<td>Une suite de lettres, éventuellement vide</td>
+</tr>
+<tr class="odd">
+<td><code>any_digits</code></td>
+<td><code>"[[:digit:]]*"</code></td>
+<td>Une suite de chiffres, éventuellement vide</td>
+</tr>
+<tr class="even">
+<td><code>any_lowers</code></td>
+<td><code>"[[:lower:]]*"</code></td>
+<td>Une suite de lettres minuscules, éventuellement vide</td>
+</tr>
+<tr class="odd">
+<td><code>any_uppers</code></td>
+<td><code>"[[:upper:]]*"</code></td>
+<td>Une suite de lettres majuscules, éventuellement vide</td>
+</tr>
+<tr class="even">
+<td><code>any_puncts</code></td>
+<td><code>"[[:punct:]]*"</code></td>
+<td>Une suite de signes de ponctuation, éventuellement vide</td>
+</tr>
+<tr class="odd">
+<td><code>non_alphas</code></td>
+<td><code>"[^[:alpha:]]+"</code></td>
+<td>Une suite d’au moins un caractère autre qu’une lettre</td>
+</tr>
+<tr class="even">
+<td><code>non_digits</code></td>
+<td><code>"[^[:digit:]]+"</code></td>
+<td>Une suite d’au moins un caractère autre qu’un chiffre</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Dans le tableau précédent, vous pouvez remarquer que certains <em>shortcuts</em> de <code>rex</code> se ressemblent deux à deux, par exemple <code>alphas</code> et <code>any_alphas</code>. En fait, la différence entre ces deux <em>shortcuts</em> est identique à la différence entre les quantificateurs <code>+</code> et <code>*</code> (voir la remarque de la partie <a href="#les-quantificateurs">Les quantificateurs</a>) : <code>rex(alphas)</code> décrit une suite de lettres comprenant au moins une lettre, tandis que <code>rex(any_alphas)</code> décrit une suite de lettres qui peut éventuellement être vide.</p>
+</div>
+</div>
+<p>Voici la liste des principaux quantificateurs utilisables dans <code>rex</code> :</p>
+<table class="table">
+<colgroup>
+<col style="width: 24%">
+<col style="width: 75%">
+</colgroup>
+<thead><tr class="header">
+<th>Argument <code>rex</code>
+</th>
+<th>Signification</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>zero_or_more(x)</code></td>
+<td>Les éléments de <code>x</code> sont présents zéro fois ou plus</td>
+</tr>
+<tr class="even">
+<td><code>one_or_more(x)</code></td>
+<td>Les éléments de <code>x</code> sont présents au moins une fois</td>
+</tr>
+<tr class="odd">
+<td><code>maybe(x)</code></td>
+<td>Les éléments de <code>x</code> sont présents zéro ou une fois</td>
+</tr>
+<tr class="even">
+<td><code>n_times(x, n)</code></td>
+<td>L’expression <code>x</code> répétée <code>n</code> fois</td>
+</tr>
+<tr class="odd">
+<td><code>between(x, low = n, high = m)</code></td>
+<td>L’expression <code>x</code> répétée entre <code>n</code> et <code>m</code> fois</td>
+</tr>
+<tr class="even">
+<td><code>at_least(x, n)</code></td>
+<td>L’expression <code>x</code> répétée au moins <code>n</code> fois</td>
+</tr>
+<tr class="odd">
+<td><code>at_most(x, n)</code></td>
+<td>L’expression <code>x</code> répétée au plus <code>n</code> fois</td>
+</tr>
+</tbody>
+</table>
+<p>Voici la liste des principaux liens logiques utilisables dans <code>rex</code> :</p>
+<table class="table">
+<colgroup>
+<col style="width: 31%">
+<col style="width: 24%">
+<col style="width: 44%">
+</colgroup>
+<thead><tr class="header">
+<th>Argument <code>rex</code>
+</th>
+<th>Expression régulière</th>
+<th>Signification</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>or(x, y)</code></td>
+<td><code>"|"</code></td>
+<td>L’une des expressions <code>x</code> ou <code>y</code> est présente</td>
+</tr>
+<tr class="even">
+<td><code>one_of("abyz")</code></td>
+<td><code>[abyz]</code></td>
+<td>Un seul des caractères spécifiés</td>
+</tr>
+<tr class="odd">
+<td><code>some_of("abyz")</code></td>
+<td><code>[abyz]+</code></td>
+<td>Un ou plusieurs des caractères spécifiés (éventuellement répétés)</td>
+</tr>
+<tr class="even">
+<td><code>none_of("abyz")</code></td>
+<td><code>[^abyz]</code></td>
+<td>Aucun des caractères spécifiés n’est présent</td>
+</tr>
+</tbody>
+</table></section></section></section><section id="les-fonctions-de-base-r" class="level2" data-number="21.5"><h2 data-number="21.5" class="anchored" data-anchor-id="les-fonctions-de-base-r">
+<span class="header-section-number">21.5</span> Les fonctions de <code>base R</code>
+</h2>
+<p>Beaucoup de fonctions disponibles dans <code>stringi</code> et <code>stringr</code> sont en réalité des réécritures de fonctions de <code>R base</code>. Le tableau suivant vous indique quel est l’équivalent en <code>base R</code> des principales fonctions de <code>stringr</code>. Pour mémoire, <strong>il est recommandé d’utiliser <code>stringr</code> plutôt que les fonctions de <code>R base</code></strong>, car ce <em>package</em> est plus robuste et plus cohérent que les fonctions de base.</p>
+<table class="table">
+<colgroup>
+<col style="width: 51%">
+<col style="width: 48%">
+</colgroup>
+<thead><tr class="header">
+<th><code>stringr</code></th>
+<th><code>R base</code></th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>str_to_lower(x)</code></td>
+<td><code>tolower(x)</code></td>
+</tr>
+<tr class="even">
+<td><code>str_to_upper(x)</code></td>
+<td><code>toupper(x)</code></td>
+</tr>
+<tr class="odd">
+<td><code>str_to_title(x)</code></td>
+<td><code>tools::toTitleCase(x)</code></td>
+</tr>
+<tr class="even">
+<td><code>str_trim(x)</code></td>
+<td><code>trimws(x)</code></td>
+</tr>
+<tr class="odd">
+<td><code>str_c(x)</code></td>
+<td>
+<code>paste0(x)</code> ou <code>paste(x)</code>
+</td>
+</tr>
+<tr class="even">
+<td><code>str_sub(x, start, end)</code></td>
+<td><code>substr(x, start, end)</code></td>
+</tr>
+<tr class="odd">
+<td><code>str_split(x, pattern)</code></td>
+<td><code>strsplit(x, pattern)</code></td>
+</tr>
+<tr class="even">
+<td><code>str_locate(x, pattern)</code></td>
+<td><code>regexpr(pattern, x)</code></td>
+</tr>
+<tr class="odd">
+<td><code>str_locate_all(x, pattern)</code></td>
+<td><code>gregexpr(pattern, x)</code></td>
+</tr>
+<tr class="even">
+<td><code>str_subset(x, pattern)</code></td>
+<td><code>grep(pattern, x, value = TRUE)</code></td>
+</tr>
+<tr class="odd">
+<td><code>str_which(x, pattern)</code></td>
+<td><code>grep(pattern, x)</code></td>
+</tr>
+<tr class="even">
+<td><code>str_detect(x, pattern)</code></td>
+<td><code>grepl(pattern, x)</code></td>
+</tr>
+<tr class="odd">
+<td><code>str_match(x, pattern)</code></td>
+<td>
+<code>regexec(pattern, x)</code> + <code><a href="https://rdrr.io/r/base/regmatches.html">regmatches()</a></code>
+</td>
+</tr>
+<tr class="even">
+<td><code>str_replace(x, pattern, replacement)</code></td>
+<td><code>sub(pattern, replacement, x)</code></td>
+</tr>
+<tr class="odd">
+<td><code>str_replace_all(x, pattern, replacement)</code></td>
+<td><code>gsub(pattern, replacement, x)</code></td>
+</tr>
+<tr class="even">
+<td><code>str_extract(x, pattern)</code></td>
+<td>
+<code>regexpr(pattern, x)</code> + <code><a href="https://rdrr.io/r/base/regmatches.html">regmatches()</a></code>
+</td>
+</tr>
+<tr class="odd">
+<td><code>str_length(x)</code></td>
+<td><code>nchar(x)</code></td>
+</tr>
+<tr class="even">
+<td><code>str_order(x)</code></td>
+<td><code>order(x)</code></td>
+</tr>
+<tr class="odd">
+<td><code>str_sort(x)</code></td>
+<td><code>sort(x)</code></td>
+</tr>
+<tr class="even">
+<td><code>str_dup(x, n)</code></td>
+<td><code>strrep(x, n)</code></td>
+</tr>
+<tr class="odd">
+<td><code>str_wrap(x)</code></td>
+<td><code>strwrap(x)</code></td>
+</tr>
+</tbody>
+</table>
+<!-- | `stringr`                                 |  `R base`                               | --><!-- |-------------------------------------------|-----------------------------------------| --><!-- | `str_locate_all(x, pattern)`              |  `gregexpr(pattern, x)`                 | --><!-- | `str_subset(x, pattern)`                  |  `grep(pattern, x, value = TRUE)`       | --><!-- | `str_which(x, pattern)`                   |  `grep(pattern, x)`                     | --><!-- | `str_detect(x, pattern)`                  |  `grepl(pattern, x)`                    | --><!-- | `str_replace_all(x, pattern, replacement)`|  `gsub(pattern, replacement, x)`        | --><!-- | `str_length(x)`                           |  `nchar(x)`                             | --><!-- | `str_order(x)`                            |  `order(x)`                             | --><!-- | `str_match(x, pattern)`                   |  `regexec(pattern, x)` + `regmatches()` | --><!-- | `str_extract(x, pattern)`                 |  `regexpr(pattern, x)` + `regmatches()` | --><!-- | `str_locate(x, pattern)`                  |  `regexpr(pattern, x)`                  | --><!-- | `str_sort(x)`                             |  `sort(x)`                              | --><!-- | `str_dup(x, n)`                           |  `strrep(x, n)`                         | --><!-- | `str_split(x, pattern)`                   |  `strsplit(x, pattern)`                 | --><!-- | `str_wrap(x)`                             |  `strwrap(x)`                           | --><!-- | `str_replace(x, pattern, replacement)`    |  `sub(pattern, replacement, x)`         | --><!-- | `str_sub(x, start, end)`                  |  `substr(x, start, end)`                | --><!-- | `str_to_lower(x)`                         |  `tolower(x)`                           | --><!-- | `str_to_upper(x)`                         |  `toupper(x)`                           | --><!-- | `str_to_title(x)`                         |  `tools::toTitleCase(x)`                | --><!-- | `str_trim(x)`                             |  `trimws(x)`                            | --></section><section id="stringrRessources" class="level2" data-number="21.6"><h2 data-number="21.6" class="anchored" data-anchor-id="stringrRessources">
+<span class="header-section-number">21.6</span> Pour en savoir plus</h2>
+<ul>
+<li>sur le <em>package</em> <code>stringr</code> :
+<ul>
+<li>la <a href="https://www.rdocumentation.org/packages/stringr">documentation</a> du <em>package</em> (en anglais) ;</li>
+<li>une <a href="https://cran.r-project.org/web/packages/stringr/vignettes/stringr.html">vignette</a> d’introduction à <code>stringr</code> (en anglais) ;</li>
+<li>un <a href="https://github.com/rstudio/cheatsheets/raw/master/strings.pdf">aide-mémoire</a> sur <code>stringr</code> et les expressions régulières ;</li>
+</ul>
+</li>
+<li>sur les expressions régulières :
+<ul>
+<li>
+<a href="https://thinkr.fr/r-les-expressions-regulieres/">une page en français sur la construction des expressions régulières avec R</a> ;</li>
+<li>un très bon <a href="http://perso.ens-lyon.fr/lise.vaudor/strings-et-expressions-regulieres/">article de blog</a> en français sur les expressions régulières en <code>R</code> ;</li>
+<li>une <a href="https://cran.r-project.org/web/packages/stringr/vignettes/regular-expressions.html">vignette</a> sur les expressions régulières avec <code>stringr</code> (en anglais) ;</li>
+<li>la <a href="https://juba.github.io/tidyverse/11-stringr.html">partie <code>stringr</code></a> de l’introduction à <code>R</code> et au <code>tidyverse</code> (en français) ;</li>
+<li>
+<a href="https://github.com/rstudio/cheatsheets/raw/master/strings.pdf">un aide-mémoire en anglais sur la construction des expressions régulières avec R</a> ;</li>
+<li>
+<a href="https://r4ds.hadley.nz/regexps.html">le chapitre dédié aux expressions régulières du livre <code>R for Data Science</code></a> ;</li>
+</ul>
+</li>
+<li>sur le <em>package</em> <code>RVerbalExpressions</code> :
+<ul>
+<li>la <a href="https://cran.r-project.org/web/packages/RVerbalExpressions/RVerbalExpressions.pdf">documentation</a> du <em>package</em> (en anglais) ;</li>
+<li>une <a href="https://cran.r-project.org/web/packages/RVerbalExpressions/vignettes/examples.html">vignette</a> d’exemples d’utilisation du <em>package</em> (en anglais).</li>
+</ul>
+</li>
+</ul>
+
+
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script><nav class="page-navigation"><div class="nav-page nav-page-previous">
+      <a href="../03_Fiches_thematiques/Fiche_joindre_donnees.html" class="pagination-link  aria-label=" des="" tables="" de="" donn="">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Joindre des tables de données</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../03_Fiches_thematiques/Fiche_survey.html" class="pagination-link" aria-label="<span class='chapter-number'>22</span>&nbsp; <span class='chapter-title'>Utiliser des données d'enquêtes</span>">
+        <span class="nav-page-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Utiliser des données d’enquêtes</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer">
+    <div class="nav-footer-left">
+<p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/InseeFrLab/utilitR/edit/master/03_Fiches_thematiques/Fiche_donnees_textuelles.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/InseeFrLab/utilitR/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<li>
+<a href="https://github.com/InseeFrLab/utilitR.git" target="blank">Code source</a>
+</li>
+</div>
+  </div>
+</footer>
+
+
+</body></html>

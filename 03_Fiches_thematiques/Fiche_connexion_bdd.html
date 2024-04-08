@@ -1,0 +1,1425 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.549">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>16&nbsp; Se connecter à une base de données</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../03_Fiches_thematiques/Fiche_tidyverse.html" rel="next">
+<link href="../03_Fiches_thematiques/Fiche_api.html" rel="prev">
+<link href="../resources/logo-utilitr.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark"><script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><script async="" src="https://hypothes.is/embed.js"></script><script>
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    document.body.classList.add('hypothesis-enabled');
+  });
+</script>
+</head>
+<body class="nav-sidebar docked nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="navbar navbar-expand-lg " data-bs-theme="dark"><div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../resources/logo-utilitr.png" alt="Logo du projet utilitR" class="navbar-logo"></a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+<li class="nav-item">
+    <a class="nav-link active" href="../01_R_Insee/presentation_utilitr.html" aria-current="page"> 
+<span class="menu-text">Introduction</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_rprojects.html"> 
+<span class="menu-text">Mener un projet statistique</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_import_fichiers_plats.html"> 
+<span class="menu-text">Importer des données</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_tidyverse.html"> 
+<span class="menu-text">Choisir son paradigme</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_joindre_donnees.html"> 
+<span class="menu-text">Manipuler des données</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_graphiques.html"> 
+<span class="menu-text">Produire des sorties</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../02_Bonnes_pratiques/01-qualite-code.html"> 
+<span class="menu-text">Bonnes pratiques</span></a>
+  </li>  
+</ul>
+</div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools tools-wide">
+    <a href="https://github.com/InseeFrLab/utilitR" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <div class="dropdown">
+      <a href="" title="Share" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Share"><i class="bi bi-share"></i></a>
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="quarto-navigation-tool-dropdown-0">
+<li>
+            <a class="dropdown-item quarto-navbar-tools-item" href="https://twitter.com/intent/tweet?url=%7Curl%7C">
+              <i class="bi bi-bi-twitter pe-1"></i>
+            Twitter
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item quarto-navbar-tools-item" href="https://www.linkedin.com/sharing/share-offsite/?url=%7Curl%7C">
+              <i class="bi bi-bi-linkedin pe-1"></i>
+            LinkedIn
+            </a>
+          </li>
+      </ul>
+</div>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_import_fichiers_plats.html">Importer des données avec R</a></li><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_connexion_bdd.html"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Se connecter à une base de données</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="../resources/logo-utilitr.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none"></a>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Principales parties</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Introduction</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/presentation_utilitr.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Présentation du projet <code>utilitR</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_utilitR.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Comment utiliser la documentation <code>utilitR</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">Mener un projet statistique avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_rprojects.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Utiliser les projets <code>RStudio</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_git_utilisation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Utiliser <code>Git</code> avec RStudio</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_installer_packages.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Utiliser des <em>packages</em> <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_comment_choisir_un_package.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Comment choisir un <em>package</em> ?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_gerer_dependances.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Gérer les dépendances</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_se_documenter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Se documenter sur <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_resoudre_un_probleme.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Résoudre un problème avec <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_targets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Construire une chaîne de traitement reproductible avec <code>targets</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">Importer des données avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_fichiers_plats.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Importer des fichiers plats (<code>.csv</code>, <code>.tsv</code>, <code>.txt</code>)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_tables_sas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Importer des tables SAS®</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_tableurs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Importer des fichiers issus de tableurs (Excel, Calc)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_fichiers_parquet.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Lire et écrire des fichiers Parquet</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_api.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Travailler avec des API</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_connexion_bdd.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Se connecter à une base de données</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true">
+ <span class="menu-text">Choisir son paradigme d’analyse des données avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_tidyverse.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Manipuler des données avec le <code>tidyverse</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_datatable.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Manipuler des données avec <code>data.table</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_arrow.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Manipuler des données avec <code>arrow</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text">Manipuler des données avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_joindre_donnees.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Joindre des tables de données</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_donnees_textuelles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Manipuler des données textuelles</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_survey.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Utiliser des données d’enquêtes</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_donnees_spatiales.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Manipuler des données spatiales</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_donnees_temporelles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Manipuler des données temporelles</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_analyse_de_donnees.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">L’analyse de données (ACP, ACM, ACF…)</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text">Produire des sorties avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_graphiques.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Faire des graphiques avec <code>ggplot2</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_rmarkdown.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Produire des documents avec <code>R Markdown</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_rmarkdown_param_report.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Produire des rapports automatisés avec <code>R Markdown</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text">Bonnes pratiques</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_Bonnes_pratiques/01-qualite-code.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Qualité du code</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_Bonnes_pratiques/02-structure-code.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Structure des projets</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true">
+ <span class="menu-text">Éléments de configuration</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_Rstudio_AUSv3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Utiliser RStudio sur l’environnement AUSv3</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_Rstudio_SSPCloud.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Utiliser <code>RStudio</code> sur l’environnement SSP Cloud</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_configurer_git.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Configurer <code>Git</code> sur son poste de travail</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche-personnaliser-R.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Personnaliser la configuration de <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_ressources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Superviser sa session <code>R</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+    </ul>
+</div>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+<li><a href="#t%C3%A2ches-concern%C3%A9es-et-recommandations" id="toc-tâches-concernées-et-recommandations" class="nav-link active" data-scroll-target="#t%C3%A2ches-concern%C3%A9es-et-recommandations"><span class="header-section-number">16.1</span> Tâches concernées et recommandations</a></li>
+  <li>
+<a href="#rappel-des-notions-essentielles-sur-les-bases-de-donn%C3%A9es" id="toc-rappel-des-notions-essentielles-sur-les-bases-de-données" class="nav-link" data-scroll-target="#rappel-des-notions-essentielles-sur-les-bases-de-donn%C3%A9es"><span class="header-section-number">16.2</span> Rappel des notions essentielles sur les bases de données</a>
+  <ul class="collapse">
+<li><a href="#structure-de-bases-de-donn%C3%A9es" id="toc-structure-de-bases-de-données" class="nav-link" data-scroll-target="#structure-de-bases-de-donn%C3%A9es"><span class="header-section-number">16.2.1</span> Structure de bases de données</a></li>
+  <li><a href="#quest-ce-que-sql" id="toc-quest-ce-que-sql" class="nav-link" data-scroll-target="#quest-ce-que-sql"><span class="header-section-number">16.2.2</span> Qu’est-ce que SQL ?</a></li>
+  </ul>
+</li>
+  <li><a href="#comment-travailler-avec-des-bases-de-donn%C3%A9es-avec-dbi" id="toc-comment-travailler-avec-des-bases-de-données-avec-dbi" class="nav-link" data-scroll-target="#comment-travailler-avec-des-bases-de-donn%C3%A9es-avec-dbi"><span class="header-section-number">16.3</span> Comment travailler avec des bases de données avec <code>DBI</code></a></li>
+  <li>
+<a href="#se-connecter-%C3%A0-une-base-de-donn%C3%A9es" id="toc-se-connecter-à-une-base-de-données" class="nav-link" data-scroll-target="#se-connecter-%C3%A0-une-base-de-donn%C3%A9es"><span class="header-section-number">16.4</span> Se connecter à une base de données</a>
+  <ul class="collapse">
+<li><a href="#se-connecter-%C3%A0-une-base-de-donn%C3%A9es-postgresql" id="toc-se-connecter-à-une-base-de-données-postgresql" class="nav-link" data-scroll-target="#se-connecter-%C3%A0-une-base-de-donn%C3%A9es-postgresql"><span class="header-section-number">16.4.1</span> Se connecter à une base de données PostgreSQL…</a></li>
+  <li><a href="#se-connecter-%C3%A0-une-base-de-donn%C3%A9es-oracle" id="toc-se-connecter-à-une-base-de-données-oracle" class="nav-link" data-scroll-target="#se-connecter-%C3%A0-une-base-de-donn%C3%A9es-oracle"><span class="header-section-number">16.4.2</span> Se connecter à une base de données Oracle</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#ex%C3%A9cuter-des-requ%C3%AAtes" id="toc-exécuter-des-requêtes" class="nav-link" data-scroll-target="#ex%C3%A9cuter-des-requ%C3%AAtes"><span class="header-section-number">16.5</span> Exécuter des requêtes</a>
+  <ul class="collapse">
+<li><a href="#ex%C3%A9cuter-des-requ%C3%AAtes-avec-dbi" id="toc-exécuter-des-requêtes-avec-dbi" class="nav-link" data-scroll-target="#ex%C3%A9cuter-des-requ%C3%AAtes-avec-dbi"><span class="header-section-number">16.5.1</span> Exécuter des requêtes avec <code>DBI</code></a></li>
+  <li><a href="#ex%C3%A9cuter-des-requ%C3%AAtes-avec-dbplyr" id="toc-exécuter-des-requêtes-avec-dbplyr" class="nav-link" data-scroll-target="#ex%C3%A9cuter-des-requ%C3%AAtes-avec-dbplyr"><span class="header-section-number">16.5.2</span> Exécuter des requêtes avec <code>dbplyr</code></a></li>
+  <li><a href="#comparaison-de-dbi-et-de-dbplyr" id="toc-comparaison-de-dbi-et-de-dbplyr" class="nav-link" data-scroll-target="#comparaison-de-dbi-et-de-dbplyr"><span class="header-section-number">16.5.3</span> Comparaison de <code>DBI</code> et de <code>dbplyr</code></a></li>
+  </ul>
+</li>
+  <li><a href="#se-d%C3%A9connecter-avec-dbi" id="toc-se-déconnecter-avec-dbi" class="nav-link" data-scroll-target="#se-d%C3%A9connecter-avec-dbi"><span class="header-section-number">16.6</span> Se déconnecter avec <code>DBI</code></a></li>
+  <li><a href="#quelques-bonnes-pratiques" id="toc-quelques-bonnes-pratiques" class="nav-link" data-scroll-target="#quelques-bonnes-pratiques"><span class="header-section-number">16.7</span> Quelques bonnes pratiques</a></li>
+  <li><a href="#sources" id="toc-sources" class="nav-link" data-scroll-target="#sources"><span class="header-section-number">16.8</span> Sources</a></li>
+  <li><a href="#RessourcesBDD" id="toc-RessourcesBDD" class="nav-link" data-scroll-target="#RessourcesBDD"><span class="header-section-number">16.9</span> Pour en savoir plus</a></li>
+  </ul><div class="toc-actions"><ul><li><a href="https://github.com/InseeFrLab/utilitR/edit/master/03_Fiches_thematiques/Fiche_connexion_bdd.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/InseeFrLab/utilitR/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_import_fichiers_plats.html">Importer des données avec R</a></li><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_connexion_bdd.html"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Se connecter à une base de données</span></a></li></ol></nav><div class="quarto-title">
+<h1 class="title"><span id="bdd" class="quarto-section-identifier"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Se connecter à une base de données</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header><section id="tâches-concernées-et-recommandations" class="level2" data-number="16.1"><h2 data-number="16.1" class="anchored" data-anchor-id="tâches-concernées-et-recommandations">
+<span class="header-section-number">16.1</span> Tâches concernées et recommandations</h2>
+<p>L’utilisateur souhaite accéder à des données stockées dans une base de données (sous forme Oracle, PostgreSQL, etc.). Il veut effectuer de la manipulation de données, mais également calculer des indicateurs, réaliser des estimations et en récupérer le résultat.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tâche concernée et recommandation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>
+<strong>Il est recommandé d’utiliser le <em>package</em> <code>DBI</code></strong> qui fournit une boîte à outils génériques pour de multiples bases de données. Ce <em>package</em> doit être complété par un autre <em>package</em> spécifique au type de base de données concernées :
+<ul>
+<li>pour une base de données de type Oracle : <code>ROracle</code> ;</li>
+<li>pour une base de données de type PostgreSQL : <code>RPostgres</code> (ou <code>odbc</code> pour les utilisateurs qui souhaitent visualiser l’architecture de la base de données dans RStudio).</li>
+</ul>
+</li>
+<li>Les utilisateurs débutants peuvent utiliser le <em>package</em> <code>dbplyr</code> pour se familiariser avec les requêtes SQL.</li>
+<li>L’usage de ces <em>packages</em> peut être conditionné à l’installation préalable de <strong>librairies système</strong> sur lesquelles l’utilisateur standard n’a pas la main. Il faudra le cas échéant contacter les services informatiques pour obtenir l’installation de ces librairies système.</li>
+</ul>
+</div>
+</div>
+</section><section id="rappel-des-notions-essentielles-sur-les-bases-de-données" class="level2" data-number="16.2"><h2 data-number="16.2" class="anchored" data-anchor-id="rappel-des-notions-essentielles-sur-les-bases-de-données">
+<span class="header-section-number">16.2</span> Rappel des notions essentielles sur les bases de données</h2>
+<section id="structure-de-bases-de-données" class="level3" data-number="16.2.1"><h3 data-number="16.2.1" class="anchored" data-anchor-id="structure-de-bases-de-données">
+<span class="header-section-number">16.2.1</span> Structure de bases de données</h3>
+<p>Les <em>systèmes de gestion de bases de données</em> (ou <strong>SGBD</strong>) sont des logiciels permettant de stocker, gérer, manipuler et partager des informations organisées d’une certaine manière (la manière la plus courante étant l’organisation sous forme de tables à deux dimensions - lignes et colonnes - appelée <em>bases de données relationnelles</em>). Cette gestion de l’information se fait de manière transparente pour l’utilisateur, et vise en général à optimiser les opérations sur des bases de données de grande taille.</p>
+<p>De ce point de vue, le logiciel de gestion de bases de données est <strong>indépendant</strong>, au sens où il n’est pas dépendant de la forme que prendra le logiciel permettant à l’utilisateur de consulter et de manipuler l’information de la base de données. Il faut ainsi distinguer deux notions essentielles :</p>
+<ul>
+<li>la notion de <strong>client</strong> : schématiquement la machine sur laquelle l’utilisateur effectue des <strong>requêtes</strong> visant à consulter, manipuler, modifier la base de données ;</li>
+<li>la notion de <strong>serveur</strong> : schématiquement la machine sur laquelle la base de données se situe et qui va se charger d’exécuter les <strong>requêtes</strong> que le client lui adresse.</li>
+</ul>
+<p>Rien n’interdit que le client et le serveur soient la même machine (bien que ce ne soit pas la pratique courante). Néanmoins, cette distinction est essentielle pour la <strong>transparence</strong> des opérations qu’effectuent le SGBD. Ainsi, plusieurs clients de différentes formes, avec des caractéristiques techniques différentes, peuvent interroger la même base de données. Pour le dire plus simplement dans le contexte de l’Insee, il est possible de se connecter sur une même base de données avec différents logiciels (qui sont ici les <strong>clients</strong>), tels que <code>SAS</code>, <code>R</code>, <code>Python</code> ou d’autres logiciels spécifiquement dédiés au requêtage et à la gestion de bases de données (<code>PgAdmin</code>, <code>DBeaver</code>, etc.). C’est là tout l’intérêt du système de gestion de bases de données : il permet de s’affranchir des questions du support d’enregistrement de l’information, en offrant une solution accessible par différents logiciels, rendant ainsi le format d’enregistrement agnostique vis-à-vis du langage utilisé, et en parallèle permettant de séparer la manipulation des données et l’analyse qui en est faite.</p>
+<p>Ainsi, une <strong>requête</strong> est une commande plus ou moins complexe permettant de manipuler, de transformer et/ou de générer des données stockées dans la base de données gérées par le SGBD auquel s’adresse la requête. Cette requête est adressée au serveur par le client. Elle peut ou non aboutir à une transmission d’information du serveur vers le client. Là encore, l’intérêt d’une requête s’adressant à un serveur distinct du client est qu’elle permet à l’utilisateur de s’affranchir de toutes les questions qui peuvent surgir lorsqu’on cherche à manipuler un volume de données important. Ces questions sont particulièrement prégnantes sur des logiciels comme <code>R</code>, qui sont très exigeants du point de vue des ressources informatiques. Ainsi, pour une même opération, l’utilisateur aura le choix entre plusieurs approches :</p>
+<ul>
+<li>adresser une requête au serveur pour télécharger les données qui l’intéressent, et réaliser les opérations voulues sur le client directement (mais faisant alors face aux problèmes de ressources sus-mentionnés) ;</li>
+<li>adresser une requête au serveur pour que ce dernier accomplisse les opérations directement sur la base de données, et éventuellement compléter la requête de manière à en récupérer le résultat (sous une forme éventuellement agrégée, selon l’usage qu’on souhaite <em>in fine</em> avoir de l’information ainsi transformée) ;</li>
+<li>soit un mélange des deux, visant à tirer partie à la fois des performances de gestion de gros volumes du serveur, mais également des outils spécifiques (en particulier en matière de statistiques ou d’économétrie) offert par le client.</li>
+</ul>
+<p>Reste la question de l’interfaçage entre le client et le serveur, c’est-à-dire la façon dont les deux vont communiquer de façon intelligible, supposé être transparent pour l’utilisateur. Cet interfaçage est assuré par un <em>driver</em> du côté client, qui permet à celui-ci d’envoyer des requêtes que le serveur peut interpréter. Il est donc essentiel de s’assurer que ce <em>driver</em> existe du côté client et qu’il est utilisé par le logiciel. En effet, il existe un grand nombre de SGBD, dont les caractéristiques techniques varient, par exemple <code>MySQL</code>, <code>Oracle</code>, <code>Postgres</code>, <code>SQLite</code>, <code>DuckDB</code>, etc. C’est ici que le package <code>DBI</code> entre en jeu. Ce <em>package</em> contient un certain nombre de fonctions génériques permettant de communiquer avec un serveur de base de données, quel que soit le type de base de données en question. Ce <em>package</em> doit être utilisé avec un autre <em>package</em> qui contient le <em>driver</em> correspondant au type de la base de données que l’on souhaite requêter. Dès lors que ce <em>driver</em> existe et est correctement chargé, les fonctions de <code>DBI</code> permettent d’établir la connexion avec le serveur et de lancer des requêtes.</p>
+</section><section id="quest-ce-que-sql" class="level3" data-number="16.2.2"><h3 data-number="16.2.2" class="anchored" data-anchor-id="quest-ce-que-sql">
+<span class="header-section-number">16.2.2</span> Qu’est-ce que SQL ?</h3>
+<p>SQL (pour <em>Structured Query Language</em> ou langage de requête structuré) est un langage informatique spécifiquement dédié à la manipulation, ajout, modification et suppression de données dans un SGBD. Ce langage peut varier dans les fonctions qu’il offre selon la solution technique utilisée (le type de base de données), mais la structure de requête reste globalement la même d’un type de base de données à l’autre. L’utilité du langage SQL vient du fait qu’il permet de formuler des requêtes qui seront exécutées sur le serveur ; sa maîtrise permet à l’utilisateur de déporter sur le serveur la charge de calcul pour la manipulation des données. D’autres solutions existent en <code>R</code> (<em>cf.</em> infra) mais c’est le langage SQL qui offre <em>in fine</em> le plus de possibilités, puisqu’il s’agit du langage natif de requêtage d’une base de données.</p>
+<p>Dans les grandes lignes, une requête SQL ressemble généralement à ce qui suit :</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> var1, var2</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> ma_table</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> var3<span class="op">=</span><span class="dv">1</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> var1 ;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Un grand nombre de sites internet proposent des tutoriels sur le langage SQL.</p>
+</section></section><section id="comment-travailler-avec-des-bases-de-données-avec-dbi" class="level2" data-number="16.3"><h2 data-number="16.3" class="anchored" data-anchor-id="comment-travailler-avec-des-bases-de-données-avec-dbi">
+<span class="header-section-number">16.3</span> Comment travailler avec des bases de données avec <code>DBI</code>
+</h2>
+<p>Pour interagir avec une base de données avec <code>R</code>, les fonctionnalités se décomposent en deux grands ensembles :</p>
+<ul>
+<li>une <strong>interface utilisateur</strong> (<em>front-end</em>) : le <em>package</em> <code>DBI</code> contient les fonctions nécessaires à l’utilisateur de <code>R</code> pour établir, gérer et terminer la connexion à la base de données, ainsi que pour lancer des requêtes sur la base, quelle que soit la nature de celle-ci. Il s’agit d’un composant indépendant des caractéristiques techniques de la base de données ;</li>
+<li>une <strong>interface technique</strong> (<em>back-end</em>) : il faut utiliser des <em>drivers</em> qui varient selon le type de la base de données (PostgreSQL, Oracle, MySQL, etc.) et qui permettent de transcrire les commandes issues du <em>front-end</em> d’une manière qui soit intelligible pour la base de données. Ces <em>drivers</em> sont contenus dans des <em>packages</em> (<code>RPostgres</code>, <code>ROracle</code>, <code>odbc</code>).</li>
+</ul>
+<p>Le travail sur une base de données avec <code>DBI</code> se déroule toujours en trois temps, détaillés dans la suite de cette fiche :</p>
+<ol type="1">
+<li>On se connecte à la base de données avec la fonction <code>dbConnect</code> ;</li>
+<li>On envoie des requêtes au serveur. Il y a deux méthodes pour écrire des requêtes :
+<ul>
+<li>écrire des requêtes en langage SQL en utilisant les fonctions <code>dbGetQuery</code> et <code>dbSendQuery</code> de <code>DBI</code> ;</li>
+<li>écrire des requêtes selon la syntaxe <code>dplyr</code> en utilisant le <em>package</em> <code>dbplyr</code> ;</li>
+</ul>
+</li>
+<li>On se déconnecte de la base de données à l’aide de la fonction <code>dbDisconnect</code>.</li>
+</ol></section><section id="se-connecter-à-une-base-de-données" class="level2" data-number="16.4"><h2 data-number="16.4" class="anchored" data-anchor-id="se-connecter-à-une-base-de-données">
+<span class="header-section-number">16.4</span> Se connecter à une base de données</h2>
+<p>La fonction <code>dbConnect</code> du <em>package</em> <code>DBI</code> permet d’établir la connexion à la base de données. Si les éléments fournis sont corrects, <code>R</code> va créer un objet de type <code>DBIConnection</code> qu’il faudra ensuite utiliser pour chaque requête effectuée sur la base de données.</p>
+<section id="se-connecter-à-une-base-de-données-postgresql" class="level3" data-number="16.4.1"><h3 data-number="16.4.1" class="anchored" data-anchor-id="se-connecter-à-une-base-de-données-postgresql">
+<span class="header-section-number">16.4.1</span> Se connecter à une base de données PostgreSQL…</h3>
+<section id="avec-le-package-rpostgres" class="level4" data-number="16.4.1.1"><h4 data-number="16.4.1.1" class="anchored" data-anchor-id="avec-le-package-rpostgres">
+<span class="header-section-number">16.4.1.1</span> … avec le <em>package</em> <code>RPostgres</code>
+</h4>
+<p>Le <em>package</em> <code>RPostgres</code> fournit directement les <em>drivers</em> permettant de se connecter à une base de données PostgreSQL. Il s’installe facilement (pas de dépendance de librairies système) et la syntaxe pour une connexion est relativement simple. En revanche, ce <em>package</em> ne permet pas de visualiser facilement l’architecture de la base de données.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Lorsqu’on découvre une base de données <code>Postgres</code>, il est fréquent de vouloir en visualiser l’architecture (liste des tables, liste des variables, schémas…). <code>RStudio</code> n’est pas très adapté sur ce point. Une très bonne alternative est le logiciel <code>PgAdmin</code>. Son utilisation est simple.</p>
+</div>
+</div>
+<p>Pour se connecter à une base de données Postgres avec <code>RPostgres</code>, il faut utiliser la fonction <code>dbConnect</code> de <code>DBI</code> avec les informations suivantes :</p>
+<ul>
+<li>l’URL de la base de données (autrement appelé <em>host</em>) : elle la forme d’une adresse <code>mabasededonnees.monsite.fr</code> ou d’une adresse IP <code>123.123.456.789</code> ;</li>
+<li>le port de la base de données : par exemple <code>1983</code> ;</li>
+<li>le nom de la base de données : <code>nom.basededonnees</code> par exemple ;</li>
+<li>l’identifiant de connexion (autrement appelé <em>user</em>) : <code>monIdep</code> ;</li>
+<li>le mot de passe associé : <code>mdp123</code>.</li>
+</ul>
+<p>En voici un exemple :</p>
+<div class="cell">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html">dbConnect</a></span><span class="op">(</span>drv <span class="op">=</span> <span class="fu">RPostgres</span><span class="fu">::</span><span class="fu"><a href="https://rpostgres.r-dbi.org/reference/Postgres.html">Postgres</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>                       host <span class="op">=</span> <span class="st">"mabasededonnees.monsite.fr"</span>,</span>
+<span>                       port <span class="op">=</span> <span class="fl">1983</span>,</span>
+<span>                       dbname <span class="op">=</span> <span class="st">"nom.basededonnees"</span>,</span>
+<span>                       user <span class="op">=</span> <span class="fu">rstudioapi</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/rstudioapi/reference/askForPassword.html">askForPassword</a></span><span class="op">(</span><span class="st">"Nom d'utilisateur:"</span><span class="op">)</span>,</span>
+<span>                       password <span class="op">=</span> <span class="fu">rstudioapi</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/rstudioapi/reference/askForPassword.html">askForPassword</a></span><span class="op">(</span><span class="st">"Mot de passe: "</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>En général, on se connecte à une base de données à l’aide d’un identifiant et d’un mot de passe. <strong>Une bonne pratique consiste à ne pas inscrire ces éléments directement dans le code</strong> (en particulier si on veut partager le code en question avec d’autres personnes). Dans ce cas, on pourra utiliser la fonction <code>askForPassword()</code> du package <code>rstudioapi</code>, qui permet d’obtenir une boîte de dialogue interactive pour la saisie de ces éléments.</p>
+</div>
+</div>
+</section><section id="avec-le-package-odbc" class="level4" data-number="16.4.1.2"><h4 data-number="16.4.1.2" class="anchored" data-anchor-id="avec-le-package-odbc">
+<span class="header-section-number">16.4.1.2</span> … avec le <em>package</em> <code>odbc</code>
+</h4>
+<p>Le <em>package</em> <code>odbc</code> permet de visualiser dans RStudio l’architecture de la base de données et de lister facilement les schémas, tables et colonnes disponibles. Cela rend de fait beaucoup plus facile le travail de requêtes par la suite. Toutefois, l’usage de ce <em>package</em> peut être rendu complexe car il est dépendant de librairies système qui ne sont pas nécessairement disponibles sur votre poste. Pour plus de détails, il faut consulter <a href="https://db.rstudio.com/best-practices/drivers/">cette page</a>, pour le système d’exploitation utilisé. Si vous souhaitez utiliser <code>odbc</code>, vous devrez peut-être contacter les services informatiques pour obtenir l’installation des librairies nécessaires.</p>
+<p>Le détail de la syntaxe est fournie à <a href="https://db.rstudio.com/databases/postgresql/#connection-settings">cette adresse</a>, et dans l’exemple ci-dessus, se formule ainsi :</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>connexion <span class="ot">&lt;-</span> DBI<span class="sc">::</span><span class="fu">dbConnect</span>(odbc<span class="sc">::</span><span class="fu">odbc</span>(),</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>                            <span class="at">driver =</span> <span class="st">"PostgreSQL Unicode"</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>                            <span class="at">server =</span> <span class="st">"mabasededonnees.monsite.fr"</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>                            <span class="at">port =</span> <span class="dv">1983</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>                            <span class="at">database =</span> <span class="st">"nom.basededonnees"</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>                            <span class="at">uid =</span> rstudioapi<span class="sc">::</span><span class="fu">askForPassword</span>(),</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>                            <span class="at">pwd =</span> rstudioapi<span class="sc">::</span><span class="fu">askForPassword</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>L’utilisateur obtient alors la visualisation de la base de données (ici par exemple le clone Fidéli) dans l’onglet <code>Connections</code> en haut à droite :</p>
+<p><img src="../pics/connexion_bdd/screenshot0.png" class="img-fluid"></p>
+</section></section><section id="se-connecter-à-une-base-de-données-oracle" class="level3" data-number="16.4.2"><h3 data-number="16.4.2" class="anchored" data-anchor-id="se-connecter-à-une-base-de-données-oracle">
+<span class="header-section-number">16.4.2</span> Se connecter à une base de données Oracle</h3>
+<p>Le <em>package</em> <code>ROracle</code> permet de se connecter à une base de données Oracle. Il convient de vérifier que les librairies système nécessaires sont bien installées sur le serveur (se reporter <a href="https://db.rstudio.com/databases">ici</a> pour plus de détails).</p>
+<p>La connexion se réalise de manière très similaire à celle pour une base de données Postgres :</p>
+<div class="cell">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html">dbConnect</a></span><span class="op">(</span>drv <span class="op">=</span> <span class="fu">ROracle</span><span class="fu">::</span><span class="fu">Oracle</span><span class="op">(</span><span class="op">)</span>,</span>
+<span>                       host <span class="op">=</span> <span class="st">"mabasededonnees.monsite.fr"</span>,</span>
+<span>                       port <span class="op">=</span> <span class="fl">1521</span>,</span>
+<span>                       dbname <span class="op">=</span> <span class="st">"nom.basededonnees"</span>,</span>
+<span>                       user <span class="op">=</span> <span class="fu">rstudioapi</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/rstudioapi/reference/askForPassword.html">askForPassword</a></span><span class="op">(</span><span class="st">"Nom d'utilisateur:"</span><span class="op">)</span>,</span>
+<span>                       password <span class="op">=</span> <span class="fu">rstudioapi</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/rstudioapi/reference/askForPassword.html">askForPassword</a></span><span class="op">(</span><span class="st">"Mot de passe: "</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section></section><section id="exécuter-des-requêtes" class="level2" data-number="16.5"><h2 data-number="16.5" class="anchored" data-anchor-id="exécuter-des-requêtes">
+<span class="header-section-number">16.5</span> Exécuter des requêtes</h2>
+<section id="exécuter-des-requêtes-avec-dbi" class="level3" data-number="16.5.1"><h3 data-number="16.5.1" class="anchored" data-anchor-id="exécuter-des-requêtes-avec-dbi">
+<span class="header-section-number">16.5.1</span> Exécuter des requêtes avec <code>DBI</code>
+</h3>
+<p>Pour lancer des requêtes sur la base de données, l’utilisateur a la possibilité d’utiliser les fonctions <code>dbSendQuery</code> et <code>dbGetQuery</code> du <em>package</em> <code>DBI</code>. La fonction <code>dbSendQuery</code> demande au serveur PostgreSQL d’exécuter une requête <strong>sans renvoyer de résultats</strong>. La fonction <code>dbGetQuery</code> demande au serveur PostgreSQL de <strong>renvoyer vers <code>R</code> les résultats de la requête</strong>. Les deux fonctions ont la même syntaxe : <code>dbSendQuery(conn, requete)</code> :</p>
+<ul>
+<li>
+<code>conn</code> est l’objet <code>DBIConnection</code> créé par la fonction <code>dbConnect</code> (voir <a href="#se-connecter-%C3%A0-une-base-de-donn%C3%A9es">Se connecter à une base de données</a>) ;</li>
+<li>
+<code>requete</code> est une requête SQL sous forme de chaîne de caractères (exemple : <code>"SELECT var2, var3 FROM table1"</code>).</li>
+</ul>
+<p>Ainsi, pour un utilisateur qui est connecté à la base de données PostgreSQL qui contient le schéma de diffusion - une sorte de librairie SAS - de Fidéli (<code>s_diff_2018</code>) et qui souhaite requêter la table des logements (<code>d_logement</code>) pour compter le nombre de logements par commune et selon le critère du type de local (critère n°2 dans la documentation utilisateur), on peut lancer les requêtes SQL suivantes :</p>
+<div class="cell">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">q</span> <span class="op">&lt;-</span> <span class="fu">dbSendQuery</span><span class="op">(</span><span class="va">conn</span>, </span>
+<span>                 <span class="st">"create temp table count_log as </span></span>
+<span><span class="st">                  select csdep, cne, </span></span>
+<span><span class="st">                  case when natloc in ('MA', 'ME', 'AP') then 1 else 0 end as logement </span></span>
+<span><span class="st">                  from s_diff_2018.d_logement"</span><span class="op">)</span></span>
+<span><span class="fu">dbClearResult</span><span class="op">(</span><span class="va">q</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">count_log</span> <span class="op">&lt;-</span> <span class="fu">dbGetQuery</span><span class="op">(</span><span class="va">conn</span>, </span>
+<span>                        <span class="st">"select distinct concat(csdep, cne) as code_com,</span></span>
+<span><span class="st">                         sum(logement) as nb_logement </span></span>
+<span><span class="st">                         from count_log"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>La première requête crée une table temporaire <code>count_log</code> qui contient le département et la commune de chaque local, ainsi qu’une variable indicatrice indiquant s’il s’agit d’un logement. Cette requête est envoyée au serveur avec <code>dbSendQuery</code> et ne renvoie donc aucun résultat vers <code>R</code>. La création de cette table temporaire nécessite d’avoir les droits minimaux en écriture dans la base.</p>
+<p>La seconde requête compte le nombre de logements par commune à partir de la table temporaire et renvoie vers <code>R</code> un objet de type <code>data.frame</code> appelé <code>count_log</code> donnant le nombre de logements (<code>nb_logement</code>) par commune (<code>code_com</code>).</p>
+<p>Dans le cas où l’utilisateur n’a pas les droits pour créer des tables temporaires, il est toujours possible de procéder à des sous-requêtes (<strong>sub-query</strong>) en SQL. Cela consiste à enchasser la première requête dans la seconde sans passer par la création d’une table temporaire, de la manière suivante :</p>
+<div class="cell">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">q</span> <span class="op">&lt;-</span> <span class="fu">dbSendQuery</span><span class="op">(</span><span class="va">conn</span>, </span>
+<span>            <span class="st">"select distinct concat(csdep, cne) as code_com,</span></span>
+<span><span class="st">                         sum(logement) as nb_logement </span></span>
+<span><span class="st">                         from (select csdep, cne, </span></span>
+<span><span class="st">                         case when natloc in ('MA', 'ME', 'AP') then 1 else 0 end as logement </span></span>
+<span><span class="st">                         from s_diff_2018.d_logement) as a"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">dbFetch</span><span class="op">(</span><span class="va">q</span><span class="op">)</span></span>
+<span><span class="fu">dbClearResult</span><span class="op">(</span><span class="va">q</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Il est fréquent que les bases de données contiennent des données volumineuses, dont le téléchargement et le traitement peuvent dépasser les capacités de votre poste local. C’est pourquoi <strong>il est recommandé d’éviter de télécharger les données brutes et de réaliser les traitements en <code>R</code>.</strong> Dans la mesure du possible, <strong>il vaut mieux faire exécuter les traitements par la base de données, et ne récupérer en <code>R</code> qu’un résultat agrégé.</strong></p>
+<p><strong>Le code donné en exemple ci-dessus réalise l’intégralité du traitement statistique sur le serveur.</strong> Cela permet d’obtenir un résultat agrégé exploitable en <code>R</code> (pour faire de la cartographie, de l’économétrie ou générer des tables de résultats), tout en limitant la taille des données échangées entre le serveur et <code>R</code> et la quantité de calculs réalisés par <code>R</code>.</p>
+</div>
+</div>
+</section><section id="exécuter-des-requêtes-avec-dbplyr" class="level3" data-number="16.5.2"><h3 data-number="16.5.2" class="anchored" data-anchor-id="exécuter-des-requêtes-avec-dbplyr">
+<span class="header-section-number">16.5.2</span> Exécuter des requêtes avec <code>dbplyr</code>
+</h3>
+<p><strong>Il n’est pas indispensable de connaître SQL pour manipuler des données avec une connexion à une base de données sur <code>R</code>.</strong> En effet, le package <code>dbplyr</code> permet de manipuler des tables dans une base de données avec une syntaxe très similaire à celle du <em>package</em> <code>dplyr</code>. Ainsi, pour reprendre l’exemple du décompte des logements dans le clone Fidéli, il convient dans un premier temps de référencer l’existence de cette table en mémoire de <code>R</code> :</p>
+<div class="cell">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dbplyr.tidyverse.org/">dbplyr</a></span><span class="op">)</span></span>
+<span><span class="va">d_logement</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="va">conn</span>, <span class="fu"><a href="https://dbplyr.tidyverse.org/reference/in_schema.html">in_schema</a></span><span class="op">(</span><span class="st">"s_diff_2018"</span>, <span class="st">"d_logement"</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Une fois la référence créée, on peut manipuler les données de la table <code>d_logement</code> avec la syntaxe <code>dplyr</code> comme si cette table était un <code>data.frame</code> standard. La différence entre <code>dplyr</code> et <code>dbplyr</code> est que les instructions sont automatiquement converties en requêtes SQL et envoyées au serveur. Il est à noter que les requêtes ne sont pas exécutées immédiatement, mais uniquement lorsque c’est nécessaire (il s’agit du concept de <em>lazy evaluation</em> sur lequel repose le <em>package</em> <code>dplyr</code>). Ainsi pour poursuivre l’exemple :</p>
+<div class="cell">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">count_log</span> <span class="op">&lt;-</span> <span class="va">d_logement</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>logement <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">natloc</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'MA'</span>, <span class="st">'ME'</span>, <span class="st">'AP'</span><span class="op">)</span>, <span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">csdep</span>, <span class="va">cne</span>, <span class="va">logement</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html">compute</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">count_log</span> <span class="op">&lt;-</span> <span class="va">count_log</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">csdep</span>, <span class="va">cne</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>nb_logement <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">logement</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html">collect</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Dans cet exemple, la nature de l’objet <code>count_log</code> change entre la première et la seconde instruction. Au départ, il s’agit d’une interprétation de l’instruction sous forme <code>dplyr</code> en requête SQL (un objet <code>sql_tbl</code>) stockée dans une table temporaire grâce à la commande <code>compute</code>, qui ensuite devient un objet <code>data.frame</code> suite à la commande <code>collect</code> (qui peut se voir comme un équivalent de la commande <code>dbGetQuery</code>, en plus large puisqu’elle déclenche la soumission de la requête SQL).</p>
+<p>Le <em>package</em> <code>dbplyr</code> présente l’avantage d’offrir une syntaxe très proche de celle de <code>dplyr</code>. Cette syntaxe peut néanmoins, comme indiqué dans la documentation, présenter des limites dans l’interprétation des commandes en requêtes SQL. L’utilisateur devra être particulièrement attentif à ce point.</p>
+<p>L’enchâssement d’une sous-requête dans une requête SQL est très adapté au <em>pipe</em> de la syntaxe <code>dplyr</code>, et se traduit très naturellement ainsi :</p>
+<div class="cell">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">count_log</span> <span class="op">&lt;-</span> <span class="va">d_logement</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>logement <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">natloc</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'MA'</span>, <span class="st">'ME'</span>, <span class="st">'AP'</span><span class="op">)</span>, <span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">csdep</span>, <span class="va">cne</span>, <span class="va">logement</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">csdep</span>, <span class="va">cne</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>nb_logement <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">logement</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html">collect</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Comme indiqué ci-dessus, le <em>package</em> <code>dbplyr</code> convertit automatiquement vos instructions en requête SQL. Il est possible d’afficher cette requête avec la fonction <code>show_query</code>. Cela vous permet de vous familiariser avec le langage SQL, et de voir que la requête SQL générée par <code>dbplyr</code> est souvent loin d’être optimale.</p>
+</div>
+</div>
+</section><section id="comparaison-de-dbi-et-de-dbplyr" class="level3" data-number="16.5.3"><h3 data-number="16.5.3" class="anchored" data-anchor-id="comparaison-de-dbi-et-de-dbplyr">
+<span class="header-section-number">16.5.3</span> Comparaison de <code>DBI</code> et de <code>dbplyr</code>
+</h3>
+<p>L’utilisation des fonctions <code>dbSendQuery</code> et <code>dbGetQuery</code> du <em>package</em> <code>DBI</code> permet de profiter pleinement des avantages du langage SQL :</p>
+<ul>
+<li>indépendant de <code>R</code> : les requêtes SQL qui ont été élaborées en <code>R</code> pourront être aisément réutilisées dans un autre contexte (en <code>Python</code> par exemple) ;</li>
+<li>puissance du langage : les requêtes écrites directement en SQL permettent d’utiliser toutes les fonctions de SQL pour le traitement des données par la base de données.</li>
+</ul>
+<p>Le principal inconvénient de <code>DBI</code> et du langage SQL est que les détails du langage SQL peuvent varier légèrement d’un type de base de données à l’autre (MySQL, SQLite, Postgres, DuckDB…), ce qui peut entraîner des confusions et des bugs (par exemple si on reprend un exemple trouvé sur internet).</p>
+<p>Le <em>package</em> <code>dbplyr</code> a pour avantage de proposer une syntaxe simple, très proche de <code>dplyr</code>, ce qui réduit le coût d’apprentissage. Par ailleurs ce <em>package</em> couvre l’essentiel des besoins standards en matière de base de données. Il a toutefois deux inconvénients : ce <em>package</em> ralentit l’apprentissage de SQL par l’utilisateur et empêche de réaliser des requêtes complexes réservées aux agents maîtrisant SQL. Par ailleurs, la syntaxe de <code>dbplyr</code> est spécifique à <code>R</code> et à l’écosystème <code>tidyverse</code>, créant ainsi une dépendance au langage.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Si vous découvrez le langage SQL et le travail sur des bases de données, le <em>package</em> <code>dbplyr</code> peut vous aider à être rapidement opérationnel. Toutefois, il est vivement recommandé d’apprendre SQL en parallèle.</p>
+</div>
+</div>
+</section></section><section id="se-déconnecter-avec-dbi" class="level2" data-number="16.6"><h2 data-number="16.6" class="anchored" data-anchor-id="se-déconnecter-avec-dbi">
+<span class="header-section-number">16.6</span> Se déconnecter avec <code>DBI</code>
+</h2>
+<p>Il est recommandé de se déconnecter de la base de données une fois que l’ensemble des traitements a été effectué, de la manière suivante :</p>
+<div class="cell">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">dbDisconnect</span><span class="op">(</span><span class="va">conn</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="quelques-bonnes-pratiques" class="level2" data-number="16.7"><h2 data-number="16.7" class="anchored" data-anchor-id="quelques-bonnes-pratiques">
+<span class="header-section-number">16.7</span> Quelques bonnes pratiques</h2>
+<p>En général, on se connecte à une base de données à l’aide d’un identifiant et d’un mot de passe. <strong>Une bonne pratique consiste à ne pas inscrire ces éléments directement dans le code</strong> (en particulier si on veut partager le code en question avec d’autres personnes). Dans ce cas, on pourra utiliser la fonction <code>askForPassword()</code> du package <code>rstudioapi</code>, qui permet d’obtenir une boîte de dialogue interactive pour la saisie de ces éléments. Une autre façon de procéder est d’utiliser un fichier <code>.Renviron</code> pour disposer de ces informations sous forme de variables d’environnement.</p>
+<p>Il est fréquent que les bases de données contiennent des données volumineuses, dont le téléchargement et le traitement peuvent dépasser les capacités de votre poste local. C’est pourquoi <strong>il est recommandé d’éviter de télécharger les données brutes et de réaliser les traitements en <code>R</code>.</strong> Dans la mesure du possible, <strong>il vaut mieux faire exécuter les traitements par la base de données, et ne récupérer en <code>R</code> qu’un résultat agrégé</strong> (ceci nécessite parfois d’avoir des droits en écriture sur la base de données).</p>
+</section><section id="sources" class="level2" data-number="16.8"><h2 data-number="16.8" class="anchored" data-anchor-id="sources">
+<span class="header-section-number">16.8</span> Sources</h2>
+<p>Cette fiche reprend partiellement ce <a href="https://db.rstudio.com/databases">tutoriel RStudio</a> (en anglais).</p>
+</section><section id="RessourcesBDD" class="level2" data-number="16.9"><h2 data-number="16.9" class="anchored" data-anchor-id="RessourcesBDD">
+<span class="header-section-number">16.9</span> Pour en savoir plus</h2>
+<ul>
+<li>la documentation de RStudio sur la connexion aux bases de données (en anglais) :
+<ul>
+<li>une <a href="https://db.rstudio.com/databases">introduction aux bases de données</a> ;</li>
+<li>une <a href="https://db.rstudio.com/dbi/">introduction à <code>DBI</code></a> (en anglais) ;</li>
+<li>la <a href="https://db.rstudio.com/databases/postgresql/">documentation associée à Postgres</a> ;</li>
+</ul>
+</li>
+<li>la <a href="https://cran.r-project.org/web/packages/DBI/DBI.pdf">documentation du <em>package</em> <code>DBI</code></a> (en anglais) ;</li>
+<li>le <a href="https://db.rstudio.com/dbi/">site de RStudio</a> sur <code>DBI</code> ;</li>
+<li>la <a href="hhttps://cran.r-project.org/web/packages/RPostgres/RPostgres.pdf">documentation du <em>package</em> <code>RPostgres</code></a> (en anglais) ;</li>
+<li>la <a href="https://dbplyr.tidyverse.org/">documentation au sujet du <em>package</em> <code>dbplyr</code></a>.</li>
+</ul>
+
+
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script><nav class="page-navigation"><div class="nav-page nav-page-previous">
+      <a href="../03_Fiches_thematiques/Fiche_api.html" class="pagination-link  aria-label=" avec="" des="" api="">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Travailler avec des API</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../03_Fiches_thematiques/Fiche_tidyverse.html" class="pagination-link" aria-label="<span class='chapter-number'>17</span>&nbsp; <span class='chapter-title'>Manipuler des données avec le `tidyverse`</span>">
+        <span class="nav-page-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Manipuler des données avec le <code>tidyverse</code></span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer">
+    <div class="nav-footer-left">
+<p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/InseeFrLab/utilitR/edit/master/03_Fiches_thematiques/Fiche_connexion_bdd.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/InseeFrLab/utilitR/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<li>
+<a href="https://github.com/InseeFrLab/utilitR.git" target="blank">Code source</a>
+</li>
+</div>
+  </div>
+</footer>
+
+
+</body></html>

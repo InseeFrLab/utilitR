@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.549">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>11&nbsp; Importer des fichiers plats (.csv, .tsv, .txt)</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../03_Fiches_thematiques/Fiche_import_tables_sas.html" rel="next">
+<link href="../03_Fiches_thematiques/Fiche_targets.html" rel="prev">
+<link href="../resources/logo-utilitr.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark"><script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><script async="" src="https://hypothes.is/embed.js"></script><script>
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    document.body.classList.add('hypothesis-enabled');
+  });
+</script>
+</head>
+<body class="nav-sidebar docked nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="navbar navbar-expand-lg " data-bs-theme="dark"><div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../resources/logo-utilitr.png" alt="Logo du projet utilitR" class="navbar-logo"></a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+<li class="nav-item">
+    <a class="nav-link active" href="../01_R_Insee/presentation_utilitr.html" aria-current="page"> 
+<span class="menu-text">Introduction</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_rprojects.html"> 
+<span class="menu-text">Mener un projet statistique</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_import_fichiers_plats.html"> 
+<span class="menu-text">Importer des données</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_tidyverse.html"> 
+<span class="menu-text">Choisir son paradigme</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_joindre_donnees.html"> 
+<span class="menu-text">Manipuler des données</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_graphiques.html"> 
+<span class="menu-text">Produire des sorties</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../02_Bonnes_pratiques/01-qualite-code.html"> 
+<span class="menu-text">Bonnes pratiques</span></a>
+  </li>  
+</ul>
+</div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools tools-wide">
+    <a href="https://github.com/InseeFrLab/utilitR" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <div class="dropdown">
+      <a href="" title="Share" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Share"><i class="bi bi-share"></i></a>
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="quarto-navigation-tool-dropdown-0">
+<li>
+            <a class="dropdown-item quarto-navbar-tools-item" href="https://twitter.com/intent/tweet?url=%7Curl%7C">
+              <i class="bi bi-bi-twitter pe-1"></i>
+            Twitter
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item quarto-navbar-tools-item" href="https://www.linkedin.com/sharing/share-offsite/?url=%7Curl%7C">
+              <i class="bi bi-bi-linkedin pe-1"></i>
+            LinkedIn
+            </a>
+          </li>
+      </ul>
+</div>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_import_fichiers_plats.html">Importer des données avec R</a></li><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_import_fichiers_plats.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Importer des fichiers plats (<code>.csv</code>, <code>.tsv</code>, <code>.txt</code>)</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="../resources/logo-utilitr.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none"></a>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Principales parties</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Introduction</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/presentation_utilitr.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Présentation du projet <code>utilitR</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_utilitR.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Comment utiliser la documentation <code>utilitR</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">Mener un projet statistique avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_rprojects.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Utiliser les projets <code>RStudio</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_git_utilisation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Utiliser <code>Git</code> avec RStudio</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_installer_packages.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Utiliser des <em>packages</em> <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_comment_choisir_un_package.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Comment choisir un <em>package</em> ?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_gerer_dependances.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Gérer les dépendances</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_se_documenter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Se documenter sur <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_resoudre_un_probleme.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Résoudre un problème avec <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_targets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Construire une chaîne de traitement reproductible avec <code>targets</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">Importer des données avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_fichiers_plats.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Importer des fichiers plats (<code>.csv</code>, <code>.tsv</code>, <code>.txt</code>)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_tables_sas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Importer des tables SAS®</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_tableurs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Importer des fichiers issus de tableurs (Excel, Calc)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_fichiers_parquet.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Lire et écrire des fichiers Parquet</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_api.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Travailler avec des API</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_connexion_bdd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Se connecter à une base de données</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true">
+ <span class="menu-text">Choisir son paradigme d’analyse des données avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_tidyverse.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Manipuler des données avec le <code>tidyverse</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_datatable.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Manipuler des données avec <code>data.table</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_arrow.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Manipuler des données avec <code>arrow</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text">Manipuler des données avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_joindre_donnees.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Joindre des tables de données</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_donnees_textuelles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Manipuler des données textuelles</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_survey.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Utiliser des données d’enquêtes</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_donnees_spatiales.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Manipuler des données spatiales</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_donnees_temporelles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Manipuler des données temporelles</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_analyse_de_donnees.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">L’analyse de données (ACP, ACM, ACF…)</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text">Produire des sorties avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_graphiques.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Faire des graphiques avec <code>ggplot2</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_rmarkdown.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Produire des documents avec <code>R Markdown</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_rmarkdown_param_report.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Produire des rapports automatisés avec <code>R Markdown</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text">Bonnes pratiques</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_Bonnes_pratiques/01-qualite-code.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Qualité du code</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_Bonnes_pratiques/02-structure-code.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Structure des projets</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true">
+ <span class="menu-text">Éléments de configuration</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_Rstudio_AUSv3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Utiliser RStudio sur l’environnement AUSv3</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_Rstudio_SSPCloud.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Utiliser <code>RStudio</code> sur l’environnement SSP Cloud</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_configurer_git.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Configurer <code>Git</code> sur son poste de travail</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche-personnaliser-R.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Personnaliser la configuration de <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_ressources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Superviser sa session <code>R</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+    </ul>
+</div>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+<li><a href="#t%C3%A2ches-concern%C3%A9es-et-recommandations" id="toc-tâches-concernées-et-recommandations" class="nav-link active" data-scroll-target="#t%C3%A2ches-concern%C3%A9es-et-recommandations"><span class="header-section-number">11.1</span> Tâches concernées et recommandations</a></li>
+  <li>
+<a href="#importer-un-fichier-avec-le-package-readr" id="toc-importer-un-fichier-avec-le-package-readr" class="nav-link" data-scroll-target="#importer-un-fichier-avec-le-package-readr"><span class="header-section-number">11.2</span> Importer un fichier avec le <em>package</em> <code>readr</code></a>
+  <ul class="collapse">
+<li><a href="#utiliser-lassistant-dimportation-rstudio" id="toc-utiliser-lassistant-dimportation-rstudio" class="nav-link" data-scroll-target="#utiliser-lassistant-dimportation-rstudio"><span class="header-section-number">11.2.1</span> Utiliser l’assistant d’importation <code>RStudio</code></a></li>
+  <li><a href="#utiliser-la-fonction-read_delim" id="toc-utiliser-la-fonction-read_delim" class="nav-link" data-scroll-target="#utiliser-la-fonction-read_delim"><span class="header-section-number">11.2.2</span> Utiliser la fonction <code>read_delim()</code></a></li>
+  </ul>
+</li>
+  <li><a href="#importer-un-fichier-avec-le-package-data.table" id="toc-importer-un-fichier-avec-le-package-data.table" class="nav-link" data-scroll-target="#importer-un-fichier-avec-le-package-data.table"><span class="header-section-number">11.3</span> Importer un fichier avec le <em>package</em> <code>data.table</code></a></li>
+  <li><a href="#comparaison-de-performances-sur-grands-fichiers" id="toc-comparaison-de-performances-sur-grands-fichiers" class="nav-link" data-scroll-target="#comparaison-de-performances-sur-grands-fichiers"><span class="header-section-number">11.4</span> Comparaison de performances sur grands fichiers</a></li>
+  <li><a href="#quelques-bonnes-pratiques" id="toc-quelques-bonnes-pratiques" class="nav-link" data-scroll-target="#quelques-bonnes-pratiques"><span class="header-section-number">11.5</span> Quelques bonnes pratiques</a></li>
+  <li><a href="#RessourcesImportCSV" id="toc-RessourcesImportCSV" class="nav-link" data-scroll-target="#RessourcesImportCSV"><span class="header-section-number">11.6</span> Pour en savoir plus</a></li>
+  </ul><div class="toc-actions"><ul><li><a href="https://github.com/InseeFrLab/utilitR/edit/master/03_Fiches_thematiques/Fiche_import_fichiers_plats.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/InseeFrLab/utilitR/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_import_fichiers_plats.html">Importer des données avec R</a></li><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_import_fichiers_plats.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Importer des fichiers plats (<code>.csv</code>, <code>.tsv</code>, <code>.txt</code>)</span></a></li></ol></nav><div class="quarto-title">
+<h1 class="title"><span id="importcsv" class="quarto-section-identifier"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Importer des fichiers plats (<code>.csv</code>, <code>.tsv</code>, <code>.txt</code>)</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header><section id="tâches-concernées-et-recommandations" class="level2" data-number="11.1"><h2 data-number="11.1" class="anchored" data-anchor-id="tâches-concernées-et-recommandations">
+<span class="header-section-number">11.1</span> Tâches concernées et recommandations</h2>
+<p>L’utilisateur souhaite importer dans <code>R</code> des données stockées sous forme de fichiers plats (formats <code>.txt</code>, <code>.csv</code>, <code>.tsv</code>).</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tâche concernée et recommandation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>Pour importer des données de taille réduite (jusqu’à 1 Go), <strong>il est recommandé d’utiliser la fonction <code><a href="https://readr.tidyverse.org/reference/read_delim.html">read_delim()</a></code> du <em>package</em> <code>readr</code></strong> ;</li>
+<li>Pour importer des données de taille plus importante (supérieure à 1 Go), <strong>il est recommandé d’utiliser la fonction <code><a href="https://rdatatable.gitlab.io/data.table/reference/fread.html">fread()</a></code> du <em>package</em> <code>data.table</code></strong>.</li>
+<li>
+<strong>L’usage du <em>package</em> <code>csvread</code> est déconseillé</strong>, de même que l’utilisation des fonctions natives de <code>R</code> <code><a href="https://rdrr.io/r/utils/read.table.html">read.csv()</a></code> et <code><a href="https://rdrr.io/r/utils/read.table.html">read.delim()</a></code>.</li>
+</ul>
+</div>
+</div>
+</section><section id="importer-un-fichier-avec-le-package-readr" class="level2" data-number="11.2"><h2 data-number="11.2" class="anchored" data-anchor-id="importer-un-fichier-avec-le-package-readr">
+<span class="header-section-number">11.2</span> Importer un fichier avec le <em>package</em> <code>readr</code>
+</h2>
+<p>Le <em>package</em> <code>readr</code> propose plusieurs fonctions adaptées pour importer des fichiers plats. Parmi elles, la fonction <code><a href="https://readr.tidyverse.org/reference/read_delim.html">read_delim()</a></code> permet de lire les fichiers csv et cela quelque soit le délimiteur (virgule ou point-virgule) et le marqueur décimal (point ou virgule).</p>
+<p>Il faut charger le <em>package</em> <code>readr</code> pour utiliser cette fonction :</p>
+<div class="cell">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://readr.tidyverse.org">readr</a></span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Si vous êtes complètement débutants en <code>R</code>, il est recommandé d’utiliser l’utilitaire d’importation de <code>RStudio</code>. Une fois que les données sont correctement importées, vous pourrez copier-coller le code dans votre script <code>R</code> et vous familiariser avec les fonctions du <em>package</em> <code>readr</code>.</p>
+</div>
+</div>
+<section id="utiliser-lassistant-dimportation-rstudio" class="level3" data-number="11.2.1"><h3 data-number="11.2.1" class="anchored" data-anchor-id="utiliser-lassistant-dimportation-rstudio">
+<span class="header-section-number">11.2.1</span> Utiliser l’assistant d’importation <code>RStudio</code>
+</h3>
+<p>Pour les utilisateurs débutants, <code>RStudio</code> propose une interface graphique très commode pour importer des fichiers plats avec <code>readr</code>. On y accède avec : <code>File &gt; Import Dataset &gt; From text (readr)...</code>. On obtient la fenêtre suivante. En cliquant sur <code>Browse</code> (rectangle rouge), on peut définir le chemin du fichier que l’on souhaite importer.</p>
+<p><img src="../pics/Importer_csv/Interface_readr1-1.png" class="img-fluid" style="width:100.0%"></p>
+<p>Une fois que le fichier à importer a été sélectionné, un aperçu des premières lignes du fichier s’affiche dans la fenêtre. Dans l’exemple ci-dessous, on essaie d’importer le fichier des communes du Code Officiel Géographique (version 2019). La fenêtre comprend deux panneaux très utiles :</p>
+<ul>
+<li>Un panneau qui permet de définir les <strong>options d’importation</strong> (rectangle orange) ;</li>
+<li>Un panneau qui donne le <strong>code qui réalise l’importation demandée</strong> (rectangle vert).</li>
+</ul>
+<p><img src="../pics/Importer_csv/Interface_readr2-1.png" class="img-fluid" style="width:100.0%"></p>
+<p>Les principales options d’importation comprennent notamment :</p>
+<ul>
+<li>
+<code>Name</code> : Le nom du <code>data.frame</code> dans lequel les donnée seront stockées ;</li>
+<li>
+<code>First Row as Names</code> : à cocher si la première ligne contient les noms de colonnes ;</li>
+<li>
+<code>Delimiter</code> : Indique le délimiteur des données. Pour mémoire : <code>Comma</code> = virgule, <code>Semicolon</code> = point virgule, <code>Tab</code> = tabulation, <code>Whitespace</code> = espace, <code>Other...</code> = autre (à définir) ;</li>
+<li>
+<code>Locale...</code> : définit les options locales d’importation, notamment l’encodage et le marqueur décimal qui sont des sources récurrentes de problèmes ;</li>
+<li>
+<code>NA</code> : indique la valeur retenue lorsqu’une valeur est manquante.</li>
+</ul>
+<p>Enfin, il est possible de modifier le type des données en cliquant sur la petite flèches à côté de l’en-tête de colonne (flèches noires).</p>
+</section><section id="utiliser-la-fonction-read_delim" class="level3" data-number="11.2.2"><h3 data-number="11.2.2" class="anchored" data-anchor-id="utiliser-la-fonction-read_delim">
+<span class="header-section-number">11.2.2</span> Utiliser la fonction <code>read_delim()</code>
+</h3>
+<p>La fonction <code><a href="https://readr.tidyverse.org/reference/read_delim.html">read_delim()</a></code> est faite pour lire toutes sortes de fichiers plats, et propose de nombreuses options pour l’adapter au fichier considéré.</p>
+<p>Voici les principales options de <code><a href="https://readr.tidyverse.org/reference/read_delim.html">read_delim()</a></code> :</p>
+<table class="table">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 20%">
+<col style="width: 68%">
+</colgroup>
+<thead><tr class="header">
+<th>Argument</th>
+<th>Valeur par défaut</th>
+<th>Fonction</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>file</code></td>
+<td>Aucune</td>
+<td>Le chemin du fichier à importer</td>
+</tr>
+<tr class="even">
+<td><code>delim</code></td>
+<td>Aucune</td>
+<td>Le délimiteur du fichier plat</td>
+</tr>
+<tr class="odd">
+<td><code>escape_backslash</code></td>
+<td><code>FALSE</code></td>
+<td>Les caractères spéciaux du fichier plat ont-ils un échappement (<code>\</code>)</td>
+</tr>
+<tr class="even">
+<td><code>col_names</code></td>
+<td><code>TRUE</code></td>
+<td>La première ligne contient-elle les noms de colonne ?</td>
+</tr>
+<tr class="odd">
+<td><code>col_types</code></td>
+<td><code>NULL</code></td>
+<td>Définir le type des variables</td>
+</tr>
+<tr class="even">
+<td><code>col_select</code></td>
+<td><code>NULL</code></td>
+<td>Choisir les variables à importer</td>
+</tr>
+<tr class="odd">
+<td><code>skip</code></td>
+<td><code>0</code></td>
+<td>Sauter les n premières lignes (0 par défaut)</td>
+</tr>
+<tr class="even">
+<td><code>n_max</code></td>
+<td><code>Inf</code></td>
+<td>Nombre maximum de lignes à importer (pas de limite par défaut)</td>
+</tr>
+<tr class="odd">
+<td><code>locale</code></td>
+<td></td>
+<td>Réglages locaux (encodage, marqueur décimal…)</td>
+</tr>
+</tbody>
+</table>
+<p>Quelques remarques sur les options de <code><a href="https://readr.tidyverse.org/reference/read_delim.html">read_delim()</a></code> :</p>
+<ul>
+<li>
+<code><a href="https://readr.tidyverse.org/reference/read_delim.html">read_delim()</a></code> essaie par défaut de deviner le type des colonnes (<em>integer</em> pour les nombres entiers, <em>character</em> pour les chaînes de caractères…). L’option <code>col_types</code> permet de choisir le type des colonnes, et doit être égale à un vecteur dont chaque élément est de la forme <code>nom_variable = [type de colonne]</code>. Les types de colonnes disponibles sont <code><a href="https://readr.tidyverse.org/reference/parse_atomic.html">col_integer()</a></code>, <code><a href="https://readr.tidyverse.org/reference/parse_atomic.html">col_logical()</a></code>, <code><a href="https://readr.tidyverse.org/reference/parse_atomic.html">col_double()</a></code>, <code><a href="https://readr.tidyverse.org/reference/parse_atomic.html">col_character()</a></code> (voir <code><a href="https://readr.tidyverse.org/reference/cols.html">?cols</a></code> pour la liste complète). Exemple : si on importe une variable comme nombre entier et une variable comme caractère, on écrit : <code>col_types = cols(var1 = col_integer(), var2 = col_character())</code>.</li>
+</ul>
+<p><strong>Exemple</strong> : on veut importer le fichier des communes du code officiel géographique (version 2019, <a href="https://www.insee.fr/fr/information/3720946">disponible ici</a>), en déclarant que le fichier est encodé en UTF-8 et en imposant que le code commune (<code>com</code>) soit lu comme une chaîne de caractères et le code région (<code>reg</code>) comme un nombre entier. On écrit le code suivant :</p>
+<div class="cell">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Dans cet exemple, il faut remplacer "mon_IDEP" par votre IDEP</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://readr.tidyverse.org">readr</a></span><span class="op">)</span></span>
+<span><span class="va">communes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_delim</a></span><span class="op">(</span><span class="st">"Z:/mon_IDEP/communes-01012019.csv"</span>, </span>
+<span>                       locale <span class="op">=</span> <span class="fu"><a href="https://readr.tidyverse.org/reference/locale.html">locale</a></span><span class="op">(</span>encoding <span class="op">=</span><span class="st">"UTF-8"</span><span class="op">)</span>,</span>
+<span>                       col_types <span class="op">=</span> <span class="fu"><a href="https://readr.tidyverse.org/reference/cols.html">cols</a></span><span class="op">(</span>com <span class="op">=</span> <span class="fu"><a href="https://readr.tidyverse.org/reference/parse_atomic.html">col_character</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>                                        reg <span class="op">=</span> <span class="fu"><a href="https://readr.tidyverse.org/reference/parse_atomic.html">col_integer</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span>                      <span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">communes</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>La fonction <code><a href="https://readr.tidyverse.org/reference/read_delim.html">read_delim()</a></code> contient également l’option <code>lazy</code> qui lorsque elle est fixée à <code>TRUE</code> permet d’améliorer la vitesse de traitement d’un fichier csv. Cette idée de “lecture paresseuse”, explorée pour la première fois dans le paquet <a href="https://www.tidyverse.org/blog/2019/05/vroom-1-0-0/">vroom</a>, consiste à optimiser la quantité du fichier total auquel un utilisateur a besoin d’accéder en fonction de sa requête. <a href="https://www.tidyverse.org/blog/2021/11/readr-2-1-0-lazy/">Ce billet de blog</a> de RStudio illustre ce concept.</p>
+<p>Pour en savoir plus sur <code><a href="https://readr.tidyverse.org/reference/read_delim.html">read_delim()</a></code>, il suffit de consulter l’aide avec <code><a href="https://readr.tidyverse.org/reference/read_delim.html">?read_delim</a></code>.</p>
+</section></section><section id="importer-un-fichier-avec-le-package-data.table" class="level2" data-number="11.3"><h2 data-number="11.3" class="anchored" data-anchor-id="importer-un-fichier-avec-le-package-data.table">
+<span class="header-section-number">11.3</span> Importer un fichier avec le <em>package</em> <code>data.table</code>
+</h2>
+<p>Le <em>package</em> <code>data.table</code> permet d’importer des fichiers plats avec la fonction <code><a href="https://rdatatable.gitlab.io/data.table/reference/fread.html">fread()</a></code>. Cette fonction présente trois avantages :</p>
+<ul>
+<li>Elle est très rapide pour importer de gros volumes de données (et nettement plus rapide que les fonctions du <em>package</em> <code>readr</code>). Voir <a href="#comparaison-de-performances-sur-grands-fichiers">ici</a> ;</li>
+<li>Elle permet de sélectionner facilement les colonnes qu’on veut importer (option <code>select</code>) ;</li>
+<li>Elle propose un grand nombre d’options, adaptées pour les usages avancés.</li>
+</ul>
+<p>Pour utiliser <code><a href="https://rdatatable.gitlab.io/data.table/reference/fread.html">fread()</a></code>, il faut charger le <em>package</em> <code>data.table</code> :</p>
+<div class="cell">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com">data.table</a></span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Les principales options de <code><a href="https://rdatatable.gitlab.io/data.table/reference/fread.html">fread()</a></code> sont les suivantes :</p>
+<table class="table">
+<colgroup>
+<col style="width: 13%">
+<col style="width: 33%">
+<col style="width: 52%">
+</colgroup>
+<thead><tr class="header">
+<th>Argument</th>
+<th>Valeur par défaut</th>
+<th>Fonction</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>file</code></td>
+<td>Aucune</td>
+<td>Le chemin du fichier à importer</td>
+</tr>
+<tr class="even">
+<td><code>sep</code></td>
+<td>Le caractère le plus fréquent parmi <code>,\t |;:</code>
+</td>
+<td>Le délimiteur du fichier</td>
+</tr>
+<tr class="odd">
+<td><code>header</code></td>
+<td>
+<code><a href="https://rdatatable.gitlab.io/data.table/reference/fread.html">fread()</a></code> essaie de deviner</td>
+<td>La première ligne contient-elle les noms de colonnes ?</td>
+</tr>
+<tr class="even">
+<td><code>nrows</code></td>
+<td><code>Inf</code></td>
+<td>Nombre maximum de lignes à importer (pas de limite par défaut)</td>
+</tr>
+<tr class="odd">
+<td><code>skip</code></td>
+<td><code>0</code></td>
+<td>Sauter les n premières lignes (0 par défaut)</td>
+</tr>
+<tr class="even">
+<td><code>stringsAsFactors</code></td>
+<td><code>FALSE</code></td>
+<td>Les chaînes de caractères sont-elles traitées comme des facteurs ?</td>
+</tr>
+<tr class="odd">
+<td><code>select</code></td>
+<td><code>NULL</code></td>
+<td>Sélectionner les colonnes à importer</td>
+</tr>
+<tr class="even">
+<td><code>drop</code></td>
+<td><code>NULL</code></td>
+<td>Sélectionner les colonnes à ne pas importer</td>
+</tr>
+<tr class="odd">
+<td><code>colClasses</code></td>
+<td>
+<code><a href="https://rdatatable.gitlab.io/data.table/reference/fread.html">fread()</a></code> essaie de deviner</td>
+<td>Définir le type des variables</td>
+</tr>
+<tr class="even">
+<td><code>encoding</code></td>
+<td><code>"unknown"</code></td>
+<td>Définir l’encodage du fichier (<code>"UTF-8"</code> ou <code>"Latin-1"</code>)</td>
+</tr>
+<tr class="odd">
+<td><code>dec</code></td>
+<td>Le point</td>
+<td>Définir le marqueur décimal</td>
+</tr>
+<tr class="even">
+<td><code>data.table</code></td>
+<td><code>TRUE</code></td>
+<td>
+<code>fread</code> renvoie un <code>data.table</code> si <code>TRUE</code>, un <code>data.frame</code> si <code>FALSE</code>
+</td>
+</tr>
+<tr class="odd">
+<td><code>showProgress</code></td>
+<td><code>TRUE</code></td>
+<td>Indiquer la progression de l’importation</td>
+</tr>
+</tbody>
+</table>
+<p>Quelques remarques sur les options de <code><a href="https://rdatatable.gitlab.io/data.table/reference/fread.html">fread()</a></code> :</p>
+<ul>
+<li>
+<p><code><a href="https://rdatatable.gitlab.io/data.table/reference/fread.html">fread()</a></code> importe par défaut toutes les colonnes</p>
+<ul>
+<li>L’option <code>select</code> permet de sélectionner les colonnes, et doit être égale à un vecteur de noms. Exemple : <code>select = c("var1", "var2", "var4")</code> ;</li>
+<li>Inversement, l’option <code>drop</code> permet de préciser quelles colonnes ne seront pas importées. Les options <code>select</code> et <code>drop</code> ne peuvent pas être utilisées en même temps.</li>
+</ul>
+</li>
+<li><p><code><a href="https://rdatatable.gitlab.io/data.table/reference/fread.html">fread()</a></code> essaie par défaut de deviner le type des colonnes (<em>integer</em> pour les nombres entiers, <em>character</em> pour les chaînes de caractères…). L’option <code>colClasses</code> permet de choisir le type des colonnes, et doit égale à un vecteur dont chaque élément est de la forme <code>nom_variable = "type"</code>. Exemple : <code>colClasses = c(var1 = "character", var2 = "logical", var4 = "double")</code> ;</p></li>
+<li><p>l’option <code>stringsAsFactors = TRUE</code> peut ralentir sensiblement l’importation des données ; il faut l’utiliser avec circonspection.</p></li>
+</ul>
+<p>Exemple 1 : on veut à nouveau importer le fichier des communes du code officiel géographique, en déclarant que le fichier est encodé en UTF-8 et en imposant que le code commune (<code>com</code>) soit lu comme une chaîne de caractères et le code région (<code>reg</code>) comme un nombre entier. On écrit le code suivant :</p>
+<div class="cell">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Dans cet exemple, il faut remplacer "mon_IDEP" par votre IDEP</span></span>
+<span><span class="va">communes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/fread.html">fread</a></span><span class="op">(</span><span class="st">"Z:/mon_IDEP/communes-01012019.csv"</span>,</span>
+<span>                  colClasses <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>com <span class="op">=</span> <span class="st">"character"</span>,</span>
+<span>                                 reg <span class="op">=</span> <span class="st">"integer"</span><span class="op">)</span>,</span>
+<span>                  encoding <span class="op">=</span> <span class="st">"UTF-8"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Exemple 2 : on veut réaliser la même importation que précédemment, mais en sélectionnant uniquement le code commune (<code>com</code>), le nom de la commune (<code>libelle</code>) et la région (<code>reg</code>). On écrit le code suivant :</p>
+<div class="cell">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Dans cet exemple, il faut remplacer "mon_IDEP" par votre IDEP</span></span>
+<span><span class="va">communes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/fread.html">fread</a></span><span class="op">(</span><span class="st">"Z:/mon_IDEP/communes-01012019.csv"</span>,</span>
+<span>                  select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"com"</span>, <span class="st">"libelle"</span>, <span class="st">"reg"</span><span class="op">)</span>,</span>
+<span>                  colClasses <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>com <span class="op">=</span> <span class="st">"character"</span>,</span>
+<span>                                 reg <span class="op">=</span> <span class="st">"integer"</span><span class="op">)</span>,</span>
+<span>                  encoding <span class="op">=</span> <span class="st">"UTF-8"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="comparaison-de-performances-sur-grands-fichiers" class="level2" data-number="11.4"><h2 data-number="11.4" class="anchored" data-anchor-id="comparaison-de-performances-sur-grands-fichiers">
+<span class="header-section-number">11.4</span> Comparaison de performances sur grands fichiers</h2>
+<p>Afin de comparer la rapidité de la fonction <code><a href="https://readr.tidyverse.org/reference/read_delim.html">read_delim()</a></code> du <em>package</em> <code>readr</code> avec la fonction <code><a href="https://rdatatable.gitlab.io/data.table/reference/fread.html">fread()</a></code> de <code>data.table</code>, on utilise dans cette partie <a href="https://www.insee.fr/fr/statistiques/fichier/2540004/dpt2021_csv.zip">le fichier des prénoms de l’Insee</a>. Celui-ci contient les données sur les prénoms attribués aux enfants nés en France entre 1900 et 2021 par département de naissance.<br>
+Ce fichier de 78 Mo contient près de 3,8 millions de lignes et 5 variables.</p>
+<p>Le code suivant utilise le <em>package</em> <code>microbenchmark</code> qui fournit des fonctions pour mesurer et comparer avec précision le temps d’exécution d’instructions R. Pour en savoir plus, consulter <a href="https://github.com/joshuaulrich/microbenchmark/">cette page</a>.<br>
+Une comparaison est même réalisée avec la fonction <code>read_delim_arrow</code> du <em>package</em> <code>arrow</code> qui permet également d’importer des fichiers csv avec le lecteur CSV Arrow C++. Pour en savoir plus, consultez <a href="https://arrow.apache.org/docs/r/reference/read_delim_arrow.html">ce site</a>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Dans cet exemple, il faut remplacer "mon_IDEP" par votre IDEP</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://readr.tidyverse.org">readr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com">data.table</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/apache/arrow/">arrow</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/joshuaulrich/microbenchmark/">microbenchmark</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">chemin_fichier</span> <span class="op">&lt;-</span> <span class="st">"Z:/mon_IDEP/dpt2021.csv"</span></span>
+<span></span>
+<span><span class="va">mbm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html">microbenchmark</a></span><span class="op">(</span><span class="st">"readr"</span> <span class="op">=</span> <span class="op">{</span></span>
+<span>  <span class="va">base</span> <span class="op">&lt;-</span></span>
+<span>    <span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_delim</a></span><span class="op">(</span></span>
+<span>      file <span class="op">=</span> <span class="va">chemin_fichier</span></span>
+<span>    <span class="op">)</span></span>
+<span><span class="op">}</span>,</span>
+<span></span>
+<span><span class="st">"readr_lazy"</span> <span class="op">=</span> <span class="op">{</span></span>
+<span>  <span class="va">base</span> <span class="op">&lt;-</span></span>
+<span>    <span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_delim</a></span><span class="op">(</span></span>
+<span>      file <span class="op">=</span> <span class="va">chemin_fichier</span>,</span>
+<span>      lazy <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>    <span class="op">)</span></span>
+<span><span class="op">}</span>,</span>
+<span></span>
+<span><span class="st">"arrow"</span> <span class="op">=</span> <span class="op">{</span></span>
+<span>  <span class="va">base</span> <span class="op">&lt;-</span></span>
+<span>    <span class="fu"><a href="https://arrow.apache.org/docs/r/reference/read_delim_arrow.html">read_delim_arrow</a></span><span class="op">(</span></span>
+<span>      file <span class="op">=</span> <span class="va">chemin_fichier</span>,</span>
+<span>      delim <span class="op">=</span> <span class="st">";"</span></span>
+<span>    <span class="op">)</span></span>
+<span><span class="op">}</span>,</span>
+<span>  </span>
+<span><span class="st">"data.table"</span> <span class="op">=</span> <span class="op">{</span></span>
+<span>  <span class="va">base</span> <span class="op">&lt;-</span></span>
+<span>    <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/fread.html">fread</a></span><span class="op">(</span></span>
+<span>      file <span class="op">=</span> <span class="va">chemin_fichier</span></span>
+<span>    <span class="op">)</span></span>
+<span>  </span>
+<span><span class="op">}</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Lorsqu’on affiche le résultat, on se rend compte que la fonction <code><a href="https://rdatatable.gitlab.io/data.table/reference/fread.html">fread()</a></code> est la plus rapide. À l’opposé, <code><a href="https://readr.tidyverse.org/reference/read_delim.html">read_delim()</a></code> est la moins performante même si l’ajout de l’option <code>lazy=TRUE</code> permet de diviser le temps d’exécution par près de 3. Enfin, la fonction <code><a href="https://arrow.apache.org/docs/r/reference/read_delim_arrow.html">read_delim_arrow()</a></code> du package <code>arrow</code> se rapproche fortement de la rapidité de <code><a href="https://rdatatable.gitlab.io/data.table/reference/fread.html">fread()</a></code>.</p>
+<pre><code>&gt; mbm
+Unit: milliseconds
+       expr       min       lq      mean    median        uq      max neval
+      readr    1546.9   1630.7    1673.4    1659.1    1685.0   1921.7    20
+ readr_lazy     567.8    591.7     619.8     602.7     639.9    793.7    20
+      arrow     428.1    456.1     478.6     476.5     496.0    573.6    20
+ data.table     284.9    300.5     326.9     311.3     326.4    480.9    20</code></pre>
+</section><section id="quelques-bonnes-pratiques" class="level2" data-number="11.5"><h2 data-number="11.5" class="anchored" data-anchor-id="quelques-bonnes-pratiques">
+<span class="header-section-number">11.5</span> Quelques bonnes pratiques</h2>
+<p>Voici quelques bonnes pratiques à avoir en tête pour importer des données :</p>
+<ul>
+<li>
+<strong>Vérifier que votre machine peut charger les données</strong> : <code>R</code> importe les données dans la mémoire vive de la machine. Si les fichiers que vous voulez importer sont d’une taille supérieure à celle de la mémoire vive, vous ne pourrez pas les importer intégralement.</li>
+<li>
+<strong>Tester votre code d’importation avec quelques lignes</strong> : il faut souvent tâtonner pour bien importer des données. Il est donc recommandé de commencer par importer quelques centaines ou quelques milliers de lignes (en utilisant l’option <code>n_max</code> des fonctions du <em>package</em> <code>readr</code> ou <code>nrows</code> de <code><a href="https://rdatatable.gitlab.io/data.table/reference/fread.html">fread()</a></code>) pour vérifier que le code est correct.</li>
+<li>Il est important d’<strong>importer un nombre réduit de colonnes</strong>. Bien sélectionner les colonnes permet souvent de réduire significativement la taille des données et de résoudre le problème mentionné au point précédent. Pour cela, il s’agit d’utiliser l’option <code>col_select</code> pour la fonction <code><a href="https://readr.tidyverse.org/reference/read_delim.html">read_delim()</a></code> du package <code>readr</code> ou l’option <code>select</code> de la fonction <code><a href="https://rdatatable.gitlab.io/data.table/reference/fread.html">fread()</a></code> de <code>data.table</code>.</li>
+<li>
+<strong>Vous pouvez choisir le <em>package</em> que vous utilisez en fonction des outils que vous voulez utiliser pour manipuler les données</strong> : les fonction <code><a href="https://readr.tidyverse.org/reference/read_delim.html">read_delim()</a></code> de <code>readr</code> renvoit un objet <code>tibble</code> tandis que <code><a href="https://rdatatable.gitlab.io/data.table/reference/fread.html">fread()</a></code> renvoie un objet <code>data.table</code>. Si vous prévoyez d’utiliser des <em>packages</em> du <em>tidyverse</em> (notamment <code>tidyr</code> et <code>dplyr</code>), il est préférable d’utiliser <code>readr</code>. Si vous prévoyez d’utiliser <code>data.table</code>, il est préférable d’utiliser <code><a href="https://rdatatable.gitlab.io/data.table/reference/fread.html">fread()</a></code>.</li>
+</ul></section><section id="RessourcesImportCSV" class="level2" data-number="11.6"><h2 data-number="11.6" class="anchored" data-anchor-id="RessourcesImportCSV">
+<span class="header-section-number">11.6</span> Pour en savoir plus</h2>
+<ul>
+<li>
+<p>Sur <code>readr</code> :</p>
+<ul>
+<li>la <a href="https://www.rdocumentation.org/packages/readr">documentation du <em>package</em></a> (en anglais) ;</li>
+<li>une <a href="https://cran.r-project.org/web/packages/readr/vignettes/readr.html">introduction à <code>readr</code></a> (en anglais) ;</li>
+<li>l’<a href="https://posit.co/wp-content/uploads/2022/10/data-import.pdf">aide-mémoire du <em>package</em></a> ;</li>
+</ul>
+</li>
+<li>
+<p>sur <code>data.table</code> :</p>
+<ul>
+<li>la <a href="https://www.rdocumentation.org/packages/data.table">documentation du <em>package</em></a> (en anglais).</li>
+</ul>
+</li>
+</ul>
+
+
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script><nav class="page-navigation"><div class="nav-page nav-page-previous">
+      <a href="../03_Fiches_thematiques/Fiche_targets.html" class="pagination-link  aria-label=" une="" cha="" de="" traitement="" reproductible="" avec="">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Construire une chaîne de traitement reproductible avec <code>targets</code></span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../03_Fiches_thematiques/Fiche_import_tables_sas.html" class="pagination-link" aria-label="<span class='chapter-number'>12</span>&nbsp; <span class='chapter-title'>Importer des tables SAS®</span>">
+        <span class="nav-page-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Importer des tables SAS®</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer">
+    <div class="nav-footer-left">
+<p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/InseeFrLab/utilitR/edit/master/03_Fiches_thematiques/Fiche_import_fichiers_plats.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/InseeFrLab/utilitR/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<li>
+<a href="https://github.com/InseeFrLab/utilitR.git" target="blank">Code source</a>
+</li>
+</div>
+  </div>
+</footer>
+
+
+</body></html>
