@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - master
+      - test
 
 jobs:
   docker:
@@ -47,15 +48,17 @@ jobs:
         name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
   website:
+    name: Render website
     if: "!contains(github.event.commits[0].message, '[skip ci]')"
     needs: docker
     runs-on: ubuntu-latest
     container: inseefrlab/utilitr:latest
     steps:
-      - name: Checkout Repository
-        env:
-          GITHUB_PAT: ${{ secrets.PAT }}
-        uses: actions/checkout@master
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{github.event.pull_request.head.repo.full_name}}
       - name: Install Dependencies
         run: |
           Rscript -e "install.packages(c('remotes'))"
@@ -65,17 +68,15 @@ jobs:
           GITHUB_PAT: ${{ secrets.PAT }}
       - name: Render Book
         run: |
+          ls
+          git remote -v
+          git config --global user.email quarto-github-actions-publish@example.com
+          git config --global user.name "Quarto GHA Workflow Runner"
           git config --global --add safe.directory /__w/utilitR/utilitR
-          quarto render
+          quarto render --to html
+          quarto publish gh-pages --no-render --no-browser
       - uses: actions/upload-artifact@v2
         with:
           name: _public
           path: _public/
           retention-days: 5
-      - name: Publish to GitHub Pages (and render)
-        run: |
-          git config --global user.email quarto-github-actions-publish@example.com
-          git config --global user.name "Quarto GHA Workflow Runner"
-          quarto publish gh-pages . --no-render --no-browser
-        #env:
-        #  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
