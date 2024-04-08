@@ -59,8 +59,9 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{github.event.pull_request.head.repo.full_name}}
-      - name: Install Dependencies
+      - name: Install dependencies
         run: |
+          git config --global --add safe.directory /__w/utilitR/utilitR
           Rscript -e "install.packages(c('remotes'))"
           Rscript -e "remotes::install_github('rstudio/htmltools')"
           Rscript -e "remotes::install_github('r-spatial/sf', dependencies = TRUE)"
@@ -72,7 +73,6 @@ jobs:
           git remote -v
           git config --global user.email quarto-github-actions-publish@example.com
           git config --global user.name "Quarto GHA Workflow Runner"
-          git config --global --add safe.directory /__w/utilitR/utilitR
           quarto render --to html
           quarto publish gh-pages --no-render --no-browser
       - uses: actions/upload-artifact@v2
