@@ -47,7 +47,7 @@ Pré-requis: avoir un compte Github.
 
 Pour ce type de modifications, il est demandé d'utiliser directement
 l'outil de suggestions de changements de `Github`.
-Le livre déployé sur https://www.book.utilitr.org comprend un bouton `Edit` qui
+Le livre déployé sur https://book.utilitr.org comprend un bouton `Edit` qui
 permet de proposer, automatiquement, des modifications via l'interface de 
 `Github`. 
 
@@ -168,7 +168,7 @@ Le lieu idéal de retour de la part d'un relecteur ou d'une relectrice dépend d
 ### Comment faire des commentaires sur une fiche via Github?
 
 La démarche est un peu fastidieuse mais est possible directement depuis `Github`. 
-Dans le menu du site web www.book.utilitr.org,
+Dans le menu du site web book.utilitr.org,
 il faut d'abord se placer dans la fiche à
 relire et ensuite cliquer sur le bouton `View source`, dans le menu à droite.
 
@@ -255,7 +255,7 @@ Enfin, comme montré dans la capture d'écran ci-dessous, il est possible de con
 
 La méthode présentée ci-dessus a l'inconvénient qu'elle oblige l'utilisateur à insérer son mot de passe de façon régulière, et quoi qu'il en soit, pour chaque nouveau service RStudio créé sur le SSP Cloud. Il est ainsi possible d'insérer le mot de passe en question dans les variables d'environnement insérées au moment de la création du service, via l'interface `Mes secrets` du SSP Cloud. L'utilisateur intéressé pourra s'il le souhaite consulter la [vidéo de démonstration](https://github.com/InseeFrLab/onyxia-ui/releases/download/assets/Demo_My_Secrets.mp4) explicitant l'usage de ce service.
 
-**ATTENTION : cette méthode comporte des risques car dans l'éventualité où un attaquant parvient à accéder à votre compte sur le SSP Cloud, il récupère des identifiants lui permettant d'accéder, de manière plus ou moins limitée selon la solution retenue, à votre compte Github et à interagir avec vos dépôts. À ce stade, ce n'est pas une méthode recommandée et si elle est utilisée, il convient d'utiliser un jeton d'accès aux droits limités. La fiche `utilitR` [Configurer Git](https://www.book.utilitr.org/03_fiches_thematiques/fiche_configurer_git) présente plus de détails sur la question des jetons d'accès à Github
+**ATTENTION : cette méthode comporte des risques car dans l'éventualité où un attaquant parvient à accéder à votre compte sur le SSP Cloud, il récupère des identifiants lui permettant d'accéder, de manière plus ou moins limitée selon la solution retenue, à votre compte Github et à interagir avec vos dépôts. À ce stade, ce n'est pas une méthode recommandée et si elle est utilisée, il convient d'utiliser un jeton d'accès aux droits limités. La fiche `utilitR` [Configurer Git](https://book.utilitr.org/03_fiches_thematiques/fiche_configurer_git) présente plus de détails sur la question des jetons d'accès à Github
 
 Ainsi, il est possible de récupérer, de manière systématique, son mot de passe ou, de manière un peu plus sécurisée, le token créé sous Github pour communiquer avec le dépôt. La configuration de l'accès de manière automatique peut se configurer en définissant les secrets ci-dessous dans un dossier `utilitr` :
 
