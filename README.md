@@ -17,7 +17,7 @@ Elle a vocation à être validée annuellement afin de produire un guide des bon
 
 Elle prend la forme suivante :
 
-* la documentation principale qui est déployée à l'adresse <https://www.book.utilitr.org/> ;
+* la documentation principale qui est déployée à l'adresse <https://book.utilitr.org/> ;
 * un guide des bonnes pratiques en `R` déployé à l'adresse <https://www.pratiques.utilitr.org/>
 
 Lorsqu'une version `PDF` sera mise à disposition, un lien direct de téléchargement sera 
@@ -46,7 +46,7 @@ Cette documentation présente succinctement les outils les plus adaptés à ces 
 
 ### Structuration de la documentation
 
-La documentation présentée dans www.book.utilitr.org a pour ambition de répondre à deux questions générales:
+La documentation présentée dans book.utilitr.org a pour ambition de répondre à deux questions générales:
 
 * Comment réaliser des tâches standards avec `R` (importation et manipulation de données, exploitation d'enquêtes, graphiques...)?
 * Comment configurer `R` et `Rstudio` de manière à bénéficier de la richesse de cet écosystème ?
