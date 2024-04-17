@@ -97,15 +97,21 @@ La méthode la plus simple pour modifier le fichier `.Renviron` est la suivante 
 ## Spécificité Insee
 
 Comme dans de nombreuses institutions, la navigation sur Internet depuis un poste de l'Insee est contrôlée par un *proxy* (intermédiaire entre le *web* et un ordinateur). Il est indispensable de paramétrer l'adresse du _proxy_ pour que `R` puisse accéder à Internet (par exemple pour télécharger un _package_). Pour ce faire, vous pouvez récupérer l'adresse du _proxy_ de l'Insee en exécutant la commande suivante :
+
 ```{r ie_get_proxy_for_url, eval=FALSE}
 curl::ie_get_proxy_for_url()
 ```
 
-Puis vous pouvez ajouter l'adresse du _proxy_ dans votre fichier `.Renviron`. Il faut ajouter deux lignes dans ce fichier :
-```
+Puis vous pouvez ajouter l'adresse du *proxy* dans votre fichier `.Renviron`. Il faut ajouter deux lignes dans ce fichier :
+
+```         
 http_proxy=adresse_du_proxy
 https_proxy=adresse_du_proxy
 ```
+
+Il est également possible d'ajouter ces variables d'environnement au niveau du profil utilisateur Windows sur votre poste de travail Insee. Cela permet à tout processus lancé d'hériter automatiquement de ces variables d'environnement, évitant ainsi de réserver cette configuration uniquement pour R, comme dans la première option proposée. De nombreux autres logiciels utilisent par convention ces noms de variables d'environnement (`http_proxy`, `https_proxy` ou `no_proxy`) pour la configuration du proxy lorsqu'ils effectuent des requêtes HTTP ; il est donc possible de mutualiser ces paramètres. C'est notamment le cas d'outils en ligne de commande tels que le client pour des requêtes réseau `curl` ou des gestionnaires de paquets comme `pip` pour `Python`.
+
+Pour ce faire, ouvrez l'interface de modification des variables d'environnement pour votre compte utilisateur en utilisant le raccourci clavier <kbd>⊞</kbd> + <kbd>R</kbd> pour exécuter la commande `rundll32 sysdm.cpl,EditEnvironmentVariables`, puis ajoutez les nouvelles variables. Redémarrez ensuite `R` pour que cette modification prenne effet .
 :::
 
 Il est possible de modifier les paramètres de son environnement ou d'en générer d'autres après l'ouverture de la session `R`, avec la commande `Sys.setenv()`. Vous pouvez par exemple exécuter la commande `Sys.setenv("MON_API_INSEE"="jamais")`. De même, la fonction `Sys.getenv()` permet de lister certaines valeurs présentes dans l'environnement actuel. Toutefois, toutes les procédures d'initialisation de R se seront déjà déroulées alors avec les anciennes valeurs, définies par défaut. Cette subtilité peut être importante !
