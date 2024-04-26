@@ -525,6 +525,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul class="collapse">
 <li><a href="#donn%C3%A9es-peu-volumineuses-%C3%A9crire-un-seul-fichier-parquet" id="toc-données-peu-volumineuses-écrire-un-seul-fichier-parquet" class="nav-link" data-scroll-target="#donn%C3%A9es-peu-volumineuses-%C3%A9crire-un-seul-fichier-parquet"><span class="header-section-number">14.3.1</span> Données peu volumineuses: écrire un seul fichier Parquet</a></li>
   <li><a href="#donn%C3%A9es-volumineuses-%C3%A9crire-un-fichier-parquet-partitionn%C3%A9" id="toc-données-volumineuses-écrire-un-fichier-parquet-partitionné" class="nav-link" data-scroll-target="#donn%C3%A9es-volumineuses-%C3%A9crire-un-fichier-parquet-partitionn%C3%A9"><span class="header-section-number">14.3.2</span> Données volumineuses: écrire un fichier Parquet partitionné</a></li>
+  <li><a href="#donn%C3%A9es-volumineuses-optimiser-en-triant" id="toc-données-volumineuses-optimiser-en-triant" class="nav-link" data-scroll-target="#donn%C3%A9es-volumineuses-optimiser-en-triant"><span class="header-section-number">14.3.3</span> Données volumineuses: optimiser en triant</a></li>
+  <li><a href="#v%C3%A9rifier-quun-fichier-parquet-est-correctement-optimis%C3%A9" id="toc-vérifier-quun-fichier-parquet-est-correctement-optimisé" class="nav-link" data-scroll-target="#v%C3%A9rifier-quun-fichier-parquet-est-correctement-optimis%C3%A9"><span class="header-section-number">14.3.4</span> Vérifier qu’un fichier parquet est correctement optimisé</a></li>
   </ul>
 </li>
   <li>
@@ -620,7 +622,9 @@ Tâche concernée et recommandation
 </div>
 <ul>
 <li>
-<strong>Un fichier Parquet contient à la fois les données et des métadonnées</strong>. Ces métadonnées écrites à la fin du fichier enregistrent une description du fichier (appelé <strong>schéma</strong>). Ces métadonnées contiennent notamment le type de chaque colonne (entier/réel/caractère). Ce sont ces métadonnées qui font en sorte que la lecture des données Parquet soit optimisée et sans risque d’altération (voir <a href="https://parquet.apache.org/docs/file-format/metadata/">ici</a> pour en savoir plus).</li>
+<strong>Un fichier Parquet contient à la fois les données et des métadonnées</strong>. Ces métadonnées écrites à la fin du fichier enregistrent une description du fichier (appelé <strong>schéma</strong>). Ces métadonnées contiennent notamment le type de chaque colonne (entier/réel/caractère) et quelques statistiques (min, max). Ce sont ces métadonnées qui font en sorte que la lecture des données Parquet soit optimisée et sans risque d’altération (voir <a href="https://parquet.apache.org/docs/file-format/metadata/">ici</a> pour en savoir plus).</li>
+<li>
+<strong>Un fichier Parquet est composé de groupe de lignes (row group)</strong> contenant également des métadonnées similaires à celles du fichier. La taille idéale d’un row group est de l’ordre de 30 000 à 1 000 000.</li>
 </ul>
 <p>Dans un contexte analytique, cette organisation des données génère plusieurs avantages dont les principaux sont:</p>
 <ul>
@@ -705,6 +709,8 @@ Tip
 <strong>Il est inutile de partitionner des données de petite taille</strong>. Si les données dépassent quelques millions d’observations et/ou si leur taille en CSV dépasse quelques giga-octets, il est utile de partitionner.</li>
 <li>
 <strong>Il ne faut pas partitionner les données en trop de fichiers</strong>. En pratique, il est rare d’avoir besoin de plus d’une ou deux variables de partitionnement.</li>
+<li>
+<strong>Si vous souhaitez être compatible avec tous les outils lisant du parquet</strong>, il est recommandé de ne pas partitionner sur une variable pouvant être <code>NA</code> ou une chaîne vide.</li>
 </ul>
 </div>
 </div>
@@ -726,6 +732,41 @@ Tip
 </div>
 </div>
 </div>
+</section><section id="données-volumineuses-optimiser-en-triant" class="level3" data-number="14.3.3"><h3 data-number="14.3.3" class="anchored" data-anchor-id="données-volumineuses-optimiser-en-triant">
+<span class="header-section-number">14.3.3</span> Données volumineuses: optimiser en triant</h3>
+<p>Il n’est pas toujours possible ou souhaitable de partitionner un fichier si la variable de partitionnement possède de trop nombreuses modalités (si celle-ci est non discrète ou possède des milliers de modalités…). Dans ces cas là, vous pouvez trier le fichier par la variable à utiliser, cela va permettre une recherche efficace à partir des métadonnées des fichiers et des groupes de lignes.</p>
+<div class="cell">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">donnees_BPE</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">arrange</span><span class="op">(</span><span class="va">EPCI</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://arrow.apache.org/docs/r/reference/write_parquet.html">write_parquet</a></span><span class="op">(</span></span>
+<span>    sink <span class="op">=</span> <span class="st">"Data_parquet/BPE_ENS.parquet"</span></span>
+<span>    <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Vous pouvez bien sûr cumuler les partitions avec des tris :</p>
+<div class="cell">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">donnees_BPE</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">arrange</span><span class="op">(</span><span class="va">EPCI</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://arrow.apache.org/docs/r/reference/write_dataset.html">write_dataset</a></span><span class="op">(</span></span>
+<span>    path <span class="op">=</span> <span class="st">"Data/"</span>,</span>
+<span>    partitioning <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"REG"</span><span class="op">)</span>, <span class="co"># la variable de partitionnement</span></span>
+<span>    format<span class="op">=</span><span class="st">"parquet"</span></span>
+<span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Cette méthode est quasiment aussi efficace que le partitionnement.</p>
+</section><section id="vérifier-quun-fichier-parquet-est-correctement-optimisé" class="level3" data-number="14.3.4"><h3 data-number="14.3.4" class="anchored" data-anchor-id="vérifier-quun-fichier-parquet-est-correctement-optimisé">
+<span class="header-section-number">14.3.4</span> Vérifier qu’un fichier parquet est correctement optimisé</h3>
+<p>Dans certains cas pathologiques quand vous manipulez de très gros volumes de données (par exemple quand vous partitionnez avec <code><a href="https://arrow.apache.org/docs/r/reference/open_dataset.html">arrow::open_dataset</a></code> un volume de données de plusieurs de dizaine de millions de lignes), le package <code>arrow</code> peut générer des fichiers parquet avec un nombre de lignes par row group très petite (inférieur à 1000 voire à 100). Cela rendra toutes les requêtes sur vos fichiers extrèmement lent.</p>
+<p>Pour vérifier que vos fichiers ont une taille de row group correcte, vous pouvez utiliser la fonction suivante :</p>
+<div class="cell">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/apache/arrow/">arrow</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">mean_row_group_size</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">path</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">a</span> <span class="op">&lt;-</span> <span class="fu">arrow</span><span class="fu">::</span><span class="va"><a href="https://arrow.apache.org/docs/r/reference/ParquetFileReader.html">ParquetFileReader</a></span><span class="op">$</span><span class="fu">create</span><span class="op">(</span><span class="va">path</span><span class="op">)</span></span>
+<span>  <span class="op">(</span><span class="va">a</span><span class="op">$</span><span class="va">num_rows</span> <span class="op">/</span> <span class="va">a</span><span class="op">$</span><span class="va">num_row_groups</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="fu">mean_row_group_size</span><span class="op">(</span><span class="st">'bpe2018/REG=11/part-0.parquet'</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Vous devez obtenir une valeur au moins égale à 10 000. Si vous obtenez une valeur inférieure, vous aurez intérêt à regénérer votre fichier en passant par d’autres méthodes (par exemple générer chaque partition en faisant une boucle et un filtre).</p>
 </section></section><section id="readparquet" class="level2" data-number="14.4"><h2 data-number="14.4" class="anchored" data-anchor-id="readparquet">
 <span class="header-section-number">14.4</span> Lire et exploiter un fichier Parquet avec <code>R</code>
 </h2>
@@ -735,14 +776,14 @@ Tip
 <p>La fonction <a href="https://arrow.apache.org/docs/r/reference/read_parquet.html"><code>read_parquet()</code></a> du <em>package</em> <code>arrow</code> permet d’importer des fichiers Parquet dans <code>R</code>. Elle possède un argument très utile <code>col_select</code> qui permet de sélectionner les variables à importer (par défaut toutes). Cet argument accepte soit une liste de noms de variables, soit <a href="https://dplyr.tidyverse.org/reference/dplyr_tidy_select.html">une expression dite de <code>tidy selection</code> issue du <em>tidyverse</em></a>.</p>
 <p>Pour utiliser <code><a href="https://arrow.apache.org/docs/r/reference/read_parquet.html">read_parquet()</a></code>, il faut charger le <em>package</em> <code>arrow</code> :</p>
 <div class="cell">
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/apache/arrow/">arrow</a></span><span class="op">)</span></span>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/apache/arrow/">arrow</a></span><span class="op">)</span></span>
 <span><span class="va">donnees</span> <span class="op">&lt;-</span> <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/read_parquet.html">read_parquet</a></span><span class="op">(</span><span class="st">"Data/BPE_ENS.parquet"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ul>
 <li>Exemple en ne sélectionnant que quelques variables à l’aide d’un vecteur de caractères :</li>
 </ul>
 <div class="cell">
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">donnees</span> <span class="op">&lt;-</span> <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/read_parquet.html">read_parquet</a></span><span class="op">(</span></span>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">donnees</span> <span class="op">&lt;-</span> <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/read_parquet.html">read_parquet</a></span><span class="op">(</span></span>
 <span>  <span class="st">"Data/BPE_ENS.parquet"</span>,</span>
 <span>  col_select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'AN'</span>,<span class="st">'REG'</span>,<span class="st">'DEP'</span>,<span class="st">'SDOM'</span>,<span class="st">'TYPEQU'</span>,<span class="st">'NB_EQUIP'</span><span class="op">)</span></span>
 <span><span class="op">)</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -751,7 +792,7 @@ Tip
 <li>Exemple en ne sélectionnant que quelques variables à l’aide d’une <code>tidy selection</code> :</li>
 </ul>
 <div class="cell">
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">donnees</span> <span class="op">&lt;-</span> <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/read_parquet.html">read_parquet</a></span><span class="op">(</span></span>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">donnees</span> <span class="op">&lt;-</span> <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/read_parquet.html">read_parquet</a></span><span class="op">(</span></span>
 <span>  <span class="st">"Data/BPE_ENS.parquet"</span>,</span>
 <span>  col_select <span class="op">=</span> <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">starts_with</a></span><span class="op">(</span><span class="st">"DEP"</span><span class="op">)</span></span>
 <span><span class="op">)</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -769,7 +810,7 @@ Tip
 </ul>
 <p>Voici un exemple avec une table peu volumineuse :</p>
 <div class="cell">
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span></span>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/apache/arrow/">arrow</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Établir la connexion aux données</span></span>
@@ -789,7 +830,7 @@ Tip
 <li>Exemple avec une table volumineuse (Recensements 1968-2019, suivre ce <a href="https://gist.github.com/ddotta/acf6add0f2328f077791461ef4f37b84">lien</a> pour obtenir le code qui permet de générer “Ficdep19.parquet” de façon reproductible) :</li>
 </ul>
 <div class="cell">
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Attention ce morceau de code n'est pas reproductible,</span></span>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Attention ce morceau de code n'est pas reproductible,</span></span>
 <span><span class="co"># Il faut suivre le lien dans le texte pour reconstruire le fichier de données</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span></span>
 <span></span>
@@ -859,7 +900,7 @@ Note
 <p>Comme indiqué précédemment, les <em>packages</em> <code>arrow</code> et <code>duckdb</code> ne se contentent pas d’exécuter les instructions de la requête une à une, dans l’ordre du code, mais analysent la requête dans son ensemble pour <strong>optimiser le plan d’exécution de la requête</strong>. Toutefois, il n’est pas possible de charger seulement quelques lignes d’un fichier Parquet: on importe nécessairement des colonnes entières. C’est principalement sur ce point qu’<strong>utiliser un fichier Parquet partitionné facilite ce travail d’optimisation du plan d’exécution.</strong> En effet, lorsque le fichier Parquet est partitionné, <code>arrow</code> est capable de filtrer les lignes à importer à l’aide des clés de partitionnement, ce qui permet d’accélérer l’importation des données.</p>
 <p><strong>Exemple :</strong> imaginons que la Base Permanente des Équipements soit stockée sous la forme d’un fichier Parquet partitionné par région (<code>REG</code>), et qu’on veuille compter le nombre d’équipements de chaque type dans chaque département de la région Hauts-de-France (<code>REG == "32"</code>). On utilisera le code suivant:</p>
 <div class="cell">
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Établir la connexion au fichier Parquet partitionné</span></span>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Établir la connexion au fichier Parquet partitionné</span></span>
 <span><span class="va">donnees_BPE_part</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://arrow.apache.org/docs/r/reference/open_dataset.html">open_dataset</a></span><span class="op">(</span></span>
 <span>  <span class="st">"Data/"</span>,</span>
 <span>  partitioning <span class="op">=</span> <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/schema.html">schema</a></span><span class="op">(</span>REG <span class="op">=</span> <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/data-type.html">utf8</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
@@ -892,7 +933,7 @@ Note
 </ul>
 <p>Une fois que la connexion est établie avec le fichier partitionné, il est possible de l’utiliser exactement comme s’il s’agissait d’un seul fichier Parquet. Voici un exemple de code:</p>
 <div class="cell">
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Établir la connexion au fichier Parquet partitionné</span></span>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Établir la connexion au fichier Parquet partitionné</span></span>
 <span><span class="va">donnees_part</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://arrow.apache.org/docs/r/reference/open_dataset.html">open_dataset</a></span><span class="op">(</span></span>
 <span>  <span class="st">"Data/"</span>, <span class="co"># Ici, on met le chemin d'un répertoire</span></span>
 <span>  hive_style <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -915,7 +956,7 @@ Note
 <li>Il est fortement recommandé de spécifier le type des variables de partitionnement avec l’argument <code>partitioning</code>. Cela évite des erreurs typiques: le code du département est interprété à tort comme un nombre et aboutit à une erreur à cause de la Corse… L’argument <code>partitioning</code> s’utilise en construisant un schéma qui précise le type de chacune des variables de partitionnement:</li>
 </ul>
 <div class="cell">
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">donnees_part</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://arrow.apache.org/docs/r/reference/open_dataset.html">open_dataset</a></span><span class="op">(</span></span>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">donnees_part</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://arrow.apache.org/docs/r/reference/open_dataset.html">open_dataset</a></span><span class="op">(</span></span>
 <span>  <span class="st">"Data/"</span>,</span>
 <span>  partitioning <span class="op">=</span> <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/schema.html">schema</a></span><span class="op">(</span>variable1 <span class="op">=</span> <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/data-type.html">utf8</a></span><span class="op">(</span><span class="op">)</span>, variable2 <span class="op">=</span> <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/data-type.html">int16</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -925,7 +966,7 @@ Note
 <li>Il est recommandé de définir les deux options suivantes au début de votre script. Cela autorise <code>arrow</code> à utiliser plusieurs processeurs à la fois, ce qui accélère les traitements:</li>
 </ul>
 <div class="cell">
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Autoriser arrow à utiliser plusieurs processeurs en même temps</span></span>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Autoriser arrow à utiliser plusieurs processeurs en même temps</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span>arrow.use_threads <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co"># Définir le nombre de processeurs utilisés par arrow</span></span>
 <span><span class="co"># 10 processeurs sont suffisants dans la plupart des cas</span></span>
