@@ -511,9 +511,12 @@ L'interaction entre les différentes options de `duckdb` est complexe et rendent
 - Avec l'évaluation différée, l'ensemble de la requête est exécutée à chaque appel à `collect()`. Il peut être utile de conserver des résultats pour ne pas refaire les mêmes calculs.
 - Certaines requêtes sont trop compliquées pour le moteur SQL et/ou pour la traduction automatique. Par contre, `arrow::write_dataset()` sait faire les calculs par morceaux automatiquement, et libère la mémoire au fur et à mesure. Lorsqu'un calcul ne passe pas, on peut tenter de le découper en passant par une base intermédiaire :
 ```{r eval=FALSE}
-conn_ddb %>% calcul1() %>% 
-  arrow::to_arrow() %>% arrow::write_dataset("base_intermediaire")
-arrow::open_dataset("base_intermediaire") %>% arrow::to_duckdb(conn_ddb) %>% 
+conn_ddb %>% calcul1() %>%
+  arrow::to_arrow() %>%
+  arrow::write_dataset("base_intermediaire")
+
+arrow::open_dataset("base_intermediaire") %>%
+  arrow::to_duckdb(conn_ddb) %>%
   calcul2()
 ```
 
