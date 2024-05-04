@@ -113,11 +113,16 @@ Concrètement, cette commande crée une nouvelle base de données `duckdb` dans 
 DBI::dbDisconnect(conn_ddb, shutdown = TRUE)
 ```
 
-Pour la suite, on supposera que la connexion est ouverte.
+Par défaut, `duckdb` utilisera tous les cœurs disponibles. Sur un serveur mutualisé, afin de ne pas consommer toutes les ressources, il est conseillé de limiter le nombre de cœurs utilisés par `duckdb`. 
 
 ```{r}
-conn_ddb <- dbConnect(duckdb())
+conn_ddb <- DBI::dbConnect(duckdb::duckdb(
+  config = list(threads = "6")
+))
+
 ```
+
+Pour la suite, on supposera que la connexion est ouverte.
 
 ### Chargement des données
 
