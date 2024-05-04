@@ -113,7 +113,7 @@ Concrètement, cette commande crée une nouvelle base de données `duckdb` dans 
 DBI::dbDisconnect(conn_ddb, shutdown = TRUE)
 ```
 
-Par défaut, `duckdb` utilisera tous les cœurs disponibles. Sur un serveur mutualisé, afin de ne pas consommer toutes les ressources, il est conseillé de limiter le nombre de cœurs utilisés par `duckdb`. 
+Par défaut, `duckdb` utilisera tous les cœurs disponibles. Sur un serveur mutualisé, afin de ne pas consommer toutes les ressources, il est conseillé de limiter le nombre de cœurs utilisés par `duckdb` (pour plus d'information, cf [Configurer `duckdb`](#sec-configuration))
 
 ```{r}
 conn_ddb <- DBI::dbConnect(duckdb::duckdb(
@@ -306,6 +306,66 @@ bpe_ens_2018_dataset %>%
 
 ## Notions avancées / bien utiliser `duckdb`
 
+### Configurer `duckdb` {#sec-configuration}
+
+`duckdb` propose [de nombreux paramètres](https://duckdb.org/docs/configuration/overview) mais nous n'allons voir que les principaux.
+
+Nous allons d'abord voir comment configurer `duckdb` à l'initialisation du pilote. La signature de `duckdb` est :
+
+```{r}
+drv <- duckdb(
+  dbdir = "fichier.db", 
+  config = list(
+    threads = "4",
+    memory_limit = "40GB",
+    temp_directory = "tmp_path/",
+    preserve_insertion_order = "true")
+)
+```
+
+**`dbdir` : utiliser une base persistante**
+
+Par défaut, `duckdb` créé une base en mémoire. Si vous fixez ce paramètre, `duckdb` créera une base de données sur disque que vous pourrez réouvrir à votre prochaine session.
+
+Si vous utilisez principalement `dplyr`, les bases de données en mémoire sont certainement suffisantes pour vous mais si vous utilisez du SQL, que vous créez des vues ou que vous utilisez `dplyr::compute`, ce paramètre peut être intéressant.
+
+#### Les principaux paramètres de `config`
+
+**`threads` : limiter le nombre de threads** {#config-thread}
+
+Par défaut, `duckdb` fixe la limite de thread au nombre de cœurs disponibles, ce qui n'est pas forcément souhaitable pour plusieurs raisons :
+
+- sur un serveur partagé, vos collègues seront gênés ;
+- il est [conseillé de disposer de 5 à 10Go](https://duckdb.org/docs/guides/performance/environment.html) de mémoire par thread (5 pour des aggrégations, 10 pour des jointures) donc beaucoup de threads implique beaucoup de mémoire ;
+- avoir trop de thread peut être contre-productif.
+
+Au final, il n'y a pas de règle exacte mais 4 à 8 threads, en respectant le ratio threads/mémoire ci-dessus, sont des valeurs raisonnables. Au delà, les performances augmentent généralement peu pour une consommation mémoire plus importante.
+
+**`memory_limit` : Limiter la mémoire**
+
+Par défaut, `duckdb` limite la mémoire à 80% de la mémoire disponible sur le serveur.
+
+Si vous avez une quantité limitée de mémoire, essayez plutôt de limiter le nombre de threads en respectant la règle de 5 à 10Go par thread.
+
+**`temp_directory` : ou comment utiliser plus de mémoire que ce dont on dispose**
+
+`duckdb` sait ["déborder" sur disque](https://duckdb.org/docs/guides/performance/how_to_tune_workloads.html#larger-than-memory-workloads-out-of-core-processing) pour une grande partie de ces opérations, à savoir, quand il a arrive à la limite mémoire fixée, il va écrire dans des fichiers temporaires les données qu'il ne peut conserver en mémoire.
+
+Il est généralement beaucoup plus efficace de diminuer le nombre de threads (ou de faire vos traitements par bloc) que de déborder sur disque mais dans le cas où vous avez besoin de "juste un peu plus" de mémoire cela peut se révéler utile.
+
+A noter, ce paramètre est automatiquement fixé si vous avez décidé d'utiliser une base persistante.
+
+**`preserve_insertion_order` : préserver l'ordre de lecture/écriture ou non**
+
+`duckdb` peut consommer beaucoup de mémoire pour conserver l'ordre de lecture et d'écriture. Ce dernier paramètre permet d'autoriser `duckdb` à ne pas préserver l'ordre des données à la lecture et à l'écriture des fichiers dans le cas où il n'y a pas de clause `ORDER BY` / `arrange`.
+
+#### Fixer les paramètres après l'initialisation
+
+Vous pouvez également changer les paramètres d'une base après son initialisation en utilisant la commande `dbExecute`. Par exemple, pour fixer le nombre de thread à 4 :
+
+```{r}
+dbExecute(conn_ddb, "SET threads = '4';")
+```
 
 ### L'évaluation différée avec `duckdb` (_lazy evaluation_) {#sec-lazy}
 
