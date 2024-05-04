@@ -155,31 +155,43 @@ Pour l'exemple, on sauvegarde les données `bpe_ens_2018` au format Parquet.
 bpe_ens_2018 |> arrow::write_dataset("bpe_ens_2018_dataset")
 ```
 
-**Pour utiliser un fichier Parquet dans `duckdb` sans le charger en mémoire, on propose deux méthodes:** utiliser `arrow`, ou passer directement par `duckdb`. Il est recommandé de privilégier la première méthode qui est plus simple.
+**Pour utiliser un fichier Parquet dans `duckdb` sans le charger en mémoire, on propose deux méthodes:** utiliser la fonction `dplyr::tbl` qui va directement lire les fichiers avec `duckdb` ou passer par `arrow::open_dataset` et convertir l'objet avec `arrow::to_duckdb`. Si la deuxième méthode est plus simple, surtout quand vous connaissez déjà `arrow`, la première est systématiquement plus efficace et peut générer des gains de consommation mémoire et de temps de traitement conséquents, il est donc conseillé de ne pas lire vos fichiers avec `arrow::open_dataset` si vos traitements sont lourds.
+
+Pour passer par `duckdb`, vous devez utilisez `dplyr::tbl` :
+
+```{r messages=FALSE}
+conn_ddb %>% tbl("read_parquet('bpe_ens_2018_dataset/**/*.parquet')")
+```
+
+Quelques explications de cette ligne :
+
+* [`read_parquet`](https://duckdb.org/docs/data/parquet/overview.html#read_parquet-function) est une fonction `duckdb`, elle ne doit pas être confondue avec la fonction `arrow::read_parquet`. 
+* `**/*.parquet` est un motif qui indique que vous souhaitez lire, dans tous les sous-répertoires quelque soit le niveau (`**`), l'ensemble des fichiers parquets (`*.parquet`) qui s'y trouvent.
+
+Quand vous n'avez pas besoin de passer d'arguments à `read_parquet`, vous pouvez l'omettre :
+
+```{r messages=FALSE}
+conn_ddb %>% tbl('bpe_ens_2018_dataset/**/*.parquet')
+```
+
+A noter que `duckdb` propose aussi [des fonctions pour lire d'autres formats](https://duckdb.org/docs/data/csv/overview.html) comme csv, json...
 
 En passant par `arrow`. Cette méthode utilise un objet intermédiaire de type Arrow Table (voir la fiche [Manipuler des données avec `arrow`](#arrow)) : 
 
 ```{r}
 # Créer une connexion au dataset Parquet
-bpe_ens_2018_dataset <- arrow::open_dataset("bpe_ens_2018_dataset") 
+bpe_ens_2018_dataset <- arrow::open_dataset("bpe_ens_2018_dataset")
 
 # Etablir le lien entre la base de données duckdb et le dataset Parquet
 bpe_ens_2018_dataset %>% arrow::to_duckdb(conn_ddb)
 ```
 
-En passant directement par `duckdb`, il faut travailler un peu plus pour construire les noms de fichiers :
-
-```{r messages=FALSE}
-conn_ddb %>% tbl('bpe_ens_2018_dataset/*.parquet')
-```
-
-Ces deux méthodes utilisent les données directement depuis le dataset Parquet. Les données ne sont chargées ni dans la mémoire de `R`, ni dans celle de `DuckDB`. Pour plus de commodité, on sauvegarde l'instruction précédente dans la variable `bpe_ens_2018_dataset`.
+Ces méthodes utilisent les données directement depuis le dataset Parquet. Les données ne sont chargées ni dans la mémoire de `R`, ni dans celle de `DuckDB`. Pour plus de commodité, on sauvegarde l'instruction précédente dans la variable `bpe_ens_2018_dataset`.
 
 ```{r}
 bpe_ens_2018_dataset <- conn_ddb %>% 
   tbl('bpe_ens_2018_dataset/*.parquet')
 ```
-
 
 ### Manipulation des données avec la syntaxe `dplyr`
 
