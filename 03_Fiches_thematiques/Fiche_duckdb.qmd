@@ -496,17 +496,21 @@ Or set PRAGMA temp_directory='/path/to/tmp.tmp'
 
 Pour contourner le manque de mémoire vive, on propose les quatre techniques suivantes :   
 
+- diminuer le nombre de threads utilisés par `duckdb`, donc moins de besoins de mémoire (mais aussi moins de parallélisme) :
+  ```{r eval=FALSE}
+  conn_ddb <- dbConnect(duckdb(),
+                        config=list("threads"="1")))
+  ```
+  ou
+  ```{r eval=FALSE}
+  dbExecute(conn_ddb, "SET threads = '1';")
+  ```
 - exécuter et sauvegarder les résultats au fur et à mesure. La commande `arrow::write_dataset` et la commande SQL `COPY request TO filename.parquet` savent le faire automatiquement, sans faire déborder la mémoire, pour certains calculs.
+- découper le calcul et sauvegarder une base intermédiaire (cf ci-dessous).
 - adosser un fichier sur le disque dur à la base de données en mémoire au moment de la création de la connexion. Cela ralentit considérablement les calculs, et ne permet pas toujours d'obtenir un résultat. 
   ```{r eval=FALSE}
-  conn_ddb <- dbConnect(duckdb(), dbdir = "my-db.duckdb", read_only = FALSE)
+  conn_ddb <- dbConnect(duckdb(), dbdir = "my-db.duckdb")
   ```
-- diminuer le nombre de threads utilisés par `duckdb`, donc moins de besoins de mémoire, mais aussi moins de parallélisme.
-  ```{r eval=FALSE}
-  conn_ddb <- dbConnect(duckdb(), 
-                        config=list("memory_limit"="10GB", "threads"="1")))
-  ```
-- découper le calcul et sauvegarder une base intermédiaire (cf ci-dessous).
 
 L'interaction entre les différentes options de `duckdb` est complexe et rendent difficile l'élaboration de recommandations claires. Nous mettrons à jour cette fiche quand des benchmarks plus poussés seront disponibles.
 
