@@ -191,8 +191,9 @@ bpe_ens_2018_dataset <- arrow::open_dataset("bpe_ens_2018_dataset")
 bpe_ens_2018_dataset %>% arrow::to_duckdb(conn_ddb)
 ```
 
-Ces méthodes utilisent les données directement depuis le dataset Parquet. Les données ne sont chargées ni dans la mémoire de `R`, ni dans celle de `DuckDB`. Pour plus de commodité, on sauvegarde l'instruction précédente dans la variable `bpe_ens_2018_dataset`.
+Ces deux approches ont un point commun important: __elles établissent une connexion aux données contenues dans le dataset Parquet, mais elles ne chargent pas les données en mémoire__ (ni dans la mémoire de `R`, ni dans celle de `DuckDB`). 
 
+Pour plus de commodité, on sauvegarde l'instruction précédente dans la variable `bpe_ens_2018_dataset`.
 ```{r}
 bpe_ens_2018_dataset <- conn_ddb %>% 
   tbl('bpe_ens_2018_dataset/*.parquet')
