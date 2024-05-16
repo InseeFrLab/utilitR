@@ -48,7 +48,8 @@ Le format Parquet présente trois caractéristiques importantes du point de l'ut
 knitr::include_graphics("../pics/parquet/stockage_colonne.png")
 ```
 
-- **Un fichier Parquet contient à la fois les données et des métadonnées**. Ces métadonnées écrites à la fin du fichier enregistrent une description du fichier (appelé **schéma**). Ces métadonnées contiennent notamment le type de chaque colonne (entier/réel/caractère). Ce sont ces métadonnées qui font en sorte que la lecture des données Parquet soit optimisée et sans risque d’altération (voir [ici](https://parquet.apache.org/docs/file-format/metadata/) pour en savoir plus).
+- **Un fichier Parquet contient à la fois les données et des métadonnées**. Ces métadonnées écrites à la fin du fichier enregistrent une description du fichier (appelé **schéma**). Ces métadonnées contiennent notamment le type de chaque colonne (entier/réel/caractère) et quelques statistiques (min, max). Ce sont ces métadonnées qui font en sorte que la lecture des données Parquet soit optimisée et sans risque d’altération (voir [ici](https://parquet.apache.org/docs/file-format/metadata/) pour en savoir plus).
+- **Un fichier Parquet est composé de groupe de lignes (row group)** contenant également des métadonnées similaires à celles du fichier. La taille idéale d'un row group est de l'ordre de 30 000 à 1 000 000.
 
 Dans un contexte analytique, cette organisation des données génère plusieurs avantages dont les principaux sont: 
 
@@ -73,7 +74,7 @@ Pour cette utilisation, le statisticien privilégiera un système de gestion de 
 
 Les tables Parquet sont encore loin d'être majoritaires dans les liens de téléchargement notamment face au format csv. C'est la raison pour laquelle, nous allons dans cette section dérouler **le processus pour obtenir un fichier Parquet à partir d'un fichier csv.**  
 
-Dans un premier temps, on importe le fichier plat avec la fonction **fread()** du _package_ **data.table**, conformément aux recommandations de [la fiche sur les imports de fichiers plats](https://www.book.utilitr.org/03_fiches_thematiques/fiche_import_fichiers_plats). On obtient un objet `data.table` en mémoire. Dans un second temps, on exporte ces données en format Parquet avec la fonction `write_parquet()` du _package_ `arrow`.
+Dans un premier temps, on importe le fichier plat avec la fonction **fread()** du _package_ **data.table**, conformément aux recommandations de [la fiche sur les imports de fichiers plats](https://book.utilitr.org/03_fiches_thematiques/fiche_import_fichiers_plats). On obtient un objet `data.table` en mémoire. Dans un second temps, on exporte ces données en format Parquet avec la fonction `write_parquet()` du _package_ `arrow`.
 
 ```{r, eval=FALSE}
 library(data.table)
@@ -131,6 +132,7 @@ Partitionner un fichier revient à le "découper" selon une clé de partitionnem
 - **Il est important de bien choisir les variables de partitionnement** d'un fichier **Parquet**. Il faut choisir des variables faciles à comprendre et qui soient cohérentes avec l'usage des données (année, département, secteur...). En effet, un partitionnement bien construit induit par la suite des gains d'efficacité sur les traitements et facilite la maintenance du fichier sur le long terme.
 - **Il est inutile de partitionner des données de petite taille**. Si les données dépassent quelques millions d'observations et/ou si leur taille en CSV dépasse quelques giga-octets, il est utile de partitionner.
 - **Il ne faut pas partitionner les données en trop de fichiers**. En pratique, il est rare d'avoir besoin de plus d'une ou deux variables de partitionnement.
+- **Si vous souhaitez être compatible avec tous les outils lisant du parquet**, il est recommandé de ne pas partitionner sur une variable pouvant être `NA` ou une chaîne vide.
 :::
 
 Pour créer des fichiers **Parquet** partitionnés, il faut utiliser la fonction [`write_dataset()`](https://arrow.apache.org/docs/r/reference/write_dataset.html) du _package_ `arrow`. Voici ce que ça donne sur le fichier de la BPE :
@@ -149,6 +151,50 @@ Avec cette instruction, on a créé autant de répertoires que de modalités dif
 ```{r, echo = FALSE, fig.cap = "Arborescence d'un fichier Parquet partitionné"}
 knitr::include_graphics("../pics/parquet/fichier_partition.png")
 ```
+
+### Données volumineuses: optimiser en triant
+
+Il n'est pas toujours possible ou souhaitable de partitionner un fichier si la variable de partitionnement possède de trop nombreuses modalités (si celle-ci est non discrète ou possède des milliers de modalités...). Dans ces cas là, vous pouvez trier le fichier par la variable à utiliser, cela va permettre une recherche efficace à partir des métadonnées des fichiers et des groupes de lignes. 
+
+```{r, eval = FALSE}
+donnees_BPE |>
+  arrange(EPCI) |>
+  write_parquet(
+    sink = "Data_parquet/BPE_ENS.parquet"
+    )
+```
+
+Vous pouvez bien sûr cumuler les partitions avec des tris :
+
+```{r, eval = FALSE}
+donnees_BPE |>
+  arrange(EPCI) |>
+  write_dataset(
+    path = "Data/",
+    partitioning = c("REG"), # la variable de partitionnement
+    format="parquet"
+  )
+```
+
+Cette méthode est quasiment aussi efficace que le partitionnement.
+
+### Vérifier qu'un fichier parquet est correctement optimisé
+
+Dans certains cas pathologiques quand vous manipulez de très gros volumes de données (par exemple quand vous partitionnez avec `arrow::open_dataset` un volume de données de plusieurs de dizaine de millions de lignes), le package `arrow` peut générer des fichiers parquet avec un nombre de lignes par row group très petite (inférieur à 1000 voire à 100). Cela rendra toutes les requêtes sur vos fichiers extrèmement lent.
+
+Pour vérifier que vos fichiers ont une taille de row group correcte, vous pouvez utiliser la fonction suivante :
+
+```{r, eval = FALSE}
+library(arrow)
+
+mean_row_group_size <- function(path) {
+  a <- arrow::ParquetFileReader$create(path)
+  (a$num_rows / a$num_row_groups)
+}
+mean_row_group_size('bpe2018/REG=11/part-0.parquet')
+```
+
+Vous devez obtenir une valeur au moins égale à 10 000. Si vous obtenez une valeur inférieure, vous aurez intérêt à regénérer votre fichier en passant par d'autres méthodes (par exemple générer chaque partition en faisant une boucle et un filtre).
 
 ## Lire et exploiter un fichier Parquet avec `R` {#readparquet}
 
@@ -246,7 +292,7 @@ Les _packages_ `arrow` et `duckdb` présentent une grande différence avec les _
 
 <!-- ## Exploiter un fichier Parquet avec le _package_ `duckdb` -->
 
-<!-- Dans le cas de fichiers volumineux, il est également possible de les requêter avec le langage `SQL` grâce au _package_ [`duckdb`](https://duckdb.org/docs/api/r.html). Cette méthode est basée sur le moteur portable `DuckDB` qui permet à n'importe quel ordinateur d'accéder à des performances d'un moteur de base de données classique qui utilise un serveur. Pour plus d'informations sur la façon d'exécuter des requêtes sur des bases de données, consultez [cette fiche](https://www.book.utilitr.org/03_fiches_thematiques/fiche_connexion_bdd#ex%C3%A9cuter-des-requ%C3%AAtes). En fonction des cas d'usage, la méthode présentée ici peut être encore plus efficace que celle avec `arrow` et `dplyr`, mais elle implique de savoir exprimer les requêtes en langage SQL. -->
+<!-- Dans le cas de fichiers volumineux, il est également possible de les requêter avec le langage `SQL` grâce au _package_ [`duckdb`](https://duckdb.org/docs/api/r.html). Cette méthode est basée sur le moteur portable `DuckDB` qui permet à n'importe quel ordinateur d'accéder à des performances d'un moteur de base de données classique qui utilise un serveur. Pour plus d'informations sur la façon d'exécuter des requêtes sur des bases de données, consultez [cette fiche](https://book.utilitr.org/03_fiches_thematiques/fiche_connexion_bdd#ex%C3%A9cuter-des-requ%C3%AAtes). En fonction des cas d'usage, la méthode présentée ici peut être encore plus efficace que celle avec `arrow` et `dplyr`, mais elle implique de savoir exprimer les requêtes en langage SQL. -->
 
 <!-- L'approche avec `duckdb` comprend trois étapes similaires à celle de l'approche avec `arrow` et `dplyr`:  -->
 
