@@ -162,7 +162,9 @@ bpe_ens_2018 |> arrow::write_dataset("bpe_ens_2018_dataset")
 
 **Pour utiliser un fichier Parquet dans `duckdb` sans le charger en mémoire, on propose deux méthodes:** utiliser la fonction `dplyr::tbl` qui va directement lire les fichiers avec `duckdb` ou passer par `arrow::open_dataset` et convertir l'objet avec `arrow::to_duckdb`. Si la deuxième méthode est plus simple, surtout quand vous connaissez déjà `arrow`, la première est systématiquement plus efficace et peut générer des gains de consommation mémoire et de temps de traitement conséquents, il est donc conseillé de ne pas lire vos fichiers avec `arrow::open_dataset` si vos traitements sont lourds.
 
-Pour passer par `duckdb`, vous devez utilisez `dplyr::tbl` :
+
+
+La première approche repose uniquement `duckdb`. Vous devez utilisez la fonction `dplyr::tbl` :
 
 ```{r messages=FALSE}
 conn_ddb %>% tbl("read_parquet('bpe_ens_2018_dataset/**/*.parquet')")
