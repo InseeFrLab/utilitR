@@ -23,7 +23,8 @@ des séries temporelles (création d'objets `ts` en R).
 Pour installer les packages :
 
 ```{r}
-#| eval: False
+#| echo: true
+#| eval: false
 install.packages(c("lubridate", "parsedate", "zoo"))
 install.packages(c("ggplot2", "dygraphs"))
 ```
@@ -41,12 +42,7 @@ La fonction `as.Date()`{.r} existe dans les packages `base` et
 ### Les dates
 
 Une date en R signifie généralement un jour d'une année. Elle peut
-s'écrire sous différents formats :
-
-| Format           | Type       | Exemple (Noël 2023) |
-|------------------|------------|---------------------|
-| Format européen  | JJ/MM/AAAA | 25/12/2023          |
-| Format américain | AAAA-MM-JJ | 2023-12-25          |
+s'écrire sous différents formats (voir [encadré sur les normes ISO8601 et RFC3339](@iso8601-rfc3339)).
 
 Une date peut aussi désigner un horaire ou un moment précis. On peut
 alors spécifier les heures, les minutes, les secondes.
@@ -67,12 +63,16 @@ Pour créer une date en R, il suffit de faire appel à la fonction
 correspond au format américain :
 
 ```{r}
+#| echo: true
+#| eval: true
 M_Drucker_birth <- base::as.Date(x = "1942-09-12")
 ```
 
 Il suffit de le changer pour créer une date à partir d'un autre format :
 
 ```{r}
+#| echo: true
+#| eval: true
 noel_2023 <- base::as.Date(x = "25/12/2023", format = "%d/%m/%Y")
 ```
 
@@ -93,6 +93,8 @@ classe `POSIXt`. Pour cela, on peut utiliser les fonctions
     composants de la date (année, mois, jour, heure...).
 
 ```{r}
+#| echo: true
+#| eval: true
 pied_sur_la_lune <- as.POSIXct(x = "1969-07-21 02:56:20", 
                                format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
 ```
@@ -105,15 +107,24 @@ d'appliquer différents fuseaux horaires à un évènement.
 
 Par exemple :
 
-Neil Armstrong a posé le pied sur la lune le
-`r as.POSIXct(pied_sur_la_lune, tz = "Europe/Paris")` à Paris mais le
-`r as.POSIXct(pied_sur_la_lune, tz = "America/Los_Angeles")` à Los
-Angeles.
-
 ```{r}
-heure_en_france <- as.POSIXct(x = pied_sur_la_lune, tz = "Europe/Paris")
-heure_los_angeles <- as.POSIXct(x = pied_sur_la_lune, tz = "America/Los_Angeles")
+#| echo: true
+#| eval: true
+# changement du fuseau horaire avec le package base
+heure_en_france <- pied_sur_la_lune
+attr(heure_en_france , "tzone") <- "Europe/Paris"
+
+# changement du fuseau horaire avec le package lubridate
+heure_los_angeles <- lubridate::with_tz(
+    time = pied_sur_la_lune, 
+    tzone = "America/Los_Angeles"
+)
 ```
+
+Neil Armstrong a posé le pied sur la lune le
+`r heure_en_france` à Paris mais le
+`r heure_los_angeles` à Los
+Angeles.
 
 Pour connaître la liste des différents fuseaux horaires, il faut appeler
 la fonction `OlsonNames()`{.r} (du nom de l'Olson Database).
@@ -141,6 +152,8 @@ des fuseaux horaires.
 -   Par exemple en hiver (CET = UTC+1) :
 
 ```{r}
+#| echo: true
+#| eval: true
 # définition en date et heure locale avec le bon fuseau horaire
 chute_mur_berlin <- as.POSIXct(x = "1989-11-09 18:00", tz = "Europe/Berlin")
 
@@ -148,12 +161,14 @@ chute_mur_berlin <- as.POSIXct(x = "1989-11-09 18:00", tz = "Europe/Berlin")
 print(chute_mur_berlin)
 
 # Heure UTC (exemple en islande)
-print(as.POSIXct(chute_mur_berlin, tz = "UTC"))
+print(chute_mur_berlin, tz = "UTC")
 ```
 
 -   En été (CEST = UTC+2) :
 
 ```{r}
+#| echo: true
+#| eval: true
 # définition en date et heure locale avec le bon fuseau horaire
 victoire_fifa_1998 <- as.POSIXct(x = "1998-07-12 21:00", tz = "Europe/Paris")
 
@@ -161,7 +176,7 @@ victoire_fifa_1998 <- as.POSIXct(x = "1998-07-12 21:00", tz = "Europe/Paris")
 print(victoire_fifa_1998)
 
 # Heure UTC (exemple au Burkina Faso)
-print(as.POSIXct(victoire_fifa_1998, tz = "UTC"))
+print(victoire_fifa_1998, tz = "UTC")
 ```
 
 ## Autres fonctions
@@ -174,6 +189,8 @@ formater une date selon *n'importe quelle* représentation.
 Par exemple pour des dates :
 
 ```{r}
+#| echo: true
+#| eval: true
 # On prend la date d'aujourd'hui
 format(Sys.Date(), format = "Nous sommes le %A %d %B %Y.")
 format(Sys.Date(), format = "Date du jour : %x")
@@ -182,6 +199,8 @@ format(Sys.Date(), format = "Date du jour : %x")
 Par exemple pour des temps :
 
 ```{r}
+#| echo: true
+#| eval: true
 # On prend la date d'aujourd'hui
 format(Sys.time(), format = "Nous sommes le %d %B %Y et il est %Hh%M et %Ss.")
 format(Sys.time(), format = "Il s'est écoulé %ss depuis le 1er janvier 1970.")
@@ -192,7 +211,7 @@ La liste des formats de données est disponible sur la page d'aide de
 `strptime()`{.r} (accessible via `help(strptime)`{.r}).
 
 ::: {.callout-note}
-### Les normes ISO8601 et RFC3339
+### Les normes ISO8601 et RFC3339  {#iso8601-rfc3339}
 
 Les normes ISO8601 et RFC3339 sont des conventions de représentation des
 dates. Selon ces 2 normes, certains formats de dates sont acceptés ou
@@ -214,7 +233,10 @@ https://ijmacd.github.io/rfc3339-iso8601/.
 On peut aussi utiliser le package `parsedate` qui permet de lire une
 date au format ISO8601
 
-```{r, warning = FALSE}
+```{r}
+#| echo: true
+#| eval: true
+#| warning: false
 library("parsedate")
 
 parse_iso_8601("2023-05-24T08:43:00+08:00") # Accepté par ISO8601
@@ -235,6 +257,8 @@ Il peut être utile de vouloir changer les paramètres régionaux sous R.
 Pour cela, il faut faire appel à la fonction `Sys.setlocale()`{.r}
 
 ```{r}
+#| echo: true
+#| eval: true
 # Paramètres locaux en France
 Sys.setlocale("LC_TIME", "fr_FR.UTF-8")
 format(Sys.time(), format = "%c")
@@ -267,6 +291,8 @@ parmi les 3 restants.
 Exemple :
 
 ```{r}
+#| echo: true
+#| eval: true
 date1 <- base::as.Date("2016-02-29")
 date2 <- base::as.Date("2021-10-02")
 date3 <- base::as.Date("2023-08-15")
@@ -289,6 +315,8 @@ seq(from = time2, to = time3, by = "sec")
 Le objets de classe `difftime` représentent des durées.
 
 ```{r}
+#| echo: true
+#| eval: true
 age <- Sys.Date() - M_Drucker_birth
 print(age)
 
@@ -310,6 +338,8 @@ arrivee_toronto - decollage_paris
 Avec la fonction `units()`{.r}, on peut changer l'unité de la durée.
 
 ```{r}
+#| echo: true
+#| eval: true
 # En minutes
 units(age) <- "mins"
 print(age)
@@ -321,7 +351,10 @@ print(age)
 
 Le package `lubridate` propose aussi d'autres formatages des durées :
 
-```{r, warning = FALSE}
+```{r}
+#| echo: true
+#| eval: true
+#| warning: false
 library("lubridate")
 
 time_length(age, unit = "year")
@@ -350,6 +383,8 @@ Une date au format `Date` est stockée sous la forme d'un nombre de jours
 ainsi :
 
 ```{r}
+#| echo: true
+#| eval: true
 # En R base
 Sys.Date() + 5L # Date dans 5 jours
 
@@ -360,6 +395,8 @@ Sys.Date() + days(5L) # Date dans 5 jours
 Par exemple, si je veux avoir la même date il y a 5 ou 4 ans :
 
 ```{r}
+#| echo: true
+#| eval: true
 fev_29 <- base::as.Date("2016-02-29")
 
 # Il y a 5 ans, 29 fevrier 2011 n'existe pas :
@@ -380,6 +417,8 @@ package `stats`. L'argument `frequency` est le nombre de période en 1
 an.
 
 ```{r}
+#| echo: true
+#| eval: true
 # Pour une série annuelle, frequency = 1L
 serie_annuelle <- ts(1:20, start = 2003L, frequency = 1L)
 
@@ -438,6 +477,8 @@ fonctions suivantes :
     temporelle
 
 ```{r}
+#| echo: true
+#| eval: true
 start(serie_mensuelle)
 end(serie_mensuelle)
 frequency(serie_mensuelle)
@@ -449,6 +490,9 @@ Les dates en output de `time()`{.r} sont au format ts et non au format
 `zoo::as.Date()`{.r} :
 
 ```{r, warning = FALSE}
+#| echo: true
+#| eval: true
+#| warning: false
 library("zoo")
 
 zoo::as.Date(time(serie_mensuelle))
@@ -462,6 +506,8 @@ haute-fréquence.
 On peut construire des séries journalières :
 
 ```{r}
+#| echo: true
+#| eval: true
 #data : https://www.letour.fr/fr/parcours-general
 date_tour_de_france <- seq(from = as.Date("2023-06-29"), 
                            to = as.Date("2023-07-21"), by = "day")
@@ -477,6 +523,8 @@ On peut construire des séries infra-journalières (heure par heure ou
 encore plus haute-fréquence) :
 
 ```{r}
+#| echo: true
+#| eval: true
 #data : https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/pvgis-tools/hourly-radiation_en
 heures_journee <- seq(from = as.POSIXct("2016-07-01 00:10:00"), 
                            to = as.POSIXct("2016-07-01 23:10:00"), by = "hours")
@@ -498,6 +546,8 @@ La fonction `plot()`{.r} du package `graphics` (méthode `plot.ts()`{.r}
 du package `stats`) permet d'afficher simplement des séries temporelles :
 
 ```{r plot}
+#| echo: true
+#| eval: true
 plot(x = tour_de_france_ts, col = "blue", 
      ylab = "Distance (en km)", xlab = "Time", 
      main = "Distance parcourue par jour (TDF 2023)")
@@ -511,7 +561,10 @@ Le package `ggplot2` propose une grande variété de graphiques. Il est
 nécessaire au préalable de convertir l'objet en `data.frame` pour
 construire le graphique.
 
-```{r ggplot2, warning = FALSE}
+```{r ggplot2}
+#| echo: true
+#| eval: true
+#| warning: false
 library("ggplot2")
 
 sunspots_df <- data.frame(date = time(sunspots), value = sunspots)
@@ -530,7 +583,10 @@ Le package `dygraphs` propose aussi des graphiques pour séries
 temporelles. L'avantage de ce package est l'interactivité et la
 possibilité de zoomer dans les graphiques.
 
-```{r dygraphs, warning = FALSE}
+```{r dygraphs}
+#| echo: true
+#| eval: true
+#| warning: false
 library("dygraphs")
 
 dygraph(temp_ts)
@@ -539,6 +595,8 @@ dygraph(temp_ts)
 On peut aussi afficher plusieurs courbes sur le même graphique :
 
 ```{r dygraph_multiple_plot}
+#| echo: true
+#| eval: true
 dygraph(cbind(fdeaths, mdeaths))
 ```
 
