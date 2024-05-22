@@ -35,11 +35,13 @@ Apprendre à utiliser `duckdb` n'est pas difficile, car la syntaxe utilisée est
 
 - un moteur SQL rapide, capable d'utiliser des données au format `parquet` sans les charger complètement en mémoire,
 - un dialecte SQL enrichi avec des fonctions qui facilitent l'analyse de données,
-- une installation et un déploiement facile,
+- une installation et une utilisation faciles,
 - un moteur portable, utilisable sous Windows, MacOS, Linux, et interfacé avec de nombreux langages de programmation (R, Python, Javascript, etc.).
 
-Un point important à comprendre est que `DuckDB` est un système de gestion de base de données (SGBD), similaire par exemple à une base `PostgreSQL` : la base `DuckDB` a une existence propre sur le disque ou dans la mémoire. On peut donc lui envoyer directement des requêtes SQL, sans passer par `R`.
-Un point important à retenir est donc que **`DuckDB` n'est pas un outil spécifique à `R`**, et il faut bien distinguer le projet `DuckDB` du *package* `R` `duckdb`. Ce *package* propose simplement une interface avec `R` parmi les autres interfaces existantes : Python, Java, Javascript, Julia, etc.
+Un point important à comprendre est que **`DuckDB` n'est pas un outil spécifique à `R`**: `DuckDB` est un système de gestion de base de données (SGBD), similaire par exemple à une base `PostgreSQL`. Cela a deux conséquencées:
+
+- la base de données `DuckDB` a une existence propre sur le disque ou dans la mémoire, et on peut donc lui envoyer directement des requêtes SQL, sans passer par `R`. 
+- Il faut bien distinguer le projet `DuckDB` du *package* `R` `duckdb`. Ce *package* propose simplement une interface avec `R` parmi les autres interfaces existantes : Python, Java, Javascript, Julia, etc.
 
 Toutefois, `DuckDB` est très facile à utiliser avec `R`, ce qui permet de bénéficier des optimisations inhérentes au langage SQL, à la fois en terme d'utilisation de la mémoire et de rapidité de calcul. C'est de plus un bon intermédiaire avant de passer à des infrastructures avancées telles que spark ou oracle.
 
@@ -64,9 +66,9 @@ Du point de vue d'un statisticien utilisant `R`, le *package* `duckdb` permet de
 
 ### Quels sont les points d'attention à l'usage ?
 
--   __Représentation des données en mémoire__ : `duckdb` est un moteur SQL. Les lignes n'ont pas d'ordre pré-défini, et le résultat d'un traitement peut être dans un ordre aléatoire.
--   __Traitement de données volumineuses__: `duckdb` peut traiter de gros volumes de données, qu'elles soient en mémoire vive ou sur le disque dur. Lorsque les données sont en mémoire vive, les _packages_ `duckdb` et `arrow` peuvent être utilisés conjointement de façon très efficace: cela veut dire concrètement que `duckdb` peut manipuler directement des données stockées dans un `Arrow Table`, sans aucun coût de conversion. Avec des données stockées sur le disque dur, `duckdb` est capable de faire les traitements sur des données plus volumineuses que la mémoire vive (RAM). C'est un avantage majeur en comparaison aux autres approches possibles en `R` (`data.table` et `dplyr` par exemple). Toutefois, il faut dans ce cas ajouter le temps de lecture des données au temps nécessaire pour le calcul.
--   __*Évaluation différée*__: `duckdb` construit des requêtes SQL, qui sont exécutées uniquement lorsque nécessaire, après optimisation des étapes intermédiaires, et peuvent être exécutées partiellement. La @sec-lazy présente en détail cette notion.
+-   __Représentation des données en mémoire__ : `duckdb` est un moteur SQL. Les lignes n'ont pas d'ordre pré-défini, et le résultat d'un traitement peut être dans un ordre imprévisible.
+-   __Traitement de données volumineuses__: `duckdb` peut traiter de gros volumes de données, qu'elles soient en mémoire vive ou sur le disque dur. Lorsque les données sont en mémoire vive, les _packages_ `duckdb` et `arrow` peuvent être utilisés conjointement de façon très efficace: cela veut dire concrètement que `duckdb` peut manipuler directement des données stockées dans un objet `Arrow Table`, sans avoir à convertir les données dans un autre format. Avec des données stockées sur le disque dur, `duckdb` est capable de faire les traitements sur des données plus volumineuses que la mémoire vive (RAM). C'est un avantage majeur en comparaison aux autres approches possibles en `R` (`data.table` et `dplyr` par exemple). Toutefois, il faut dans ce cas ajouter le temps de lecture des données au temps nécessaire pour le calcul.
+-   __*Évaluation différée*__: `duckdb` construit des requêtes SQL, qui sont exécutées uniquement lorsque le résultat est explicitement demandée, après optimisation des étapes intermédiaires, et peuvent être exécutées partiellement. La @sec-lazy présente en détail cette notion.
 -   __*Traduction en SQL*__: `duckdb` traduit automatiquement les instructions `dplyr` en requêtes SQL (de la même façon qu'`arrow` traduit ces instructions en code C++). Il arrive toutefois que certaines fonctions de `dplyr` n'aient pas d'équivalent direct en `duckdb` et ne puissent être traduites automatiquement. Dans ce cas (qui est heureusement moins fréquent qu'avec `arrow`), il faut parfois utiliser une fonction SQL directement ou trouver une solution pour contourner le problème. La @sec-sql donne quelques trucs et astuces dans ce cas.
 -   __Interopérabilité__: `duckdb` est conçu pour être interopérable entre plusieurs langages de programmation tels que `R`, Python, Java, C++, etc. Cela signifie que les données peuvent être échangées entre ces langages sans avoir besoin de convertir les données, d'où des gains importants de temps et de performance.
 
@@ -107,13 +109,13 @@ conn_ddb <- DBI::dbConnect(duckdb::duckdb())
 
 Concrètement, cette commande crée une nouvelle base de données `duckdb` dans la mémoire vive. Cette base de données ne contient aucune donnée lorsqu'elle est créée. L'objet `conn_ddb` apparaît dans l'onglet `Data` de l'environnement `RStudio`, mais la liste des tables n'y est pas directement accessible. Pour plus d'informations, se reporter à la documentation du _package_ `DBI`.
 
-À la fin du traitement ou du programme, on ferme la connexion avec le code ci-dessous. L'option `shutdown` est importante : elle permet de fermer complètement la session `duckdb` et de libérer la mémoire utilisée. Si on n'utilise pas cette option, il arrive souvent d'avoir des connexions à moitié ouvertes, et de devoir relancer la session `R`.
+À la fin du traitement ou du programme, on ferme la connexion avec le code ci-dessous. L'option `shutdown` est importante : elle permet de fermer complètement la session `duckdb` et de libérer la mémoire utilisée. Si on n'utilise pas cette option, il arrive souvent que des connexions à moitié ouvertes continuent à consommer des ressources, et il faut alors relancer la session `R`.
 
 ```{r}
 DBI::dbDisconnect(conn_ddb, shutdown = TRUE)
 ```
 
-Par défaut, `duckdb` utilisera tous les cœurs disponibles. Sur un serveur mutualisé, afin de ne pas consommer toutes les ressources, il est conseillé de limiter le nombre de cœurs utilisés par `duckdb` (pour plus d'information, cf [Configurer `duckdb`](#sec-configuration))
+Par défaut, `duckdb` utilisera tous les cœurs disponibles. Si vous travaillez sur un serveur mutualisé, il est conseillé de limiter le nombre de cœurs utilisés par `duckdb` afin de ne pas consommer toutes les ressources. Vous pouvez trouver plus d'information dans la section [Configurer `duckdb`](#sec-configuration).
 
 ```{r}
 conn_ddb <- DBI::dbConnect(duckdb::duckdb(
@@ -133,13 +135,13 @@ Une fois qu'on s'est connecté à une base de données duckDB, il faut charger d
 
 #### Déclaration de données provenant de `R`
 
-__On charge des données dans `duckdb` au travers de la connexion `conn_ddb` avec la fonction `duckdb_register()`.__ Cette méthode a l'avantage de ne pas _recopier_ les données: elle se contente d'établir un lien entre la base de données `duckdb` et un objet de la session `R`. Voici un exemple avec la Base permanente des équipements.
+__La fonction `duckdb_register()` permet de charger dans `duckdb` des données présentes dans la session `R`.__ Cette méthode a l'avantage de ne pas _recopier_ les données: elle se contente d'établir un lien logique entre la base de données `duckdb` et un objet de la session `R`. Voici un exemple avec la Base permanente des équipements: grâce à la fonction `duckdb::duckdb_register()`, l'objet `bpe_ens_2018` est référencé dans la base de données `duckdb` sous le nom `bpe_ens_2018_duckdb`.
 
 ```{r}
 # Charger la Base permanente des équipements 2018 dans la session R
 bpe_ens_2018 <- doremifasolData::bpe_ens_2018 |> as_tibble()
 
-# Etablir le lien entre la base de données duckdb et la table de données
+# Etablir le lien logique entre la base de données duckdb et la table de données
 conn_ddb %>% duckdb::duckdb_register(
   name = "bpe_ens_2018_duckdb", 
   df = bpe_ens_2018)
@@ -160,20 +162,18 @@ Pour l'exemple, on sauvegarde les données `bpe_ens_2018` au format Parquet.
 bpe_ens_2018 |> arrow::write_dataset("bpe_ens_2018_dataset")
 ```
 
-**Pour utiliser un fichier Parquet dans `duckdb` sans le charger en mémoire, on propose deux méthodes:** utiliser la fonction `dplyr::tbl` qui va directement lire les fichiers avec `duckdb` ou passer par `arrow::open_dataset` et convertir l'objet avec `arrow::to_duckdb`. Si la deuxième méthode est plus simple, surtout quand vous connaissez déjà `arrow`, la première est systématiquement plus efficace et peut générer des gains de consommation mémoire et de temps de traitement conséquents, il est donc conseillé de ne pas lire vos fichiers avec `arrow::open_dataset` si vos traitements sont lourds.
+**Il existe deux méthodes pour manipuler des données stockées en Parquet avec `duckdb` sans avoir à les charger en mémoire**: soit utiliser la fonction `dplyr::tbl` qui lit directement les fichiers avec `duckdb`, soit utiliser la fonction `arrow::open_dataset()` et créer un lien logique avec la fonction `arrow::to_duckdb()`. Si la deuxième méthode est plus simple, surtout quand vous connaissez déjà `arrow`, la première est systématiquement plus efficace et peut générer des gains de consommation mémoire et de temps de traitement conséquents, il est donc conseillé de ne pas lire vos fichiers avec `arrow::open_dataset` si vos traitements sont lourds.
 
-
-
-La première approche repose uniquement `duckdb`. Vous devez utilisez la fonction `dplyr::tbl` :
+**La première approche repose uniquement sur `duckdb`.** Vous devez utilisez la fonction `dplyr::tbl`:
 
 ```{r messages=FALSE}
 conn_ddb %>% tbl("read_parquet('bpe_ens_2018_dataset/**/*.parquet')")
 ```
 
-Quelques explications de cette ligne :
+Quelques explications de cette commande:
 
-* La fonction [`read_parquet`](https://duckdb.org/docs/data/parquet/overview.html#read_parquet-function) est une fonction interne à `duckdb`, elle ne doit pas être confondue avec la fonction `read_parquet()` du _package_ `arrow`. 
-* `**/*.parquet` est un motif qui indique que vous souhaitez lire, dans tous les sous-répertoires quelque soit le niveau (`**`), l'ensemble des fichiers parquets (`*.parquet`) qui s'y trouvent. C'est utile pour lire des fichiers Parquet partitionnés.
+* La fonction [`read_parquet`](https://duckdb.org/docs/data/parquet/overview.html#read_parquet-function) est une fonction interne à `duckdb`, elle ne doit surtout pas être confondue avec la fonction `read_parquet()` du _package_ `arrow`. 
+* `**/*.parquet` est un motif qui indique que vous souhaitez lire, dans tous les sous-dossiers quelque soit le niveau (`**`), l'ensemble des fichiers parquets (`*.parquet`) qui s'y trouvent. C'est notamment utile pour lire des fichiers Parquet partitionnés.
 Quand vous n'avez pas besoin de passer d'arguments à `read_parquet`, vous pouvez l'omettre :
 
 ```{r messages=FALSE}
@@ -182,7 +182,7 @@ conn_ddb %>% tbl('bpe_ens_2018_dataset/**/*.parquet')
 
 A noter que `duckdb` propose aussi [des fonctions pour lire d'autres formats](https://duckdb.org/docs/data/csv/overview.html) comme csv, json...
 
-La seconde approche consiste à passer par `arrow`, puis à transmettre les données à `duckdb`. Cette méthode utilise un objet intermédiaire de type Arrow Table (voir la fiche [Manipuler des données avec `arrow`](#arrow)) : 
+**La seconde approche consiste à passer par `arrow`, puis à transmettre les données à `duckdb`.** Cette méthode utilise un objet intermédiaire de type Arrow Table (voir la fiche [Manipuler des données avec `arrow`](#arrow)) : 
 ```{r}
 # Créer une connexion au dataset Parquet
 bpe_ens_2018_dataset <- arrow::open_dataset("bpe_ens_2018_dataset")
