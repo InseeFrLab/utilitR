@@ -345,9 +345,9 @@ Voici une description des principaux paramètres de configuration:
 
     Il n'existe pas de règle générale pour définir le nombre de -threads_, mais utiliser 4 à 8 _threads_  (en respectant le ratio _threads_/mémoire ci-dessus) constitue un point de départ raisonnable. Au delà, les performances augmentent généralement peu pour une consommation mémoire plus importante.
 
-- **`memory_limit` : Limiter la mémoire vive utilisée par `duckdb`**. Par défaut, `duckdb` limite la mémoire à 80% de la mémoire disponible sur le serveur. Si vous avez une quantité limitée de mémoire, essayez plutôt de limiter le nombre de _threads_ en respectant la règle de 5 à 10 Go par thread.
+- **`memory_limit` : limiter la mémoire vive utilisée par `duckdb`**. Par défaut, `duckdb` limite la mémoire à 80% de la mémoire disponible sur le serveur. Si vous avez une quantité limitée de mémoire, essayez plutôt de limiter le nombre de _threads_ en respectant la règle de 5 à 10 Go par thread.
 
-- **`temp_directory` : le dossier sur disque dans lequel `duckdb` peut écrire des fichiers temporaires**. Un avantage de `duckdb` est qu'il sait ["déborder" sur disque](https://duckdb.org/docs/guides/performance/how_to_tune_workloads.html#larger-than-memory-workloads-out-of-core-processing) pour une grande partie de ces opérations. Cela signifie que `duckdb` va écrire dans des fichiers temporaires sur le disque les données qu'il ne peut conserver en mémoire car il a atteint la limite de mémoire fixée. Le paramètre `temp_directory` permet de choisir dans quel dossier ces fichiers temporaires seront écrits. Toutefois, il est généralement beaucoup plus efficace de diminuer le nombre de _threads_ que de déborder sur disque mais dans le cas où vous avez besoin de "juste un peu plus" de mémoire cela peut se révéler utile. A noter que ce paramètre est automatiquement fixé si vous avez décidé d'utiliser une base persistante.
+- **`temp_directory` : définir le dossier sur disque dans lequel `duckdb` peut écrire des fichiers temporaires**. Un avantage de `duckdb` est qu'il sait ["déborder" sur disque](https://duckdb.org/docs/guides/performance/how_to_tune_workloads.html#larger-than-memory-workloads-out-of-core-processing) pour une grande partie de ces opérations. Cela signifie que `duckdb` va écrire dans des fichiers temporaires sur le disque les données qu'il ne peut conserver en mémoire car il a atteint la limite de mémoire fixée. Le paramètre `temp_directory` permet de choisir dans quel dossier ces fichiers temporaires seront écrits. Toutefois, il est généralement beaucoup plus efficace de diminuer le nombre de _threads_ que de déborder sur disque mais dans le cas où vous avez besoin de "juste un peu plus" de mémoire cela peut se révéler utile. A noter que ce paramètre est automatiquement fixé si vous avez décidé d'utiliser une base persistante.
 
 - **`preserve_insertion_order` : préserver l'ordre de lecture/écriture ou non**. `duckdb` peut consommer beaucoup de mémoire pour conserver l'ordre de lecture et d'écriture. Ce dernier paramètre permet d'autoriser `duckdb` à ne pas préserver l'ordre des données à la lecture et à l'écriture des fichiers dans le cas où il n'y a pas de clause `ORDER BY` / `arrange`.
 
@@ -366,8 +366,8 @@ dbExecute(conn_ddb, "SET threads = '4';")
 Il est vivement conseillé de lire la fiche [Manipuler des données avec `arrow`](#arrow) avant de lire cette section, en particulier la partie sur l'évaluation différée.
 :::
 
-
 Quand on manipule des objets `duckdb`, on construit des requêtes SQL. Le _package_ `duckdb` se contente de traduire le code `dplyr` en `SQL` sans l'exécuter (de la même façon que le _package_ `arrow` traduit du code `dplyr` en instructions C++). On rappelle qu'il faut utiliser `show_query()` pour visualiser la requête. La fonction `print()` permet de pré-visualiser le résultat.
+
 ```{r}
 # Étape 1: compter les équipements
 req_dep <- 
@@ -432,7 +432,7 @@ arrow::write_parquet(res_final, "resultats.parquet")
 
 __Usage recommandé__
 
-La première étape construit une requête SQL, sans effectuer de calcul. La deuxième étape complète la requête sans effectuer de calcul. Ici, pas de fonction `print()`, donc pas de calcul partiel. Le calcul n'est exécuté qu'au moment de la sauvegarde des résultats par `DuckDB`, ce qui assure de bonnes performances notamment sur données volumineuses. Les données ne passent pas par la mémoire de `R`.
+La première étape construit une requête SQL, sans effectuer de calcul. La deuxième étape complète la requête sans effectuer de calcul. Ici, pas de fonction `print()`, donc pas de calcul partiel. Le calcul n'est exécuté qu'au moment de la sauvegarde des résultats par `DuckDB`, ce qui assure de bonnes performances notamment sur données volumineuses. Les données ne sont chargées dans la mémoire de `R` à aucun moment.
 
 
 ```{r}
@@ -457,50 +457,67 @@ res_final |> arrow::to_arrow() |>
 ::::
 
 ::: {.callout-tip}
-Si vous ne savez plus si une table de données est une requête SQL ou un `tibble`, il suffit d'exécuter `print()`.
+Si vous ne savez plus si une table de données est une requête SQL ou un `tibble`, il suffit d'exécuter `print(votre_table)` ou `class(votre_table)`.
 :::
 
 
 ### Fonctions non traduites et/ou comment passer des paramètres ? {#sec-sql}
 
-Que faire quand la traduction automatique ne fonctionne pas ? Pour les fonctions non traduites ou bien pour spécifier un paramètre à une fonction, il faut mettre les mains dans le mécanisme de traduction vers SQL. 
+Il peut arriver que le _package_ `duckdb` ne parvienne pas à traduire votre code `dplyr` en SQL, par exemple lorsque vous voulez utiliser une fonction `R` dont `duckdb` ne connaît pas la traduction SQL, ou lorsque vous voulez passer un paramètre à une fonction. Pour surmonter ce problème (heureusement peu fréquent), il faut mettre les mains dans le mécanisme de traduction vers SQL. Il y a deux points importants:
 
-**Facile : les fonctions non connues par le _package_ `duckdb` sont écrites directement dans le code SQL**, y compris lorsqu'elles n'existent pas.
+- Lorsque `duckdb` ne connaît pas la traduction SQL d'une fonction `R` est que **la fonction inconnue est reprise directement dans le code SQL** sans aucune modification. Voici un exemple, dans lequel on peut voir que la fonction `fonction_inexistante()` apparaît telle quelle dans le code SQL. 
+
+    ```{r}
+    req <- bpe_ens_2018_dataset |> 
+      mutate(test = fonction_inexistante(DEP)) |> 
+      show_query()
+    ```
+
+- `DuckDB` contient un grand nombre de fonctions optimisées ([documentation ici](https://duckdb.org/docs/sql/functions/overview)), et il est possible de les utiliser directement dans du code `R`.
+
+Ces deux points ensemble permettent de **surmonter dans la plupart des cas le problème des fonctions `R` inconnues de `duckdb`: il suffit d'appeler la fonction de `DuckDB` qui fait la même chose**. Voici un exemple qui explique cela en détail dans le cas de la fonction `R` `as.Date()`. On commence par créer une petite table `duckdb` contenant des dates sous forme de chaînes de caractères avec le format "DD/MM/YYYY".
+
 ```{r}
-req <- bpe_ens_2018_dataset |> 
-  mutate(test = fonction_inexistante(DEP)) |> 
-  show_query()
+# Créer des dates sous forme de chaînes de caractères
+dates <- tibble(
+  date_naissance = c("02/07/1980", "29/02/2004"),
+  date_deces = c("05/06/2001", "12/07/2023")
+)
+
+# Créer une connexion entre ces données et la base de données duckdb
+conn_ddb %>% duckdb::duckdb_register(name = "dates_duckdb", df = dates, overwrite = TRUE)
 ```
 
-On peut se servir de cela pour utiliser directement des fonctions SQL du moteur `DuckDB`, ou préciser des paramètres. Un exemple très utile : préciser le format des dates.
-```{r}
-dates <- tibble(date_naissance = c("02/07/1980", "29/02/2004"),
-                date_deces = c("05/06/2001", "12/07/2023"),)
-conn_ddb %>% duckdb::duckdb_register(name = "dates_duckdb", df = dates, overwrite = TRUE)
+Le _package_ `duckdb` dispose d'une traduction SQL de la fonction `as.Date()`, mais cette traduction a deux limites: elle n'accepte que les données en format "YYYY-MM-DD", et ne supporte pas l'argument `format` qui permet de préciser que les données sont en format "DD/MM/YYYY". Par conséquent, on rencontre une erreur si on essaie d'utiliser la fonction `as.Date()` avec l'argument `format` (car `duckdb` ne sait pas gérer cet argument), et on rencontre une erreur si on essaie d'utiliser la fonction `as.Date()` sans cet argument (car les données n'ont pas le bon format).
+
+```{r error=TRUE}
+conn_ddb %>% tbl("dates_duckdb") %>% 
+  mutate(date_naissance = as.Date(date_naissance, format = "%d/%m/%Y")) # erreur
 ```
 
 ```{r error=TRUE}
 conn_ddb %>% tbl("dates_duckdb") %>% 
-  mutate(date_naissance = as.Date(date_naissance, "%d/%m/%Y")) # erreur
+  mutate(date_naissance = as.Date(date_naissance)) # erreur
 ```
 
-On peut utiliser la fonction [`strptime`](https://duckdb.org/docs/sql/functions/dateformat.html) du moteur SQL `DuckDB` en indiquant le paramètre adéquat :
+On pourrait penser que ce problème est sérieux. En fait, la solution est très simple: il suffit d'utiliser la fonction [`strptime`](https://duckdb.org/docs/sql/functions/dateformat.html) du moteur SQL `DuckDB` en indiquant le paramètre adéquat. Comme vous pouvez voir dans l'exemple suivant, on appelle cette fonction directement dans le code `R`. Par ailleurs, cette façon d'utiliser les fonctions de `DuckDB` dans du code `R` permet de passer facilement un paramètre à une fonction (le format "%d/%m/%Y" dans le cas présent).
+
 ```{r}
 conn_ddb %>% tbl("dates_duckdb") %>% 
-  mutate(date_naissance = strptime(date_naissance,"%d/%m/%Y"))
+  mutate(date_naissance = strptime(date_naissance, "%d/%m/%Y"))
 ```
 
-On a ainsi, très facilement, accès à l'ensemble des fonctions optimisées de `DuckDB` disponibles ([documentation ici](https://duckdb.org/docs/sql/functions/overview)). 
+::: {.callout-note}
 
-Note : `duckdb` ne propose pas de convertir automatiquement les objets en `tibble` pour faire passer les calculs.
-
-**Avancé :** utilisation sur plusieurs variables avec `mutate_at`.
+La logique présentée ici fonctionne également dans un cas plus avancé: l'utilisation d'une fonction sur plusieurs variables avec `mutate_at`. L'exemple ci-dessous reprend l'exemple ci-dessus avec deux variables.
 
 ```{r}
 liste_variables <- c("date_naissance","date_deces")
 conn_ddb %>% tbl("dates_duckdb") %>% 
   mutate_at(liste_variables, ~ strptime(.,"%d/%m/%Y"))
 ```
+:::
+
 
 
 ### Manipulation des données avec SQL
