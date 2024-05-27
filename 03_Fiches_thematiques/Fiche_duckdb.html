@@ -1,0 +1,2127 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.549">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>19&nbsp; Manipuler des données avec duckdb</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../03_Fiches_thematiques/Fiche_joindre_donnees.html" rel="next">
+<link href="../03_Fiches_thematiques/Fiche_arrow.html" rel="prev">
+<link href="../resources/logo-utilitr.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark"><script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><script async="" src="https://hypothes.is/embed.js"></script><script>
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    document.body.classList.add('hypothesis-enabled');
+  });
+</script>
+</head>
+<body class="nav-sidebar docked nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="navbar navbar-expand-lg " data-bs-theme="dark"><div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../resources/logo-utilitr.png" alt="Logo du projet utilitR" class="navbar-logo"></a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+<li class="nav-item">
+    <a class="nav-link active" href="../01_R_Insee/presentation_utilitr.html" aria-current="page"> 
+<span class="menu-text">Introduction</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_rprojects.html"> 
+<span class="menu-text">Mener un projet statistique</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_import_fichiers_plats.html"> 
+<span class="menu-text">Importer des données</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_tidyverse.html"> 
+<span class="menu-text">Choisir son paradigme</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_joindre_donnees.html"> 
+<span class="menu-text">Manipuler des données</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../03_Fiches_thematiques/Fiche_graphiques.html"> 
+<span class="menu-text">Produire des sorties</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../02_Bonnes_pratiques/01-qualite-code.html"> 
+<span class="menu-text">Bonnes pratiques</span></a>
+  </li>  
+</ul>
+</div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools tools-wide">
+    <a href="https://github.com/InseeFrLab/utilitR" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <div class="dropdown">
+      <a href="" title="Share" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Share"><i class="bi bi-share"></i></a>
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="quarto-navigation-tool-dropdown-0">
+<li>
+            <a class="dropdown-item quarto-navbar-tools-item" href="https://twitter.com/intent/tweet?url=%7Curl%7C">
+              <i class="bi bi-bi-twitter pe-1"></i>
+            Twitter
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item quarto-navbar-tools-item" href="https://www.linkedin.com/sharing/share-offsite/?url=%7Curl%7C">
+              <i class="bi bi-bi-linkedin pe-1"></i>
+            LinkedIn
+            </a>
+          </li>
+      </ul>
+</div>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_tidyverse.html">Choisir son paradigme d’analyse des données avec R</a></li><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_duckdb.html"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Manipuler des données avec <code>duckdb</code></span></a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+      <a href="../index.html" class="sidebar-logo-link">
+      <img src="../resources/logo-utilitr.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none"></a>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Principales parties</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Introduction</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/presentation_utilitr.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Présentation du projet <code>utilitR</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_utilitR.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Comment utiliser la documentation <code>utilitR</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text">Mener un projet statistique avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_rprojects.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Utiliser les projets <code>RStudio</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_git_utilisation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Utiliser <code>Git</code> avec RStudio</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_installer_packages.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Utiliser des <em>packages</em> <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_comment_choisir_un_package.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Comment choisir un <em>package</em> ?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_gerer_dependances.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Gérer les dépendances</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_se_documenter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Se documenter sur <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_resoudre_un_probleme.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Résoudre un problème avec <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_targets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Construire une chaîne de traitement reproductible avec <code>targets</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text">Importer des données avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_fichiers_plats.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Importer des fichiers plats (<code>.csv</code>, <code>.tsv</code>, <code>.txt</code>)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_tables_sas.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Importer des tables SAS®</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_tableurs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Importer des fichiers issus de tableurs (Excel, Calc)</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_import_fichiers_parquet.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Lire et écrire des fichiers Parquet</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_connexion_bdd.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Se connecter à une base de données</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true">
+ <span class="menu-text">Choisir son paradigme d’analyse des données avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_tidyverse.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Manipuler des données avec le <code>tidyverse</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_datatable.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Manipuler des données avec <code>data.table</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_arrow.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Manipuler des données avec <code>arrow</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_duckdb.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Manipuler des données avec <code>duckdb</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text">Manipuler des données avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_joindre_donnees.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Joindre des tables de données</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_donnees_textuelles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Manipuler des données textuelles</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_survey.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Utiliser des données d’enquêtes</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_donnees_spatiales.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Manipuler des données spatiales</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_donnees_temporelles.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Manipuler des données temporelles</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_analyse_de_donnees.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">L’analyse de données (ACP, ACM, ACF…)</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true">
+ <span class="menu-text">Produire des sorties avec R</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_graphiques.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Faire des graphiques avec <code>ggplot2</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_rmarkdown.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Produire des documents avec <code>R Markdown</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_rmarkdown_param_report.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Produire des rapports automatisés avec <code>R Markdown</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true">
+ <span class="menu-text">Bonnes pratiques</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_Bonnes_pratiques/01-qualite-code.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Qualité du code</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../02_Bonnes_pratiques/02-structure-code.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Structure des projets</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true">
+ <span class="menu-text">Éléments de configuration</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_Rstudio_AUSv3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Utiliser RStudio sur l’environnement AUSv3</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_Rstudio_SSPCloud.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Utiliser <code>RStudio</code> sur l’environnement SSP Cloud</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../03_Fiches_thematiques/Fiche_configurer_git.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Configurer <code>Git</code> sur son poste de travail</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche-personnaliser-R.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Personnaliser la configuration de <code>R</code></span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../01_R_Insee/Fiche_utiliser_ressources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Superviser sa session <code>R</code></span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+    </ul>
+</div>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+<li><a href="#t%C3%A2ches-concern%C3%A9es-et-recommandations" id="toc-tâches-concernées-et-recommandations" class="nav-link active" data-scroll-target="#t%C3%A2ches-concern%C3%A9es-et-recommandations"><span class="header-section-number">19.1</span> Tâches concernées et recommandations</a></li>
+  <li>
+<a href="#pr%C3%A9sentation-du-package-duckdb-et-du-projet-associ%C3%A9" id="toc-présentation-du-package-duckdb-et-du-projet-associé" class="nav-link" data-scroll-target="#pr%C3%A9sentation-du-package-duckdb-et-du-projet-associ%C3%A9"><span class="header-section-number">19.2</span> Présentation du <em>package</em> <code>duckdb</code> et du projet associé</a>
+  <ul class="collapse">
+<li><a href="#sec-presentation" id="toc-sec-presentation" class="nav-link" data-scroll-target="#sec-presentation"><span class="header-section-number">19.2.1</span> Qu’est-ce que <code>duckdb</code>?</a></li>
+  <li><a href="#%C3%A0-quoi-sert-le-package-duckdb" id="toc-à-quoi-sert-le-package-duckdb" class="nav-link" data-scroll-target="#%C3%A0-quoi-sert-le-package-duckdb"><span class="header-section-number">19.2.2</span> À quoi sert le <em>package</em> <code>duckdb</code>?</a></li>
+  <li><a href="#quels-sont-les-avantages-de-duckdb" id="toc-quels-sont-les-avantages-de-duckdb" class="nav-link" data-scroll-target="#quels-sont-les-avantages-de-duckdb"><span class="header-section-number">19.2.3</span> Quels sont les avantages de <code>duckdb</code>?</a></li>
+  <li><a href="#quels-sont-les-points-dattention-%C3%A0-lusage" id="toc-quels-sont-les-points-dattention-à-lusage" class="nav-link" data-scroll-target="#quels-sont-les-points-dattention-%C3%A0-lusage"><span class="header-section-number">19.2.4</span> Quels sont les points d’attention à l’usage ?</a></li>
+  </ul>
+</li>
+  <li><a href="#installation-de-duckdb" id="toc-installation-de-duckdb" class="nav-link" data-scroll-target="#installation-de-duckdb"><span class="header-section-number">19.3</span> Installation de <code>duckdb</code></a></li>
+  <li>
+<a href="#utilisation-de-duckdb" id="toc-utilisation-de-duckdb" class="nav-link" data-scroll-target="#utilisation-de-duckdb"><span class="header-section-number">19.4</span> Utilisation de <code>duckdb</code></a>
+  <ul class="collapse">
+<li><a href="#charger-le-package-duckdb" id="toc-charger-le-package-duckdb" class="nav-link" data-scroll-target="#charger-le-package-duckdb"><span class="header-section-number">19.4.1</span> Charger le <em>package</em> <code>duckdb</code></a></li>
+  <li><a href="#connexion-%C3%A0-une-base-de-donn%C3%A9es" id="toc-connexion-à-une-base-de-données" class="nav-link" data-scroll-target="#connexion-%C3%A0-une-base-de-donn%C3%A9es"><span class="header-section-number">19.4.2</span> Connexion à une base de données</a></li>
+  <li><a href="#chargement-des-donn%C3%A9es" id="toc-chargement-des-données" class="nav-link" data-scroll-target="#chargement-des-donn%C3%A9es"><span class="header-section-number">19.4.3</span> Chargement des données</a></li>
+  <li><a href="#manipulation-des-donn%C3%A9es-avec-la-syntaxe-dplyr" id="toc-manipulation-des-données-avec-la-syntaxe-dplyr" class="nav-link" data-scroll-target="#manipulation-des-donn%C3%A9es-avec-la-syntaxe-dplyr"><span class="header-section-number">19.4.4</span> Manipulation des données avec la syntaxe <code>dplyr</code></a></li>
+  <li><a href="#%C3%A9criture-au-format-parquet" id="toc-écriture-au-format-parquet" class="nav-link" data-scroll-target="#%C3%A9criture-au-format-parquet"><span class="header-section-number">19.4.5</span> Écriture au format Parquet</a></li>
+  <li><a href="#erreurs-courantes" id="toc-erreurs-courantes" class="nav-link" data-scroll-target="#erreurs-courantes"><span class="header-section-number">19.4.6</span> Erreurs courantes</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#notions-avanc%C3%A9es-bien-utiliser-duckdb" id="toc-notions-avancées-bien-utiliser-duckdb" class="nav-link" data-scroll-target="#notions-avanc%C3%A9es-bien-utiliser-duckdb"><span class="header-section-number">19.5</span> Notions avancées / bien utiliser <code>duckdb</code></a>
+  <ul class="collapse">
+<li><a href="#sec-configuration" id="toc-sec-configuration" class="nav-link" data-scroll-target="#sec-configuration"><span class="header-section-number">19.5.1</span> Configurer <code>duckdb</code></a></li>
+  <li><a href="#sec-lazy" id="toc-sec-lazy" class="nav-link" data-scroll-target="#sec-lazy"><span class="header-section-number">19.5.2</span> L’évaluation différée avec <code>duckdb</code> (<em>lazy evaluation</em>)</a></li>
+  <li><a href="#sec-sql" id="toc-sec-sql" class="nav-link" data-scroll-target="#sec-sql"><span class="header-section-number">19.5.3</span> Fonctions non traduites et/ou comment passer des paramètres ?</a></li>
+  <li><a href="#manipulation-des-donn%C3%A9es-avec-sql" id="toc-manipulation-des-données-avec-sql" class="nav-link" data-scroll-target="#manipulation-des-donn%C3%A9es-avec-sql"><span class="header-section-number">19.5.4</span> Manipulation des données avec SQL</a></li>
+  <li><a href="#optimisations" id="toc-optimisations" class="nav-link" data-scroll-target="#optimisations"><span class="header-section-number">19.5.5</span> Optimisations</a></li>
+  </ul>
+</li>
+  <li><a href="#comparaison-avec-arrow" id="toc-comparaison-avec-arrow" class="nav-link" data-scroll-target="#comparaison-avec-arrow"><span class="header-section-number">19.6</span> Comparaison avec <code>arrow</code></a></li>
+  <li><a href="#Ressourcesduckdb" id="toc-Ressourcesduckdb" class="nav-link" data-scroll-target="#Ressourcesduckdb"><span class="header-section-number">19.7</span> Pour en savoir plus</a></li>
+  </ul><div class="toc-actions"><ul><li><a href="https://github.com/InseeFrLab/utilitR/edit/master/03_Fiches_thematiques/Fiche_duckdb.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/InseeFrLab/utilitR/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_tidyverse.html">Choisir son paradigme d’analyse des données avec R</a></li><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_duckdb.html"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Manipuler des données avec <code>duckdb</code></span></a></li></ol></nav><div class="quarto-title">
+<h1 class="title"><span id="duckdb" class="quarto-section-identifier"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Manipuler des données avec <code>duckdb</code></span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header><section id="tâches-concernées-et-recommandations" class="level2" data-number="19.1"><h2 data-number="19.1" class="anchored" data-anchor-id="tâches-concernées-et-recommandations">
+<span class="header-section-number">19.1</span> Tâches concernées et recommandations</h2>
+<p>L’utilisateur souhaite manipuler des données structurées sous forme de <code>data.frame</code> par le biais de l’écosystème <code>duckdb</code> (sélectionner des variables, sélectionner des observations, créer des variables, joindre des tables).</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Tâches concernées et recommandations</p>
+<ul>
+<li><p>Pour des tables de données de taille petite et moyenne (inférieure à 1 Go ou moins d’un million d’observations), il est recommandé d’utiliser les <em>packages</em> <code>tibble</code>, <code>dplyr</code> et <code>tidyr</code> qui sont présentés dans la fiche <a href="Fiche_tidyverse.html">Manipuler des données avec le <code>tidyverse</code></a>;</p></li>
+<li><p>Pour des tables de données de grande taille (plus de 1 Go en CSV, plus de 200 Mo en Parquet, ou plus d’un million d’observations), il est recommandé d’utiliser soit les <em>packages</em> <code>arrow</code> (voir la fiche <a href="Fiche_arrow.html">Manipuler des données avec <code>arrow</code></a>) et <code>duckdb</code> qui fait l’objet de la présente fiche, soit le <em>package</em> <code>data.table</code> qui fait l’objet de la fiche <a href="Fiche_datatable.html">Manipuler des données avec <code>data.table</code></a>.</p></li>
+<li><p>Il est essentiel de travailler avec la dernière version d’<code>arrow</code>, de <code>duckdb</code> et de <code>R</code> car les <em>packages</em> <code>arrow</code> et <code>duckdb</code> sont en cours de développement. Par ailleurs, les recommandations d’<code>utilitR</code> peuvent évoluer en fonction du développement de ces <em>packages</em>.</p></li>
+<li><p>Si les données sont très volumineuses (plus de 5 Go en CSV, plus de 1 Go en Parquet ou plus de 5 millions d’observations), il est recommandé de manipuler les données avec <code>duckdb</code> (et avec <code>arrow</code>) plutôt qu’avec le <code>tidyverse</code>. Il peut arriver que le volume de données soit tellement important qu’il ne soit pas possible de les traiter avec <code>duckdb</code> et <code>arrow</code>; il faut s’orienter vers des infrastructures <em>big data</em> permettant le calcul distribué et utiliser des logiciels adaptés (<code>Spark</code> par exemple).</p></li>
+</ul>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Apprendre à utiliser <code>duckdb</code> n’est pas difficile, car la syntaxe utilisée est quasiment identique à celle du <code>tidyverse</code>. Toutefois, une bonne compréhension du fonctionnement de <code>R</code> et de <code>duckdb</code> est nécessaire pour bien utiliser <code>duckdb</code> sur des données volumineuses. Voici quelques conseils pour bien démarrer:</p>
+<ul>
+<li>Il est indispensable de lire la fiche <a href="Fiche_tidyverse.html">Manipuler des données avec le <code>tidyverse</code></a> avant de lire la présente fiche.</li>
+<li>Il est recommandé de lire les fiches <a href="Fiche_connexion_bdd.html">Se connecter à une base de données</a> et <a href="Fiche_arrow.html">Manipuler des données avec <code>arrow</code></a> avant de lire la présente fiche.</li>
+<li>Il est complètement normal de rencontrer des erreurs difficiles à comprendre lorsqu’on commence à utiliser <code>duckdb</code>, il ne faut donc pas se décourager.</li>
+<li>Il ne faut pas hésiter à demander de l’aide à des collègues, ou à poser des questions sur les salons Tchap adaptés (le salon Langage <code>R</code> par exemple).</li>
+</ul>
+</div>
+</div>
+</section><section id="présentation-du-package-duckdb-et-du-projet-associé" class="level2" data-number="19.2"><h2 data-number="19.2" class="anchored" data-anchor-id="présentation-du-package-duckdb-et-du-projet-associé">
+<span class="header-section-number">19.2</span> Présentation du <em>package</em> <code>duckdb</code> et du projet associé</h2>
+<section id="sec-presentation" class="level3" data-number="19.2.1"><h3 data-number="19.2.1" class="anchored" data-anchor-id="sec-presentation">
+<span class="header-section-number">19.2.1</span> Qu’est-ce que <code>duckdb</code>?</h3>
+<p><a href="https://duckdb.org/"><code>DuckDB</code></a> est un projet <em>open-source</em> (license MIT) qui propose un moteur SQL optimisé pour réaliser des travaux d’analyse statistique sur des bases de données :</p>
+<ul>
+<li>un moteur SQL rapide, capable d’utiliser des données au format <code>parquet</code> sans les charger complètement en mémoire,</li>
+<li>un dialecte SQL enrichi avec des fonctions qui facilitent l’analyse de données,</li>
+<li>une installation et une utilisation faciles,</li>
+<li>un moteur portable, utilisable sous Windows, MacOS, Linux, et interfacé avec de nombreux langages de programmation (R, Python, Javascript, etc.).</li>
+</ul>
+<p>Un point important à comprendre est que <strong><code>DuckDB</code> n’est pas un outil spécifique à <code>R</code></strong>: <code>DuckDB</code> est un système de gestion de base de données (SGBD), similaire par exemple à une base <code>PostgreSQL</code>. Cela a deux conséquencées:</p>
+<ul>
+<li>la base de données <code>DuckDB</code> a une existence propre sur le disque ou dans la mémoire, et on peut donc lui envoyer directement des requêtes SQL, sans passer par <code>R</code>.</li>
+<li>Il faut bien distinguer le projet <code>DuckDB</code> du <em>package</em> <code>R</code> <code>duckdb</code>. Ce <em>package</em> propose simplement une interface avec <code>R</code> parmi les autres interfaces existantes : Python, Java, Javascript, Julia, etc.</li>
+</ul>
+<p>Toutefois, <code>DuckDB</code> est très facile à utiliser avec <code>R</code>, ce qui permet de bénéficier des optimisations inhérentes au langage SQL, à la fois en terme d’utilisation de la mémoire et de rapidité de calcul. C’est de plus un bon intermédiaire avant de passer à des infrastructures avancées telles que spark ou oracle.</p>
+</section><section id="à-quoi-sert-le-package-duckdb" class="level3" data-number="19.2.2"><h3 data-number="19.2.2" class="anchored" data-anchor-id="à-quoi-sert-le-package-duckdb">
+<span class="header-section-number">19.2.2</span> À quoi sert le <em>package</em> <code>duckdb</code>?</h3>
+<p>Du point de vue d’un statisticien utilisant <code>R</code>, le <em>package</em> <code>duckdb</code> permet de faire trois choses:</p>
+<ul>
+<li>Importer des données (exemples: fichiers CSV, fichiers Parquet);</li>
+<li>Manipuler des données avec la syntaxe <code>dplyr</code>, ou avec le langage SQL;</li>
+<li>Écrire des données au format Parquet.</li>
+</ul></section><section id="quels-sont-les-avantages-de-duckdb" class="level3" data-number="19.2.3"><h3 data-number="19.2.3" class="anchored" data-anchor-id="quels-sont-les-avantages-de-duckdb">
+<span class="header-section-number">19.2.3</span> Quels sont les avantages de <code>duckdb</code>?</h3>
+<ul>
+<li>
+<strong>Disponibilité immédiate</strong>: on peut pré-visualiser les données ou le résultat d’un calcul sans l’exécuter totalement, sans attendre le chargement des données;</li>
+<li>
+<strong>Performances élevées</strong>: <code>duckdb</code> est très rapide pour la manipulation de données tabulaires (nettement plus performant que <code>dplyr</code> par exemple);</li>
+<li>
+<strong>Ne pas nécessairement charger les données en mémoire</strong>: <code>duckdb</code> permet également de travailler directement sur des fichiers du disque dur;</li>
+<li>
+<strong>Optimisations automatiques</strong>: <code>duckdb</code> sélectionne automatiquement les colonnes nécessaires, et ne lit que les lignes nécessaires. Cela permet d’accélérer les calculs et de réduire considérablement les besoins en mémoire, même lorsque les données sont volumineuses;</li>
+<li>
+<strong>Facilité d’apprentissage</strong> grâce aux approches <code>dplyr</code> et SQL: <code>duckdb</code> peut être utilisé avec les verbes de <code>dplyr</code> (<code>select</code>, <code>mutate</code>, etc.) et/ou avec le langage SQL. Par conséquent, il n’est pas nécessaire d’apprendre une nouvelle syntaxe pour utiliser <code>duckdb</code>, on peut s’appuyer sur la ou les approches que l’on maîtrise déjà.</li>
+</ul></section><section id="quels-sont-les-points-dattention-à-lusage" class="level3" data-number="19.2.4"><h3 data-number="19.2.4" class="anchored" data-anchor-id="quels-sont-les-points-dattention-à-lusage">
+<span class="header-section-number">19.2.4</span> Quels sont les points d’attention à l’usage ?</h3>
+<ul>
+<li>
+<strong>Représentation des données en mémoire</strong> : <code>duckdb</code> est un moteur SQL. Les lignes n’ont pas d’ordre pré-défini, et le résultat d’un traitement peut être dans un ordre imprévisible.</li>
+<li>
+<strong>Traitement de données volumineuses</strong>: <code>duckdb</code> peut traiter de gros volumes de données, qu’elles soient en mémoire vive ou sur le disque dur. Lorsque les données sont en mémoire vive, les <em>packages</em> <code>duckdb</code> et <code>arrow</code> peuvent être utilisés conjointement de façon très efficace: cela veut dire concrètement que <code>duckdb</code> peut manipuler directement des données stockées dans un objet <code>Arrow Table</code>, sans avoir à convertir les données dans un autre format. Avec des données stockées sur le disque dur, <code>duckdb</code> est capable de faire les traitements sur des données plus volumineuses que la mémoire vive (RAM). C’est un avantage majeur en comparaison aux autres approches possibles en <code>R</code> (<code>data.table</code> et <code>dplyr</code> par exemple). Toutefois, il faut dans ce cas ajouter le temps de lecture des données au temps nécessaire pour le calcul.</li>
+<li>
+<strong><em>Évaluation différée</em></strong>: <code>duckdb</code> construit des requêtes SQL, qui sont exécutées uniquement lorsque le résultat est explicitement demandée, après optimisation des étapes intermédiaires, et peuvent être exécutées partiellement. La <a href="#sec-lazy" class="quarto-xref"><span>Section 19.5.2</span></a> présente en détail cette notion.</li>
+<li>
+<strong><em>Traduction en SQL</em></strong>: <code>duckdb</code> traduit automatiquement les instructions <code>dplyr</code> en requêtes SQL (de la même façon qu’<code>arrow</code> traduit ces instructions en code C++). Il arrive toutefois que certaines fonctions de <code>dplyr</code> n’aient pas d’équivalent direct en <code>duckdb</code> et ne puissent être traduites automatiquement. Dans ce cas (qui est heureusement moins fréquent qu’avec <code>arrow</code>), il faut parfois utiliser une fonction SQL directement ou trouver une solution pour contourner le problème. La <a href="#sec-sql" class="quarto-xref"><span>Section 19.5.3</span></a> donne quelques trucs et astuces dans ce cas.</li>
+<li>
+<strong>Interopérabilité</strong>: <code>duckdb</code> est conçu pour être interopérable entre plusieurs langages de programmation tels que <code>R</code>, Python, Java, C++, etc. Cela signifie que les données peuvent être échangées entre ces langages sans avoir besoin de convertir les données, d’où des gains importants de temps et de performance.</li>
+</ul></section></section><section id="installation-de-duckdb" class="level2" data-number="19.3"><h2 data-number="19.3" class="anchored" data-anchor-id="installation-de-duckdb">
+<span class="header-section-number">19.3</span> Installation de <code>duckdb</code>
+</h2>
+<p>Il suffit d’installer le <em>package</em> <code>duckdb</code>, qui contient à la fois <code>DuckDB</code> et une interface pour que <code>R</code> puisse s’y connecter.</p>
+<div class="cell">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"duckdb"</span>, repos<span class="op">=</span><span class="st">"https://cloud.r-project.org"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="utilisation-de-duckdb" class="level2" data-number="19.4"><h2 data-number="19.4" class="anchored" data-anchor-id="utilisation-de-duckdb">
+<span class="header-section-number">19.4</span> Utilisation de <code>duckdb</code>
+</h2>
+<p>Dans cette section, on présente l’utilisation basique de <code>duckdb</code>. C’est très facile: il n’est pas nécessaire de connaître le langage SQL car il est possible d’utiliser <code>duckdb</code> avec la syntaxe <code>dplyr</code>.</p>
+<section id="charger-le-package-duckdb" class="level3" data-number="19.4.1"><h3 data-number="19.4.1" class="anchored" data-anchor-id="charger-le-package-duckdb">
+<span class="header-section-number">19.4.1</span> Charger le <em>package</em> <code>duckdb</code>
+</h3>
+<p>Pour utiliser <code>duckdb</code>, il faut commencer par charger le <em>package</em>. Cela charge automatiquement le <em>package</em> <code>DBI</code>, qui permet de se connecter aux bases de données. Il est utile de charger également le <em>package</em> <code>dplyr</code> afin de pouvoir requêter la base de données avec la syntaxe bien connue de <code>dplyr</code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://duckdb.org/">duckdb</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Le moteur <code>duckdb</code> fonctionnant “en dehors” de <code>R</code>, il détecte le nombre de processeurs et effectue les opérations en parallèle si possible.</p>
+</section><section id="connexion-à-une-base-de-données" class="level3" data-number="19.4.2"><h3 data-number="19.4.2" class="anchored" data-anchor-id="connexion-à-une-base-de-données">
+<span class="header-section-number">19.4.2</span> Connexion à une base de données</h3>
+<p><strong><code>duckdb</code> est une base de données distante et s’utilise comme telle: il faut ouvrir une connexion, puis “charger” les données dans la base de données pour les manipuler.</strong></p>
+<p>Comme beaucoup d’autres bases de données (distantes ou locales), on ouvre une connexion au moteur <code>duckdb</code> avec une base de données en mémoire vive de la façon suivante :</p>
+<div class="cell">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html">dbConnect</a></span><span class="op">(</span>drv <span class="op">=</span> <span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/duckdb/man/duckdb.html">duckdb</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Concrètement, cette commande crée une nouvelle base de données <code>duckdb</code> dans la mémoire vive. Cette base de données ne contient aucune donnée lorsqu’elle est créée. L’objet <code>conn_ddb</code> apparaît dans l’onglet <code>Data</code> de l’environnement <code>RStudio</code>, mais la liste des tables n’y est pas directement accessible. Pour plus d’informations, se reporter à la documentation du <em>package</em> <code>DBI</code>.</p>
+<p>À la fin du traitement ou du programme, on ferme la connexion avec le code ci-dessous. L’option <code>shutdown</code> est importante : elle permet de fermer complètement la session <code>duckdb</code> et de libérer la mémoire utilisée. Si on n’utilise pas cette option, il arrive souvent que des connexions à moitié ouvertes continuent à consommer des ressources, et il faut alors relancer la session <code>R</code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html">dbDisconnect</a></span><span class="op">(</span><span class="va">conn_ddb</span>, shutdown <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Par défaut, <code>duckdb</code> utilisera tous les cœurs disponibles. Si vous travaillez sur un serveur mutualisé, il est conseillé de limiter le nombre de cœurs utilisés par <code>duckdb</code> afin de ne pas consommer toutes les ressources. Vous pouvez trouver plus d’information dans la section <a href="#sec-configuration">Configurer <code>duckdb</code></a>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html">dbConnect</a></span><span class="op">(</span><span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/duckdb/man/duckdb.html">duckdb</a></span><span class="op">(</span></span>
+<span>  config <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>threads <span class="op">=</span> <span class="st">"6"</span><span class="op">)</span></span>
+<span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Pour la suite, on supposera que la connexion à une base de données duckdb est ouverte.</p>
+</section><section id="chargement-des-données" class="level3" data-number="19.4.3"><h3 data-number="19.4.3" class="anchored" data-anchor-id="chargement-des-données">
+<span class="header-section-number">19.4.3</span> Chargement des données</h3>
+<p>Une fois qu’on s’est connecté à une base de données duckDB, il faut charger des données dans cette base de données. Il y a deux façons de le faire:</p>
+<ul>
+<li>En établissant un lien entre la base de données duckDB et les objets de la session <code>R</code>;</li>
+<li>En indiquant à <code>duckdb</code> l’emplacement des données sur le disque dur.</li>
+</ul>
+<section id="chargement-de-données-provenant-de-la-session-r" class="level4" data-number="19.4.3.1"><h4 data-number="19.4.3.1" class="anchored" data-anchor-id="chargement-de-données-provenant-de-la-session-r">
+<span class="header-section-number">19.4.3.1</span> Chargement de données provenant de la session <code>R</code>
+</h4>
+<p><strong>La fonction <code><a href="https://rdrr.io/pkg/duckdb/man/duckdb_register.html">duckdb_register()</a></code> permet de charger dans <code>duckdb</code> des données présentes dans la session <code>R</code>.</strong> Cette méthode a l’avantage de ne pas <em>recopier</em> les données: elle se contente d’établir un lien logique entre la base de données <code>duckdb</code> et un objet de la session <code>R</code>. Voici un exemple avec la Base permanente des équipements: grâce à la fonction <code><a href="https://rdrr.io/pkg/duckdb/man/duckdb_register.html">duckdb::duckdb_register()</a></code>, l’objet <code>bpe_ens_2018</code> est référencé dans la base de données <code>duckdb</code> sous le nom <code>bpe_ens_2018_duckdb</code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Charger la Base permanente des équipements 2018 dans la session R</span></span>
+<span><span class="va">bpe_ens_2018</span> <span class="op">&lt;-</span> <span class="fu">doremifasolData</span><span class="fu">::</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData/reference/bpe_ens_2018.html">bpe_ens_2018</a></span> <span class="op">|&gt;</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Etablir le lien logique entre la base de données duckdb et la table de données</span></span>
+<span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/duckdb/man/duckdb_register.html">duckdb_register</a></span><span class="op">(</span></span>
+<span>  name <span class="op">=</span> <span class="st">"bpe_ens_2018_duckdb"</span>, </span>
+<span>  df <span class="op">=</span> <span class="va">bpe_ens_2018</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Le code ci-dessous permet de vérifier que le chargement des données a bien fonctionné. La fonction <code>tbl</code> permet d’accéder à un objet de la base de données par le nom (de la table), ou par du code SQL (utilisation un peu plus avancée). Par défaut, <code>duckdb</code> affiche les 10 premières lignes du résultat, sans effectuer tout le calcul. C’est très pratique et très rapide !</p>
+<div class="cell">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="st">"bpe_ens_2018_duckdb"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># Source:   table&lt;bpe_ens_2018_duckdb&gt; [?? x 7]
+# Database: DuckDB v0.9.2 [unknown@Linux 6.5.0-1021-azure:R 4.3.2/:memory:]
+   REG   DEP   DEPCOM DCIRIS    AN TYPEQU NB_EQUIP
+   &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;     &lt;dbl&gt;
+ 1 84    01    01001  01001   2018 A401          2
+ 2 84    01    01001  01001   2018 A404          4
+ 3 84    01    01001  01001   2018 A504          1
+ 4 84    01    01001  01001   2018 A507          1
+ 5 84    01    01001  01001   2018 B203          1
+ 6 84    01    01001  01001   2018 C104          1
+ 7 84    01    01001  01001   2018 D233          1
+ 8 84    01    01001  01001   2018 F102          1
+ 9 84    01    01001  01001   2018 F111          1
+10 84    01    01001  01001   2018 F113          1
+# ℹ more rows</code></pre>
+</div>
+</div>
+</section><section id="chargement-de-données-stockées-sur-le-disque-dur" class="level4" data-number="19.4.3.2"><h4 data-number="19.4.3.2" class="anchored" data-anchor-id="chargement-de-données-stockées-sur-le-disque-dur">
+<span class="header-section-number">19.4.3.2</span> Chargement de données stockées sur le disque dur</h4>
+<p>Pour l’exemple suivant, on sauvegarde les données <code>bpe_ens_2018</code> au format Parquet.</p>
+<div class="cell">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018</span> <span class="op">|&gt;</span> <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/write_dataset.html">write_dataset</a></span><span class="op">(</span><span class="st">"bpe_ens_2018_dataset"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>Il existe deux méthodes pour manipuler des données stockées en Parquet avec <code>duckdb</code> sans avoir à les charger en mémoire</strong>: soit utiliser la fonction <code><a href="https://dplyr.tidyverse.org/reference/tbl.html">dplyr::tbl()</a></code> qui lit directement les fichiers Parquet avec <code>duckdb</code>, soit utiliser la fonction <code><a href="https://arrow.apache.org/docs/r/reference/open_dataset.html">arrow::open_dataset()</a></code> et créer un lien logique avec la fonction <code><a href="https://arrow.apache.org/docs/r/reference/to_duckdb.html">arrow::to_duckdb()</a></code>. Si la deuxième méthode est plus simple, surtout quand vous connaissez déjà <code>arrow</code>, la première est systématiquement plus efficace et peut générer des gains de consommation mémoire et de temps de traitement conséquents. Il est donc conseillé de ne pas lire vos fichiers avec <code><a href="https://arrow.apache.org/docs/r/reference/open_dataset.html">arrow::open_dataset</a></code> si vos traitements sont lourds (il ne faut pas hésiter à faire des tests).</p>
+<p><strong>La première approche repose uniquement sur <code>duckdb</code>.</strong> Vous devez utilisez la fonction <code><a href="https://dplyr.tidyverse.org/reference/tbl.html">dplyr::tbl</a></code>:</p>
+<div class="cell" data-messages="false">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="st">"read_parquet('bpe_ens_2018_dataset/**/*.parquet')"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>ℹ Using `ident_q()` for a table identifier is intended as fallback in case of
+  bugs.
+ℹ If you need it to work around a bug please open an issue
+  &lt;https://github.com/tidyverse/dbplyr/issues&gt;.
+It looks like you tried to incorrectly use a table in a schema as source.
+ℹ If you want to specify a schema use `in_schema()` or `in_catalog()`.
+ℹ If your table actually contains "." in the name use `check_from = FALSE` to
+  silence this message.
+This message is displayed once every 8 hours.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># Source:   SQL [?? x 7]
+# Database: DuckDB v0.9.2 [unknown@Linux 6.5.0-1021-azure:R 4.3.2/:memory:]
+   REG   DEP   DEPCOM DCIRIS    AN TYPEQU NB_EQUIP
+   &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;     &lt;dbl&gt;
+ 1 84    01    01001  01001   2018 A401          2
+ 2 84    01    01001  01001   2018 A404          4
+ 3 84    01    01001  01001   2018 A504          1
+ 4 84    01    01001  01001   2018 A507          1
+ 5 84    01    01001  01001   2018 B203          1
+ 6 84    01    01001  01001   2018 C104          1
+ 7 84    01    01001  01001   2018 D233          1
+ 8 84    01    01001  01001   2018 F102          1
+ 9 84    01    01001  01001   2018 F111          1
+10 84    01    01001  01001   2018 F113          1
+# ℹ more rows</code></pre>
+</div>
+</div>
+<p>Quelques explications de cette commande:</p>
+<ul>
+<li>La fonction <a href="https://duckdb.org/docs/data/parquet/overview.html#read_parquet-function"><code>read_parquet</code></a> est une fonction interne à <code>duckdb</code>, elle ne doit surtout pas être confondue avec la fonction <code>read_parquet()</code> du <em>package</em> <code>arrow</code>. Remarque: <code>duckdb</code> propose aussi <a href="https://duckdb.org/docs/data/csv/overview.html">des fonctions pour lire d’autres formats</a> comme csv, json…</li>
+<li>
+<code>**/*.parquet</code> est un motif qui indique que vous souhaitez lire, dans tous les sous-dossiers quelque soit le niveau (<code>**</code>), l’ensemble des fichiers parquets (<code>*.parquet</code>) qui s’y trouvent. C’est notamment utile pour lire des fichiers Parquet partitionnés. Quand vous n’avez pas besoin de passer d’arguments à <code>read_parquet</code>, vous pouvez l’omettre :</li>
+</ul>
+<div class="cell" data-messages="false">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="st">'bpe_ens_2018_dataset/**/*.parquet'</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>It looks like you tried to incorrectly use a table in a schema as source.
+ℹ If you want to specify a schema use `in_schema()` or `in_catalog()`.
+ℹ If your table actually contains "." in the name use `check_from = FALSE` to
+  silence this message.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># Source:   table&lt;bpe_ens_2018_dataset/**/*.parquet&gt; [?? x 7]
+# Database: DuckDB v0.9.2 [unknown@Linux 6.5.0-1021-azure:R 4.3.2/:memory:]
+   REG   DEP   DEPCOM DCIRIS    AN TYPEQU NB_EQUIP
+   &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;     &lt;dbl&gt;
+ 1 84    01    01001  01001   2018 A401          2
+ 2 84    01    01001  01001   2018 A404          4
+ 3 84    01    01001  01001   2018 A504          1
+ 4 84    01    01001  01001   2018 A507          1
+ 5 84    01    01001  01001   2018 B203          1
+ 6 84    01    01001  01001   2018 C104          1
+ 7 84    01    01001  01001   2018 D233          1
+ 8 84    01    01001  01001   2018 F102          1
+ 9 84    01    01001  01001   2018 F111          1
+10 84    01    01001  01001   2018 F113          1
+# ℹ more rows</code></pre>
+</div>
+</div>
+<p><strong>La seconde approche consiste à passer par <code>arrow</code>, puis à transmettre les données à <code>duckdb</code>.</strong> Cette méthode utilise un objet intermédiaire de type Arrow Dataset (voir la fiche <a href="Fiche_arrow.html">Manipuler des données avec <code>arrow</code></a>):</p>
+<div class="cell">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Créer une connexion au dataset Parquet</span></span>
+<span><span class="va">bpe_ens_2018_dataset</span> <span class="op">&lt;-</span> <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/open_dataset.html">open_dataset</a></span><span class="op">(</span><span class="st">"bpe_ens_2018_dataset"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Etablir le lien entre la base de données duckdb et le dataset Parquet</span></span>
+<span><span class="va">bpe_ens_2018_dataset</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/to_duckdb.html">to_duckdb</a></span><span class="op">(</span><span class="va">conn_ddb</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># Source:   table&lt;arrow_001&gt; [?? x 7]
+# Database: DuckDB v0.9.2 [unknown@Linux 6.5.0-1021-azure:R 4.3.2/:memory:]
+   REG   DEP   DEPCOM DCIRIS    AN TYPEQU NB_EQUIP
+   &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;     &lt;dbl&gt;
+ 1 84    01    01001  01001   2018 A401          2
+ 2 84    01    01001  01001   2018 A404          4
+ 3 84    01    01001  01001   2018 A504          1
+ 4 84    01    01001  01001   2018 A507          1
+ 5 84    01    01001  01001   2018 B203          1
+ 6 84    01    01001  01001   2018 C104          1
+ 7 84    01    01001  01001   2018 D233          1
+ 8 84    01    01001  01001   2018 F102          1
+ 9 84    01    01001  01001   2018 F111          1
+10 84    01    01001  01001   2018 F113          1
+# ℹ more rows</code></pre>
+</div>
+</div>
+<p>Ces deux approches ont un point commun important: <strong>elles établissent une connexion aux données contenues dans le dataset Parquet, mais elles ne chargent pas les données en mémoire</strong> (ni dans la mémoire de <code>R</code>, ni dans celle de <code>DuckDB</code>).</p>
+<p>Pour plus de commodité, on sauvegarde l’instruction précédente dans la variable <code>bpe_ens_2018_dataset</code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dataset</span> <span class="op">&lt;-</span> <span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="st">'bpe_ens_2018_dataset/*.parquet'</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>It looks like you tried to incorrectly use a table in a schema as source.
+ℹ If you want to specify a schema use `in_schema()` or `in_catalog()`.
+ℹ If your table actually contains "." in the name use `check_from = FALSE` to
+  silence this message.</code></pre>
+</div>
+</div>
+</section></section><section id="manipulation-des-données-avec-la-syntaxe-dplyr" class="level3" data-number="19.4.4"><h3 data-number="19.4.4" class="anchored" data-anchor-id="manipulation-des-données-avec-la-syntaxe-dplyr">
+<span class="header-section-number">19.4.4</span> Manipulation des données avec la syntaxe <code>dplyr</code>
+</h3>
+<p>Le <em>package</em> <code>R</code> <code>duckdb</code> a été écrit de façon à pouvoir manipuler les données avec la syntaxe de <code>dplyr</code> (<code>select</code>, <code>filter</code>, <code>mutate</code>, <code>left_join</code>, etc.). <code>duckdb</code> traduit le code <code>R</code>, y compris certaines fonctions de <code>stringr</code> et <code>lubridate</code> en requête SQL. Cela s’avère très commode en pratique, car lorsqu’on sait utiliser <code>dplyr</code> et le <code>tidyverse</code>, on peut commencer à utiliser <code>duckdb</code> sans avoir à apprendre une nouvelle syntaxe de manipulation de données.</p>
+<p>Dans l’exemple suivant, on calcule le nombre d’équipements par région, à partir d’un <code>tibble</code> et à partir d’une table <code>duckdb</code>. La seule différence apparente entre les deux traitement est la présence de la fonction <code><a href="https://dplyr.tidyverse.org/reference/compute.html">collect()</a></code> à la fin des instructions; cette fonction indique que l’on souhaite obtenir le résultat du traitement sous la forme d’un <code>tibble</code>. La raison d’être de ce <code><a href="https://dplyr.tidyverse.org/reference/compute.html">collect()</a></code> est expliquée plus loin, dans le paragraphe sur l’évaluation différée. Les résultats sont identiques, à l’exception de l’ordre des lignes. En effet, un moteur SQL ne respecte pas l’ordre par défaut, il faut le demander explicitement avec <code>arrange</code>.</p>
+<div class="columns">
+<div class="column" style="width:49%;">
+<p><strong>Manipulation d’un <code>tibble</code></strong></p>
+<div class="cell">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">doremifasolData</span><span class="fu">::</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData/reference/bpe_ens_2018.html">bpe_ens_2018</a></span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">REG</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
+<span>    NB_EQUIP_TOT <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 18 × 2
+   REG   NB_EQUIP_TOT
+   &lt;chr&gt;        &lt;dbl&gt;
+ 1 01           23939
+ 2 02           19068
+ 3 03            7852
+ 4 04           30767
+ 5 06            7353
+ 6 11          469181
+ 7 24           81379
+ 8 27           96309
+ 9 28          107186
+10 32          175859
+11 44          181130
+12 52          119689
+13 53          111291
+14 75          237008
+15 76          256813
+16 84          303775
+17 93          254405
+18 94           21778</code></pre>
+</div>
+</div>
+</div><div class="column" style="width:2%;">
+<!-- empty column to create gap -->
+</div><div class="column" style="width:49%;">
+<p><strong>Manipulation d’une table <code>duckdb</code></strong></p>
+<div class="cell">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dataset</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">REG</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
+<span>    NB_EQUIP_TOT <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html">collect</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Missing values are always removed in SQL aggregation functions.
+Use `na.rm = TRUE` to silence this warning
+This warning is displayed once every 8 hours.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 18 × 2
+   REG   NB_EQUIP_TOT
+   &lt;chr&gt;        &lt;dbl&gt;
+ 1 28          107186
+ 2 53          111291
+ 3 76          256813
+ 4 06            7353
+ 5 02           19068
+ 6 03            7852
+ 7 75          237008
+ 8 94           21778
+ 9 52          119689
+10 01           23939
+11 84          303775
+12 32          175859
+13 44          181130
+14 27           96309
+15 24           81379
+16 93          254405
+17 11          469181
+18 04           30767</code></pre>
+</div>
+</div>
+</div>
+</div>
+<p>On peut examiner la requête SQL construite par <code>duckdb</code> avec la fonction <code><a href="https://dplyr.tidyverse.org/reference/explain.html">show_query()</a></code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dataset</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">REG</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
+<span>    NB_EQUIP_TOT <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/explain.html">show_query</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;SQL&gt;
+SELECT REG, SUM(NB_EQUIP) AS NB_EQUIP_TOT
+FROM "bpe_ens_2018_dataset/*.parquet"
+GROUP BY REG</code></pre>
+</div>
+</div>
+<p>Cette requête est envoyée au serveur SQL et exécutée de façon différente en fonction de la dernière instruction du traitement:</p>
+<ul>
+<li>si le traitement se termine par <code><a href="https://dplyr.tidyverse.org/reference/compute.html">collect()</a></code>: le calcul est exécuté en entier et le résultat est retourné sous la forme d’un <code>tibble</code>,</li>
+<li>si le traitement se termine par <code>print(n=nb_lignes)</code>: le calcul est exécuté partiellement, et seules les <code>nb_lignes</code> demandées sont affichées. Cela permet de minimiser les ressources et la mémoire utilisées.</li>
+</ul>
+<p><strong>Ce point est important: en utilisant <code><a href="https://rdrr.io/r/base/print.html">print()</a></code>, on peut prévisualiser le résultat d’une requête <code>duckdb</code> de façon très rapide, sans exécuter tout le traitement.</strong> Il ne faut pas hésiter à s’en servir pour explorer les données et pour construire le traitement étape par étape, en ajustant en fonction des résultats.</p>
+</section><section id="écriture-au-format-parquet" class="level3" data-number="19.4.5"><h3 data-number="19.4.5" class="anchored" data-anchor-id="écriture-au-format-parquet">
+<span class="header-section-number">19.4.5</span> Écriture au format Parquet</h3>
+<p><strong>Pour écrire une table (ou le résultat de n’importe quelle requête) sur le disque au format Parquet, il est recommandé d’utiliser la librairie <code>arrow</code>.</strong></p>
+<div class="cell">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dataset</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/to_arrow.html">to_arrow</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/write_dataset.html">write_dataset</a></span><span class="op">(</span><span class="st">"temp_dataset"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html">list.files</a></span><span class="op">(</span><span class="st">"temp_dataset"</span><span class="op">)</span> <span class="co"># liste des fichiers du répertoire temp_dataset/</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "part-0.parquet"</code></pre>
+</div>
+</div>
+<p>Pour un usage basique en syntaxe <code>dplyr</code>, passer par <code>arrow</code> (au lieu de SQL) est plus facile à manipuler, notamment quand on souhaite ajouter des options telle que le partitionnement.</p>
+</section><section id="erreurs-courantes" class="level3" data-number="19.4.6"><h3 data-number="19.4.6" class="anchored" data-anchor-id="erreurs-courantes">
+<span class="header-section-number">19.4.6</span> Erreurs courantes</h3>
+<p>Cette section présente quelques erreurs classiques.</p>
+<section id="on-a-éliminé-des-colonnes-nécessaires" class="level4" data-number="19.4.6.1"><h4 data-number="19.4.6.1" class="anchored" data-anchor-id="on-a-éliminé-des-colonnes-nécessaires">
+<span class="header-section-number">19.4.6.1</span> On a éliminé des colonnes nécessaires</h4>
+<div class="cell">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dataset</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">DEP</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>NB_EQUIP_TOTAL_DEP  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in `mutate()`:
+ℹ In argument: `NB_EQUIP_TOTAL_DEP = sum(NB_EQUIP)`
+Caused by error:
+! Object `NB_EQUIP` not found.</code></pre>
+</div>
+</div>
+</section><section id="convertir-les-types" class="level4" data-number="19.4.6.2"><h4 data-number="19.4.6.2" class="anchored" data-anchor-id="convertir-les-types">
+<span class="header-section-number">19.4.6.2</span> Convertir les types</h4>
+<p>Dans cet exemple, on veut multiplier un nombre par une indicatrice.</p>
+<div class="cell">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dataset</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>nb_boulangeries  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span> <span class="op">*</span> <span class="op">(</span><span class="va">TYPEQU</span> <span class="op">==</span> <span class="st">"B203"</span><span class="op">)</span><span class="op">)</span>, .by <span class="op">=</span> <span class="va">DEP</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in `collect()`:
+! Failed to collect lazy table.
+Caused by error:
+! rapi_prepare: Failed to prepare query SELECT DEP, SUM(NB_EQUIP * (TYPEQU = 'B203')) AS nb_boulangeries
+FROM "bpe_ens_2018_dataset/*.parquet"
+GROUP BY DEP
+LIMIT 11
+Error: Binder Error: No function matches the given name and argument types '*(DOUBLE, BOOLEAN)'. You might need to add explicit type casts.
+    Candidate functions:
+    *(TINYINT, TINYINT) -&gt; TINYINT
+    *(SMALLINT, SMALLINT) -&gt; SMALLINT
+    *(INTEGER, INTEGER) -&gt; INTEGER
+    *(BIGINT, BIGINT) -&gt; BIGINT
+    *(HUGEINT, HUGEINT) -&gt; HUGEINT
+    *(FLOAT, FLOAT) -&gt; FLOAT
+    *(DOUBLE, DOUBLE) -&gt; DOUBLE
+    *(DECIMAL, DECIMAL) -&gt; DECIMAL
+    *(UTINYINT, UTINYINT) -&gt; UTINYINT
+    *(USMALLINT, USMALLINT) -&gt; USMALLINT
+    *(UINTEGER, UINTEGER) -&gt; UINTEGER
+    *(UBIGINT, UBIGINT) -&gt; UBIGINT
+    *(INTERVAL, BIGINT) -&gt; INTERVAL
+    *(BIGINT, INTERVAL) -&gt; INTERVAL
+
+LINE 1: SELECT DEP, SUM(NB_EQUIP * (TYPEQU = 'B203')) AS nb_boulangeries
+                                 ^</code></pre>
+</div>
+</div>
+<p>Avec <code>duckdb</code>, il faut transformer explicitement un booléen en nombre (entier ou flottant).</p>
+<div class="cell">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dataset</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>nb_boulangeries  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html">as.integer</a></span><span class="op">(</span><span class="va">TYPEQU</span> <span class="op">==</span> <span class="st">"B203"</span><span class="op">)</span><span class="op">)</span>, .by <span class="op">=</span> <span class="va">DEP</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># Source:   SQL [?? x 2]
+# Database: DuckDB v0.9.2 [unknown@Linux 6.5.0-1021-azure:R 4.3.2/:memory:]
+   DEP   nb_boulangeries
+   &lt;chr&gt;           &lt;dbl&gt;
+ 1 76                861
+ 2 09                159
+ 3 12                270
+ 4 72                396
+ 5 31                814
+ 6 68                513
+ 7 973                98
+ 8 06                966
+ 9 55                157
+10 56                640
+# ℹ more rows</code></pre>
+</div>
+</div>
+</section></section></section><section id="notions-avancées-bien-utiliser-duckdb" class="level2" data-number="19.5"><h2 data-number="19.5" class="anchored" data-anchor-id="notions-avancées-bien-utiliser-duckdb">
+<span class="header-section-number">19.5</span> Notions avancées / bien utiliser <code>duckdb</code>
+</h2>
+<section id="sec-configuration" class="level3" data-number="19.5.1"><h3 data-number="19.5.1" class="anchored" data-anchor-id="sec-configuration">
+<span class="header-section-number">19.5.1</span> Configurer <code>duckdb</code>
+</h3>
+<p><code>duckdb</code> propose de nombreux paramètres mais nous n’allons voir que les principaux. Vous pouvez vous reporter à la <a href="https://duckdb.org/docs/configuration/overview">documentation officielle</a> pour en apprendre davantage sur la configuration de <code>duckdb</code>.</p>
+<section id="configuration-lors-de-linitialisation" class="level4" data-number="19.5.1.1"><h4 data-number="19.5.1.1" class="anchored" data-anchor-id="configuration-lors-de-linitialisation">
+<span class="header-section-number">19.5.1.1</span> Configuration lors de l’initialisation</h4>
+<p>Pour configurer <code>duckdb</code> lors de l’initialisation de la base de données (c’est-à-dire au moment où on utilise <code>DBI::dbConnect(drv = duckdb::duckdb())</code>), on utilise les arguments du <em>driver</em> <code>duckdb</code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Configurer le driver duckdb</span></span>
+<span><span class="va">drv</span> <span class="op">&lt;-</span> <span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/duckdb/man/duckdb.html">duckdb</a></span><span class="op">(</span></span>
+<span>  dbdir <span class="op">=</span> <span class="st">"fichier.db"</span>, </span>
+<span>  config <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
+<span>    threads <span class="op">=</span> <span class="st">"4"</span>,</span>
+<span>    memory_limit <span class="op">=</span> <span class="st">"40GB"</span>,</span>
+<span>    temp_directory <span class="op">=</span> <span class="st">"tmp_path/"</span>,</span>
+<span>    preserve_insertion_order <span class="op">=</span> <span class="st">"true"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Initaliser la base de données duckdb avec la configuration</span></span>
+<span><span class="va">conn_ddb</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html">dbConnect</a></span><span class="op">(</span>drv <span class="op">=</span> <span class="va">drv</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Voici une description des principaux paramètres de configuration:</p>
+<ul>
+<li>
+<strong><code>dbdir</code> : utiliser une base de données persistante</strong>. Par défaut, <code>duckdb</code> crée une base de données dans la mémoire vive, qui est automatiquement détruite lorsque vous fermez la session <code>R</code> ou la connexion <code>duckdb</code>. Si vous mettez un chemin dans le paramètre <code>dbdir</code>, <code>duckdb</code> créera une base de données sur disque que vous pourrez réouvrir à votre prochaine session.</li>
+</ul>
+<p>Si vous utilisez principalement <code>dplyr</code>, les bases de données en mémoire sont certainement suffisantes. En revanche, ce paramètre peut éventuellement vous être utile si vous utilisez du SQL, si vous créez des vues ou si vous utilisez <code><a href="https://dplyr.tidyverse.org/reference/compute.html">dplyr::compute</a></code>.</p>
+<ul>
+<li><p><strong><code>threads</code> : limiter le nombre de <em>threads</em> utilisés par <code>duckdb</code></strong>. Pour simplifier, un <em>thread</em> est un processeur ou un morceau de processeur (l’unité électronique qui réalise les calculs). Par défaut, <code>duckdb</code> utilise tous les processeurs disponibles, ce qui n’est pas forcément souhaitable pour plusieurs raisons :</p></li>
+<li><p>sur un serveur partagé, vos collègues seront gênés ;</p></li>
+<li><p>il est <a href="https://duckdb.org/docs/guides/performance/environment.html">conseillé de disposer de 5 à 10Go</a> de mémoire par <em>thread</em> (5 pour des aggrégations, 10 pour des jointures) donc beaucoup de threads implique beaucoup de mémoire ;</p></li>
+<li><p>avoir trop de <em>threads</em> peut être contre-productif.</p></li>
+</ul>
+<p>Il n’existe pas de règle générale pour définir le nombre de -threads_, mais utiliser 4 à 8 <em>threads</em> (en respectant le ratio <em>threads</em>/mémoire ci-dessus) constitue un point de départ raisonnable. Au delà, les performances augmentent généralement peu pour une consommation mémoire plus importante.</p>
+<ul>
+<li><p><strong><code>memory_limit</code> : limiter la mémoire vive utilisée par <code>duckdb</code></strong>. Par défaut, <code>duckdb</code> limite la mémoire à 80% de la mémoire disponible sur le serveur. Si vous avez une quantité limitée de mémoire, essayez plutôt de limiter le nombre de <em>threads</em> en respectant la règle de 5 à 10 Go par thread.</p></li>
+<li><p><strong><code>temp_directory</code> : définir le dossier sur disque dans lequel <code>duckdb</code> peut écrire des fichiers temporaires</strong>. Un avantage de <code>duckdb</code> est qu’il sait <a href="https://duckdb.org/docs/guides/performance/how_to_tune_workloads.html#larger-than-memory-workloads-out-of-core-processing">“déborder” sur disque</a> pour une grande partie de ces opérations. Cela signifie que <code>duckdb</code> va écrire dans des fichiers temporaires sur le disque les données qu’il ne peut conserver en mémoire car il a atteint la limite de mémoire fixée. Le paramètre <code>temp_directory</code> permet de choisir dans quel dossier ces fichiers temporaires seront écrits. Toutefois, il est généralement beaucoup plus efficace de diminuer le nombre de <em>threads</em> que de déborder sur disque mais dans le cas où vous avez besoin de “juste un peu plus” de mémoire cela peut se révéler utile. A noter que ce paramètre est automatiquement fixé si vous avez décidé d’utiliser une base persistante.</p></li>
+<li><p><strong><code>preserve_insertion_order</code> : préserver l’ordre de lecture/écriture ou non</strong>. <code>duckdb</code> peut consommer beaucoup de mémoire pour conserver l’ordre de lecture et d’écriture. Ce dernier paramètre permet d’autoriser <code>duckdb</code> à ne pas préserver l’ordre des données à la lecture et à l’écriture des fichiers dans le cas où il n’y a pas de clause <code>ORDER BY</code> / <code>arrange</code>.</p></li>
+</ul></section><section id="fixer-les-paramètres-après-linitialisation" class="level4" data-number="19.5.1.2"><h4 data-number="19.5.1.2" class="anchored" data-anchor-id="fixer-les-paramètres-après-linitialisation">
+<span class="header-section-number">19.5.1.2</span> Fixer les paramètres après l’initialisation</h4>
+<p>Vous pouvez également changer les paramètres d’une base après son initialisation en utilisant la commande <code>dbExecute</code>. Par exemple, pour fixer le nombre de <em>threads</em> à 4 :</p>
+<div class="cell">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html">dbExecute</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"SET threads = '4';"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section></section><section id="sec-lazy" class="level3" data-number="19.5.2"><h3 data-number="19.5.2" class="anchored" data-anchor-id="sec-lazy">
+<span class="header-section-number">19.5.2</span> L’évaluation différée avec <code>duckdb</code> (<em>lazy evaluation</em>)</h3>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Il est vivement conseillé de lire la fiche <a href="Fiche_arrow.html">Manipuler des données avec <code>arrow</code></a> avant de lire cette section, en particulier la partie sur l’évaluation différée.</p>
+</div>
+</div>
+<p>Quand on manipule des objets <code>duckdb</code>, on construit des requêtes SQL. Le <em>package</em> <code>duckdb</code> se contente de traduire le code <code>dplyr</code> en <code>SQL</code> sans l’exécuter (de la même façon que le <em>package</em> <code>arrow</code> traduit du code <code>dplyr</code> en instructions C++). On rappelle qu’il faut utiliser <code><a href="https://dplyr.tidyverse.org/reference/explain.html">show_query()</a></code> pour visualiser la requête. La fonction <code><a href="https://rdrr.io/r/base/print.html">print()</a></code> permet de pré-visualiser le résultat.</p>
+<div class="cell">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Étape 1: compter les équipements</span></span>
+<span><span class="va">req_dep</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="va">bpe_ens_2018_dataset</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">DEP</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
+<span>    NB_EQUIP_TOT <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> </span>
+<span><span class="va">req_dep</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/explain.html">show_query</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;SQL&gt;
+SELECT DEP, SUM(NB_EQUIP) AS NB_EQUIP_TOT
+FROM "bpe_ens_2018_dataset/*.parquet"
+GROUP BY DEP</code></pre>
+</div>
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Étape 2: filtrer sur le département</span></span>
+<span><span class="va">req_dep_filter</span> <span class="op">&lt;-</span> <span class="va">req_dep</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">DEP</span> <span class="op">==</span> <span class="st">"59"</span><span class="op">)</span> </span>
+<span><span class="va">req_dep_filter</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/explain.html">show_query</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;SQL&gt;
+SELECT DEP, SUM(NB_EQUIP) AS NB_EQUIP_TOT
+FROM "bpe_ens_2018_dataset/*.parquet"
+GROUP BY DEP
+HAVING (DEP = '59')</code></pre>
+</div>
+</div>
+<p>La fonction <code><a href="https://dplyr.tidyverse.org/reference/compute.html">collect()</a></code> envoie à <code>duckdb</code> l’instruction d’exécuter le calcul, et transmet les résultats à <code>R</code>. Un point essentiel est qu’avant l’instruction <code><a href="https://dplyr.tidyverse.org/reference/compute.html">collect()</a></code>, c’est le moteur SQL de <code>duckdb</code> qui fait les calculs, tandis qu’après l’instruction <code><a href="https://dplyr.tidyverse.org/reference/compute.html">collect()</a></code>, c’est le moteur de <code>R</code> qui fait les calculs car on manipule un objet <code>R</code> (<code>tibble</code>) standard. Par conséquent, il faut faire le plus de calculs possibles avant <code><a href="https://dplyr.tidyverse.org/reference/compute.html">collect()</a></code> pour bénéficier de la rapidité du moteur SQL !</p>
+<div class="cell">
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">req_dep_filter</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html">collect</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 2
+  DEP   NB_EQUIP_TOT
+  &lt;chr&gt;        &lt;dbl&gt;
+1 59           76125</code></pre>
+</div>
+</div>
+<p>On pourrait penser que, lorsqu’on exécute l’ensemble de ce traitement, <code>duckdb</code> se contente d’exécuter les instructions les unes après les autres: compter les équipements par département, puis conserver uniquement le département 59. Mais en réalité <code>duckdb</code> fait beaucoup mieux que cela: <strong><code>duckdb</code> analyse la requête avant de l’exécuter, et optimise le traitement pour minimiser le travail</strong>. Dans le cas présent, <code>duckdb</code> repère que la requête ne porte en fait que sur le département 59, et commence donc par filtrer les données sur le département avant de compter les équipements, de façon à ne conserver que le minimum de données nécessaires et à ne réaliser que le minimum de calculs. Ce type d’optimisation s’avère très utile quand les données à traiter sont très volumineuses.</p>
+<div class="columns">
+<div class="column" style="width:49%;">
+<p><strong>Situation à éviter</strong></p>
+<p>La première étape de traitement est déclenchée par <code><a href="https://dplyr.tidyverse.org/reference/compute.html">collect()</a></code>, la table intermédiaire <code>res_etape1</code> est donc un <code>tibble</code>. C’est le moteur d’exécution de <code>dplyr</code> qui est utilisé pour manipuler <code>res_etape1</code> lors de la seconde étape, ce qui dégrade fortement les performances sur données volumineuses.</p>
+<div class="cell">
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Etape 1</span></span>
+<span><span class="va">res_etape1</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="va">bpe_ens_2018_dataset</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">DEP</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
+<span>    NB_EQUIP_TOT <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html">collect</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Etape 2</span></span>
+<span><span class="va">res_final</span> <span class="op">&lt;-</span> <span class="va">res_etape1</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">DEP</span> <span class="op">==</span> <span class="st">"59"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html">collect</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Sauvegarder les résultats</span></span>
+<span><span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/write_parquet.html">write_parquet</a></span><span class="op">(</span><span class="va">res_final</span>, <span class="st">"resultats.parquet"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div><div class="column" style="width:2%;">
+<!-- empty column to create gap -->
+</div><div class="column" style="width:49%;">
+<p><strong>Usage recommandé</strong></p>
+<p>La première étape construit une requête SQL, sans effectuer de calcul. La deuxième étape complète la requête sans effectuer de calcul. Ici, pas de fonction <code><a href="https://rdrr.io/r/base/print.html">print()</a></code>, donc pas de calcul partiel. Le calcul n’est exécuté qu’au moment de la sauvegarde des résultats par <code>DuckDB</code>, ce qui assure de bonnes performances notamment sur données volumineuses. Les données ne sont chargées dans la mémoire de <code>R</code> à aucun moment.</p>
+<div class="cell">
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Etape 1</span></span>
+<span><span class="va">res_etape1</span> <span class="op">&lt;-</span> <span class="va">bpe_ens_2018_dataset</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">DEP</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
+<span>    NB_EQUIP_TOT <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> </span>
+<span></span>
+<span><span class="co"># Etape 2</span></span>
+<span><span class="va">res_final</span> <span class="op">&lt;-</span> <span class="va">res_etape1</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">DEP</span> <span class="op">==</span> <span class="st">"59"</span><span class="op">)</span> </span>
+<span></span>
+<span><span class="co"># Sauvegarder les résultats</span></span>
+<span><span class="va">res_final</span> <span class="op">|&gt;</span> <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/to_arrow.html">to_arrow</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/write_parquet.html">write_parquet</a></span><span class="op">(</span><span class="st">"resultats.parquet"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Si vous ne savez plus si une table de données est une requête SQL ou un <code>tibble</code>, il suffit d’exécuter <code>print(votre_table)</code> ou <code>class(votre_table)</code>.</p>
+</div>
+</div>
+</section><section id="sec-sql" class="level3" data-number="19.5.3"><h3 data-number="19.5.3" class="anchored" data-anchor-id="sec-sql">
+<span class="header-section-number">19.5.3</span> Fonctions non traduites et/ou comment passer des paramètres ?</h3>
+<p>Il peut arriver que le <em>package</em> <code>duckdb</code> ne parvienne pas à traduire votre code <code>dplyr</code> en SQL, par exemple lorsque vous voulez utiliser une fonction <code>R</code> dont <code>duckdb</code> ne connaît pas la traduction SQL, ou lorsque vous voulez passer un paramètre à une fonction. Pour surmonter ce problème (heureusement peu fréquent), il faut mettre les mains dans le mécanisme de traduction vers SQL. Il y a deux points importants:</p>
+<ul>
+<li>Lorsque <code>duckdb</code> ne connaît pas la traduction SQL d’une fonction <code>R</code> est que <strong>la fonction inconnue est reprise directement dans le code SQL</strong> sans aucune modification. Voici un exemple, dans lequel on peut voir que la fonction <code>fonction_inexistante()</code> apparaît telle quelle dans le code SQL.</li>
+</ul>
+<div class="cell">
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">req</span> <span class="op">&lt;-</span> <span class="va">bpe_ens_2018_dataset</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>test <span class="op">=</span> <span class="fu">fonction_inexistante</span><span class="op">(</span><span class="va">DEP</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/explain.html">show_query</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;SQL&gt;
+SELECT "bpe_ens_2018_dataset/*.parquet".*, fonction_inexistante(DEP) AS test
+FROM "bpe_ens_2018_dataset/*.parquet"</code></pre>
+</div>
+</div>
+<ul>
+<li>
+<code>DuckDB</code> contient un grand nombre de fonctions optimisées (<a href="https://duckdb.org/docs/sql/functions/overview">documentation ici</a>), et il est possible de les utiliser directement dans du code <code>R</code>.</li>
+</ul>
+<p>Ces deux points ensemble permettent de <strong>surmonter dans la plupart des cas le problème des fonctions <code>R</code> inconnues de <code>duckdb</code>: il suffit d’appeler la fonction de <code>DuckDB</code> qui fait la même chose</strong>. Voici un exemple qui explique cela en détail dans le cas de la fonction <code>R</code> <code><a href="https://rdrr.io/r/base/as.Date.html">as.Date()</a></code>. On commence par créer une petite table <code>duckdb</code> contenant des dates sous forme de chaînes de caractères avec le format “DD/MM/YYYY”.</p>
+<div class="cell">
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Créer des dates sous forme de chaînes de caractères</span></span>
+<span><span class="va">dates</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
+<span>  date_naissance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"02/07/1980"</span>, <span class="st">"29/02/2004"</span><span class="op">)</span>,</span>
+<span>  date_deces <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"05/06/2001"</span>, <span class="st">"12/07/2023"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Créer une connexion entre ces données et la base de données duckdb</span></span>
+<span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/duckdb/man/duckdb_register.html">duckdb_register</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"dates_duckdb"</span>, df <span class="op">=</span> <span class="va">dates</span>, overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Le <em>package</em> <code>duckdb</code> dispose d’une traduction SQL de la fonction <code><a href="https://rdrr.io/r/base/as.Date.html">as.Date()</a></code>, mais cette traduction a deux limites: elle n’accepte que les données en format “YYYY-MM-DD”, et ne supporte pas l’argument <code>format</code> qui permet de préciser que les données sont en format “DD/MM/YYYY”. Par conséquent, on rencontre une erreur si on essaie d’utiliser la fonction <code><a href="https://rdrr.io/r/base/as.Date.html">as.Date()</a></code> avec l’argument <code>format</code> (car <code>duckdb</code> ne sait pas gérer cet argument), et on rencontre une erreur si on essaie d’utiliser la fonction <code><a href="https://rdrr.io/r/base/as.Date.html">as.Date()</a></code> sans cet argument (car les données n’ont pas le bon format).</p>
+<div class="cell">
+<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="st">"dates_duckdb"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>date_naissance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="va">date_naissance</span>, format <span class="op">=</span> <span class="st">"%d/%m/%Y"</span><span class="op">)</span><span class="op">)</span> <span class="co"># erreur</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in as.Date(date_naissance, format = "%d/%m/%Y"): unused argument (format = "%d/%m/%Y")</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="st">"dates_duckdb"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>date_naissance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="va">date_naissance</span><span class="op">)</span><span class="op">)</span> <span class="co"># erreur</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in `collect()`:
+! Failed to collect lazy table.
+Caused by error:
+! rapi_execute: Failed to run query
+Error: Conversion Error: date field value out of range: "02/07/1980", expected format is (YYYY-MM-DD)</code></pre>
+</div>
+</div>
+<p>On pourrait penser que ce problème est sérieux. En fait, la solution est très simple: il suffit d’utiliser la fonction <a href="https://duckdb.org/docs/sql/functions/dateformat.html"><code>strptime</code></a> du moteur SQL <code>DuckDB</code> en indiquant le paramètre adéquat. Comme vous pouvez voir dans l’exemple suivant, on appelle cette fonction directement dans le code <code>R</code>. Par ailleurs, cette façon d’utiliser les fonctions de <code>DuckDB</code> dans du code <code>R</code> permet de passer facilement un paramètre à une fonction (le format “%d/%m/%Y” dans le cas présent).</p>
+<div class="cell">
+<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="st">"dates_duckdb"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>date_naissance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/strptime.html">strptime</a></span><span class="op">(</span><span class="va">date_naissance</span>, <span class="st">"%d/%m/%Y"</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># Source:   SQL [2 x 2]
+# Database: DuckDB v0.9.2 [unknown@Linux 6.5.0-1021-azure:R 4.3.2/:memory:]
+  date_naissance      date_deces
+  &lt;dttm&gt;              &lt;chr&gt;     
+1 1980-07-02 00:00:00 05/06/2001
+2 2004-02-29 00:00:00 12/07/2023</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>La logique présentée ici fonctionne également dans un cas plus avancé: l’utilisation d’une fonction sur plusieurs variables avec <code>mutate_at</code>. L’exemple ci-dessous reprend l’exemple ci-dessus avec deux variables.</p>
+<div class="cell">
+<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">liste_variables</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"date_naissance"</span>,<span class="st">"date_deces"</span><span class="op">)</span></span>
+<span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="st">"dates_duckdb"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate_all.html">mutate_at</a></span><span class="op">(</span><span class="va">liste_variables</span>, <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/strptime.html">strptime</a></span><span class="op">(</span><span class="va">.</span>,<span class="st">"%d/%m/%Y"</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># Source:   SQL [2 x 2]
+# Database: DuckDB v0.9.2 [unknown@Linux 6.5.0-1021-azure:R 4.3.2/:memory:]
+  date_naissance      date_deces         
+  &lt;dttm&gt;              &lt;dttm&gt;             
+1 1980-07-02 00:00:00 2001-06-05 00:00:00
+2 2004-02-29 00:00:00 2023-07-12 00:00:00</code></pre>
+</div>
+</div>
+</div>
+</div>
+</section><section id="manipulation-des-données-avec-sql" class="level3" data-number="19.5.4"><h3 data-number="19.5.4" class="anchored" data-anchor-id="manipulation-des-données-avec-sql">
+<span class="header-section-number">19.5.4</span> Manipulation des données avec SQL</h3>
+<p><code>DuckDB</code> étant un moteur SQL à part entière, on peut interagir avec <code>DuckDB</code> directement avec des requêtes SQL. Par exemple, en reprenant une table enregistrée plus haut avec la fonction <code><a href="https://rdrr.io/pkg/duckdb/man/duckdb_register.html">duckdb::duckdb_register</a></code> :</p>
+<div class="cell">
+<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html">dbGetQuery</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"SELECT * FROM bpe_ens_2018_duckdb"</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  REG DEP DEPCOM DCIRIS   AN TYPEQU NB_EQUIP
+1  84  01  01001  01001 2018   A401        2
+2  84  01  01001  01001 2018   A404        4
+3  84  01  01001  01001 2018   A504        1
+4  84  01  01001  01001 2018   A507        1
+5  84  01  01001  01001 2018   B203        1
+6  84  01  01001  01001 2018   C104        1</code></pre>
+</div>
+</div>
+<p>Vous pouvez créer des vues ou des tables explicitement. La fonction <code><a href="https://dbi.r-dbi.org/reference/dbExecute.html">dbExecute()</a></code> retourne le nombre de lignes modifiées, tandis que la fonction <code>dbGetQuery</code> retourne le résultat sous la forme d’un <code>tibble</code>. Si vous n’avez pas l’intention de conserver durablement une table intermédiaire, il est préférable de créer une vue (qui ne consomme pas de mémoire) plutôt qu’une table (qui consomme de la mémoire). On peut d’ailleurs noter que les fonctions <code>read_parquet()</code> en SQL et <code>duckdb_register</code> du <em>package</em> utilisent <code>CREATE VIEW</code> implicitement.</p>
+<div class="cell">
+<div class="sourceCode" id="cb58"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Créer une table dans la base de données DuckDB</span></span>
+<span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html">dbExecute</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"</span></span>
+<span><span class="st">               CREATE TABLE bpe_ens_2018_table AS </span></span>
+<span><span class="st">               SELECT REG, SUM(NB_EQUIP) AS NB_EQUIP_TOT </span></span>
+<span><span class="st">               FROM bpe_ens_2018_duckdb </span></span>
+<span><span class="st">               GROUP BY REG"</span><span class="op">)</span> <span class="co"># Utilise de la mémoire</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 18</code></pre>
+</div>
+<div class="sourceCode" id="cb60"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Créer une vue dans la base de données DuckDB</span></span>
+<span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html">dbExecute</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"</span></span>
+<span><span class="st">               CREATE VIEW bpe_ens_2018_view AS </span></span>
+<span><span class="st">               SELECT REG, SUM(NB_EQUIP) AS NB_EQUIP_TOT </span></span>
+<span><span class="st">               FROM bpe_ens_2018_duckdb </span></span>
+<span><span class="st">               GROUP BY REG"</span><span class="op">)</span>   <span class="co"># n'utilise pas de mémoire</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+</div>
+<p>Vous pouvez ensuite requêter les objets créés dans la base SQL via <code>dplyr</code>:</p>
+<div class="cell">
+<div class="sourceCode" id="cb62"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="st">"bpe_ens_2018_view"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># Source:   table&lt;bpe_ens_2018_view&gt; [?? x 2]
+# Database: DuckDB v0.9.2 [unknown@Linux 6.5.0-1021-azure:R 4.3.2/:memory:]
+   REG   NB_EQUIP_TOT
+   &lt;chr&gt;        &lt;dbl&gt;
+ 1 02           19068
+ 2 03            7852
+ 3 84          303775
+ 4 32          175859
+ 5 06            7353
+ 6 76          256813
+ 7 24           81379
+ 8 01           23939
+ 9 75          237008
+10 94           21778
+# ℹ more rows</code></pre>
+</div>
+</div>
+<p>Vous pouvez bien sûr lire des fichiers <code>Parquet</code>, <code>CSV</code> ou autres en utilisant les <a href="https://duckdb.org/docs/data/overview">fonctions de duckdb</a> :</p>
+<div class="cell">
+<div class="sourceCode" id="cb64"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html">dbGetQuery</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"SELECT * FROM read_parquet('bpe_ens_2018_dataset/**/*.parquet') LIMIT 5"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  REG DEP DEPCOM DCIRIS   AN TYPEQU NB_EQUIP
+1  84  01  01001  01001 2018   A401        2
+2  84  01  01001  01001 2018   A404        4
+3  84  01  01001  01001 2018   A504        1
+4  84  01  01001  01001 2018   A507        1
+5  84  01  01001  01001 2018   B203        1</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Le SQL de <code>duckdb</code> est très proche de celui de PostgreSQL avec <a href="https://duckdb.org/docs/guides/sql_features/friendly_sql">quelques évolutions très pertinentes</a>.</p>
+</div>
+</div>
+<section id="séparer-vos-traitements-sql-en-blocs" class="level4" data-number="19.5.4.1"><h4 data-number="19.5.4.1" class="anchored" data-anchor-id="séparer-vos-traitements-sql-en-blocs">
+<span class="header-section-number">19.5.4.1</span> Séparer vos traitements SQL en blocs</h4>
+<p>Si vos requêtes deviennent trop complexes et/ou longues, vous pouvez facilement les découper en créant des vues intermédiaires que vous réutiliserez plus tard :</p>
+<div class="cell">
+<div class="sourceCode" id="cb66"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Créer une vue qui correspond à la première étape du traitement</span></span>
+<span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html">dbExecute</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"CREATE OR REPLACE VIEW data1_nettoye AS SELECT ... FROM read_parquet('data1.parquet')"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Créer une vue qui correspond à la deuxième étape du traitement</span></span>
+<span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html">dbExecute</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"CREATE OR REPLACE VIEW data2_nettoye AS SELECT ... FROM read_parquet('data2.parquet')"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Faire la dernière étape du traitement et récupérer les résultats dans un tibble</span></span>
+<span><span class="va">resultats</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html">dbGetQuery</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"SELECT * FROM data1_nettoye LEFT JOIN data2_nettoye ON data1.id = data2.id"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Et vous pouvez bien sûr créer des tables intermédiaires (temporaires ou non) à la place des vues (en utilisant <code>CREATE TABLE</code> pluôt que <code>CREATE VIEW</code>) pour éviter de les recalculer à chaque fois.</p>
+</section><section id="écrire-des-fichiers" class="level4" data-number="19.5.4.2"><h4 data-number="19.5.4.2" class="anchored" data-anchor-id="écrire-des-fichiers">
+<span class="header-section-number">19.5.4.2</span> Écrire des fichiers</h4>
+<p>Vous pouvez exporter des données vers des fichiers en utilisant <a href="https://duckdb.org/docs/sql/statements/copy.html#copy--to"><code>COPY ... TO ...</code></a> :</p>
+<div class="cell">
+<div class="sourceCode" id="cb67"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html">dbExecute</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"COPY (SELECT * FROM read_parquet('bpe_ens_2018_dataset/**/*.parquet')) </span></span>
+<span><span class="st">                      TO 'mon_dataset_parquet' (FORMAT PARQUET, PARTITION_BY (REG), OVERWRITE_OR_IGNORE 1)"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+</div>
+<p>Si vous préférez utiliser les fonctions de <code>arrow</code>, vous pouvez créez une vue et utiliser <code>dbplr::tbl</code> avec <code><a href="https://arrow.apache.org/docs/r/reference/write_dataset.html">arrow::write_dataset</a></code> :</p>
+<div class="cell">
+<div class="sourceCode" id="cb69"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html">dbExecute</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"CREATE OR REPLACE VIEW output AS SELECT ..."</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"output"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/to_arrow.html">to_arrow</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">write_dataset</span><span class="op">(</span><span class="st">"mon_dataset"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section></section><section id="optimisations" class="level3" data-number="19.5.5"><h3 data-number="19.5.5" class="anchored" data-anchor-id="optimisations">
+<span class="header-section-number">19.5.5</span> Optimisations</h3>
+<p>Les opérations difficiles en SQL, longues, nécessitant beaucoup de mémoire, sont les fonctions dites “fenêtre”: jointures, <code>GROUP BY</code> avec beaucoup de petits groupes, dédoublonnage, etc. On propose ici quelques techniques pour faire passer ces calculs difficiles.</p>
+<section id="utilisation-de-la-mémoire-vive" class="level4" data-number="19.5.5.1"><h4 data-number="19.5.5.1" class="anchored" data-anchor-id="utilisation-de-la-mémoire-vive">
+<span class="header-section-number">19.5.5.1</span> Utilisation de la mémoire vive</h4>
+<p>Comme expliqué plus haut, les objets manipulés dans cette fiche sont des requêtes SQL, et ne nécessitent pas de mémoire vive. Les données déclarées par <code>read_parquet</code> sont stockées sur le disque dur, lues à la demande, et “oubliées” à la fin du calcul. On retourne le <em>résultat</em> du calcul.</p>
+<p>Pour les opérations compliquées, il peut être nécessaire de charger les données en mémoire pour effectuer le calcul, au risque de saturer la mémoire. Lorsque ce problème se pose, <code>duckdb</code> renvoie un message du type:</p>
+<pre><code>Error: rapi_execute: Failed to run query
+Error: Out of Memory Error: could not allocate block of size 262KB (99.7MB/100.0MB used)
+Database is launched in in-memory mode and no temporary directory is specified.
+Unused blocks cannot be offloaded to disk.
+
+Launch the database with a persistent storage back-end
+Or set PRAGMA temp_directory='/path/to/tmp.tmp'</code></pre>
+<p>Pour contourner le manque de mémoire vive, on propose les quatre techniques suivantes :</p>
+<ul>
+<li>diminuer le nombre de <em>threads</em> utilisés par <code>duckdb</code>, donc moins de besoins de mémoire (mais aussi moins de parallélisme):</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>conn_ddb <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(<span class="fu">duckdb</span>(),</span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a><span class="at">config=</span><span class="fu">list</span>(<span class="st">"threads"</span><span class="ot">=</span><span class="st">"1"</span>))<span class="er">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>ou</p>
+<div class="cell">
+<div class="sourceCode" id="cb72"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html">dbExecute</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"SET threads = '1';"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li>exécuter et sauvegarder les résultats au fur et à mesure. La commande <code><a href="https://arrow.apache.org/docs/r/reference/write_dataset.html">arrow::write_dataset</a></code> et la commande SQL <code>COPY request TO filename.parquet</code> savent le faire automatiquement, sans faire déborder la mémoire, pour certains calculs.</li>
+<li>découper le calcul et sauvegarder une base intermédiaire (cf ci-dessous).</li>
+<li>adosser un fichier sur le disque dur à la base de données en mémoire au moment de la création de la connexion. Cela ralentit considérablement les calculs, et ne permet pas toujours d’obtenir un résultat.</li>
+</ul>
+<div class="cell">
+<div class="sourceCode" id="cb73"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html">dbConnect</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/duckdb/man/duckdb.html">duckdb</a></span><span class="op">(</span><span class="op">)</span>, dbdir <span class="op">=</span> <span class="st">"my-db.duckdb"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>L’interaction entre les différentes options de <code>duckdb</code> est complexe et rendent difficile l’élaboration de recommandations claires. Nous mettrons à jour cette fiche quand des benchmarks plus poussés seront disponibles.</p>
+</section><section id="sauvegarder-des-résultats-intermédiaires" class="level4" data-number="19.5.5.2"><h4 data-number="19.5.5.2" class="anchored" data-anchor-id="sauvegarder-des-résultats-intermédiaires">
+<span class="header-section-number">19.5.5.2</span> Sauvegarder des résultats intermédiaires</h4>
+<p>Dans plusieurs cas, vous pouvez vouloir passer par des résultats intermédiaires :</p>
+<ul>
+<li>Votre traitement est long et vous ne souhaitez pas le recalculer entièrement à chaque fois ;</li>
+<li>Certaines requêtes sont trop compliquées pour le moteur SQL et/ou pour la traduction automatique, vous devez le découper.</li>
+</ul>
+<p>Vous avez plusieurs méthodes possibles :</p>
+<ul>
+<li>
+<code><a href="https://arrow.apache.org/docs/r/reference/write_dataset.html">arrow::write_dataset()</a></code> sait faire les calculs par morceaux automatiquement, et libère la mémoire au fur et à mesure.</li>
+</ul>
+<div class="cell">
+<div class="sourceCode" id="cb74"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu">calcul1</span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/to_arrow.html">to_arrow</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/write_dataset.html">write_dataset</a></span><span class="op">(</span><span class="st">"base_intermediaire"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/open_dataset.html">open_dataset</a></span><span class="op">(</span><span class="st">"base_intermediaire"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/to_duckdb.html">to_duckdb</a></span><span class="op">(</span><span class="va">conn_ddb</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu">calcul2</span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li>Vous pouvez utiliser <code>dbplyr::compute()</code> pour créer une table <code>duckdb</code> stockée sur le disque (si vous avez préalablement créé une base sur disque) que vous pourrez directement utiliser par la suite dans une autre session :</li>
+</ul>
+<div class="cell">
+<div class="sourceCode" id="cb75"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu">calcul1</span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html">compute</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"matable"</span>, temporary <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="va">conn_dbb</span>, <span class="st">"matable"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu">calcul2</span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>La première méthode avec <code>arrow</code> est généralement la plus rapide et la seconde avec <code>dbplyr::compute</code> sur une table nommée est la plus efficace (de loin) en terme d’occupation mémoire.</p>
+<p>A noter que vous pouvez également utiliser <code>dbplyr::compute</code> pour créer une table temporaire <code>duckdb</code> stockée en mémoire qui disparaitra à la fin de votre session :</p>
+<div class="cell">
+<div class="sourceCode" id="cb76"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">table_temporaire</span> <span class="op">&lt;-</span> <span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu">calcul1</span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html">compute</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">table_temporaire</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu">calcul2</span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="partitionner-les-données" class="level4" data-number="19.5.5.3"><h4 data-number="19.5.5.3" class="anchored" data-anchor-id="partitionner-les-données">
+<span class="header-section-number">19.5.5.3</span> Partitionner les données</h4>
+<ul>
+<li>Pour exécuter une fonction fenêtre, il faut pouvoir localiser les données en mémoire avec un <em>index</em>.</li>
+<li>Les fichiers <code>parquet</code> ont un index <code>min-max</code> : les fichiers sont structurés en blocs, et on indique le minimum et maximum des valeurs du bloc dans les métadonnées. Ceci permet de sauter la lecture d’un bloc si l’on s’intéresse à des valeurs en dehors de la plage <code>min-max</code>, parce que l’on filtre les données par exemple.</li>
+<li>En SQL, on peut créer un index, mais il faut que les données soient en mémoire, ce qui peut s’avérer être incompatible avec de très grosses volumétries.</li>
+<li>Par contre, on peut partitionner les données, et le moteur SQL sait utiliser le partitionnement comme un index.</li>
+</ul>
+<div class="cell">
+<div class="sourceCode" id="cb77"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dataset</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/to_arrow.html">to_arrow</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/write_dataset.html">write_dataset</a></span><span class="op">(</span><span class="st">"bpe_ens_2018_dataset_parts"</span>, partitioning <span class="op">=</span> <span class="st">"REG"</span> <span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html">list.files</a></span><span class="op">(</span><span class="st">"bpe_ens_2018_dataset_parts"</span><span class="op">)</span> <span class="co"># on obtient un sous-répertoire par région</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "REG=01" "REG=02" "REG=03" "REG=04" "REG=06" "REG=11" "REG=24" "REG=27"
+ [9] "REG=28" "REG=32" "REG=44" "REG=52" "REG=53" "REG=75" "REG=76" "REG=84"
+[17] "REG=93" "REG=94"</code></pre>
+</div>
+</div>
+</section><section id="exécuter-les-traitements-par-groupe-explicitement" class="level4" data-number="19.5.5.4"><h4 data-number="19.5.5.4" class="anchored" data-anchor-id="exécuter-les-traitements-par-groupe-explicitement">
+<span class="header-section-number">19.5.5.4</span> Exécuter les traitements par groupe <em>explicitement</em>
+</h4>
+<p>S’il faut absolument charger des données en mémoire, on peut découper le calcul pour ne charger qu’une partie des données. Par exemple, faire une jointure région par région au lieu de faire la jointure sur toute la base d’un coup. On peut utiliser le partitionnement pour sauvegarder les résultats partiels, et les ré-assembler ensuite.</p>
+<div class="cell">
+<div class="sourceCode" id="cb79"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">groups</span> <span class="op">&lt;-</span> <span class="va">bpe_ens_2018_dataset</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html">distinct</a></span><span class="op">(</span><span class="va">REG</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html">pull</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># liste des modalités de la variable REG</span></span>
+<span></span>
+<span><span class="co"># Définir une fonction qui traite un morceau des données</span></span>
+<span><span class="co"># Puis exporte le résultats dans un Parquet partitionné</span></span>
+<span><span class="va">f</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">bpe_ens_2018_dataset</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">REG</span> <span class="op">==</span> <span class="va">x</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>    <span class="fu">calcul_long</span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>    <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/to_arrow.html">to_arrow</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>    <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/write_dataset.html">write_dataset</a></span><span class="op">(</span><span class="st">"resultat"</span>, partitioning <span class="op">=</span> <span class="st">"REG"</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co"># Appliquer la fonction à chaque groupe</span></span>
+<span><span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">walk</a></span><span class="op">(</span><span class="va">f</span>, <span class="va">groups</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section></section></section><section id="comparaison-avec-arrow" class="level2" data-number="19.6"><h2 data-number="19.6" class="anchored" data-anchor-id="comparaison-avec-arrow">
+<span class="header-section-number">19.6</span> Comparaison avec <code>arrow</code>
+</h2>
+<p><code>arrow</code> et <code>duckdb</code> partagent de nombreux concepts. Voici quelques différences :</p>
+<ul>
+<li>
+<code>duckdb</code> comprend parfaitement SQL. Si vous savez utiliser <code>PROC SQL</code> avec SAS, vous ne serez pas dépaysés.</li>
+<li>Le projet <code>duckdb</code> est très récent. Il y a régulièrement des évolutions qui sont souvent des extensions ou des optimisations, et parfois la résolution de bugs. <code>arrow</code> est un projet plus ancien et plus mature.</li>
+<li>Certaines fonctions standards de <code>R</code> ne sont pas traduites, mais la situation est meilleure du côté de <code>duckdb</code> que d’<code>arrow</code>. Hormis <code>write_dataset()</code>, la plupart des traitements peuvent être effectués en utilisant uniquement <code>duckdb</code>, sans passer par <code>arrow</code>.</li>
+<li>Les <strong>conversions de type</strong>: <code>duckdb</code> est plus permissif que <code>arrow</code> et fera plus facilement des <a href="https://duckdb.org/docs/sql/data_types/typecasting.html">conversions automatiques</a> sans danger.</li>
+<li>Les <strong>jointures de tables volumineuses</strong>: <code>arrow</code> ne parvient pas à joindre des tables de données très volumineuses; il est préférable d’utiliser <code>duckdb</code> pour ce type d’opération.</li>
+<li>Les <strong>réorganisations de données</strong> : les fonctions <code>pivot_wider</code> et <code>pivot_longer</code> existent nativement dans <code>duckdb</code> mais pas dans <code>arrow</code>.</li>
+<li>Les <strong>fonctions fenêtre</strong> (<em>window functions</em>): <code>arrow</code> ne permet pas d’ajouter directement à une table des informations issues d’une agrégation par groupe de la même table. Par exemple, <code>arrow</code> ne peut pas ajouter directement à la base permanente des équipements une colonne égale au nombre total d’équipements du département. Le code fonctionne en <code>duckdb</code>.</li>
+</ul>
+<div class="cell">
+<div class="sourceCode" id="cb80"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># arrow ne peut pas exécuter ceci</span></span>
+<span><span class="va">bpe_ens_2018_dataset</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">DEP</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>NB_EQUIP_TOTAL_DEP  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">DEP</span>, <span class="va">NB_EQUIP</span>, <span class="va">NB_EQUIP_TOTAL_DEP</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># Source:   SQL [?? x 3]
+# Database: DuckDB v0.9.2 [unknown@Linux 6.5.0-1021-azure:R 4.3.2/:memory:]
+# Groups:   DEP
+   DEP   NB_EQUIP NB_EQUIP_TOTAL_DEP
+   &lt;chr&gt;    &lt;dbl&gt;              &lt;dbl&gt;
+ 1 06           3              66766
+ 2 06           2              66766
+ 3 06           6              66766
+ 4 06           4              66766
+ 5 06           3              66766
+ 6 06           3              66766
+ 7 06           6              66766
+ 8 06          14              66766
+ 9 06           9              66766
+10 06           7              66766
+# ℹ more rows</code></pre>
+</div>
+</div>
+<ul>
+<li>les <strong>empilements de tables</strong>: il est facile d’empiler plusieurs <code>tibbles</code> avec <code>dplyr</code> grâce à la fonction <code><a href="https://dplyr.tidyverse.org/reference/bind_rows.html">bind_rows()</a></code>: <code>bind_rows(table1, table2, table3, table4)</code>. En revanche, il n’existe pas à ce jour de fonction équivalente dans <code>arrow</code> ou dans <code>duckdb</code>: il faut empiler les tables deux à deux avec les fonctions <code><a href="https://dplyr.tidyverse.org/reference/setops.html">union_all()</a></code> et <code><a href="https://generics.r-lib.org/reference/setops.html">union()</a></code>. La différence entre <code>arrow</code> et <code>duckdb</code> est que <code>duckdb</code> est plus souple et acceptera d’empiler des tables qui ne sont pas exactement compatibles (exemple: pas le même nombre de colonnes), tandis qu’<code>arrow</code> exige qye les deux tables soient parfaitement compatibles (il faut le même nombre de colonnes avec le même nom et le même type, ce qui n’est pas toujours le cas en pratique). Dans l’exemple suivant, on empile deux tables qui n’ont pas exactement le même nombre de colonnes:</li>
+</ul>
+<div class="cell">
+<div class="sourceCode" id="cb82"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Comment empiler de multiples tables</span></span>
+<span><span class="va">table_empilees</span>  <span class="op">&lt;-</span> <span class="va">bpe_ens_2018_dataset</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/setops.html">union_all</a></span><span class="op">(</span><span class="va">bpe_ens_2018_dataset</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">DEPCOM</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="Ressourcesduckdb" class="level2" data-number="19.7"><h2 data-number="19.7" class="anchored" data-anchor-id="Ressourcesduckdb">
+<span class="header-section-number">19.7</span> Pour en savoir plus</h2>
+<ul>
+<li>la documentation officielle du <em>moteur</em> <a href="https://duckdb.org/docs/"><code>DuckDB</code></a> (en anglais) ;</li>
+<li>la documentation du <em>package</em> R <a href="https://r.duckdb.org/">DuckDB</a> ;</li>
+<li>la documentation du <em>package</em> <a href="https://dbi.r-dbi.org/"><code>DBI</code></a> décrit les mécanismes de traduction <code>dplyr</code> vers SQL utilisés dans toutes les bases de données interfacées avec <code>R</code>.</li>
+</ul>
+
+
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script><nav class="page-navigation"><div class="nav-page nav-page-previous">
+      <a href="../03_Fiches_thematiques/Fiche_arrow.html" class="pagination-link  aria-label=" des="" donn="" avec="">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Manipuler des données avec <code>arrow</code></span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../03_Fiches_thematiques/Fiche_joindre_donnees.html" class="pagination-link" aria-label="<span class='chapter-number'>20</span>&nbsp; <span class='chapter-title'>Joindre des tables de données</span>">
+        <span class="nav-page-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Joindre des tables de données</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer">
+    <div class="nav-footer-left">
+<p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/InseeFrLab/utilitR/edit/master/03_Fiches_thematiques/Fiche_duckdb.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/InseeFrLab/utilitR/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<li>
+<a href="https://github.com/InseeFrLab/utilitR.git" target="blank">Code source</a>
+</li>
+</div>
+  </div>
+</footer>
+
+
+</body></html>
