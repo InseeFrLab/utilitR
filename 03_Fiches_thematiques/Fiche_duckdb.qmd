@@ -315,6 +315,7 @@ bpe_ens_2018_dataset %>%
 Pour configurer `duckdb` lors de l'initialisation de la base de données (c'est-à-dire au moment où on utilise `DBI::dbConnect(drv = duckdb::duckdb())`), on utilise les arguments du _driver_ `duckdb`. 
 
 ```{r}
+#| eval: false
 # Configurer le driver duckdb
 drv <- duckdb::duckdb(
   dbdir = "fichier.db", 
@@ -355,10 +356,16 @@ Voici une description des principaux paramètres de configuration:
 Vous pouvez également changer les paramètres d'une base après son initialisation en utilisant la commande `dbExecute`. Par exemple, pour fixer le nombre de _threads_ à 4 :
 
 ```{r}
+#| eval: false
 dbExecute(conn_ddb, "SET threads = '4';")
 ```
 
 ### L'évaluation différée avec `duckdb` (_lazy evaluation_) {#sec-lazy}
+
+::: {.callout-tip}
+Il est vivement conseillé de lire la fiche [Manipuler des données avec `arrow`](#arrow) avant de lire cette section, en particulier la partie sur l'évaluation différée.
+:::
+
 
 Quand on manipule des objets `duckdb`, on construit des requêtes SQL. Le _package_ `duckdb` se contente de traduire le code `dplyr` en `SQL` sans l'exécuter (de la même façon que le _package_ `arrow` traduit du code `dplyr` en instructions C++). On rappelle qu'il faut utiliser `show_query()` pour visualiser la requête. La fonction `print()` permet de pré-visualiser le résultat.
 ```{r}
@@ -379,13 +386,11 @@ req_dep_filter |>
   show_query()
 ```
 
-La fonction `collect()` envoie à `duckdb` l'instruction d'exécuter le calcul, et transmet les résultats à `R`. Avant `collect()`, c'est le moteur SQL de `duckdb` qui fait / fera les calculs. Après `collect()`, c'est `R` qui fait le calcul, et l'on manipule un objet `R` (`tibble`) standard, avec toutes les fonctions / _packages_ disponibles.
+La fonction `collect()` envoie à `duckdb` l'instruction d'exécuter le calcul, et transmet les résultats à `R`. Un point essentiel est qu'avant l'instruction `collect()`, c'est le moteur SQL de `duckdb` qui fait les calculs, tandis qu'après l'instruction `collect()`, c'est le moteur de `R` qui fait les calculs car on manipule un objet `R` (`tibble`) standard. Par conséquent, il faut faire le plus de calculs possibles avant `collect()` pour bénéficier de la rapidité du moteur SQL !
 
 ```{r}
 req_dep_filter |> collect()
 ```
-
-Pour bénéficier de la rapidité du moteur SQL, il faut faire le plus de calculs possibles avant `collect()` !
 
 On pourrait penser que, lorsqu'on exécute l'ensemble de ce traitement, `duckdb` se contente d'exécuter les instructions les unes après les autres: compter les équipements par département, puis conserver uniquement le département 59. Mais en réalité `duckdb` fait beaucoup mieux que cela: __`duckdb` analyse la requête avant de l'exécuter, et optimise le traitement pour minimiser le travail__. Dans le cas présent, `duckdb` repère que la requête ne porte en fait que sur le département 59, et commence donc par filtrer les données sur le département avant de compter les équipements, de façon à ne conserver que le minimum de données nécessaires et à ne réaliser que le minimum de calculs. Ce type d'optimisation s'avère très utile quand les données à traiter sont très volumineuses.
 
