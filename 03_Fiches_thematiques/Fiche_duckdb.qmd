@@ -175,9 +175,9 @@ Quelques explications de cette commande:
 * La fonction [`read_parquet`](https://duckdb.org/docs/data/parquet/overview.html#read_parquet-function) est une fonction interne à `duckdb`, elle ne doit surtout pas être confondue avec la fonction `read_parquet()` du _package_ `arrow`. Remarque: `duckdb` propose aussi [des fonctions pour lire d'autres formats](https://duckdb.org/docs/data/csv/overview.html) comme csv, json...
 * `**/*.parquet` est un motif qui indique que vous souhaitez lire, dans tous les sous-dossiers quelque soit le niveau (`**`), l'ensemble des fichiers parquets (`*.parquet`) qui s'y trouvent. C'est notamment utile pour lire des fichiers Parquet partitionnés. Quand vous n'avez pas besoin de passer d'arguments à `read_parquet`, vous pouvez l'omettre :
 
-    ```{r messages=FALSE}
-    conn_ddb %>% tbl('bpe_ens_2018_dataset/**/*.parquet')
-    ```
+```{r messages=FALSE}
+conn_ddb %>% tbl('bpe_ens_2018_dataset/**/*.parquet')
+```
 
 
 **La seconde approche consiste à passer par `arrow`, puis à transmettre les données à `duckdb`.** Cette méthode utilise un objet intermédiaire de type Arrow Dataset (voir la fiche [Manipuler des données avec `arrow`](#arrow)): 
@@ -284,7 +284,7 @@ Cette section présente quelques erreurs classiques.
 
 ```{r error=TRUE}
 bpe_ens_2018_dataset |> select(DEP) |>
-      mutate(NB_EQUIP_TOTAL_DEP  = sum(NB_EQUIP))
+  mutate(NB_EQUIP_TOTAL_DEP  = sum(NB_EQUIP))
 ```
 
 #### Convertir les types
@@ -335,15 +335,15 @@ Voici une description des principaux paramètres de configuration:
 
 - **`dbdir` : utiliser une base de données persistante**. Par défaut, `duckdb` crée une base de données dans la mémoire vive, qui est automatiquement détruite lorsque vous fermez la session `R` ou la connexion `duckdb`. Si vous mettez un chemin dans le paramètre `dbdir`, `duckdb` créera une base de données sur disque que vous pourrez réouvrir à votre prochaine session.
 
-    Si vous utilisez principalement `dplyr`, les bases de données en mémoire sont certainement suffisantes. En revanche, ce paramètre peut éventuellement vous être utile si vous utilisez du SQL, si vous créez des vues ou si vous utilisez `dplyr::compute`.
+Si vous utilisez principalement `dplyr`, les bases de données en mémoire sont certainement suffisantes. En revanche, ce paramètre peut éventuellement vous être utile si vous utilisez du SQL, si vous créez des vues ou si vous utilisez `dplyr::compute`.
 
 - **`threads` : limiter le nombre de _threads_ utilisés par `duckdb`**. Pour simplifier, un _thread_ est un processeur ou un morceau de processeur (l'unité électronique qui réalise les calculs). Par défaut, `duckdb` utilise tous les processeurs disponibles, ce qui n'est pas forcément souhaitable pour plusieurs raisons :
 
-    - sur un serveur partagé, vos collègues seront gênés ;
-    - il est [conseillé de disposer de 5 à 10Go](https://duckdb.org/docs/guides/performance/environment.html) de mémoire par _thread_ (5 pour des aggrégations, 10 pour des jointures) donc beaucoup de threads implique beaucoup de mémoire ;
-    - avoir trop de _threads_ peut être contre-productif.
+- sur un serveur partagé, vos collègues seront gênés ;
+- il est [conseillé de disposer de 5 à 10Go](https://duckdb.org/docs/guides/performance/environment.html) de mémoire par _thread_ (5 pour des aggrégations, 10 pour des jointures) donc beaucoup de threads implique beaucoup de mémoire ;
+- avoir trop de _threads_ peut être contre-productif.
 
-    Il n'existe pas de règle générale pour définir le nombre de -threads_, mais utiliser 4 à 8 _threads_  (en respectant le ratio _threads_/mémoire ci-dessus) constitue un point de départ raisonnable. Au delà, les performances augmentent généralement peu pour une consommation mémoire plus importante.
+Il n'existe pas de règle générale pour définir le nombre de -threads_, mais utiliser 4 à 8 _threads_  (en respectant le ratio _threads_/mémoire ci-dessus) constitue un point de départ raisonnable. Au delà, les performances augmentent généralement peu pour une consommation mémoire plus importante.
 
 - **`memory_limit` : limiter la mémoire vive utilisée par `duckdb`**. Par défaut, `duckdb` limite la mémoire à 80% de la mémoire disponible sur le serveur. Si vous avez une quantité limitée de mémoire, essayez plutôt de limiter le nombre de _threads_ en respectant la règle de 5 à 10 Go par thread.
 
@@ -467,11 +467,11 @@ Il peut arriver que le _package_ `duckdb` ne parvienne pas à traduire votre cod
 
 - Lorsque `duckdb` ne connaît pas la traduction SQL d'une fonction `R` est que **la fonction inconnue est reprise directement dans le code SQL** sans aucune modification. Voici un exemple, dans lequel on peut voir que la fonction `fonction_inexistante()` apparaît telle quelle dans le code SQL. 
 
-    ```{r}
-    req <- bpe_ens_2018_dataset |> 
-      mutate(test = fonction_inexistante(DEP)) |> 
-      show_query()
-    ```
+```{r}
+req <- bpe_ens_2018_dataset |> 
+  mutate(test = fonction_inexistante(DEP)) |> 
+  show_query()
+```
 
 - `DuckDB` contient un grand nombre de fonctions optimisées ([documentation ici](https://duckdb.org/docs/sql/functions/overview)), et il est possible de les utiliser directement dans du code `R`.
 
@@ -528,14 +528,17 @@ conn_ddb %>% tbl("dates_duckdb") %>%
 DBI::dbGetQuery(conn_ddb, "SELECT * FROM bpe_ens_2018_duckdb") |> head()
 ```
 
-Vous pouvez créer des vues ou des tables explicitement. La fonction `dbExecute` retourne le nombre de lignes modifiées, tandis que la fonction `dbGetQuery` retourne le résultat sous la forme d'un `tibble`.
+Vous pouvez créer des vues ou des tables explicitement. La fonction `dbExecute()` retourne le nombre de lignes modifiées, tandis que la fonction `dbGetQuery` retourne le résultat sous la forme d'un `tibble`. Si vous n'avez pas l'intention de conserver durablement une table intermédiaire, il est préférable de créer une vue (qui ne consomme pas de mémoire) plutôt qu'une table (qui consomme de la mémoire). On peut d'ailleurs noter que les fonctions `read_parquet()` en SQL et `duckdb_register` du _package_ utilisent `CREATE VIEW` implicitement.
 
 ```{r}
+# Créer une table dans la base de données DuckDB
 DBI::dbExecute(conn_ddb, "
                CREATE TABLE bpe_ens_2018_table AS 
                SELECT REG, SUM(NB_EQUIP) AS NB_EQUIP_TOT 
                FROM bpe_ens_2018_duckdb 
-               GROUP BY REG") # Éviter
+               GROUP BY REG") # Utilise de la mémoire
+
+# Créer une vue dans la base de données DuckDB
 DBI::dbExecute(conn_ddb, "
                CREATE VIEW bpe_ens_2018_view AS 
                SELECT REG, SUM(NB_EQUIP) AS NB_EQUIP_TOT 
@@ -543,12 +546,11 @@ DBI::dbExecute(conn_ddb, "
                GROUP BY REG")   # n'utilise pas de mémoire
 ```
 
-Et interroger les objets créés dans la base SQL via `dplyr` :
+Vous pouvez ensuite requêter les objets créés dans la base SQL via `dplyr`:
+
 ```{r}
 conn_ddb %>% tbl("bpe_ens_2018_view")
 ```
-
-Il est déconseillé de faire `CREATE TABLE` car cela copie les données. Les fonctions `read_parquet()` en SQL et `duckdb_register` du _package_ utilisent `CREATE VIEW` implicitement.
 
 Vous pouvez bien sûr lire des fichiers `Parquet`, `CSV` ou autres en utilisant les [fonctions de duckdb](https://duckdb.org/docs/data/overview) :
 
@@ -563,16 +565,20 @@ Le SQL de `duckdb` est très proche de celui de PostgreSQL avec [quelques évolu
 
 #### Séparer vos traitements SQL en blocs
 
-Si vos requêtes deviennent trop complexes et/ou longues, vous pouvez les découper en créant des vues intermédiaires que vous réutiliserez plus tard :
+Si vos requêtes deviennent trop complexes et/ou longues, vous pouvez facilement les découper en créant des vues intermédiaires que vous réutiliserez plus tard :
 
 ```{r eval=FALSE}
+# Créer une vue qui correspond à la première étape du traitement
 dbExecute(conn_ddb, "CREATE OR REPLACE VIEW data1_nettoye AS SELECT ... FROM read_parquet('data1.parquet')")
+
+# Créer une vue qui correspond à la deuxième étape du traitement
 dbExecute(conn_ddb, "CREATE OR REPLACE VIEW data2_nettoye AS SELECT ... FROM read_parquet('data2.parquet')")
 
-dbGetQuery(conn_ddb, "SELECT * FROM data1_nettoye LEFT JOIN data2_nettoye ON data1.id = data2.id")
+# Faire la dernière étape du traitement et récupérer les résultats dans un tibble
+resultats <- dbGetQuery(conn_ddb, "SELECT * FROM data1_nettoye LEFT JOIN data2_nettoye ON data1.id = data2.id")
 ```
 
-Et vous pouvez bien sûr créer des tables intermédiaires (temporaires ou non) à la place des vues pour éviter de les recalculer à chaque fois.
+Et vous pouvez bien sûr créer des tables intermédiaires (temporaires ou non) à la place des vues (en utilisant `CREATE TABLE` pluôt que `CREATE VIEW`) pour éviter de les recalculer à chaque fois.
 
 #### Écrire des fichiers
 
@@ -580,7 +586,7 @@ Vous pouvez exporter des données vers des fichiers en utilisant [`COPY ... TO .
 
 ```{r, message=F}
 dbExecute(conn_ddb, "COPY (SELECT * FROM read_parquet('bpe_ens_2018_dataset/**/*.parquet')) 
-                      TO 'un_dataset_parquet' (FORMAT PARQUET, PARTITION_BY (REG), OVERWRITE_OR_IGNORE 1)")
+                      TO 'mon_dataset_parquet' (FORMAT PARQUET, PARTITION_BY (REG), OVERWRITE_OR_IGNORE 1)")
 ```
 
 Si vous préférez utiliser les fonctions de `arrow`, vous pouvez créez une vue et utiliser `dbplr::tbl` avec `arrow::write_dataset` :
@@ -593,18 +599,18 @@ tbl(conn_ddb, "output") |>
   write_dataset("mon_dataset")
 ```
 
-(https://duckdb.org/docs/guides/sql_features/friendly_sql)
 
 ### Optimisations
 
-Les opérations difficiles en SQL, longues, nécessitant beaucoup de mémoire, sont les fonctions "fenêtre" : jointures, `GROUP BY` avec beaucoup de petits groupes, dédoublonnage, etc. On propose ici quelques techniques pour faire passer ces calculs difficiles.
+Les opérations difficiles en SQL, longues, nécessitant beaucoup de mémoire, sont les fonctions dites "fenêtre": jointures, `GROUP BY` avec beaucoup de petits groupes, dédoublonnage, etc. On propose ici quelques techniques pour faire passer ces calculs difficiles.
 
 
-**Utilisation de la mémoire vive**
+#### Utilisation de la mémoire vive
 
 Comme expliqué plus haut, les objets manipulés dans cette fiche sont des requêtes SQL, et ne nécessitent pas de mémoire vive. Les données déclarées par `read_parquet` sont stockées sur le disque dur, lues à la demande, et "oubliées" à la fin du calcul. On retourne le _résultat_ du calcul.
 
-Pour les opérations compliquées, il peut être nécessaire de charger les données en mémoire pour effectuer le calcul. En cas de débordement, `duckdb` renvoit un message du type :
+Pour les opérations compliquées, il peut être nécessaire de charger les données en mémoire pour effectuer le calcul, au risque de saturer la mémoire. Lorsque ce problème se pose, `duckdb` renvoie un message du type:
+
 ```
 Error: rapi_execute: Failed to run query
 Error: Out of Memory Error: could not allocate block of size 262KB (99.7MB/100.0MB used)
@@ -617,26 +623,29 @@ Or set PRAGMA temp_directory='/path/to/tmp.tmp'
 
 Pour contourner le manque de mémoire vive, on propose les quatre techniques suivantes :   
 
-- diminuer le nombre de threads utilisés par `duckdb`, donc moins de besoins de mémoire (mais aussi moins de parallélisme) :
-  ```{r eval=FALSE}
-  conn_ddb <- dbConnect(duckdb(),
-                        config=list("threads"="1")))
-  ```
-  ou
-  ```{r eval=FALSE}
-  dbExecute(conn_ddb, "SET threads = '1';")
-  ```
+- diminuer le nombre de _threads_ utilisés par `duckdb`, donc moins de besoins de mémoire (mais aussi moins de parallélisme):
+
+```{r eval=FALSE}
+conn_ddb <- dbConnect(duckdb(),
+config=list("threads"="1")))
+```
+ou
+
+```{r eval=FALSE}
+dbExecute(conn_ddb, "SET threads = '1';")
+```
+
 - exécuter et sauvegarder les résultats au fur et à mesure. La commande `arrow::write_dataset` et la commande SQL `COPY request TO filename.parquet` savent le faire automatiquement, sans faire déborder la mémoire, pour certains calculs.
 - découper le calcul et sauvegarder une base intermédiaire (cf ci-dessous).
 - adosser un fichier sur le disque dur à la base de données en mémoire au moment de la création de la connexion. Cela ralentit considérablement les calculs, et ne permet pas toujours d'obtenir un résultat. 
-  ```{r eval=FALSE}
-  conn_ddb <- dbConnect(duckdb(), dbdir = "my-db.duckdb")
-  ```
+```{r eval=FALSE}
+conn_ddb <- dbConnect(duckdb(), dbdir = "my-db.duckdb")
+```
 
 L'interaction entre les différentes options de `duckdb` est complexe et rendent difficile l'élaboration de recommandations claires. Nous mettrons à jour cette fiche quand des benchmarks plus poussés seront disponibles.
 
 
-**Sauvegarder des résultats intermédiaires**. 
+#### Sauvegarder des résultats intermédiaires
 
 Dans plusieurs cas, vous pouvez vouloir passer par des résultats intermédiaires :
 
@@ -646,6 +655,7 @@ Dans plusieurs cas, vous pouvez vouloir passer par des résultats intermédiaire
 Vous avez plusieurs méthodes possibles :
 
 - `arrow::write_dataset()` sait faire les calculs par morceaux automatiquement, et libère la mémoire au fur et à mesure. 
+
 ```{r eval=FALSE}
 conn_ddb %>% calcul1() %>%
   arrow::to_arrow() %>%
@@ -655,7 +665,9 @@ arrow::open_dataset("base_intermediaire") %>%
   arrow::to_duckdb(conn_ddb) %>%
   calcul2()
 ```
-- Vous pouvez utiliser `dbplyr::compute` pour créer une table `duckdb` stockée sur le disque (si vous avez créée une base sur disque bien sûr) que vous pourrez directement utiliser par la suite dans une autre session :
+
+- Vous pouvez utiliser `dbplyr::compute()` pour créer une table `duckdb` stockée sur le disque (si vous avez préalablement créé une base sur disque) que vous pourrez directement utiliser par la suite dans une autre session :
+
 ```{r eval=FALSE}
 conn_ddb %>%
   calcul1() %>%
@@ -668,6 +680,7 @@ tbl(conn_dbb, "matable") %>%
 La première méthode avec `arrow` est généralement la plus rapide et la seconde avec `dbplyr::compute` sur une table nommée est la plus efficace (de loin) en terme d'occupation mémoire. 
 
 A noter que vous pouvez également utiliser `dbplyr::compute` pour créer une table temporaire `duckdb` stockée en mémoire qui disparaitra à la fin de votre session :
+
 ```{r eval=FALSE}
 table_temporaire <- conn_ddb %>%
   calcul1() %>%
@@ -678,48 +691,54 @@ table_temporaire %>%
 ```
 
 
-**Partitionner les données**.
+#### Partitionner les données
 
 - Pour exécuter une fonction fenêtre, il faut pouvoir localiser les données en mémoire avec un _index_.
 - Les fichiers `parquet` ont un index `min-max` : les fichiers sont structurés en blocs, et on indique le minimum et maximum des valeurs du bloc dans les métadonnées. Ceci permet de sauter la lecture d'un bloc si l'on s'intéresse à des valeurs en dehors de la plage `min-max`, parce que l'on filtre les données par exemple.
 - En SQL, on peut créer un index, mais il faut que les données soient en mémoire, ce qui peut s'avérer être incompatible avec de très grosses volumétries.
 - Par contre, on peut partitionner les données, et le moteur SQL sait utiliser le partitionnement comme un index.
+
 ```{r}
 bpe_ens_2018_dataset %>% 
-  arrow::to_arrow() %>% arrow::write_dataset("bpe_ens_2018_dataset_parts", partitioning = "REG" )
+  arrow::to_arrow() %>% 
+  arrow::write_dataset("bpe_ens_2018_dataset_parts", partitioning = "REG" )
 list.files("bpe_ens_2018_dataset_parts") # on obtient un sous-répertoire par région
 ```
 
 
-**Exécuter les traitements par groupe _explicitement_**.
+#### Exécuter les traitements par groupe _explicitement_
+
 S'il faut absolument charger des données en mémoire, on peut découper le calcul pour ne charger qu'une partie des données. Par exemple, faire une jointure région par région au lieu de faire la jointure sur toute la base d'un coup. On peut utiliser le partitionnement pour sauvegarder les résultats partiels, et les ré-assembler ensuite.
+
 ```{r eval=FALSE}
 groups <- bpe_ens_2018_dataset %>% 
-  distinct(REG) %>% pull() # liste des modalités de la variable REG
+  distinct(REG) %>%
+  pull() # liste des modalités de la variable REG
+
+# Définir une fonction qui traite un morceau des données
+# Puis exporte le résultats dans un Parquet partitionné
 f <- function(x) {
   bpe_ens_2018_dataset %>% 
     filter(REG == x) %>% 
     calcul_long() %>% 
-    arrow::to_arrow() %>% arrow::write_dataset("resultat", partitioning = "REG")
+    arrow::to_arrow() %>% 
+    arrow::write_dataset("resultat", partitioning = "REG")
 }
-purrr::walk(f, groups) # on peut aussi utiliser sapply
+
+# Appliquer la fonction à chaque groupe
+purrr::walk(f, groups)
 ```
-
-
-**Bien entendu, on peut combiner ces techniques.**
-
-
 
 ## Comparaison avec `arrow`
 
 `arrow` et `duckdb` partagent de nombreux concepts. Voici quelques différences : 
 
-- `duckdb` comprend parfaitement SQL. Si vous utilisez `PROC SQL`, vous ne serez pas dépaysés.
+- `duckdb` comprend parfaitement SQL. Si vous savez utiliser `PROC SQL` avec SAS, vous ne serez pas dépaysés.
 - Le projet `duckdb` est très récent. Il y a régulièrement des évolutions qui sont souvent des extensions ou des optimisations, et parfois la résolution de bugs. `arrow` est un projet plus ancien et plus mature.
 - Certaines fonctions standards de `R` ne sont pas traduites, mais la situation est meilleure du côté de `duckdb` que d'`arrow`. Hormis `write_dataset()`, la plupart des traitements peuvent être effectués en utilisant uniquement `duckdb`, sans passer par `arrow`.
 - Les __conversions de type__: `duckdb` est plus permissif que `arrow` et fera plus facilement des [conversions automatiques](https://duckdb.org/docs/sql/data_types/typecasting.html) sans danger.
 - Les __jointures de tables volumineuses__: `arrow` ne parvient pas à joindre des tables de données très volumineuses; il est préférable d'utiliser `duckdb` pour ce type d'opération.
-- Les __réorganisations de données__ : `pivot_wider` et `pivot_longer` existent nativement dans `duckdb` mais pas dans `arrow`.
+- Les __réorganisations de données__ : les fonctions `pivot_wider` et `pivot_longer` existent nativement dans `duckdb` mais pas dans `arrow`.
 - Les __fonctions fenêtre__ (_window functions_): `arrow` ne permet pas d'ajouter directement à une table des informations issues d'une agrégation par groupe de la même table. Par exemple, `arrow` ne peut pas ajouter directement à la base permanente des équipements une colonne égale au nombre total d'équipements du département. Le code fonctionne en `duckdb`.
 
 ```{r}
@@ -730,15 +749,13 @@ bpe_ens_2018_dataset |>
   select(DEP, NB_EQUIP, NB_EQUIP_TOTAL_DEP)
 ```
 
--   les __empilements de tables__: il est facile d'empiler plusieurs `tibbles` avec `dplyr` grâce à la fonction `bind_rows()`: `bind_rows(table1, table2, table3, table4)`. En revanche, il n'existe pas à ce jour de fonction similaire dans `arrow`. On propose la syntaxe suivante en `duckdb`. Par ailleurs, les deux tables doivent être parfaitement compatibles pour être empilés (il faut le même nombre de colonnes avec le même nom et le même type, ce qui n'est pas toujours le cas en pratique).
+-   les __empilements de tables__: il est facile d'empiler plusieurs `tibbles` avec `dplyr` grâce à la fonction `bind_rows()`: `bind_rows(table1, table2, table3, table4)`. En revanche, il n'existe pas à ce jour de fonction équivalente dans `arrow` ou dans `duckdb`: il faut empiler les tables deux à deux avec les fonctions `union_all()` et `union()`. La différence entre `arrow` et `duckdb` est que `duckdb` est plus souple et acceptera d'empiler des tables qui ne sont pas exactement compatibles (exemple: pas le même nombre de colonnes), tandis qu'`arrow` exige qye les deux tables soient parfaitement compatibles (il faut le même nombre de colonnes avec le même nom et le même type, ce qui n'est pas toujours le cas en pratique). Dans l'exemple suivant, on empile deux tables qui n'ont pas exactement le même nombre de colonnes:
 
-    ```{r}
-    # Comment empiler de multiples tables
-    bpe_ens_2018_dataset %>% count()
-    bpe_ens_2018_dataset %>% 
-    union_all( bpe_ens_2018_dataset) %>% 
-    union_all( bpe_ens_2018_dataset) %>% count()
-    ```
+```{r}
+# Comment empiler de multiples tables
+table_empilees  <- bpe_ens_2018_dataset %>% 
+  union_all(bpe_ens_2018_dataset |> select(-DEPCOM))
+```
 
 
 ## Pour en savoir plus {#Ressourcesduckdb}
