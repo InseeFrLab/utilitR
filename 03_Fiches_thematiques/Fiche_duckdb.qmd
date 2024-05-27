@@ -104,7 +104,7 @@ Le moteur `duckdb` fonctionnant "en dehors" de `R`, il détecte le nombre de pro
 Comme beaucoup d'autres bases de données (distantes ou locales), on ouvre une connexion au moteur `duckdb` avec une base de données en mémoire vive de la façon suivante :
 
 ```{r}
-conn_ddb <- DBI::dbConnect(duckdb::duckdb())
+conn_ddb <- DBI::dbConnect(drv = duckdb::duckdb())
 ```
 
 Concrètement, cette commande crée une nouvelle base de données `duckdb` dans la mémoire vive. Cette base de données ne contient aucune donnée lorsqu'elle est créée. L'objet `conn_ddb` apparaît dans l'onglet `Data` de l'environnement `RStudio`, mais la liste des tables n'y est pas directement accessible. Pour plus d'informations, se reporter à la documentation du _package_ `DBI`.
@@ -133,7 +133,7 @@ Une fois qu'on s'est connecté à une base de données duckDB, il faut charger d
 - En établissant un lien entre la base de données duckDB et les objets de la session `R`;
 - En indiquant à `duckdb` l'emplacement des données sur le disque dur.
 
-#### Déclaration de données provenant de `R`
+#### Chargement de données provenant de la session `R`
 
 __La fonction `duckdb_register()` permet de charger dans `duckdb` des données présentes dans la session `R`.__ Cette méthode a l'avantage de ne pas _recopier_ les données: elle se contente d'établir un lien logique entre la base de données `duckdb` et un objet de la session `R`. Voici un exemple avec la Base permanente des équipements: grâce à la fonction `duckdb::duckdb_register()`, l'objet `bpe_ens_2018` est référencé dans la base de données `duckdb` sous le nom `bpe_ens_2018_duckdb`.
 
@@ -154,15 +154,15 @@ conn_ddb %>% tbl("bpe_ens_2018_duckdb")
 ```
 
 
-#### Déclaration de données stockées sur le disque dur
+#### Chargement de données stockées sur le disque dur
 
-Pour l'exemple, on sauvegarde les données `bpe_ens_2018` au format Parquet.
+Pour l'exemple suivant, on sauvegarde les données `bpe_ens_2018` au format Parquet.
 
 ```{r}
 bpe_ens_2018 |> arrow::write_dataset("bpe_ens_2018_dataset")
 ```
 
-**Il existe deux méthodes pour manipuler des données stockées en Parquet avec `duckdb` sans avoir à les charger en mémoire**: soit utiliser la fonction `dplyr::tbl` qui lit directement les fichiers avec `duckdb`, soit utiliser la fonction `arrow::open_dataset()` et créer un lien logique avec la fonction `arrow::to_duckdb()`. Si la deuxième méthode est plus simple, surtout quand vous connaissez déjà `arrow`, la première est systématiquement plus efficace et peut générer des gains de consommation mémoire et de temps de traitement conséquents, il est donc conseillé de ne pas lire vos fichiers avec `arrow::open_dataset` si vos traitements sont lourds.
+**Il existe deux méthodes pour manipuler des données stockées en Parquet avec `duckdb` sans avoir à les charger en mémoire**: soit utiliser la fonction `dplyr::tbl()` qui lit directement les fichiers Parquet avec `duckdb`, soit utiliser la fonction `arrow::open_dataset()` et créer un lien logique avec la fonction `arrow::to_duckdb()`. Si la deuxième méthode est plus simple, surtout quand vous connaissez déjà `arrow`, la première est systématiquement plus efficace et peut générer des gains de consommation mémoire et de temps de traitement conséquents. Il est donc conseillé de ne pas lire vos fichiers avec `arrow::open_dataset` si vos traitements sont lourds (il ne faut pas hésiter à faire des tests).
 
 **La première approche repose uniquement sur `duckdb`.** Vous devez utilisez la fonction `dplyr::tbl`:
 
@@ -172,17 +172,15 @@ conn_ddb %>% tbl("read_parquet('bpe_ens_2018_dataset/**/*.parquet')")
 
 Quelques explications de cette commande:
 
-* La fonction [`read_parquet`](https://duckdb.org/docs/data/parquet/overview.html#read_parquet-function) est une fonction interne à `duckdb`, elle ne doit surtout pas être confondue avec la fonction `read_parquet()` du _package_ `arrow`. 
-* `**/*.parquet` est un motif qui indique que vous souhaitez lire, dans tous les sous-dossiers quelque soit le niveau (`**`), l'ensemble des fichiers parquets (`*.parquet`) qui s'y trouvent. C'est notamment utile pour lire des fichiers Parquet partitionnés.
-Quand vous n'avez pas besoin de passer d'arguments à `read_parquet`, vous pouvez l'omettre :
+* La fonction [`read_parquet`](https://duckdb.org/docs/data/parquet/overview.html#read_parquet-function) est une fonction interne à `duckdb`, elle ne doit surtout pas être confondue avec la fonction `read_parquet()` du _package_ `arrow`. Remarque: `duckdb` propose aussi [des fonctions pour lire d'autres formats](https://duckdb.org/docs/data/csv/overview.html) comme csv, json...
+* `**/*.parquet` est un motif qui indique que vous souhaitez lire, dans tous les sous-dossiers quelque soit le niveau (`**`), l'ensemble des fichiers parquets (`*.parquet`) qui s'y trouvent. C'est notamment utile pour lire des fichiers Parquet partitionnés. Quand vous n'avez pas besoin de passer d'arguments à `read_parquet`, vous pouvez l'omettre :
 
-```{r messages=FALSE}
-conn_ddb %>% tbl('bpe_ens_2018_dataset/**/*.parquet')
-```
+    ```{r messages=FALSE}
+    conn_ddb %>% tbl('bpe_ens_2018_dataset/**/*.parquet')
+    ```
 
-A noter que `duckdb` propose aussi [des fonctions pour lire d'autres formats](https://duckdb.org/docs/data/csv/overview.html) comme csv, json...
 
-**La seconde approche consiste à passer par `arrow`, puis à transmettre les données à `duckdb`.** Cette méthode utilise un objet intermédiaire de type Arrow Table (voir la fiche [Manipuler des données avec `arrow`](#arrow)) : 
+**La seconde approche consiste à passer par `arrow`, puis à transmettre les données à `duckdb`.** Cette méthode utilise un objet intermédiaire de type Arrow Dataset (voir la fiche [Manipuler des données avec `arrow`](#arrow)): 
 ```{r}
 # Créer une connexion au dataset Parquet
 bpe_ens_2018_dataset <- arrow::open_dataset("bpe_ens_2018_dataset")
@@ -204,7 +202,7 @@ bpe_ens_2018_dataset <- conn_ddb %>%
 Le _package_ `R` `duckdb` a été écrit de façon à pouvoir manipuler les données avec la syntaxe de `dplyr` (`select`, `filter`, `mutate`, `left_join`, etc.). `duckdb` traduit le code `R`, y compris certaines fonctions de `stringr` et `lubridate` en requête SQL. Cela s'avère très commode en pratique, car lorsqu'on sait utiliser `dplyr` et le `tidyverse`, on peut commencer à utiliser `duckdb` sans avoir à apprendre une nouvelle syntaxe de manipulation de données. 
 
 
-Dans l'exemple suivant, on calcule le nombre d'équipements par région, à partir d'un `tibble` et à partir d'une table `duckdb`. La seule différence apparente entre les deux traitement est la présence de la fonction `collect()` à la fin des instructions; cette fonction indique que l'on souhaite que le résultat du traitement soit stocké sous la forme d'un `tibble`. La raison d'être de ce `collect()` est expliquée plus loin, dans le paragraphe sur l'évaluation différée. Les résultats sont identiques, à l'exception de l'ordre des lignes. En effet, un moteur SQL ne respecte pas l'ordre par défaut, il faut le demander explicitement avec `arrange`.
+Dans l'exemple suivant, on calcule le nombre d'équipements par région, à partir d'un `tibble` et à partir d'une table `duckdb`. La seule différence apparente entre les deux traitement est la présence de la fonction `collect()` à la fin des instructions; cette fonction indique que l'on souhaite obtenir le résultat du traitement sous la forme d'un `tibble`. La raison d'être de ce `collect()` est expliquée plus loin, dans le paragraphe sur l'évaluation différée. Les résultats sont identiques, à l'exception de l'ordre des lignes. En effet, un moteur SQL ne respecte pas l'ordre par défaut, il faut le demander explicitement avec `arrange`.
 
 :::: {.columns}
 
@@ -267,7 +265,7 @@ __Ce point est important: en utilisant `print()`, on peut prévisualiser le rés
 
 ### Écriture au format Parquet 
 
-**Pour écrire une table (ou le résultat de n'importe quelle requête) sur le disque au format Parquet, on suggère d'utiliser la librairie `arrow`.**
+**Pour écrire une table (ou le résultat de n'importe quelle requête) sur le disque au format Parquet, il est recommandé d'utiliser la librairie `arrow`.**
 
 ```{r}
 bpe_ens_2018_dataset %>% 
@@ -280,14 +278,16 @@ Pour un usage basique en syntaxe `dplyr`, passer par `arrow` (au lieu de SQL) es
 
 ### Erreurs courantes 
 
-**On a éliminé des colonnes nécessaires**
+Cette section présente quelques erreurs classiques.
+
+#### On a éliminé des colonnes nécessaires
 
 ```{r error=TRUE}
 bpe_ens_2018_dataset |> select(DEP) |>
       mutate(NB_EQUIP_TOTAL_DEP  = sum(NB_EQUIP))
 ```
 
-**Convertir les types**
+#### Convertir les types
 
 Dans cet exemple, on veut multiplier un nombre par une indicatrice.
 ```{r error=TRUE}
@@ -308,12 +308,15 @@ bpe_ens_2018_dataset %>%
 
 ### Configurer `duckdb` {#sec-configuration}
 
-`duckdb` propose [de nombreux paramètres](https://duckdb.org/docs/configuration/overview) mais nous n'allons voir que les principaux.
+`duckdb` propose de nombreux paramètres mais nous n'allons voir que les principaux. Vous pouvez vous reporter à la [documentation officielle](https://duckdb.org/docs/configuration/overview) pour en apprendre davantage sur la configuration de `duckdb`.
 
-Nous allons d'abord voir comment configurer `duckdb` à l'initialisation du pilote. La signature de `duckdb` est :
+#### Configuration lors de l'initialisation
+
+Pour configurer `duckdb` lors de l'initialisation de la base de données (c'est-à-dire au moment où on utilise `DBI::dbConnect(drv = duckdb::duckdb())`), on utilise les arguments du _driver_ `duckdb`. 
 
 ```{r}
-drv <- duckdb(
+# Configurer le driver duckdb
+drv <- duckdb::duckdb(
   dbdir = "fichier.db", 
   config = list(
     threads = "4",
@@ -321,47 +324,35 @@ drv <- duckdb(
     temp_directory = "tmp_path/",
     preserve_insertion_order = "true")
 )
+
+# Initaliser la base de données duckdb avec la configuration
+conn_ddb <- DBI::dbConnect(drv = drv)
 ```
 
-**`dbdir` : utiliser une base persistante**
+Voici une description des principaux paramètres de configuration:
 
-Par défaut, `duckdb` créé une base en mémoire. Si vous fixez ce paramètre, `duckdb` créera une base de données sur disque que vous pourrez réouvrir à votre prochaine session.
 
-Si vous utilisez principalement `dplyr`, les bases de données en mémoire sont certainement suffisantes pour vous mais si vous utilisez du SQL, que vous créez des vues ou que vous utilisez `dplyr::compute`, ce paramètre peut être intéressant.
+- **`dbdir` : utiliser une base de données persistante**. Par défaut, `duckdb` crée une base de données dans la mémoire vive, qui est automatiquement détruite lorsque vous fermez la session `R` ou la connexion `duckdb`. Si vous mettez un chemin dans le paramètre `dbdir`, `duckdb` créera une base de données sur disque que vous pourrez réouvrir à votre prochaine session.
 
-#### Les principaux paramètres de `config`
+    Si vous utilisez principalement `dplyr`, les bases de données en mémoire sont certainement suffisantes. En revanche, ce paramètre peut éventuellement vous être utile si vous utilisez du SQL, si vous créez des vues ou si vous utilisez `dplyr::compute`.
 
-**`threads` : limiter le nombre de threads** {#config-thread}
+- **`threads` : limiter le nombre de _threads_ utilisés par `duckdb`**. Pour simplifier, un _thread_ est un processeur ou un morceau de processeur (l'unité électronique qui réalise les calculs). Par défaut, `duckdb` utilise tous les processeurs disponibles, ce qui n'est pas forcément souhaitable pour plusieurs raisons :
 
-Par défaut, `duckdb` fixe la limite de thread au nombre de cœurs disponibles, ce qui n'est pas forcément souhaitable pour plusieurs raisons :
+    - sur un serveur partagé, vos collègues seront gênés ;
+    - il est [conseillé de disposer de 5 à 10Go](https://duckdb.org/docs/guides/performance/environment.html) de mémoire par _thread_ (5 pour des aggrégations, 10 pour des jointures) donc beaucoup de threads implique beaucoup de mémoire ;
+    - avoir trop de _threads_ peut être contre-productif.
 
-- sur un serveur partagé, vos collègues seront gênés ;
-- il est [conseillé de disposer de 5 à 10Go](https://duckdb.org/docs/guides/performance/environment.html) de mémoire par thread (5 pour des aggrégations, 10 pour des jointures) donc beaucoup de threads implique beaucoup de mémoire ;
-- avoir trop de thread peut être contre-productif.
+    Il n'existe pas de règle générale pour définir le nombre de -threads_, mais utiliser 4 à 8 _threads_  (en respectant le ratio _threads_/mémoire ci-dessus) constitue un point de départ raisonnable. Au delà, les performances augmentent généralement peu pour une consommation mémoire plus importante.
 
-Au final, il n'y a pas de règle exacte mais 4 à 8 threads, en respectant le ratio threads/mémoire ci-dessus, sont des valeurs raisonnables. Au delà, les performances augmentent généralement peu pour une consommation mémoire plus importante.
+- **`memory_limit` : Limiter la mémoire vive utilisée par `duckdb`**. Par défaut, `duckdb` limite la mémoire à 80% de la mémoire disponible sur le serveur. Si vous avez une quantité limitée de mémoire, essayez plutôt de limiter le nombre de _threads_ en respectant la règle de 5 à 10 Go par thread.
 
-**`memory_limit` : Limiter la mémoire**
+- **`temp_directory` : le dossier sur disque dans lequel `duckdb` peut écrire des fichiers temporaires**. Un avantage de `duckdb` est qu'il sait ["déborder" sur disque](https://duckdb.org/docs/guides/performance/how_to_tune_workloads.html#larger-than-memory-workloads-out-of-core-processing) pour une grande partie de ces opérations. Cela signifie que `duckdb` va écrire dans des fichiers temporaires sur le disque les données qu'il ne peut conserver en mémoire car il a atteint la limite de mémoire fixée. Le paramètre `temp_directory` permet de choisir dans quel dossier ces fichiers temporaires seront écrits. Toutefois, il est généralement beaucoup plus efficace de diminuer le nombre de _threads_ que de déborder sur disque mais dans le cas où vous avez besoin de "juste un peu plus" de mémoire cela peut se révéler utile. A noter que ce paramètre est automatiquement fixé si vous avez décidé d'utiliser une base persistante.
 
-Par défaut, `duckdb` limite la mémoire à 80% de la mémoire disponible sur le serveur.
-
-Si vous avez une quantité limitée de mémoire, essayez plutôt de limiter le nombre de threads en respectant la règle de 5 à 10Go par thread.
-
-**`temp_directory` : ou comment utiliser plus de mémoire que ce dont on dispose**
-
-`duckdb` sait ["déborder" sur disque](https://duckdb.org/docs/guides/performance/how_to_tune_workloads.html#larger-than-memory-workloads-out-of-core-processing) pour une grande partie de ces opérations, à savoir, quand il a arrive à la limite mémoire fixée, il va écrire dans des fichiers temporaires les données qu'il ne peut conserver en mémoire.
-
-Il est généralement beaucoup plus efficace de diminuer le nombre de threads (ou de faire vos traitements par bloc) que de déborder sur disque mais dans le cas où vous avez besoin de "juste un peu plus" de mémoire cela peut se révéler utile.
-
-A noter, ce paramètre est automatiquement fixé si vous avez décidé d'utiliser une base persistante.
-
-**`preserve_insertion_order` : préserver l'ordre de lecture/écriture ou non**
-
-`duckdb` peut consommer beaucoup de mémoire pour conserver l'ordre de lecture et d'écriture. Ce dernier paramètre permet d'autoriser `duckdb` à ne pas préserver l'ordre des données à la lecture et à l'écriture des fichiers dans le cas où il n'y a pas de clause `ORDER BY` / `arrange`.
+- **`preserve_insertion_order` : préserver l'ordre de lecture/écriture ou non**. `duckdb` peut consommer beaucoup de mémoire pour conserver l'ordre de lecture et d'écriture. Ce dernier paramètre permet d'autoriser `duckdb` à ne pas préserver l'ordre des données à la lecture et à l'écriture des fichiers dans le cas où il n'y a pas de clause `ORDER BY` / `arrange`.
 
 #### Fixer les paramètres après l'initialisation
 
-Vous pouvez également changer les paramètres d'une base après son initialisation en utilisant la commande `dbExecute`. Par exemple, pour fixer le nombre de thread à 4 :
+Vous pouvez également changer les paramètres d'une base après son initialisation en utilisant la commande `dbExecute`. Par exemple, pour fixer le nombre de _threads_ à 4 :
 
 ```{r}
 dbExecute(conn_ddb, "SET threads = '4';")
@@ -369,7 +360,7 @@ dbExecute(conn_ddb, "SET threads = '4';")
 
 ### L'évaluation différée avec `duckdb` (_lazy evaluation_) {#sec-lazy}
 
-Quand on manipule des objets `duckdb`, on construit des requêtes SQL. Le _package_ `duckdb` se contente de traduire le code `R` en `SQL` sans l'exécuter. On rappelle qu'il faut utiliser `show_query()` pour visualiser la requête. La fonction `print()` permet de pré-visualiser le résultat.
+Quand on manipule des objets `duckdb`, on construit des requêtes SQL. Le _package_ `duckdb` se contente de traduire le code `dplyr` en `SQL` sans l'exécuter (de la même façon que le _package_ `arrow` traduit du code `dplyr` en instructions C++). On rappelle qu'il faut utiliser `show_query()` pour visualiser la requête. La fonction `print()` permet de pré-visualiser le résultat.
 ```{r}
 # Étape 1: compter les équipements
 req_dep <- 
@@ -378,15 +369,18 @@ req_dep <-
   summarise(
     NB_EQUIP_TOT = sum(NB_EQUIP)
   ) 
-req_dep |> show_query()
+req_dep |> 
+  show_query()
 
 # Étape 2: filtrer sur le département
 req_dep_filter <- req_dep |> 
   filter(DEP == "59") 
-req_dep_filter |> show_query()
+req_dep_filter |> 
+  show_query()
 ```
 
-La fonction `collect()` fait exécuter le calcul, et transmet les résultats à `R`. Avant `collect()`, c'est le moteur SQL de `duckdb` qui fait / fera les calculs. Après `collect()`, c'est `R` qui fait le calcul, et l'on manipule un objet `R` (`tibble`) standard, avec toutes les fonctions / _packages_ disponibles.
+La fonction `collect()` envoie à `duckdb` l'instruction d'exécuter le calcul, et transmet les résultats à `R`. Avant `collect()`, c'est le moteur SQL de `duckdb` qui fait / fera les calculs. Après `collect()`, c'est `R` qui fait le calcul, et l'on manipule un objet `R` (`tibble`) standard, avec toutes les fonctions / _packages_ disponibles.
+
 ```{r}
 req_dep_filter |> collect()
 ```
