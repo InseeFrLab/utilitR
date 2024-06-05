@@ -632,26 +632,7 @@ Caution
 <span class="header-section-number">25.2</span> Définitions</h2>
 <section id="les-dates" class="level3" data-number="25.2.1"><h3 data-number="25.2.1" class="anchored" data-anchor-id="les-dates">
 <span class="header-section-number">25.2.1</span> Les dates</h3>
-<p>Une date en R signifie généralement un jour d’une année. Elle peut s’écrire sous différents formats :</p>
-<table class="table">
-<thead><tr class="header">
-<th>Format</th>
-<th>Type</th>
-<th>Exemple (Noël 2023)</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td>Format européen</td>
-<td>JJ/MM/AAAA</td>
-<td>25/12/2023</td>
-</tr>
-<tr class="even">
-<td>Format américain</td>
-<td>AAAA-MM-JJ</td>
-<td>2023-12-25</td>
-</tr>
-</tbody>
-</table>
+<p>Une date en R signifie généralement un jour d’une année. Elle peut s’écrire sous différents formats (voir <a href="@iso8601-rfc3339">encadré sur les normes ISO8601 et RFC3339</a>).</p>
 <p>Une date peut aussi désigner un horaire ou un moment précis. On peut alors spécifier les heures, les minutes, les secondes.</p>
 </section><section id="les-séries-temporelles" class="level3" data-number="25.2.2"><h3 data-number="25.2.2" class="anchored" data-anchor-id="les-séries-temporelles">
 <span class="header-section-number">25.2.2</span> Les séries temporelles</h3>
@@ -685,11 +666,18 @@ Caution
 <span class="header-section-number">25.3.3</span> Les différents fuseaux horaires</h3>
 <p>Ici le fuseau horaire (argument <code>tz</code>) est fixé sur UTC (Coordinated Universal Time = Temps Universel Coordonné). Mais il est possible d’appliquer différents fuseaux horaires à un évènement.</p>
 <p>Par exemple :</p>
-<p>Neil Armstrong a posé le pied sur la lune le 1969-07-21 03:56:20 à Paris mais le 1969-07-20 19:56:20 à Los Angeles.</p>
 <div class="cell">
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">heure_en_france</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html">as.POSIXct</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">pied_sur_la_lune</span>, tz <span class="op">=</span> <span class="st">"Europe/Paris"</span><span class="op">)</span></span>
-<span><span class="va">heure_los_angeles</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html">as.POSIXct</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">pied_sur_la_lune</span>, tz <span class="op">=</span> <span class="st">"America/Los_Angeles"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># changement du fuseau horaire avec le package base</span></span>
+<span><span class="va">heure_en_france</span> <span class="op">&lt;-</span> <span class="va">pied_sur_la_lune</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/attr.html">attr</a></span><span class="op">(</span><span class="va">heure_en_france</span> , <span class="st">"tzone"</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"Europe/Paris"</span></span>
+<span></span>
+<span><span class="co"># changement du fuseau horaire avec le package lubridate</span></span>
+<span><span class="va">heure_los_angeles</span> <span class="op">&lt;-</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/with_tz.html">with_tz</a></span><span class="op">(</span></span>
+<span>    time <span class="op">=</span> <span class="va">pied_sur_la_lune</span>, </span>
+<span>    tzone <span class="op">=</span> <span class="st">"America/Los_Angeles"</span></span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>Neil Armstrong a posé le pied sur la lune le 1969-07-21 03:56:20 à Paris mais le 1969-07-20 19:56:20 à Los Angeles.</p>
 <p>Pour connaître la liste des différents fuseaux horaires, il faut appeler la fonction <code class="sourceCode r"><span class="fu">OlsonNames</span>()</code> (du nom de l’Olson Database).</p>
 </section><section id="gérer-les-changements-dheure" class="level3" data-number="25.3.4"><h3 data-number="25.3.4" class="anchored" data-anchor-id="gérer-les-changements-dheure">
 <span class="header-section-number">25.3.4</span> Gérer les changements d’heure</h3>
@@ -714,7 +702,7 @@ Caution
 <pre><code>[1] "1989-11-09 18:00:00 CET"</code></pre>
 </div>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Heure UTC (exemple en islande)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html">as.POSIXct</a></span><span class="op">(</span><span class="va">chute_mur_berlin</span>, tz <span class="op">=</span> <span class="st">"UTC"</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">chute_mur_berlin</span>, tz <span class="op">=</span> <span class="st">"UTC"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "1989-11-09 17:00:00 UTC"</code></pre>
 </div>
@@ -732,7 +720,7 @@ Caution
 <pre><code>[1] "1998-07-12 21:00:00 CEST"</code></pre>
 </div>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Heure UTC (exemple au Burkina Faso)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html">as.POSIXct</a></span><span class="op">(</span><span class="va">victoire_fifa_1998</span>, tz <span class="op">=</span> <span class="st">"UTC"</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">victoire_fifa_1998</span>, tz <span class="op">=</span> <span class="st">"UTC"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "1998-07-12 19:00:00 UTC"</code></pre>
 </div>
@@ -760,15 +748,15 @@ Caution
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># On prend la date d'aujourd'hui</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/format.html">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html">Sys.time</a></span><span class="op">(</span><span class="op">)</span>, format <span class="op">=</span> <span class="st">"Nous sommes le %d %B %Y et il est %Hh%M et %Ss."</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "Nous sommes le 05 June 2024 et il est 12h58 et 13s."</code></pre>
+<pre><code>[1] "Nous sommes le 05 June 2024 et il est 12h58 et 52s."</code></pre>
 </div>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/format.html">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html">Sys.time</a></span><span class="op">(</span><span class="op">)</span>, format <span class="op">=</span> <span class="st">"Il s'est écoulé %ss depuis le 1er janvier 1970."</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "Il s'est écoulé 1717592293s depuis le 1er janvier 1970."</code></pre>
+<pre><code>[1] "Il s'est écoulé 1717592332s depuis le 1er janvier 1970."</code></pre>
 </div>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/format.html">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html">Sys.time</a></span><span class="op">(</span><span class="op">)</span>, format <span class="op">=</span> <span class="st">"Heure : %X"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "Heure : 12:58:13 PM"</code></pre>
+<pre><code>[1] "Heure : 12:58:52 PM"</code></pre>
 </div>
 </div>
 <p>La liste des formats de données est disponible sur la page d’aide de <code class="sourceCode r"><span class="fu">strptime</span>()</code> (accessible via <code class="sourceCode r"><span class="fu">help</span>(strptime)</code>).</p>
@@ -836,7 +824,7 @@ locale to "fr_FR.UTF-8" cannot be honored</code></pre>
 </div>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/format.html">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html">Sys.time</a></span><span class="op">(</span><span class="op">)</span>, format <span class="op">=</span> <span class="st">"%c"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "Wed 05 Jun 2024 12:58:13 PM UTC"</code></pre>
+<pre><code>[1] "Wed 05 Jun 2024 12:58:52 PM UTC"</code></pre>
 </div>
 <div class="sourceCode" id="cb35"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Paramètres locaux aux USA</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/locales.html">Sys.setlocale</a></span><span class="op">(</span><span class="st">"LC_TIME"</span>, <span class="st">"en_US"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -849,7 +837,7 @@ to "en_US" cannot be honored</code></pre>
 </div>
 <div class="sourceCode" id="cb38"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/format.html">format</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html">Sys.time</a></span><span class="op">(</span><span class="op">)</span>, format <span class="op">=</span> <span class="st">"%c"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "Wed 05 Jun 2024 12:58:13 PM UTC"</code></pre>
+<pre><code>[1] "Wed 05 Jun 2024 12:58:52 PM UTC"</code></pre>
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
@@ -968,17 +956,9 @@ Note
 </div>
 <p>Le package <code>lubridate</code> propose aussi d’autres formatages des durées :</p>
 <div class="cell">
-<div class="sourceCode" id="cb60"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://lubridate.tidyverse.org">"lubridate"</a></span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>
-Attaching package: 'lubridate'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following objects are masked from 'package:base':
-
-    date, intersect, setdiff, union</code></pre>
-</div>
-<div class="sourceCode" id="cb63"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/time_length.html">time_length</a></span><span class="op">(</span><span class="va">age</span>, unit <span class="op">=</span> <span class="st">"year"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb60"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://lubridate.tidyverse.org">"lubridate"</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/time_length.html">time_length</a></span><span class="op">(</span><span class="va">age</span>, unit <span class="op">=</span> <span class="st">"year"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 81.73032</code></pre>
 </div>
@@ -1037,12 +1017,12 @@ Attaching package: 'lubridate'</code></pre>
 <p>Les fonctions de création de durée permettent de modifier et décaler les dates.</p>
 <p>Une date au format <code>Date</code> est stockée sous la forme d’un nombre de jours ainsi :</p>
 <div class="cell">
-<div class="sourceCode" id="cb65"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># En R base</span></span>
+<div class="sourceCode" id="cb62"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># En R base</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html">Sys.Date</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fl">5L</span> <span class="co"># Date dans 5 jours</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "2024-06-10"</code></pre>
 </div>
-<div class="sourceCode" id="cb67"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Avec lubridate</span></span>
+<div class="sourceCode" id="cb64"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Avec lubridate</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html">Sys.Date</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/period.html">days</a></span><span class="op">(</span><span class="fl">5L</span><span class="op">)</span> <span class="co"># Date dans 5 jours</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "2024-06-10"</code></pre>
@@ -1050,23 +1030,23 @@ Attaching package: 'lubridate'</code></pre>
 </div>
 <p>Par exemple, si je veux avoir la même date il y a 5 ou 4 ans :</p>
 <div class="cell">
-<div class="sourceCode" id="cb69"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">fev_29</span> <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="st">"2016-02-29"</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb66"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">fev_29</span> <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="st">"2016-02-29"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Il y a 5 ans, 29 fevrier 2011 n'existe pas :</span></span>
 <span><span class="va">fev_29</span> <span class="op">-</span> <span class="fl">365.2425</span> <span class="op">*</span> <span class="fl">5</span> <span class="co"># Pas exactement la même date</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "2011-02-28"</code></pre>
 </div>
-<div class="sourceCode" id="cb71"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">fev_29</span> <span class="op">-</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/period.html">years</a></span><span class="op">(</span><span class="fl">5L</span><span class="op">)</span> <span class="co"># Calcul impossible</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb68"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">fev_29</span> <span class="op">-</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/period.html">years</a></span><span class="op">(</span><span class="fl">5L</span><span class="op">)</span> <span class="co"># Calcul impossible</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] NA</code></pre>
 </div>
-<div class="sourceCode" id="cb73"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Il y a 4 ans :</span></span>
+<div class="sourceCode" id="cb70"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Il y a 4 ans :</span></span>
 <span><span class="va">fev_29</span> <span class="op">-</span> <span class="fl">365.2425</span> <span class="op">*</span> <span class="fl">4</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "2012-02-29"</code></pre>
 </div>
-<div class="sourceCode" id="cb75"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">fev_29</span> <span class="op">-</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/period.html">years</a></span><span class="op">(</span><span class="fl">4L</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb72"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">fev_29</span> <span class="op">-</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/period.html">years</a></span><span class="op">(</span><span class="fl">4L</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "2012-02-29"</code></pre>
 </div>
@@ -1077,7 +1057,7 @@ Attaching package: 'lubridate'</code></pre>
 <span class="header-section-number">25.7.1</span> Créer une série temporelle</h3>
 <p>Pour créer une série temporelle, on utilise la fonction <code class="sourceCode r"><span class="fu">ts</span>()</code> du package <code>stats</code>. L’argument <code>frequency</code> est le nombre de période en 1 an.</p>
 <div class="cell">
-<div class="sourceCode" id="cb77"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Pour une série annuelle, frequency = 1L</span></span>
+<div class="sourceCode" id="cb74"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Pour une série annuelle, frequency = 1L</span></span>
 <span><span class="va">serie_annuelle</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/ts.html">ts</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">20</span>, start <span class="op">=</span> <span class="fl">2003L</span>, frequency <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Pour une série trimestrielle, frequency = 4L</span></span>
@@ -1131,19 +1111,19 @@ Attaching package: 'lubridate'</code></pre>
 <li>et <code class="sourceCode r"><span class="fu">time</span>()</code> : retourne le vecteur de date indexant la série temporelle</li>
 </ul>
 <div class="cell">
-<div class="sourceCode" id="cb78"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/start.html">start</a></span><span class="op">(</span><span class="va">serie_mensuelle</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb75"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/start.html">start</a></span><span class="op">(</span><span class="va">serie_mensuelle</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 2020    1</code></pre>
 </div>
-<div class="sourceCode" id="cb80"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/start.html">end</a></span><span class="op">(</span><span class="va">serie_mensuelle</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb77"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/start.html">end</a></span><span class="op">(</span><span class="va">serie_mensuelle</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 2021    8</code></pre>
 </div>
-<div class="sourceCode" id="cb82"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/time.html">frequency</a></span><span class="op">(</span><span class="va">serie_mensuelle</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb79"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/time.html">frequency</a></span><span class="op">(</span><span class="va">serie_mensuelle</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 12</code></pre>
 </div>
-<div class="sourceCode" id="cb84"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/time.html">time</a></span><span class="op">(</span><span class="va">serie_mensuelle</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb81"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/time.html">time</a></span><span class="op">(</span><span class="va">serie_mensuelle</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>          Jan      Feb      Mar      Apr      May      Jun      Jul      Aug
 2020 2020.000 2020.083 2020.167 2020.250 2020.333 2020.417 2020.500 2020.583
@@ -1155,17 +1135,9 @@ Attaching package: 'lubridate'</code></pre>
 </div>
 <p>Les dates en output de <code class="sourceCode r"><span class="fu">time</span>()</code> sont au format ts et non au format <code>Date</code>. Pour les convertir, il faut utiliser la fonction <code class="sourceCode r">zoo<span class="sc">::</span><span class="fu">as.Date</span>()</code> :</p>
 <div class="cell">
-<div class="sourceCode" id="cb86"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://zoo.R-Forge.R-project.org/">"zoo"</a></span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>
-Attaching package: 'zoo'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following objects are masked from 'package:base':
-
-    as.Date, as.Date.numeric</code></pre>
-</div>
-<div class="sourceCode" id="cb89"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">zoo</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/zoo/man/yearmon.html">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/time.html">time</a></span><span class="op">(</span><span class="va">serie_mensuelle</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb83"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://zoo.R-Forge.R-project.org/">"zoo"</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">zoo</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/zoo/man/yearmon.html">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/time.html">time</a></span><span class="op">(</span><span class="va">serie_mensuelle</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1] "2020-01-01" "2020-02-01" "2020-03-01" "2020-04-01" "2020-05-01"
  [6] "2020-06-01" "2020-07-01" "2020-08-01" "2020-09-01" "2020-10-01"
@@ -1179,7 +1151,7 @@ Attaching package: 'zoo'</code></pre>
 <p>Le package <code>zoo</code> a d’autres utilités, notamment gérer les séries haute-fréquence.</p>
 <p>On peut construire des séries journalières :</p>
 <div class="cell">
-<div class="sourceCode" id="cb91"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">#data : https://www.letour.fr/fr/parcours-general</span></span>
+<div class="sourceCode" id="cb85"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">#data : https://www.letour.fr/fr/parcours-general</span></span>
 <span><span class="va">date_tour_de_france</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span>from <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/zoo/man/yearmon.html">as.Date</a></span><span class="op">(</span><span class="st">"2023-06-29"</span><span class="op">)</span>, </span>
 <span>                           to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/zoo/man/yearmon.html">as.Date</a></span><span class="op">(</span><span class="st">"2023-07-21"</span><span class="op">)</span>, by <span class="op">=</span> <span class="st">"day"</span><span class="op">)</span></span>
 <span><span class="va">kilometre_etape</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">182</span>, <span class="fl">209</span>, <span class="fl">193.5</span>, <span class="fl">182</span>, <span class="fl">163</span>, <span class="fl">145</span>, <span class="fl">170</span>, <span class="fl">201</span>, </span>
@@ -1191,7 +1163,7 @@ Attaching package: 'zoo'</code></pre>
 </div>
 <p>On peut construire des séries infra-journalières (heure par heure ou encore plus haute-fréquence) :</p>
 <div class="cell">
-<div class="sourceCode" id="cb92"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">#data : https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/pvgis-tools/hourly-radiation_en</span></span>
+<div class="sourceCode" id="cb86"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">#data : https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/pvgis-tools/hourly-radiation_en</span></span>
 <span><span class="va">heures_journee</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span>from <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html">as.POSIXct</a></span><span class="op">(</span><span class="st">"2016-07-01 00:10:00"</span><span class="op">)</span>, </span>
 <span>                           to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html">as.POSIXct</a></span><span class="op">(</span><span class="st">"2016-07-01 23:10:00"</span><span class="op">)</span>, by <span class="op">=</span> <span class="st">"hours"</span><span class="op">)</span></span>
 <span><span class="va">temperature</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">19.42</span>, <span class="fl">19.21</span>, <span class="fl">18.99</span>, <span class="fl">18.78</span>, <span class="fl">19.71</span>, <span class="fl">20.64</span>, <span class="fl">21.57</span>, <span class="fl">22.82</span>, </span>
@@ -1209,7 +1181,7 @@ Attaching package: 'zoo'</code></pre>
 </h3>
 <p>La fonction <code class="sourceCode r"><span class="fu">plot</span>()</code> du package <code>graphics</code> (méthode <code class="sourceCode r"><span class="fu">plot.ts</span>()</code> du package <code>stats</code>) permet d’afficher simplement des séries temporelles :</p>
 <div class="cell">
-<div class="sourceCode" id="cb93"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">tour_de_france_ts</span>, col <span class="op">=</span> <span class="st">"blue"</span>, </span>
+<div class="sourceCode" id="cb87"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">tour_de_france_ts</span>, col <span class="op">=</span> <span class="st">"blue"</span>, </span>
 <span>     ylab <span class="op">=</span> <span class="st">"Distance (en km)"</span>, xlab <span class="op">=</span> <span class="st">"Time"</span>, </span>
 <span>     main <span class="op">=</span> <span class="st">"Distance parcourue par jour (TDF 2023)"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
@@ -1218,7 +1190,7 @@ Attaching package: 'zoo'</code></pre>
 </figure>
 </div>
 </div>
-<div class="sourceCode" id="cb94"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">temp_ts</span>, col <span class="op">=</span> <span class="st">"red"</span>, </span>
+<div class="sourceCode" id="cb88"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">temp_ts</span>, col <span class="op">=</span> <span class="st">"red"</span>, </span>
 <span>     main <span class="op">=</span> <span class="st">"Temperature"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
@@ -1232,18 +1204,12 @@ Attaching package: 'zoo'</code></pre>
 </h3>
 <p>Le package <code>ggplot2</code> propose une grande variété de graphiques. Il est nécessaire au préalable de convertir l’objet en <code>data.frame</code> pour construire le graphique.</p>
 <div class="cell">
-<div class="sourceCode" id="cb95"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://ggplot2.tidyverse.org">"ggplot2"</a></span><span class="op">)</span></span>
+<div class="sourceCode" id="cb89"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://ggplot2.tidyverse.org">"ggplot2"</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">sunspots_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/time.html">time</a></span><span class="op">(</span><span class="va">sunspots</span><span class="op">)</span>, value <span class="op">=</span> <span class="va">sunspots</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">sunspots_df</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">date</span>, y<span class="op">=</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Don't know how to automatically pick scale for object of type &lt;ts&gt;. Defaulting
-to continuous.
-Don't know how to automatically pick scale for object of type &lt;ts&gt;. Defaulting
-to continuous.</code></pre>
-</div>
 <div class="cell-output-display">
 <div>
 <figure class="figure"><p><img src="Fiche_donnees_temporelles_files/figure-html/ggplot2-1.png" class="img-fluid figure-img" width="672"></p>
@@ -1257,20 +1223,20 @@ to continuous.</code></pre>
 </h3>
 <p>Le package <code>dygraphs</code> propose aussi des graphiques pour séries temporelles. L’avantage de ce package est l’interactivité et la possibilité de zoomer dans les graphiques.</p>
 <div class="cell">
-<div class="sourceCode" id="cb97"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/rstudio/dygraphs">"dygraphs"</a></span><span class="op">)</span></span>
+<div class="sourceCode" id="cb90"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/rstudio/dygraphs">"dygraphs"</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/dygraphs/man/dygraph.html">dygraph</a></span><span class="op">(</span><span class="va">temp_ts</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div class="dygraphs html-widget html-fill-item" id="htmlwidget-5242cae69a961ee8cfe8" style="width:100%;height:464px;"></div>
-<script type="application/json" data-for="htmlwidget-5242cae69a961ee8cfe8">{"x":{"attrs":{"labels":["hour","V1"],"legend":"auto","retainDateWindow":false,"axes":{"x":{"pixelsPerLabel":60}}},"scale":"hourly","annotations":[],"shadings":[],"events":[],"format":"date","data":[["2016-07-01T00:10:00.000Z","2016-07-01T01:10:00.000Z","2016-07-01T02:10:00.000Z","2016-07-01T03:10:00.000Z","2016-07-01T04:10:00.000Z","2016-07-01T05:10:00.000Z","2016-07-01T06:10:00.000Z","2016-07-01T07:10:00.000Z","2016-07-01T08:10:00.000Z","2016-07-01T09:10:00.000Z","2016-07-01T10:10:00.000Z","2016-07-01T11:10:00.000Z","2016-07-01T12:10:00.000Z","2016-07-01T13:10:00.000Z","2016-07-01T14:10:00.000Z","2016-07-01T15:10:00.000Z","2016-07-01T16:10:00.000Z","2016-07-01T17:10:00.000Z","2016-07-01T18:10:00.000Z","2016-07-01T19:10:00.000Z","2016-07-01T20:10:00.000Z","2016-07-01T21:10:00.000Z","2016-07-01T22:10:00.000Z","2016-07-01T23:10:00.000Z"],[19.42,19.21,18.99,18.78,19.71,20.64,21.57,22.82,24.06,25.31,26.25,27.19,28.12,28.44,28.75,29.06,28.22,27.38,26.54,24.81,23.08,21.35,21.02,20.69]]},"evals":[],"jsHooks":[]}</script>
+<div class="dygraphs html-widget html-fill-item" id="htmlwidget-9371e4bd4e1b0f34a0f7" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-9371e4bd4e1b0f34a0f7">{"x":{"attrs":{"labels":["hour","V1"],"legend":"auto","retainDateWindow":false,"axes":{"x":{"pixelsPerLabel":60}}},"scale":"hourly","annotations":[],"shadings":[],"events":[],"format":"date","data":[["2016-07-01T00:10:00.000Z","2016-07-01T01:10:00.000Z","2016-07-01T02:10:00.000Z","2016-07-01T03:10:00.000Z","2016-07-01T04:10:00.000Z","2016-07-01T05:10:00.000Z","2016-07-01T06:10:00.000Z","2016-07-01T07:10:00.000Z","2016-07-01T08:10:00.000Z","2016-07-01T09:10:00.000Z","2016-07-01T10:10:00.000Z","2016-07-01T11:10:00.000Z","2016-07-01T12:10:00.000Z","2016-07-01T13:10:00.000Z","2016-07-01T14:10:00.000Z","2016-07-01T15:10:00.000Z","2016-07-01T16:10:00.000Z","2016-07-01T17:10:00.000Z","2016-07-01T18:10:00.000Z","2016-07-01T19:10:00.000Z","2016-07-01T20:10:00.000Z","2016-07-01T21:10:00.000Z","2016-07-01T22:10:00.000Z","2016-07-01T23:10:00.000Z"],[19.42,19.21,18.99,18.78,19.71,20.64,21.57,22.82,24.06,25.31,26.25,27.19,28.12,28.44,28.75,29.06,28.22,27.38,26.54,24.81,23.08,21.35,21.02,20.69]]},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <p>On peut aussi afficher plusieurs courbes sur le même graphique :</p>
 <div class="cell">
-<div class="sourceCode" id="cb98"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/dygraphs/man/dygraph.html">dygraph</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span><span class="op">(</span><span class="va">fdeaths</span>, <span class="va">mdeaths</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb91"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/dygraphs/man/dygraph.html">dygraph</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span><span class="op">(</span><span class="va">fdeaths</span>, <span class="va">mdeaths</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div class="dygraphs html-widget html-fill-item" id="htmlwidget-b99dcf25c7b1b6787bca" style="width:100%;height:464px;"></div>
-<script type="application/json" data-for="htmlwidget-b99dcf25c7b1b6787bca">{"x":{"attrs":{"labels":["month","fdeaths","mdeaths"],"legend":"auto","retainDateWindow":false,"axes":{"x":{"pixelsPerLabel":60}}},"scale":"monthly","annotations":[],"shadings":[],"events":[],"format":"date","data":[["1974-01-01T00:00:00.000Z","1974-02-01T00:00:00.000Z","1974-03-01T00:00:00.000Z","1974-04-01T00:00:00.000Z","1974-05-01T00:00:00.000Z","1974-06-01T00:00:00.000Z","1974-07-01T00:00:00.000Z","1974-08-01T00:00:00.000Z","1974-09-01T00:00:00.000Z","1974-10-01T00:00:00.000Z","1974-11-01T00:00:00.000Z","1974-12-01T00:00:00.000Z","1975-01-01T00:00:00.000Z","1975-02-01T00:00:00.000Z","1975-03-01T00:00:00.000Z","1975-04-01T00:00:00.000Z","1975-05-01T00:00:00.000Z","1975-06-01T00:00:00.000Z","1975-07-01T00:00:00.000Z","1975-08-01T00:00:00.000Z","1975-09-01T00:00:00.000Z","1975-10-01T00:00:00.000Z","1975-11-01T00:00:00.000Z","1975-12-01T00:00:00.000Z","1976-01-01T00:00:00.000Z","1976-02-01T00:00:00.000Z","1976-03-01T00:00:00.000Z","1976-04-01T00:00:00.000Z","1976-05-01T00:00:00.000Z","1976-06-01T00:00:00.000Z","1976-07-01T00:00:00.000Z","1976-08-01T00:00:00.000Z","1976-09-01T00:00:00.000Z","1976-10-01T00:00:00.000Z","1976-11-01T00:00:00.000Z","1976-12-01T00:00:00.000Z","1977-01-01T00:00:00.000Z","1977-02-01T00:00:00.000Z","1977-03-01T00:00:00.000Z","1977-04-01T00:00:00.000Z","1977-05-01T00:00:00.000Z","1977-06-01T00:00:00.000Z","1977-07-01T00:00:00.000Z","1977-08-01T00:00:00.000Z","1977-09-01T00:00:00.000Z","1977-10-01T00:00:00.000Z","1977-11-01T00:00:00.000Z","1977-12-01T00:00:00.000Z","1978-01-01T00:00:00.000Z","1978-02-01T00:00:00.000Z","1978-03-01T00:00:00.000Z","1978-04-01T00:00:00.000Z","1978-05-01T00:00:00.000Z","1978-06-01T00:00:00.000Z","1978-07-01T00:00:00.000Z","1978-08-01T00:00:00.000Z","1978-09-01T00:00:00.000Z","1978-10-01T00:00:00.000Z","1978-11-01T00:00:00.000Z","1978-12-01T00:00:00.000Z","1979-01-01T00:00:00.000Z","1979-02-01T00:00:00.000Z","1979-03-01T00:00:00.000Z","1979-04-01T00:00:00.000Z","1979-05-01T00:00:00.000Z","1979-06-01T00:00:00.000Z","1979-07-01T00:00:00.000Z","1979-08-01T00:00:00.000Z","1979-09-01T00:00:00.000Z","1979-10-01T00:00:00.000Z","1979-11-01T00:00:00.000Z","1979-12-01T00:00:00.000Z"],[901,689,827,677,522,406,441,393,387,582,578,666,830,752,785,664,467,438,421,412,343,440,531,771,767,1141,896,532,447,420,376,330,357,445,546,764,862,660,663,643,502,392,411,348,387,385,411,638,796,853,737,546,530,446,431,362,387,430,425,679,821,785,727,612,478,429,405,379,393,411,487,574],[2134,1863,1877,1877,1492,1249,1280,1131,1209,1492,1621,1846,2103,2137,2153,1833,1403,1288,1186,1133,1053,1347,1545,2066,2020,2750,2283,1479,1189,1160,1113,970,999,1208,1467,2059,2240,1634,1722,1801,1246,1162,1087,1013,959,1179,1229,1655,2019,2284,1942,1423,1340,1187,1098,1004,970,1140,1110,1812,2263,1820,1846,1531,1215,1075,1056,975,940,1081,1294,1341]]},"evals":[],"jsHooks":[]}</script>
+<div class="dygraphs html-widget html-fill-item" id="htmlwidget-7a113cde57bad6118a2a" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-7a113cde57bad6118a2a">{"x":{"attrs":{"labels":["month","fdeaths","mdeaths"],"legend":"auto","retainDateWindow":false,"axes":{"x":{"pixelsPerLabel":60}}},"scale":"monthly","annotations":[],"shadings":[],"events":[],"format":"date","data":[["1974-01-01T00:00:00.000Z","1974-02-01T00:00:00.000Z","1974-03-01T00:00:00.000Z","1974-04-01T00:00:00.000Z","1974-05-01T00:00:00.000Z","1974-06-01T00:00:00.000Z","1974-07-01T00:00:00.000Z","1974-08-01T00:00:00.000Z","1974-09-01T00:00:00.000Z","1974-10-01T00:00:00.000Z","1974-11-01T00:00:00.000Z","1974-12-01T00:00:00.000Z","1975-01-01T00:00:00.000Z","1975-02-01T00:00:00.000Z","1975-03-01T00:00:00.000Z","1975-04-01T00:00:00.000Z","1975-05-01T00:00:00.000Z","1975-06-01T00:00:00.000Z","1975-07-01T00:00:00.000Z","1975-08-01T00:00:00.000Z","1975-09-01T00:00:00.000Z","1975-10-01T00:00:00.000Z","1975-11-01T00:00:00.000Z","1975-12-01T00:00:00.000Z","1976-01-01T00:00:00.000Z","1976-02-01T00:00:00.000Z","1976-03-01T00:00:00.000Z","1976-04-01T00:00:00.000Z","1976-05-01T00:00:00.000Z","1976-06-01T00:00:00.000Z","1976-07-01T00:00:00.000Z","1976-08-01T00:00:00.000Z","1976-09-01T00:00:00.000Z","1976-10-01T00:00:00.000Z","1976-11-01T00:00:00.000Z","1976-12-01T00:00:00.000Z","1977-01-01T00:00:00.000Z","1977-02-01T00:00:00.000Z","1977-03-01T00:00:00.000Z","1977-04-01T00:00:00.000Z","1977-05-01T00:00:00.000Z","1977-06-01T00:00:00.000Z","1977-07-01T00:00:00.000Z","1977-08-01T00:00:00.000Z","1977-09-01T00:00:00.000Z","1977-10-01T00:00:00.000Z","1977-11-01T00:00:00.000Z","1977-12-01T00:00:00.000Z","1978-01-01T00:00:00.000Z","1978-02-01T00:00:00.000Z","1978-03-01T00:00:00.000Z","1978-04-01T00:00:00.000Z","1978-05-01T00:00:00.000Z","1978-06-01T00:00:00.000Z","1978-07-01T00:00:00.000Z","1978-08-01T00:00:00.000Z","1978-09-01T00:00:00.000Z","1978-10-01T00:00:00.000Z","1978-11-01T00:00:00.000Z","1978-12-01T00:00:00.000Z","1979-01-01T00:00:00.000Z","1979-02-01T00:00:00.000Z","1979-03-01T00:00:00.000Z","1979-04-01T00:00:00.000Z","1979-05-01T00:00:00.000Z","1979-06-01T00:00:00.000Z","1979-07-01T00:00:00.000Z","1979-08-01T00:00:00.000Z","1979-09-01T00:00:00.000Z","1979-10-01T00:00:00.000Z","1979-11-01T00:00:00.000Z","1979-12-01T00:00:00.000Z"],[901,689,827,677,522,406,441,393,387,582,578,666,830,752,785,664,467,438,421,412,343,440,531,771,767,1141,896,532,447,420,376,330,357,445,546,764,862,660,663,643,502,392,411,348,387,385,411,638,796,853,737,546,530,446,431,362,387,430,425,679,821,785,727,612,478,429,405,379,393,411,487,574],[2134,1863,1877,1877,1492,1249,1280,1131,1209,1492,1621,1846,2103,2137,2153,1833,1403,1288,1186,1133,1053,1347,1545,2066,2020,2750,2283,1479,1189,1160,1113,970,999,1208,1467,2059,2240,1634,1722,1801,1246,1162,1087,1013,959,1179,1229,1655,2019,2284,1942,1423,1340,1187,1098,1004,970,1140,1110,1812,2263,1820,1846,1531,1215,1075,1056,975,940,1081,1294,1341]]},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 </section></section><section id="pour-en-savoir-plus" class="level2" data-number="25.9"><h2 data-number="25.9" class="anchored" data-anchor-id="pour-en-savoir-plus">
