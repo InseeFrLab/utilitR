@@ -83,9 +83,10 @@ Les **packages** `duckdb` et `arrow` ont des cas d'usage très similaires (voir 
 | Travailler sur un fichier .csv️ sans le charger entièrement en mémoire     | ❌     | ✔️     |
 | Utiliser la syntaxe `dplyr` pour traiter mes données                      | ✔️     | ✔️     |
 | Utiliser du langage SQL pour traiter mes données                          | ❌     | ✔️     |
-| Écrire un fichier .parquet                                                | ✔️     | ❌     |
 | Utiliser des fonctions statistiques qui n'existent pas dans arrow (voir @sec-arrow) | ❌     | ✔️     |
+| Écrire un fichier .parquet                                                | ✔️     | ✔️ *   |
 
+\* pour écrire un fichier .parquet avec le package `duckdb`, il faut utiliser une instruction SQL (voir @sec-ecrire-parquet)
 
 ## Installation de `duckdb`
 
@@ -595,7 +596,7 @@ resultats <- dbGetQuery(conn_ddb, "SELECT * FROM data1_nettoye LEFT JOIN data2_n
 
 Et vous pouvez bien sûr créer des tables intermédiaires (temporaires ou non) à la place des vues (en utilisant `CREATE TABLE` pluôt que `CREATE VIEW`) pour éviter de les recalculer à chaque fois.
 
-#### Écrire des fichiers
+#### Écrire des fichiers {#sec-ecrire-parquet}
 
 Vous pouvez exporter des données vers des fichiers en utilisant [`COPY ... TO ...`](https://duckdb.org/docs/sql/statements/copy.html#copy--to) :
 
