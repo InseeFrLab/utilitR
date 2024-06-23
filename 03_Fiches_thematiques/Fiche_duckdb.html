@@ -526,6 +526,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#%C3%A0-quoi-sert-le-package-duckdb" id="toc-à-quoi-sert-le-package-duckdb" class="nav-link" data-scroll-target="#%C3%A0-quoi-sert-le-package-duckdb"><span class="header-section-number">20.2.2</span> À quoi sert le <em>package</em> <code>duckdb</code>?</a></li>
   <li><a href="#quels-sont-les-avantages-de-duckdb" id="toc-quels-sont-les-avantages-de-duckdb" class="nav-link" data-scroll-target="#quels-sont-les-avantages-de-duckdb"><span class="header-section-number">20.2.3</span> Quels sont les avantages de <code>duckdb</code>?</a></li>
   <li><a href="#quels-sont-les-points-dattention-%C3%A0-lusage" id="toc-quels-sont-les-points-dattention-à-lusage" class="nav-link" data-scroll-target="#quels-sont-les-points-dattention-%C3%A0-lusage"><span class="header-section-number">20.2.4</span> Quels sont les points d’attention à l’usage ?</a></li>
+  <li><a href="#quand-utiliser-duckdb-plut%C3%B4t-que-arrow" id="toc-quand-utiliser-duckdb-plutôt-que-arrow" class="nav-link" data-scroll-target="#quand-utiliser-duckdb-plut%C3%B4t-que-arrow"><span class="header-section-number">20.2.5</span> Quand utiliser <code>duckdb</code> plutôt que <code>arrow</code> ?</a></li>
   </ul>
 </li>
   <li><a href="#installation-de-duckdb" id="toc-installation-de-duckdb" class="nav-link" data-scroll-target="#installation-de-duckdb"><span class="header-section-number">20.3</span> Installation de <code>duckdb</code></a></li>
@@ -550,7 +551,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#optimisations" id="toc-optimisations" class="nav-link" data-scroll-target="#optimisations"><span class="header-section-number">20.5.5</span> Optimisations</a></li>
   </ul>
 </li>
-  <li><a href="#comparaison-avec-arrow" id="toc-comparaison-avec-arrow" class="nav-link" data-scroll-target="#comparaison-avec-arrow"><span class="header-section-number">20.6</span> Comparaison avec <code>arrow</code></a></li>
+  <li><a href="#sec-arrow" id="toc-sec-arrow" class="nav-link" data-scroll-target="#sec-arrow"><span class="header-section-number">20.6</span> Comparaison avec <code>arrow</code></a></li>
   <li><a href="#Ressourcesduckdb" id="toc-Ressourcesduckdb" class="nav-link" data-scroll-target="#Ressourcesduckdb"><span class="header-section-number">20.7</span> Pour en savoir plus</a></li>
   </ul><div class="toc-actions"><ul><li><a href="https://github.com/InseeFrLab/utilitR/edit/master/03_Fiches_thematiques/Fiche_duckdb.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/InseeFrLab/utilitR/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -661,7 +662,65 @@ Note
 <strong><em>Traduction en SQL</em></strong>: <code>duckdb</code> traduit automatiquement les instructions <code>dplyr</code> en requêtes SQL (de la même façon qu’<code>arrow</code> traduit ces instructions en code C++). Il arrive toutefois que certaines fonctions de <code>dplyr</code> n’aient pas d’équivalent direct en <code>duckdb</code> et ne puissent être traduites automatiquement. Dans ce cas (qui est heureusement moins fréquent qu’avec <code>arrow</code>), il faut parfois utiliser une fonction SQL directement ou trouver une solution pour contourner le problème. La <a href="#sec-sql" class="quarto-xref"><span>Section 20.5.3</span></a> donne quelques trucs et astuces dans ce cas.</li>
 <li>
 <strong>Interopérabilité</strong>: <code>duckdb</code> est conçu pour être interopérable entre plusieurs langages de programmation tels que <code>R</code>, Python, Java, C++, etc. Cela signifie que les données peuvent être échangées entre ces langages sans avoir besoin de convertir les données, d’où des gains importants de temps et de performance.</li>
-</ul></section></section><section id="installation-de-duckdb" class="level2" data-number="20.3"><h2 data-number="20.3" class="anchored" data-anchor-id="installation-de-duckdb">
+</ul></section><section id="quand-utiliser-duckdb-plutôt-que-arrow" class="level3" data-number="20.2.5"><h3 data-number="20.2.5" class="anchored" data-anchor-id="quand-utiliser-duckdb-plutôt-que-arrow">
+<span class="header-section-number">20.2.5</span> Quand utiliser <code>duckdb</code> plutôt que <code>arrow</code> ?</h3>
+<p>Les <em>packages</em> <code>duckdb</code> et <code>arrow</code> ont des cas d’usage très similaires (voir la fiche <a href="Fiche_arrow.html">Manipuler des données avec <code>arrow</code></a>), mais on peut préférer l’un à l’autre selon les cas. On peut également les utiliser ensemble pour profiter de chacun de leurs avantages. Le tableau ci-dessous compare quelques cas d’usage de ces deux <em>packages</em> :</p>
+<table class="table">
+<colgroup>
+<col style="width: 86%">
+<col style="width: 5%">
+<col style="width: 7%">
+</colgroup>
+<thead><tr class="header">
+<th>Je souhaite…</th>
+<th>arrow</th>
+<th>duckdb</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Optimiser mes traitements pour des données volumineuses</td>
+<td>✔️</td>
+<td>✔️</td>
+</tr>
+<tr class="even">
+<td>Travailler sur un fichier .parquet ou .csv sans le charger entièrement en mémoire</td>
+<td>✔️</td>
+<td>✔️</td>
+</tr>
+<tr class="odd">
+<td>Utiliser la syntaxe <code>dplyr</code> pour traiter mes données</td>
+<td>✔️</td>
+<td>✔️</td>
+</tr>
+<tr class="even">
+<td>Utiliser du langage SQL pour traiter mes données</td>
+<td>❌</td>
+<td>✔️</td>
+</tr>
+<tr class="odd">
+<td>Joindre des tables très volumineuses (plus de 4 Go)</td>
+<td>❌</td>
+<td>✔️</td>
+</tr>
+<tr class="even">
+<td>Utiliser des fonctions fenêtres (voir <a href="#sec-arrow" class="quarto-xref"><span>Section 20.6</span></a>)</td>
+<td>❌</td>
+<td>✔️</td>
+</tr>
+<tr class="odd">
+<td>Utiliser des fonctions statistiques qui n’existent pas dans arrow (voir <a href="#sec-arrow" class="quarto-xref"><span>Section 20.6</span></a>)</td>
+<td>❌</td>
+<td>✔️</td>
+</tr>
+<tr class="even">
+<td>Écrire un fichier .parquet</td>
+<td>✔️</td>
+<td>✔️ *</td>
+</tr>
+</tbody>
+</table>
+<p>* pour écrire un fichier .parquet avec le package <code>duckdb</code>, il faut utiliser une instruction SQL (voir <a href="#sec-ecrire-parquet" class="quarto-xref"><span>Section 20.5.4.2</span></a>)</p>
+</section></section><section id="installation-de-duckdb" class="level2" data-number="20.3"><h2 data-number="20.3" class="anchored" data-anchor-id="installation-de-duckdb">
 <span class="header-section-number">20.3</span> Installation de <code>duckdb</code>
 </h2>
 <p>Il suffit d’installer le <em>package</em> <code>duckdb</code>, qui contient à la fois <code>DuckDB</code> et une interface pour que <code>R</code> puisse s’y connecter.</p>
@@ -907,23 +966,23 @@ This warning is displayed once every 8 hours.</code></pre>
 <pre><code># A tibble: 18 × 2
    REG   NB_EQUIP_TOT
    &lt;chr&gt;        &lt;dbl&gt;
- 1 28          107186
- 2 53          111291
- 3 76          256813
- 4 06            7353
- 5 02           19068
- 6 03            7852
- 7 24           81379
- 8 27           96309
- 9 44          181130
-10 75          237008
-11 52          119689
-12 01           23939
-13 94           21778
-14 84          303775
-15 32          175859
-16 93          254405
-17 11          469181
+ 1 24           81379
+ 2 32          175859
+ 3 84          303775
+ 4 75          237008
+ 5 01           23939
+ 6 52          119689
+ 7 94           21778
+ 8 53          111291
+ 9 28          107186
+10 02           19068
+11 03            7852
+12 44          181130
+13 27           96309
+14 76          256813
+15 06            7353
+16 11          469181
+17 93          254405
 18 04           30767</code></pre>
 </div>
 </div>
@@ -1021,16 +1080,16 @@ LINE 1: SELECT DEP, SUM(NB_EQUIP * (TYPEQU = 'B203')) AS nb_boulangeries
 # Database: DuckDB v0.9.2 [unknown@Linux 6.5.0-1022-azure:R 4.3.2/:memory:]
    DEP   nb_boulangeries
    &lt;chr&gt;           &lt;dbl&gt;
- 1 55                157
- 2 56                640
- 3 68                513
- 4 76                861
- 5 31                814
+ 1 09                159
+ 2 12                270
+ 3 06                966
+ 4 72                396
+ 5 83                999
  6 973                98
- 7 09                159
- 8 12                270
- 9 06                966
-10 72                396
+ 7 31                814
+ 8 68                513
+ 9 76                861
+10 55                157
 # ℹ more rows</code></pre>
 </div>
 </div>
@@ -1328,16 +1387,16 @@ Note
 # Database: DuckDB v0.9.2 [unknown@Linux 6.5.0-1022-azure:R 4.3.2/:memory:]
    REG   NB_EQUIP_TOT
    &lt;chr&gt;        &lt;dbl&gt;
- 1 84          303775
- 2 32          175859
- 3 28          107186
- 4 53          111291
+ 1 28          107186
+ 2 53          111291
+ 3 06            7353
+ 4 76          256813
  5 24           81379
  6 01           23939
  7 75          237008
  8 02           19068
  9 03            7852
-10 06            7353
+10 84          303775
 # ℹ more rows</code></pre>
 </div>
 </div>
@@ -1380,7 +1439,7 @@ Tip
 <span><span class="va">resultats</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html">dbGetQuery</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"SELECT * FROM data1_nettoye LEFT JOIN data2_nettoye ON data1.id = data2.id"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Et vous pouvez bien sûr créer des tables intermédiaires (temporaires ou non) à la place des vues (en utilisant <code>CREATE TABLE</code> pluôt que <code>CREATE VIEW</code>) pour éviter de les recalculer à chaque fois.</p>
-</section><section id="écrire-des-fichiers" class="level4" data-number="20.5.4.2"><h4 data-number="20.5.4.2" class="anchored" data-anchor-id="écrire-des-fichiers">
+</section><section id="sec-ecrire-parquet" class="level4" data-number="20.5.4.2"><h4 data-number="20.5.4.2" class="anchored" data-anchor-id="sec-ecrire-parquet">
 <span class="header-section-number">20.5.4.2</span> Écrire des fichiers</h4>
 <p>Vous pouvez exporter des données vers des fichiers en utilisant <a href="https://duckdb.org/docs/sql/statements/copy.html#copy--to"><code>COPY ... TO ...</code></a> :</p>
 <div class="cell">
@@ -1516,7 +1575,7 @@ Or set PRAGMA temp_directory='/path/to/tmp.tmp'</code></pre>
 <span><span class="co"># Appliquer la fonction à chaque groupe</span></span>
 <span><span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">walk</a></span><span class="op">(</span><span class="va">f</span>, <span class="va">groups</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section></section></section><section id="comparaison-avec-arrow" class="level2" data-number="20.6"><h2 data-number="20.6" class="anchored" data-anchor-id="comparaison-avec-arrow">
+</section></section></section><section id="sec-arrow" class="level2" data-number="20.6"><h2 data-number="20.6" class="anchored" data-anchor-id="sec-arrow">
 <span class="header-section-number">20.6</span> Comparaison avec <code>arrow</code>
 </h2>
 <p><code>arrow</code> et <code>duckdb</code> partagent de nombreux concepts. Voici quelques différences :</p>
@@ -1542,16 +1601,16 @@ Or set PRAGMA temp_directory='/path/to/tmp.tmp'</code></pre>
 # Groups:   DEP
    DEP   NB_EQUIP NB_EQUIP_TOTAL_DEP
    &lt;chr&gt;    &lt;dbl&gt;              &lt;dbl&gt;
- 1 15           1               6327
- 2 15           1               6327
- 3 15           1               6327
- 4 15           1               6327
- 5 15           1               6327
- 6 15           1               6327
- 7 15           1               6327
- 8 15           1               6327
- 9 15           2               6327
-10 15           1               6327
+ 1 06           1              66766
+ 2 06           2              66766
+ 3 06           1              66766
+ 4 06           1              66766
+ 5 06           2              66766
+ 6 06           3              66766
+ 7 06           1              66766
+ 8 06           2              66766
+ 9 06           1              66766
+10 06           1              66766
 # ℹ more rows</code></pre>
 </div>
 </div>
