@@ -966,23 +966,23 @@ This warning is displayed once every 8 hours.</code></pre>
 <pre><code># A tibble: 18 × 2
    REG   NB_EQUIP_TOT
    &lt;chr&gt;        &lt;dbl&gt;
- 1 24           81379
+ 1 84          303775
  2 32          175859
- 3 84          303775
- 4 75          237008
- 5 01           23939
- 6 52          119689
- 7 94           21778
- 8 53          111291
- 9 28          107186
-10 02           19068
-11 03            7852
-12 44          181130
-13 27           96309
-14 76          256813
-15 06            7353
-16 11          469181
-17 93          254405
+ 3 75          237008
+ 4 94           21778
+ 5 52          119689
+ 6 01           23939
+ 7 76          256813
+ 8 06            7353
+ 9 24           81379
+10 44          181130
+11 27           96309
+12 02           19068
+13 03            7852
+14 28          107186
+15 53          111291
+16 93          254405
+17 11          469181
 18 04           30767</code></pre>
 </div>
 </div>
@@ -1080,16 +1080,16 @@ LINE 1: SELECT DEP, SUM(NB_EQUIP * (TYPEQU = 'B203')) AS nb_boulangeries
 # Database: DuckDB v0.9.2 [unknown@Linux 6.5.0-1022-azure:R 4.3.2/:memory:]
    DEP   nb_boulangeries
    &lt;chr&gt;           &lt;dbl&gt;
- 1 09                159
- 2 12                270
- 3 06                966
- 4 72                396
- 5 83                999
- 6 973                98
- 7 31                814
- 8 68                513
- 9 76                861
-10 55                157
+ 1 68                513
+ 2 76                861
+ 3 72                396
+ 4 06                966
+ 5 09                159
+ 6 83                999
+ 7 12                270
+ 8 31                814
+ 9 55                157
+10 56                640
 # ℹ more rows</code></pre>
 </div>
 </div>
@@ -1129,7 +1129,7 @@ LINE 1: SELECT DEP, SUM(NB_EQUIP * (TYPEQU = 'B203')) AS nb_boulangeries
 <li><p>il est <a href="https://duckdb.org/docs/guides/performance/environment.html">conseillé de disposer de 5 à 10Go</a> de mémoire par <em>thread</em> (5 pour des aggrégations, 10 pour des jointures) donc beaucoup de threads implique beaucoup de mémoire ;</p></li>
 <li><p>avoir trop de <em>threads</em> peut être contre-productif.</p></li>
 </ul>
-<p>Il n’existe pas de règle générale pour définir le nombre de -threads_, mais utiliser 4 à 8 <em>threads</em> (en respectant le ratio <em>threads</em>/mémoire ci-dessus) constitue un point de départ raisonnable. Au delà, les performances augmentent généralement peu pour une consommation mémoire plus importante.</p>
+<p>Il n’existe pas de règle générale pour définir le nombre de <em>threads</em>, mais utiliser 4 à 8 <em>threads</em> (en respectant le ratio <em>threads</em>/mémoire ci-dessus) constitue un point de départ raisonnable. Au delà, les performances augmentent généralement peu pour une consommation mémoire plus importante.</p>
 <ul>
 <li><p><strong><code>memory_limit</code> : limiter la mémoire vive utilisée par <code>duckdb</code></strong>. Par défaut, <code>duckdb</code> limite la mémoire à 80% de la mémoire disponible sur le serveur. Si vous avez une quantité limitée de mémoire, essayez plutôt de limiter le nombre de <em>threads</em> en respectant la règle de 5 à 10 Go par thread.</p></li>
 <li><p><strong><code>temp_directory</code> : définir le dossier sur disque dans lequel <code>duckdb</code> peut écrire des fichiers temporaires</strong>. Un avantage de <code>duckdb</code> est qu’il sait <a href="https://duckdb.org/docs/guides/performance/how_to_tune_workloads.html#larger-than-memory-workloads-out-of-core-processing">“déborder” sur disque</a> pour une grande partie de ces opérations. Cela signifie que <code>duckdb</code> va écrire dans des fichiers temporaires sur le disque les données qu’il ne peut conserver en mémoire car il a atteint la limite de mémoire fixée. Le paramètre <code>temp_directory</code> permet de choisir dans quel dossier ces fichiers temporaires seront écrits. Toutefois, il est généralement beaucoup plus efficace de diminuer le nombre de <em>threads</em> que de déborder sur disque mais dans le cas où vous avez besoin de “juste un peu plus” de mémoire cela peut se révéler utile. A noter que ce paramètre est automatiquement fixé si vous avez décidé d’utiliser une base persistante.</p></li>
@@ -1387,16 +1387,16 @@ Note
 # Database: DuckDB v0.9.2 [unknown@Linux 6.5.0-1022-azure:R 4.3.2/:memory:]
    REG   NB_EQUIP_TOT
    &lt;chr&gt;        &lt;dbl&gt;
- 1 28          107186
- 2 53          111291
- 3 06            7353
- 4 76          256813
- 5 24           81379
- 6 01           23939
- 7 75          237008
- 8 02           19068
- 9 03            7852
-10 84          303775
+ 1 06            7353
+ 2 76          256813
+ 3 01           23939
+ 4 75          237008
+ 5 94           21778
+ 6 52          119689
+ 7 24           81379
+ 8 84          303775
+ 9 32          175859
+10 02           19068
 # ℹ more rows</code></pre>
 </div>
 </div>
@@ -1601,21 +1601,21 @@ Or set PRAGMA temp_directory='/path/to/tmp.tmp'</code></pre>
 # Groups:   DEP
    DEP   NB_EQUIP NB_EQUIP_TOTAL_DEP
    &lt;chr&gt;    &lt;dbl&gt;              &lt;dbl&gt;
- 1 06           1              66766
- 2 06           2              66766
- 3 06           1              66766
- 4 06           1              66766
- 5 06           2              66766
- 6 06           3              66766
- 7 06           1              66766
- 8 06           2              66766
- 9 06           1              66766
-10 06           1              66766
+ 1 09           1               7316
+ 2 09           1               7316
+ 3 09           1               7316
+ 4 09           1               7316
+ 5 09           1               7316
+ 6 09           1               7316
+ 7 09           1               7316
+ 8 09           1               7316
+ 9 09           1               7316
+10 09           1               7316
 # ℹ more rows</code></pre>
 </div>
 </div>
 <ul>
-<li>les <strong>empilements de tables</strong>: il est facile d’empiler plusieurs <code>tibbles</code> avec <code>dplyr</code> grâce à la fonction <code><a href="https://dplyr.tidyverse.org/reference/bind_rows.html">bind_rows()</a></code>: <code>bind_rows(table1, table2, table3, table4)</code>. En revanche, il n’existe pas à ce jour de fonction équivalente dans <code>arrow</code> ou dans <code>duckdb</code>: il faut empiler les tables deux à deux avec les fonctions <code><a href="https://dplyr.tidyverse.org/reference/setops.html">union_all()</a></code> et <code><a href="https://generics.r-lib.org/reference/setops.html">union()</a></code>. La différence entre <code>arrow</code> et <code>duckdb</code> est que <code>duckdb</code> est plus souple et acceptera d’empiler des tables qui ne sont pas exactement compatibles (exemple: pas le même nombre de colonnes), tandis qu’<code>arrow</code> exige qye les deux tables soient parfaitement compatibles (il faut le même nombre de colonnes avec le même nom et le même type, ce qui n’est pas toujours le cas en pratique). Dans l’exemple suivant, on empile deux tables qui n’ont pas exactement le même nombre de colonnes:</li>
+<li>les <strong>empilements de tables</strong>: il est facile d’empiler plusieurs <code>tibbles</code> avec <code>dplyr</code> grâce à la fonction <code><a href="https://dplyr.tidyverse.org/reference/bind_rows.html">bind_rows()</a></code>: <code>bind_rows(table1, table2, table3, table4)</code>. En revanche, il n’existe pas à ce jour de fonction équivalente dans <code>arrow</code> ou dans <code>duckdb</code>: il faut empiler les tables deux à deux avec les fonctions <code><a href="https://dplyr.tidyverse.org/reference/setops.html">union_all()</a></code> et <code><a href="https://generics.r-lib.org/reference/setops.html">union()</a></code>. La différence entre <code>arrow</code> et <code>duckdb</code> est que <code>duckdb</code> est plus souple et acceptera d’empiler des tables qui ne sont pas exactement compatibles (exemple: pas le même nombre de colonnes), tandis qu’<code>arrow</code> exige que les deux tables soient parfaitement compatibles (il faut le même nombre de colonnes avec le même nom et le même type, ce qui n’est pas toujours le cas en pratique). Dans l’exemple suivant, on empile deux tables qui n’ont pas exactement le même nombre de colonnes:</li>
 </ul>
 <div class="cell">
 <div class="sourceCode" id="cb82"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Comment empiler de multiples tables</span></span>
