@@ -360,7 +360,7 @@ Si vous utilisez principalement `dplyr`, les bases de données en mémoire sont 
 - il est [conseillé de disposer de 5 à 10Go](https://duckdb.org/docs/guides/performance/environment.html) de mémoire par _thread_ (5 pour des aggrégations, 10 pour des jointures) donc beaucoup de threads implique beaucoup de mémoire ;
 - avoir trop de _threads_ peut être contre-productif.
 
-Il n'existe pas de règle générale pour définir le nombre de -threads_, mais utiliser 4 à 8 _threads_  (en respectant le ratio _threads_/mémoire ci-dessus) constitue un point de départ raisonnable. Au delà, les performances augmentent généralement peu pour une consommation mémoire plus importante.
+Il n'existe pas de règle générale pour définir le nombre de _threads_, mais utiliser 4 à 8 _threads_  (en respectant le ratio _threads_/mémoire ci-dessus) constitue un point de départ raisonnable. Au delà, les performances augmentent généralement peu pour une consommation mémoire plus importante.
 
 - **`memory_limit` : limiter la mémoire vive utilisée par `duckdb`**. Par défaut, `duckdb` limite la mémoire à 80% de la mémoire disponible sur le serveur. Si vous avez une quantité limitée de mémoire, essayez plutôt de limiter le nombre de _threads_ en respectant la règle de 5 à 10 Go par thread.
 
@@ -766,7 +766,7 @@ bpe_ens_2018_dataset |>
   select(DEP, NB_EQUIP, NB_EQUIP_TOTAL_DEP)
 ```
 
--   les __empilements de tables__: il est facile d'empiler plusieurs `tibbles` avec `dplyr` grâce à la fonction `bind_rows()`: `bind_rows(table1, table2, table3, table4)`. En revanche, il n'existe pas à ce jour de fonction équivalente dans `arrow` ou dans `duckdb`: il faut empiler les tables deux à deux avec les fonctions `union_all()` et `union()`. La différence entre `arrow` et `duckdb` est que `duckdb` est plus souple et acceptera d'empiler des tables qui ne sont pas exactement compatibles (exemple: pas le même nombre de colonnes), tandis qu'`arrow` exige qye les deux tables soient parfaitement compatibles (il faut le même nombre de colonnes avec le même nom et le même type, ce qui n'est pas toujours le cas en pratique). Dans l'exemple suivant, on empile deux tables qui n'ont pas exactement le même nombre de colonnes:
+-   les __empilements de tables__: il est facile d'empiler plusieurs `tibbles` avec `dplyr` grâce à la fonction `bind_rows()`: `bind_rows(table1, table2, table3, table4)`. En revanche, il n'existe pas à ce jour de fonction équivalente dans `arrow` ou dans `duckdb`: il faut empiler les tables deux à deux avec les fonctions `union_all()` et `union()`. La différence entre `arrow` et `duckdb` est que `duckdb` est plus souple et acceptera d'empiler des tables qui ne sont pas exactement compatibles (exemple: pas le même nombre de colonnes), tandis qu'`arrow` exige que les deux tables soient parfaitement compatibles (il faut le même nombre de colonnes avec le même nom et le même type, ce qui n'est pas toujours le cas en pratique). Dans l'exemple suivant, on empile deux tables qui n'ont pas exactement le même nombre de colonnes:
 
 ```{r}
 # Comment empiler de multiples tables
