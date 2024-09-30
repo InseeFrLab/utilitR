@@ -72,6 +72,23 @@ Du point de vue d'un statisticien utilisant `R`, le *package* `duckdb` permet de
 -   __*Traduction en SQL*__: `duckdb` traduit automatiquement les instructions `dplyr` en requêtes SQL (de la même façon qu'`arrow` traduit ces instructions en code C++). Il arrive toutefois que certaines fonctions de `dplyr` n'aient pas d'équivalent direct en `duckdb` et ne puissent être traduites automatiquement. Dans ce cas (qui est heureusement moins fréquent qu'avec `arrow`), il faut parfois utiliser une fonction SQL directement ou trouver une solution pour contourner le problème. La @sec-sql donne quelques trucs et astuces dans ce cas.
 -   __Interopérabilité__: `duckdb` est conçu pour être interopérable entre plusieurs langages de programmation tels que `R`, Python, Java, C++, etc. Cela signifie que les données peuvent être échangées entre ces langages sans avoir besoin de convertir les données, d'où des gains importants de temps et de performance.
 
+### Quand utiliser `duckdb` plutôt que `arrow` ?
+
+Les *packages* `duckdb` et `arrow` ont des cas d'usage très similaires (voir la fiche [Manipuler des données avec `arrow`](#arrow)), mais on peut préférer l'un à l'autre selon les cas. On peut également les utiliser ensemble pour profiter de chacun de leurs avantages. Le tableau ci-dessous compare quelques cas d'usage de ces deux *packages* :
+
+| Je souhaite...                                                            | arrow | duckdb |
+| ------------------------------------------------------------------------- | ----- | ------ |
+| Optimiser mes traitements pour des données volumineuses                   | ✔️     | ✔️     |
+| Travailler sur un fichier .parquet ou .csv sans le charger entièrement en mémoire | ✔️     | ✔️     |
+| Utiliser la syntaxe `dplyr` pour traiter mes données                      | ✔️     | ✔️     |
+| Utiliser du langage SQL pour traiter mes données                          | ❌     | ✔️     |
+| Joindre des tables très volumineuses (plus de 4 Go)                          | ❌     | ✔️     |
+| Utiliser des fonctions fenêtres (voir @sec-arrow)                          | ❌     | ✔️     |
+| Utiliser des fonctions statistiques qui n'existent pas dans arrow (voir @sec-arrow) | ❌     | ✔️     |
+| Écrire un fichier .parquet                                                | ✔️     | ✔️ *   |
+
+\* pour écrire un fichier .parquet avec le package `duckdb`, il faut utiliser une instruction SQL (voir @sec-ecrire-parquet)
+
 ## Installation de `duckdb`
 
 Il suffit d'installer le _package_ `duckdb`, qui contient à la fois `DuckDB` et une interface pour que `R` puisse s'y connecter.
@@ -343,7 +360,7 @@ Si vous utilisez principalement `dplyr`, les bases de données en mémoire sont 
 - il est [conseillé de disposer de 5 à 10Go](https://duckdb.org/docs/guides/performance/environment.html) de mémoire par _thread_ (5 pour des aggrégations, 10 pour des jointures) donc beaucoup de threads implique beaucoup de mémoire ;
 - avoir trop de _threads_ peut être contre-productif.
 
-Il n'existe pas de règle générale pour définir le nombre de -threads_, mais utiliser 4 à 8 _threads_  (en respectant le ratio _threads_/mémoire ci-dessus) constitue un point de départ raisonnable. Au delà, les performances augmentent généralement peu pour une consommation mémoire plus importante.
+Il n'existe pas de règle générale pour définir le nombre de _threads_, mais utiliser 4 à 8 _threads_  (en respectant le ratio _threads_/mémoire ci-dessus) constitue un point de départ raisonnable. Au delà, les performances augmentent généralement peu pour une consommation mémoire plus importante.
 
 - **`memory_limit` : limiter la mémoire vive utilisée par `duckdb`**. Par défaut, `duckdb` limite la mémoire à 80% de la mémoire disponible sur le serveur. Si vous avez une quantité limitée de mémoire, essayez plutôt de limiter le nombre de _threads_ en respectant la règle de 5 à 10 Go par thread.
 
@@ -580,7 +597,7 @@ resultats <- dbGetQuery(conn_ddb, "SELECT * FROM data1_nettoye LEFT JOIN data2_n
 
 Et vous pouvez bien sûr créer des tables intermédiaires (temporaires ou non) à la place des vues (en utilisant `CREATE TABLE` pluôt que `CREATE VIEW`) pour éviter de les recalculer à chaque fois.
 
-#### Écrire des fichiers
+#### Écrire des fichiers {#sec-ecrire-parquet}
 
 Vous pouvez exporter des données vers des fichiers en utilisant [`COPY ... TO ...`](https://duckdb.org/docs/sql/statements/copy.html#copy--to) :
 
@@ -729,7 +746,7 @@ f <- function(x) {
 purrr::walk(f, groups)
 ```
 
-## Comparaison avec `arrow`
+## Comparaison avec `arrow` {#sec-arrow}
 
 `arrow` et `duckdb` partagent de nombreux concepts. Voici quelques différences : 
 
@@ -749,7 +766,7 @@ bpe_ens_2018_dataset |>
   select(DEP, NB_EQUIP, NB_EQUIP_TOTAL_DEP)
 ```
 
--   les __empilements de tables__: il est facile d'empiler plusieurs `tibbles` avec `dplyr` grâce à la fonction `bind_rows()`: `bind_rows(table1, table2, table3, table4)`. En revanche, il n'existe pas à ce jour de fonction équivalente dans `arrow` ou dans `duckdb`: il faut empiler les tables deux à deux avec les fonctions `union_all()` et `union()`. La différence entre `arrow` et `duckdb` est que `duckdb` est plus souple et acceptera d'empiler des tables qui ne sont pas exactement compatibles (exemple: pas le même nombre de colonnes), tandis qu'`arrow` exige qye les deux tables soient parfaitement compatibles (il faut le même nombre de colonnes avec le même nom et le même type, ce qui n'est pas toujours le cas en pratique). Dans l'exemple suivant, on empile deux tables qui n'ont pas exactement le même nombre de colonnes:
+-   les __empilements de tables__: il est facile d'empiler plusieurs `tibbles` avec `dplyr` grâce à la fonction `bind_rows()`: `bind_rows(table1, table2, table3, table4)`. En revanche, il n'existe pas à ce jour de fonction équivalente dans `arrow` ou dans `duckdb`: il faut empiler les tables deux à deux avec les fonctions `union_all()` et `union()`. La différence entre `arrow` et `duckdb` est que `duckdb` est plus souple et acceptera d'empiler des tables qui ne sont pas exactement compatibles (exemple: pas le même nombre de colonnes), tandis qu'`arrow` exige que les deux tables soient parfaitement compatibles (il faut le même nombre de colonnes avec le même nom et le même type, ce qui n'est pas toujours le cas en pratique). Dans l'exemple suivant, on empile deux tables qui n'ont pas exactement le même nombre de colonnes:
 
 ```{r}
 # Comment empiler de multiples tables
