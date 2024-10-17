@@ -1,4 +1,4 @@
-FROM inseefrlab/onyxia-rstudio:r4.3.2-2024.02.13
+FROM inseefrlab/onyxia-rstudio:r4.4.1-2024.10.14
 
 # R packages 
 COPY ./DESCRIPTION /tmp/build_image/
