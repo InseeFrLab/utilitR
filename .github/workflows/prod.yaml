@@ -52,16 +52,29 @@ jobs:
     needs: docker
     runs-on: ubuntu-latest
     container: inseefrlab/utilitr:latest
+    env:
+      RENV_PATHS_ROOT: ~/.cache/R/renv
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{github.event.pull_request.head.repo.full_name}}
-      - name: Install dependencies
+      - name: Configure safe repository
         run: |
           git config --global --add safe.directory /__w/utilitR/utilitR
-          Rscript -e "renv::restore()"
+      - name: Cache packages
+        uses: actions/cache@v1
+        with:
+          path: ${{ env.RENV_PATHS_ROOT }}
+          key: ${{ runner.os }}-renv-${{ hashFiles('**/renv.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-renv-
+      - name: Restore packages
+        shell: Rscript {0}
+        run: |
+          if (!requireNamespace("renv", quietly = TRUE)) install.packages("renv")
+          renv::restore()
         env:
           GITHUB_PAT: ${{ secrets.PAT }}
       - name: Render Book
