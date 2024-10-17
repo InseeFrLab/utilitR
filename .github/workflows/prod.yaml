@@ -6,7 +6,7 @@ on:
     branches:
       - main
       - master
-      - test
+      - renv
 
 jobs:
   docker:
@@ -62,9 +62,7 @@ jobs:
       - name: Install dependencies
         run: |
           git config --global --add safe.directory /__w/utilitR/utilitR
-          Rscript -e "install.packages(c('remotes'))"
-          Rscript -e "remotes::install_github('rstudio/htmltools')"
-          Rscript -e "remotes::install_github('r-spatial/sf', dependencies = TRUE)"
+          Rscript -e "renv::restore()"
         env:
           GITHUB_PAT: ${{ secrets.PAT }}
       - name: Render Book
