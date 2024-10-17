@@ -16,16 +16,26 @@ jobs:
     runs-on: ubuntu-latest
     container: inseefrlab/utilitr:latest
     steps:
-      - name: Checkout Repository
-        if: ${{ github.repository == 'inseefrlab/utilitr' }}
-        env:
-          GITHUB_PAT: ${{ secrets.PAT }}
-        uses: actions/checkout@master
-      - name: Install Dependencies
-        if: ${{ github.repository == 'inseefrlab/utilitr' }}
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{github.event.pull_request.head.repo.full_name}}
+      - name: Configure safe repository
         run: |
-          Rscript -e "renv::restore()"
-          Rscript -e "install.packages('yaml')"
+          git config --global --add safe.directory /__w/utilitR/utilitR
+      - name: Cache packages
+        uses: actions/cache@v1
+        with:
+          path: ${{ env.RENV_PATHS_ROOT }}
+          key: ${{ runner.os }}-renv-${{ hashFiles('**/renv.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-renv-
+      - name: Restore packages
+        shell: Rscript {0}
+        run: |
+          if (!requireNamespace("renv", quietly = TRUE)) install.packages("renv")
+          renv::restore()
         env:
           GITHUB_PAT: ${{ secrets.PAT }}
       - name: Render Book
