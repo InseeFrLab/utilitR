@@ -2,14 +2,11 @@ FROM inseefrlab/onyxia-rstudio:r4.3.2-2024.02.13
 
 # R packages 
 COPY ./DESCRIPTION /tmp/build_image/
-RUN Rscript -e "install.packages(c('xfun','knitr', 'insee', 'OECD', 'htmltools'))"
-RUN Rscript -e "remotes::install_deps('/tmp/build_image', dependencies = TRUE, upgrade = FALSE)"
-RUN Rscript -e "remotes::install_github('kevinushey/rex')"
-RUN Rscript -e "remotes::install_github('inseefrlab/inseelocaldata')"
+RUN Rscript -e "install.packages('renv')"
 
 RUN apt-get update \
     && apt-get -qq install gnupg
-    
+
 RUN sh -c 'echo "deb http://http.us.debian.org/debian stable main contrib non-free" >> /etc/apt/sources.list' \
     && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 648ACFD622F3D138 \
     && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 0E98404D386FA1D9 \
