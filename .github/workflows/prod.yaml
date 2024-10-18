@@ -1,102 +1,37 @@
-name: Production de la documentation
-
 on:
+  workflow_dispatch:
   push:
-    branches:
-      - main
-      - master
-      - renv
+    branches: main
+
+name: Quarto Publish
 
 jobs:
-  docker:
-    if: "!contains(github.event.commits[0].message, '[skip ci]')"
+  build-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v2    
-      -
-        name: Set up QEMU
-        if: ${{ github.repository == 'inseefrlab/utilitr' }}
-        uses: docker/setup-qemu-action@v1
-      -
-        name: Set up Docker Buildx
-        if: ${{ github.repository == 'inseefrlab/utilitr' }}
-        uses: docker/setup-buildx-action@v1
-      -
-        name: Login to DockerHub
-        if: ${{ github.repository == 'inseefrlab/utilitr' }}
-        uses: docker/login-action@v1 
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+
+      - name: Install R
+        uses: r-lib/actions/setup-r@v2
+
+      - name: Install dependencies
+        run: sudo ./docker/dependencies.sh
+        
+
+      - name: Install R Dependencies
+        uses: r-lib/actions/setup-renv@v2
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      -
-        name: Build and push
-        if: ${{ github.repository == 'inseefrlab/utilitr' }}
-        id: docker_build
-        uses: docker/build-push-action@v2
+          cache-version: 1
+
+      - name: Render and Publish
+        uses: quarto-dev/quarto-actions/publish@v2
+        with:
+          target: gh-pages
         env:
-          GITHUB_PAT: ${{ secrets.PAT }}
-        with:
-          push: true
-          context: .
-          tags: |
-            inseefrlab/utilitr:latest
-            inseefrlab/utilitr:0.9.1      
-      -
-        name: Image digest
-        run: echo ${{ steps.docker_build.outputs.digest }}
-  website:
-    name: Render website
-    if: "!contains(github.event.commits[0].message, '[skip ci]')"
-    needs: docker
-    runs-on: ubuntu-latest
-    container: inseefrlab/utilitr:latest
-    env:
-      RENV_PATHS_ROOT: ~/.cache/R/renv
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: ${{ github.event.pull_request.head.ref }}
-          repository: ${{github.event.pull_request.head.repo.full_name}}
-      - name: Configure safe repository
-        run: |
-          git config --global --add safe.directory /__w/utilitR/utilitR
-      - name: Set RENV_PATHS_ROOT
-        shell: bash
-        run: |
-          echo "RENV_PATHS_ROOT=${{ runner.temp }}/renv" >> $GITHUB_ENV
-      - name: Install and activate renv
-        run: |
-          install.packages("yaml")
-          install.packages("renv")
-          renv::activate()
-        shell: Rscript {0}
-      - name: Get R and OS version
-        id: get-version
-        run: |
-          cat("##[set-output name=os-version;]", sessionInfo()$running, "\n", sep = "")
-          cat("##[set-output name=r-version;]", R.Version()$version.string, sep = "")
-        shell: Rscript {0}
-      - name: Restore Renv package cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.RENV_PATHS_ROOT }}
-          key: ${{ steps.get-version.outputs.os-version }}-${{ steps.get-version.outputs.r-version }}-${{ inputs.cache-version }}-${{ hashFiles('renv.lock') }}
-          restore-keys: ${{ steps.get-version.outputs.os-version }}-${{ steps.get-version.outputs.r-version }}-${{inputs.cache-version }}-
-        env:
-          GITHUB_PAT: ${{ secrets.PAT }}
-      - name: Render Book
-        run: |
-          ls
-          git remote -v
-          git config --global user.email quarto-github-actions-publish@example.com
-          git config --global user.name "Quarto GHA Workflow Runner"
-          quarto render --to html
-          quarto publish gh-pages --no-render --no-browser
-      - uses: actions/upload-artifact@v4
-        with:
-          name: _public
-          path: _public/
-          retention-days: 5
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
