@@ -2,7 +2,7 @@ FROM inseefrlab/onyxia-rstudio:r4.4.1-2024.10.14
 
 # R packages 
 COPY ./DESCRIPTION /tmp/build_image/
-RUN Rscript -e "install.packages('renv')"
+RUN Rscript -e "install.packages(c('renv','yaml'))"
 
 RUN apt-get update \
     && apt-get -qq install gnupg
