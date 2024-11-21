@@ -490,13 +490,16 @@ wide <- bpe_ens_2018_tbl %>%
 
 ### Retraiter des colonnes avec `tidyr`
 
-#### `separate` : scinder une colonne en plusieurs {#separate}
+#### `separate_wider_delim` : scinder une colonne en plusieurs {#separate}
 
-Il arrive que plusieurs informations réunies en une seule colonne et qu'on souhaite les séparer. La fonction `separate` permet d'effectuer cette opération. Elle prend trois arguments principaux :
+Il arrive que plusieurs informations réunies en une seule colonne et qu'on souhaite les séparer. Les fonctions préfixées par `separate_` permettent d'effectuer cette opération. Plus précisément :  
 
-- le nom de la colonne à scinder ;
-- un vecteur indiquant les noms des nouvelles variables à créer ;
-- le séparateur `sep` indique à quel endroit la variable doit être scindée. Par défaut `separate` scinde au niveau des caractères non-alphanumérique (espace, symbole, etc.). Si l'on indique un nombre entier `n`, alors la colonne est scindée après le n-ième caractère.
+- `separate_wider_position` permet d'effectuer cette séparation **sur la base d'une largeur** ;  
+- `separate_wider_delim` permet d'effectuer cette séparation **sur la base d'un séparateur identifié**.  
+
+Ces fonctions partagent comme argument principal le nom de la colonne à scinder.  
+
+La fonction `separate_wider_position` attend ensuite l'argument `widths` sous la forme d'un vecteur qui indique la position des éléments à scinder.  
 
 Voici un exemple qui utilise la table des communes du Code Officiel Géographique. Dans cette table, la colonne `com` (code commune Insee) contient deux informations : le numéro du département et le numéro de la commune.
 
@@ -505,12 +508,25 @@ cog_com_2019_tbl <- doremifasolData::cog_com_2019 %>% as_tibble()
 cog_com_2019_tbl
 ```
 
-Voici comment on peut utiliser `separate` pour scinder `com` en deux nouvelles colonnes `code_dep` et `code_com`. Vous pouvez noter que la colonne `com` a disparu, car par défaut `separate` supprime la colonne scindée. Si on veut la conserver, il faut ajouter l'option `remove = FALSE`.
+Voici comment on peut utiliser `separate_wider_position` pour scinder `com` en deux nouvelles colonnes `code_dep` et `code_com`. La première colonne `code_dep` est extraite à partir des deux premiers caractères (position 2) et la deuxième colonne `code_com` est extraite à partir du troisième caractère (position 3). Vous pouvez noter que la colonne `com` a disparu, car par défaut les fonctions préfixées par `separate_` supprime la colonne scindée. Si on veut la conserver, il faut ajouter l'option `cols_remove = FALSE`.  
 
-```{r separate}
-cog_com_2019_tbl %>% 
-  separate(com, c("code_dep", "code_com"), sep = 2)
+```{r separate_wider_position}
+cog_com_2019_tbl %>%
+  separate_wider_position(com, widths = c(code_dep = 2, code_com = 3))
 ```
+
+La fonction `separate_wider_delim` attend ensuite :  
+- L'argument `delim` sous la forme d'une chaîne de caractères qui indique le séparateur à utiliser.  
+- L'argument `names` sous la forme d'un vecteur qui indique les noms des nouvelles colonnes.  
+
+Voici un exemple pour illustrer comment on peut utiliser `separate_wider_delim`. On utilise ici le séparateur "espace" pour scinder la colonne `libelle` et définir les nouvelles colonnes `prenom` et `nom`.  
+
+```{r separate_wider_delim}
+tibble(id = 1:4, libelle = c("Lino Galiana", "Olivier Meslin", "Pierre Lamarche", "Damien Dotta")) %>%
+  separate_wider_delim(libelle, delim = " ", names = c("prenom","nom"))
+```
+
+Si vous souhaitez utiliser des expressions régulières, il existe également la fonction `separate_wider_regex`.
 
 #### `unite` : regrouper plusieurs colonnes en une seule {#unite}
 
