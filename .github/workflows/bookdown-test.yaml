@@ -8,7 +8,7 @@ on:
       - main
       - master 
 
-name: preview bookdown
+name: Preview website
 
 jobs:
   build:
@@ -16,15 +16,37 @@ jobs:
     runs-on: ubuntu-latest
     container: inseefrlab/utilitr:latest
     steps:
-      - name: Checkout Repository
-        if: ${{ github.repository == 'inseefrlab/utilitr' }}
-        env:
-          GITHUB_PAT: ${{ secrets.PAT }}
-        uses: actions/checkout@master
-      - name: Install Dependencies
-        if: ${{ github.repository == 'inseefrlab/utilitr' }}
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{github.event.pull_request.head.repo.full_name}}
+      - name: Configure safe repository
         run: |
-          Rscript -e "install.packages(c('remotes', 'htmltools', 'sf'))"
+          git config --global --add safe.directory /__w/utilitR/utilitR
+      - name: Set RENV_PATHS_ROOT
+        shell: bash
+        run: |
+          echo "RENV_PATHS_ROOT=${{ runner.temp }}/renv" >> $GITHUB_ENV
+      - name: Install and activate renv
+        run: |
+          install.packages("yaml")
+          install.packages("renv")
+          renv::status()
+          renv::activate()
+        shell: Rscript {0}
+      - name: Get R and OS version
+        id: get-version
+        run: |
+          cat("##[set-output name=os-version;]", sessionInfo()$running, "\n", sep = "")
+          cat("##[set-output name=r-version;]", R.Version()$version.string, sep = "")
+        shell: Rscript {0}
+      - name: Restore Renv package cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.RENV_PATHS_ROOT }}
+          key: ${{ steps.get-version.outputs.os-version }}-${{ steps.get-version.outputs.r-version }}-${{ inputs.cache-version }}-${{ hashFiles('renv.lock') }}
+          restore-keys: ${{ steps.get-version.outputs.os-version }}-${{ steps.get-version.outputs.r-version }}-${{inputs.cache-version }}-
         env:
           GITHUB_PAT: ${{ secrets.PAT }}
       - name: Render Book
