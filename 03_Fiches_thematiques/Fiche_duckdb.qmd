@@ -597,6 +597,27 @@ resultats <- dbGetQuery(conn_ddb, "SELECT * FROM data1_nettoye LEFT JOIN data2_n
 
 Et vous pouvez bien sûr créer des tables intermédiaires (temporaires ou non) à la place des vues (en utilisant `CREATE TABLE` pluôt que `CREATE VIEW`) pour éviter de les recalculer à chaque fois.
 
+A noter, vous pouvez grouper les requêtes SQL dans un même `dbExecute` :
+```{r eval=FALSE}
+# Créer une vue qui correspond à la première étape du traitement
+dbExecute(conn_ddb, 
+  "CREATE OR REPLACE VIEW data1_nettoye AS SELECT ... FROM read_parquet('data1.parquet');
+   CREATE OR REPLACE VIEW data2_nettoye AS SELECT ... FROM read_parquet('data2.parquet');
+   SELECT * FROM data1_nettoye LEFT JOIN data2_nettoye ON data1.id = data2.id")"
+)
+```
+
+Ou utiliser la clause SQL `WITH` :
+
+```{r eval=FALSE}
+# Créer une vue qui correspond à la première étape du traitement
+dbExecute(conn_ddb, 
+  "WITH data1_nettoye AS (SELECT ... FROM read_parquet('data1.parquet')),
+        data2_nettoye AS (SELECT ... FROM read_parquet('data2.parquet'))
+   SELECT * FROM data1_nettoye LEFT JOIN data2_nettoye ON data1.id = data2.id")"
+)
+```
+
 #### Écrire des fichiers {#sec-ecrire-parquet}
 
 Vous pouvez exporter des données vers des fichiers en utilisant [`COPY ... TO ...`](https://duckdb.org/docs/sql/statements/copy.html#copy--to) :
