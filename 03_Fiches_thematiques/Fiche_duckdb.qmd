@@ -50,23 +50,23 @@ Toutefois, `DuckDB` est très facile à utiliser avec `R`, ce qui permet de bén
 
 Du point de vue d'un statisticien utilisant `R`, le *package* `duckdb` permet de faire trois choses:
 
--   Importer des données (exemples: fichiers CSV, fichiers Parquet);
+-   Lire des données dans une multitude de formats (fichiers CSV, fichiers Parquet, geoparquet, json, geojson, shape...);
 -   Manipuler des données avec la syntaxe `dplyr`, ou avec le langage SQL;
--   Écrire des données au format Parquet.
+-   Écrire des données dans une multitude de formats (parquet, csv, json, geojson, geoparquet...)
 
 
 ### Quels sont les avantages de `duckdb`?
 
--   **Disponibilité immédiate**: on peut pré-visualiser les données ou le résultat d'un calcul sans l'exécuter totalement, sans attendre le chargement des données;
+-   **Disponibilité immédiate** dans les cas "simples": on peut pré-visualiser les données ou le résultat d'un calcul sans l'exécuter totalement, sans attendre le chargement des données (cela n'est pas vrai dans tous les cas comme par exemple sur des agrégations ou des tris)
 -   **Performances élevées**: `duckdb` est très rapide pour la manipulation de données tabulaires (nettement plus performant que `dplyr` par exemple);
--   **Ne pas nécessairement charger les données en mémoire**: `duckdb` permet également de travailler directement sur des fichiers du disque dur;
--   **Optimisations automatiques**: `duckdb` sélectionne automatiquement les colonnes nécessaires, et ne lit que les lignes nécessaires. Cela permet d'accélérer les calculs et de réduire considérablement les besoins en mémoire, même lorsque les données sont volumineuses;
+-   **Ne pas nécessairement charger les données en mémoire**: `duckdb` permet également de requêter directement sur des fichiers du disque dur (ou en ligne) sans avoir à charger tout le fichier en mémoire ;
+-   **Optimisations automatiques**: par exemple dans le cas de fichiers parquet ou d'utilisation du format `duckdb` natif, `duckdb` sélectionne automatiquement les colonnes nécessaires, et ne lit que les lignes (ou plus exactement groupes de lignes) nécessaires. Cela permet d'accélérer les calculs et de réduire considérablement les besoins en mémoire, même lorsque les données sont volumineuses. Ces optimisations ne fonctionnent pas pour tous les formats (par exemple CSV, json...);
 -   **Facilité d'apprentissage** grâce aux approches `dplyr` et SQL: `duckdb` peut être utilisé avec les verbes de `dplyr` (`select`, `mutate`, etc.) et/ou avec le langage SQL. Par conséquent, il n'est pas nécessaire d'apprendre une nouvelle syntaxe pour utiliser `duckdb`, on peut s'appuyer sur la ou les approches que l'on maîtrise déjà. 
 
 
 ### Quels sont les points d'attention à l'usage ?
 
--   __Représentation des données en mémoire__ : `duckdb` est un moteur SQL. Les lignes n'ont pas d'ordre pré-défini, et le résultat d'un traitement peut être dans un ordre imprévisible.
+-   __Préservation de l'ordre des lignes__ : contrairement à un moteur SQL classique, `duckdb` [préserve l'ordre des lignes pour certaines clauses](https://duckdb.org/docs/sql/dialect/order_preservation.html) mais le comportement diffère du {tidyverse} (par exemple`dplyr::*_join` conserve l'ordre mais pas l'ordre `JOIN` de `duckdb`)
 -   __Traitement de données volumineuses__: `duckdb` peut traiter de gros volumes de données, qu'elles soient en mémoire vive ou sur le disque dur. Lorsque les données sont en mémoire vive, les _packages_ `duckdb` et `arrow` peuvent être utilisés conjointement de façon très efficace: cela veut dire concrètement que `duckdb` peut manipuler directement des données stockées dans un objet `Arrow Table`, sans avoir à convertir les données dans un autre format. Avec des données stockées sur le disque dur, `duckdb` est capable de faire les traitements sur des données plus volumineuses que la mémoire vive (RAM). C'est un avantage majeur en comparaison aux autres approches possibles en `R` (`data.table` et `dplyr` par exemple). Toutefois, il faut dans ce cas ajouter le temps de lecture des données au temps nécessaire pour le calcul.
 -   __*Évaluation différée*__: `duckdb` construit des requêtes SQL, qui sont exécutées uniquement lorsque le résultat est explicitement demandée, après optimisation des étapes intermédiaires, et peuvent être exécutées partiellement. La @sec-lazy présente en détail cette notion.
 -   __*Traduction en SQL*__: `duckdb` traduit automatiquement les instructions `dplyr` en requêtes SQL (de la même façon qu'`arrow` traduit ces instructions en code C++). Il arrive toutefois que certaines fonctions de `dplyr` n'aient pas d'équivalent direct en `duckdb` et ne puissent être traduites automatiquement. Dans ce cas (qui est heureusement moins fréquent qu'avec `arrow`), il faut parfois utiliser une fonction SQL directement ou trouver une solution pour contourner le problème. La @sec-sql donne quelques trucs et astuces dans ce cas.
@@ -273,9 +273,9 @@ bpe_ens_2018_dataset |>
 Cette requête est envoyée au serveur SQL et exécutée de façon différente en fonction de la dernière instruction du traitement:
 
 - si le traitement se termine par `collect()`: le calcul est exécuté en entier et le résultat est retourné sous la forme d'un `tibble`,
-- si le traitement se termine par `print(n=nb_lignes)`: le calcul est exécuté partiellement, et seules les `nb_lignes` demandées sont affichées. Cela permet de minimiser les ressources et la mémoire utilisées.
+- si le traitement se termine par `print(n=nb_lignes)`: seules les `nb_lignes` demandées sont affichées. Dans le cas où vous n'avez pas d'opérations bloquantes (agrégations, tris...), cela permet de minimiser les ressources et la mémoire utilisées.
 
-__Ce point est important: en utilisant `print()`, on peut prévisualiser le résultat d'une requête `duckdb` de façon très rapide, sans exécuter tout le traitement.__ Il ne faut pas hésiter à s'en servir pour explorer les données et pour construire le traitement étape par étape, en ajustant en fonction des résultats.
+__Ce point est important: en utilisant `print()` en l'abscence d'opérations bloquantes on peut prévisualiser le résultat d'une requête `duckdb` de façon très rapide, sans exécuter tout le traitement.__ Il ne faut pas hésiter à s'en servir pour explorer les données et pour construire le traitement étape par étape, en ajustant en fonction des résultats.
 
 
 
@@ -403,7 +403,7 @@ req_dep_filter |>
   show_query()
 ```
 
-La fonction `collect()` envoie à `duckdb` l'instruction d'exécuter le calcul, et transmet les résultats à `R`. Un point essentiel est qu'avant l'instruction `collect()`, c'est le moteur SQL de `duckdb` qui fait les calculs, tandis qu'après l'instruction `collect()`, c'est le moteur de `R` qui fait les calculs car on manipule un objet `R` (`tibble`) standard. Par conséquent, il faut faire le plus de calculs possibles avant `collect()` pour bénéficier de la rapidité du moteur SQL !
+La fonction `collect()` génère le SQL, l'envoie à `duckdb` pour exécuter le calcul, et transmet les résultats à `R`. Un point essentiel est que tous les ordres passés avant l'instruction `collect()` seront exécutés par le moteur SQL de `duckdb`, tandis que ceux passés après l'instruction `collect()` seront réalisés par le moteur de `R` sur un objet `R` (`tibble`) standard. Par conséquent, il faut passer le plus d'ordres possibles avant `collect()` pour bénéficier de la rapidité du moteur SQL !
 
 ```{r}
 req_dep_filter |> collect()
@@ -597,6 +597,27 @@ resultats <- dbGetQuery(conn_ddb, "SELECT * FROM data1_nettoye LEFT JOIN data2_n
 
 Et vous pouvez bien sûr créer des tables intermédiaires (temporaires ou non) à la place des vues (en utilisant `CREATE TABLE` pluôt que `CREATE VIEW`) pour éviter de les recalculer à chaque fois.
 
+A noter, vous pouvez grouper les requêtes SQL dans un même `dbExecute` :
+```{r eval=FALSE}
+# Créer une vue qui correspond à la première étape du traitement
+dbExecute(conn_ddb, 
+  "CREATE OR REPLACE VIEW data1_nettoye AS SELECT ... FROM read_parquet('data1.parquet');
+   CREATE OR REPLACE VIEW data2_nettoye AS SELECT ... FROM read_parquet('data2.parquet');
+   SELECT * FROM data1_nettoye LEFT JOIN data2_nettoye ON data1.id = data2.id")"
+)
+```
+
+Ou utiliser la clause SQL `WITH` :
+
+```{r eval=FALSE}
+# Créer une vue qui correspond à la première étape du traitement
+dbExecute(conn_ddb, 
+  "WITH data1_nettoye AS (SELECT ... FROM read_parquet('data1.parquet')),
+        data2_nettoye AS (SELECT ... FROM read_parquet('data2.parquet'))
+   SELECT * FROM data1_nettoye LEFT JOIN data2_nettoye ON data1.id = data2.id")"
+)
+```
+
 #### Écrire des fichiers {#sec-ecrire-parquet}
 
 Vous pouvez exporter des données vers des fichiers en utilisant [`COPY ... TO ...`](https://duckdb.org/docs/sql/statements/copy.html#copy--to) :
@@ -751,8 +772,8 @@ purrr::walk(f, groups)
 `arrow` et `duckdb` partagent de nombreux concepts. Voici quelques différences : 
 
 - `duckdb` comprend parfaitement SQL. Si vous savez utiliser `PROC SQL` avec SAS, vous ne serez pas dépaysés.
-- Le projet `duckdb` est très récent. Il y a régulièrement des évolutions qui sont souvent des extensions ou des optimisations, et parfois la résolution de bugs. `arrow` est un projet plus ancien et plus mature.
-- Certaines fonctions standards de `R` ne sont pas traduites, mais la situation est meilleure du côté de `duckdb` que d'`arrow`. Hormis `write_dataset()`, la plupart des traitements peuvent être effectués en utilisant uniquement `duckdb`, sans passer par `arrow`.
+- Le projet `duckdb` évolue encore rapidement (même si le rythme s'est stabilisé depuis la sortie de la version 1.0.0). Il y a régulièrement des évolutions qui sont souvent des extensions ou des optimisations, et parfois la résolution de bugs. `arrow` est un projet un peu plus ancien et mature.
+- Certaines fonctions standards de `R` ne sont pas traduites, mais la situation est meilleure du côté de `duckdb` que d'`arrow`. Hormis `write_dataset()` (si vous utilisez la syntaxe `dplyr`), la plupart des traitements peuvent être effectués en utilisant uniquement `duckdb`, sans passer par `arrow`.
 - Les __conversions de type__: `duckdb` est plus permissif que `arrow` et fera plus facilement des [conversions automatiques](https://duckdb.org/docs/sql/data_types/typecasting.html) sans danger.
 - Les __jointures de tables volumineuses__: `arrow` ne parvient pas à joindre des tables de données très volumineuses; il est préférable d'utiliser `duckdb` pour ce type d'opération.
 - Les __réorganisations de données__ : les fonctions `pivot_wider` et `pivot_longer` existent nativement dans `duckdb` mais pas dans `arrow`.
