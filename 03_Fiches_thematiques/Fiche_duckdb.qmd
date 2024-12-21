@@ -403,7 +403,7 @@ req_dep_filter |>
   show_query()
 ```
 
-La fonction `collect()` envoie à `duckdb` l'instruction d'exécuter le calcul, et transmet les résultats à `R`. Un point essentiel est qu'avant l'instruction `collect()`, c'est le moteur SQL de `duckdb` qui fait les calculs, tandis qu'après l'instruction `collect()`, c'est le moteur de `R` qui fait les calculs car on manipule un objet `R` (`tibble`) standard. Par conséquent, il faut faire le plus de calculs possibles avant `collect()` pour bénéficier de la rapidité du moteur SQL !
+La fonction `collect()` génère le SQL, l'envoie à `duckdb` pour exécuter le calcul, et transmet les résultats à `R`. Un point essentiel est que tous les ordres passés avant l'instruction `collect()` seront exécutés par le moteur SQL de `duckdb`, tandis que ceux passés après l'instruction `collect()` seront réalisés par le moteur de `R` sur un objet `R` (`tibble`) standard. Par conséquent, il faut passer le plus d'ordres possibles avant `collect()` pour bénéficier de la rapidité du moteur SQL !
 
 ```{r}
 req_dep_filter |> collect()
