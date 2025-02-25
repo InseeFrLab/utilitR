@@ -18,7 +18,6 @@ Elle a vocation à être validée annuellement afin de produire un guide des bon
 Elle prend la forme suivante :
 
 * la documentation principale qui est déployée à l'adresse <https://book.utilitr.org/> ;
-* un guide des bonnes pratiques en `R` déployé à l'adresse <https://www.pratiques.utilitr.org/>
 
 Lorsqu'une version `PDF` sera mise à disposition, un lien direct de téléchargement sera 
 disponible. Chaque fiche, disponible sur le site web, peut être imprimée
@@ -52,7 +51,6 @@ La documentation présentée dans book.utilitr.org a pour ambition de répondre 
 * Comment configurer `R` et `RStudio` de manière à bénéficier de la richesse de cet écosystème ?
 
 A ces deux sujets s'ajoute une documentation sur les bonnes pratiques de développement avec `R`. 
-Ce guide des bonnes pratiques est disponible sur www.pratiques.utilitr.org
 
 ### Remarques
 
