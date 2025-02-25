@@ -49,7 +49,7 @@ Cette documentation présente succinctement les outils les plus adaptés à ces 
 La documentation présentée dans book.utilitr.org a pour ambition de répondre à deux questions générales:
 
 * Comment réaliser des tâches standards avec `R` (importation et manipulation de données, exploitation d'enquêtes, graphiques...)?
-* Comment configurer `R` et `Rstudio` de manière à bénéficier de la richesse de cet écosystème ?
+* Comment configurer `R` et `RStudio` de manière à bénéficier de la richesse de cet écosystème ?
 
 A ces deux sujets s'ajoute une documentation sur les bonnes pratiques de développement avec `R`. 
 Ce guide des bonnes pratiques est disponible sur www.pratiques.utilitr.org
@@ -59,7 +59,7 @@ Ce guide des bonnes pratiques est disponible sur www.pratiques.utilitr.org
 Deux points importants sont à noter:
 
 * **Cette documentation recommande les outils et les *packages* les plus adaptés au contexte d'utilisation de `R` à l'Insee**. Dans certains cas, ces recommandations peuvent ne pas être adaptées à d'autres contextes ou être amenées à changer lorsque le contexte interne évoluera. Une grande partie des recommandations sont néanmoins suffisamment générales pour ne pas être spécifiques au contexte Insee. Elles peuvent ainsi servir à de nombreux utilisateurs de données. 
-* **Cette documentation recommande d'utiliser `R` avec `Rstudio`**, qui apparaît comme la solution la plus simple et la plus complète pour un usage courant de `R`, et qui est par ailleurs le choix effectué par l'Insee et de nombreuses institutions.
+* **Cette documentation recommande d'utiliser `R` avec `RStudio`**, qui apparaît comme la solution la plus simple et la plus complète pour un usage courant de `R`, et qui est par ailleurs le choix effectué par l'Insee et de nombreuses institutions.
 
 <br>
 
