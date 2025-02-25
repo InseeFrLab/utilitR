@@ -226,7 +226,7 @@ INNER JOIN y ON x.var1 = y.var1
 
 Par exemple, pour faire une jointure interne, on pourrait écrire `merge(x = filosofi_com_2016_dt, y = cog_com_2019_dt, by.x = "CODGEO", by.y = "com", all = FALSE)`. Avec la syntaxe alternative, on peut écrire :
 
-```{r, eval=TRUE}
+```{r, eval = TRUE}
 filosofi_com_2016_dt[cog_com_2019_dt, on = c("CODGEO" = "com"), nomatch=NULL]
 ```
 
@@ -234,7 +234,7 @@ L'argument `nomatch` sert à définir le comportement pour les valeurs des obser
 
 Pour effectuer une anti-jointure, il faut sélectionner les clés de `x` qui n'ont pas de contrepartie dans `y`, ce qui s'écrit de manière générale `x[!y]`. Dans notre exemple, cela donne :
 
-```{r, eval=TRUE}
+```{r, eval = TRUE}
 filosofi_com_2016_dt[!cog_com_2019_dt, on = c("CODGEO" = "com")]
 ```
 
@@ -266,14 +266,14 @@ Avant de procéder à une jointure, il est essentiel de **vérifier la qualité 
 
   Une première approche consiste à rechercher les valeurs manquantes (`NA`) dans les variables de jointure. Le code suivant permet de calculer le nombre d'observations pour lesquelles l'identifiant est manquant :
 
-  ```{r, eval=TRUE}
+  ```{r, eval = TRUE}
   sum(is.na(filosofi_com_2016$CODGEO))
   sum(is.na(cog_com_2019$com))
   ```
   
   On voit ici que les variables de jointure ne contiennent aucun `NA` dans les deux tables. Toutefois, les valeurs manquantes peuvent prendre des formes plus complexes que `NA` : `0`, `.`, `999`... c'est pourquoi il est important de procéder à une inspection visuelle des variables de jointure. Pour ce faire, vous pouvez utilisez la fonction `unique()`, qui permet d'afficher la liste des valeurs qui apparaissent dans une variable.
 
-  ```{r, eval=TRUE}
+  ```{r, eval = TRUE}
   unique(filosofi_com_2016$CODGEO)
   ```
 
@@ -281,7 +281,7 @@ Avant de procéder à une jointure, il est essentiel de **vérifier la qualité 
 
   Si les variables de jointure contiennent un grand nombre de fois les mêmes valeurs, la jointure peut devenir très gourmande en ressources, voire irréalisable. Il est donc indispensable de repérer les doublons, et de les traiter si nécessaire. Les deux codes suivants calculent le nombre d'observations dans la table pour chaque valeur des variables de jointure, et affichent les premières lignes par nombre d'observations décroissant. Si la variable `nb_obs` est supérieure ou égale à 2, alors il y a des doublons. Le premier code est adapté si vous utilisez `tidyverse` pour manipuler des données, le second si vous utilisez `data.table`.
 
-  ```{r, eval=TRUE}
+  ```{r, eval = TRUE}
   # Approche dplyr/tidyverse
   doublons <- filosofi_com_2016_tbl %>% 
                 group_by(CODGEO) %>% 
@@ -300,7 +300,7 @@ Avant de procéder à une jointure, il est essentiel de **vérifier la qualité 
 
   On voit ici qu'il n'y a aucun doublon sur les identifiants dans la table issue du répertoire Filosofi. En revanche, on constate qu'il y a un grand grand nombre de doublons sur les identifiants dans la table du code officiel géographique. Cette présence de doublons rend nécessaire une analyse de cette table avant de réaliser la jointure. 
   
-  ```{r, eval=TRUE}
+  ```{r, eval = TRUE}
   # Approche dplyr/tidyverse
   doublons <- cog_com_2019_tbl %>% 
                 group_by(com) %>% 
@@ -323,7 +323,7 @@ Le fait que les variables de jointure contiennent des valeurs manquantes ou des 
   
   - **Une jointure ne peut être réalisée avec `R` que si les variables de jointure sont de même type.** Il faut donc vérifier que c'est le cas. Les types de variables les plus fréquemment utilisées pour des jointures avec `R` sont `integer` (nombre entier), `character` (chaîne de caractères) et `factor` (catégorie). Vous pouvez utiliser la fonction `class` pour connaître le type d'une variable. Dans l'exemple suivant, on voit que les deux variables de jointure sont de type `character`.
   
-  ```{r, eval=TRUE}
+  ```{r, eval = TRUE}
   # Type de la variable de jointure dans la table Filosofi
   class(filosofi_com_2016$CODGEO)
   # Type de la variable de jointure dans le COG 2019
@@ -335,7 +335,7 @@ Le fait que les variables de jointure contiennent des valeurs manquantes ou des 
   
   Le premier code affiche le nombre d'identifiants distincts dans chaque table, et le nombre d'identifiants communs aux deux tables. On voit que tous les identifiants de la table issue de Filosofi figurent dans le COG 2019, mais que l'inverse n'est pas vrai.
 
-  ```{r, eval=TRUE}
+  ```{r, eval = TRUE}
   # Nombre d'identifiants distincts dans la table Filosofi
   length(unique(filosofi_com_2016$CODGEO))
   # Nombre d'identifiants distincts dans le COG 2019
@@ -346,7 +346,7 @@ Le fait que les variables de jointure contiennent des valeurs manquantes ou des 
   
   Le second code donne la liste des identifiants de la table du COG 2019 qui ne figurent pas parmi les identifiants de la table issue de Filosofi.
   
-  ```{r, eval=TRUE}
+  ```{r, eval = TRUE}
   unique(cog_com_2019$com)[!(unique(cog_com_2019$com) %in% unique(filosofi_com_2016$CODGEO))]
   ```
 
@@ -371,7 +371,7 @@ Après une jointure, il est essentiel de **vérifier que la jointure a bien prod
 
   Vous pouvez par exemple utiliser la fonction `is.na()` qui permet de repérer les observations manquantes dans les variables provenant de la table de droite. S'il y a des valeurs manquantes, cela peut indiquer que cette variable contient des valeurs manquantes dans la table de droite, ou que certaines observations de la table de gauche n'ont pas de correspondances dans la table de droite. Dans l'exemple qui suit, on voit que le département est manquant pour plusieurs centaines d'observations de la table jointe.
 
-  ```{r, eval=TRUE}
+  ```{r, eval = TRUE}
   table_jointe_tbl %>% filter(is.na(dep))
   ```
 

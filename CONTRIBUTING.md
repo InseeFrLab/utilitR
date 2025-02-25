@@ -5,12 +5,12 @@
 Il est possible de contribuer au projet `utilitR` de différentes manières, détaillées dans ce document. Les contributions peuvent prendre différentes formes, d'un avis argumenté suite à une relecture à des propositions de modification en passant par des propositions d'intégrations de nouveaux éléments dans le livre ou le site. 
 
 **Il n'est pas nécessaire d'être un expert en `R` pour contribuer au projet `utilitR`.** En revanche, il est nécessaire de s'inscrire dans le fonctionnement
-des contributeurs actuels, fonctionnement qui est orchestré autour de `Github` et de ses différents outils.
+des contributeurs actuels, fonctionnement qui est orchestré autour de `GitHub` et de ses différents outils.
 Il est possible d'en acquérir très rapidement les bases à partir de ce document présentant le [Travail collaboratif avec `R`](https://linogaliana.gitlab.io/collaboratif/git.html#des-bases-de-git), ou à partir d'échanges avec les contributeurs actuels.
 
 Un environnement prêt à l'emploi pour l'exécution des scripts est disponible sur le `SSPCloud`. En cliquant sur le lien suivant, un service `RStudio` avec l'ensemble des dépendances nécessaires pour utiliser la documentation est disponible: [![SSPcloud](https://img.shields.io/badge/SSPcloud-Tester%20via%20SSP--cloud-informational?logo=R)](https://datalab.sspcloud.fr/launcher/ide/rstudio?autoLaunch=false&init.personalInit=%C2%ABhttps%3A%2F%2Fgithub.com%2FInseeFrLab%2FutilitR%2Fblob%2Fmaster%2Finit_utilitr.sh%C2%BB&service.image.custom.enabled=true&service.image.custom.version=%C2%ABinseefrlab%2Futilitr%3Alatest%C2%BB)
 
-Pour les relecteurs quelques notions de l'environnement `Github` suffisent
+Pour les relecteurs quelques notions de l'environnement `GitHub` suffisent
 (ou peuvent s'acquérir facilement) pour apporter sa pierre à l'édifice.
 
 Les mainteneurs et développeurs du projet `utilitR` sont en effet disponibles
@@ -23,7 +23,7 @@ Le document apporte une réponse aux questions suivantes:
 - [:arrow_down: Comment proposer des modifications d'une fiche?](#two-comment-proposer-des-modifications-dune-fiche)
 - [:arrow_down: Comment participer aux discussions collectives?](#three-comment-participer-aux-discussions-collectives)
 - [:arrow_down: Comment effectuer la relecture d'une fiche?](#four-comment-effectuer-la-relecture-dune-fiche)
-    - Comment suggérer des remarques sur une fiche via Github?
+    - Comment suggérer des remarques sur une fiche via GitHub?
     - Comment ouvrir une issue si la fiche pose un réel problème?
 - [:arrow_down: Comment ajouter en tant que contributeur une nouvelle fiche?](#five-comment-ajouter-une-nouvelle-fiche-à-la-documentation)
     - Comment faire un `fork` du dépôt `utilitR`?
@@ -43,13 +43,13 @@ Pour effectuer exclusivement une relecture, vous pouvez vous rendre directement
 
 [:arrow_up: Retour à l'introduction](#one-introduction)
 
-Pré-requis: avoir un compte Github.
+Pré-requis: avoir un compte GitHub.
 
 Pour ce type de modifications, il est demandé d'utiliser directement
-l'outil de suggestions de changements de `Github`.
+l'outil de suggestions de changements de `GitHub`.
 Le livre déployé sur https://book.utilitr.org comprend un bouton `Edit` qui
 permet de proposer, automatiquement, des modifications via l'interface de 
-`Github`. 
+`GitHub`. 
 
 Dans le menu du document, il faut d'abord se placer dans la fiche à
 relire et ensuite cliquer sur le bouton `Edit`, en haut à gauche :
@@ -57,7 +57,7 @@ relire et ensuite cliquer sur le bouton `Edit`, en haut à gauche :
 ![](../pics/contributing/edit_bs4.png)
 
 Un lien s'ouvre automatiquement sur la fiche `.Rmd` et permet d'éditer le
-contenu depuis `Github`. Cette fonctionnalité est utilisable même
+contenu depuis `GitHub`. Cette fonctionnalité est utilisable même
 lorsque vous n'avez pas les droits en écriture sur le dépôt (droits attachés
 au statut de *mainteneur* sur le projet), grâce à la notion de [*fork*](https://github.com/InseeFrLab/utilitr-bonnes-pratiques/edit/master/CONTRIBUTING.md#one-forker-le-d%C3%A9p%C3%B4t-utilitr).
 
@@ -68,7 +68,7 @@ de visualiser et de proposer des modifications du fichier source.
 
 ![](../pics/contributing/edit2.png)
 
-La documentation officielle de Github sur cette manière de procéder est
+La documentation officielle de GitHub sur cette manière de procéder est
 disponible
 [ici](https://docs.github.com/en/free-pro-team@latest/github/managing-files-in-a-repository/editing-files-in-another-users-repository).
 
@@ -117,7 +117,7 @@ en cliquant sur l'onglet `Files changed`:
 
 L'équipe du projet `utilitR` dispose d'un espace de discussion collective
 sur les problèmes techniques et les développements futurs du projet.
-Cet espace de discussion est stocké sur le dépôt `Github` du projet et est
+Cet espace de discussion est stocké sur le dépôt `GitHub` du projet et est
 structuré sous forme d'_issues_.
 
 Une *issue* est un fil de discussion permettant aux contributeurs du projet (mais aussi aux personnes extérieures) d'échanger sur un sujet précis (défini par le titre de l'*issue*). Vous
@@ -154,20 +154,20 @@ son organisation globale.
 
 Il est recommandé de lire la partie
 [:arrow_up: Comment proposer des modifications d'une fiche?](#two-comment-proposer-des-modifications-dune-fiche)
-avant de proposer des commentaires sur une fiche via Github.
+avant de proposer des commentaires sur une fiche via GitHub.
 
 ### Où faire des retours sur une fiche ?
 
 Le lieu idéal de retour de la part d'un relecteur ou d'une relectrice dépend du type de modification envisagée :
 
 * Proposer des corrections mineures (faute d'orthographes, formulations peu claires) : ce travail de modification est décrit dans [:arrow_up: Comment proposer des modifications d'une fiche?](#two-comment-proposer-des-modifications-dune-fiche). Les suggestions de modification sont dès lors associées à une `pull request` pour laquelle il convient d'adopter la convention proposée de nommer la branche `typo-XXX`. Lorsque la `pull request` est ouverte, il est possible de renseigner, dans la description de celle-ci, des commentaires génériques. Les commentaires relatifs à une ligne peuvent être faits sous forme de commentaire en cliquant sur l'onglet `Files changed` puis, sur la fiche en question, en ouvrant un commentaire en cliquant sur le signe `+` dans la marge ;
-* Faire des commentaires sans suggestion de modifications (exemple: je ne parviens pas à reproduire cet exemple): ce travail de modification est décrit dans __Comment faire des commentaires sur une fiche via Github?__;
+* Faire des commentaires sans suggestion de modifications (exemple: je ne parviens pas à reproduire cet exemple): ce travail de modification est décrit dans __Comment faire des commentaires sur une fiche via GitHub?__;
 * Des signalements de problèmes: si le relecteur pense que l'organisation d'ensemble ou le déroulement de la fiche soulève une difficulté sérieuse, ou que des points importants n'ont pas été abordés, il est invité à le signaler en suivant la procédure décrite dans la partie __Comment ouvrir une _issue_ si la fiche soulève un problème?__.
 
 
-### Comment faire des commentaires sur une fiche via Github?
+### Comment faire des commentaires sur une fiche via GitHub?
 
-La démarche est un peu fastidieuse mais est possible directement depuis `Github`. 
+La démarche est un peu fastidieuse mais est possible directement depuis `GitHub`. 
 Dans le menu du site web book.utilitr.org,
 il faut d'abord se placer dans la fiche à
 relire et ensuite cliquer sur le bouton `View source`, dans le menu à droite.
@@ -210,7 +210,7 @@ majorité des contributeurs du projet.
 ### Comment proposer et élaborer une nouvelle fiche?
 
 La première étape consiste à __ouvrir une *issue*__ dans le
-dépôt `Github`. L'_issue_ doit avoir:
+dépôt `GitHub`. L'_issue_ doit avoir:
 
 - un titre explicite indiquant sur quel sujet vous voulez proposer une fiche (toutes suggestions bienvenues);
 - un contenu détaillant l'objet de la fiche et les grandes lignes de son contenu. 
@@ -224,7 +224,7 @@ de la documentation `utilitR`.
 
 ### Utiliser un environnement de travail entièrement configuré pour disposer de l'ensemble des librairies nécessaires à la génération de la documentation
 
-Plutôt que d'utiliser un environnement en local dont la configuration peut différer de manière parfois significative avec l'environnement canonique qui sert à générer la documentation `utilitR` sous Github, il est recommandé d'utiliser le service RStudio du SSP Cloud.
+Plutôt que d'utiliser un environnement en local dont la configuration peut différer de manière parfois significative avec l'environnement canonique qui sert à générer la documentation `utilitR` sous GitHub, il est recommandé d'utiliser le service RStudio du SSP Cloud.
 
 #### Lancer le service RStudio configuré
 
@@ -236,9 +236,9 @@ Pour contribuer à `utilitR`, il est possible de créer un service RStudio enti�
 
 Une autre solution consiste à lancer le service directement via [ce lien](https://datalab.sspcloud.fr/launcher/inseefrlab-helm-charts-datascience/rstudio?onyxia.friendlyName=%C2%AButilitr%C2%BB&service.image.version=%C2%ABinseefrlab%2Futilitr%3A0.8.0%C2%BB).
 
-#### Configurer l'accès au dépôt distant Github : la méthode simple et sécurisée
+#### Configurer l'accès au dépôt distant GitHub : la méthode simple et sécurisée
 
-Pour accéder au dépôt distant Github (très généralement un _fork_ du dépôt officiel d'`utilitR`, comme expliqué plus bas), il faut que l'identifiant du compte corresponde à celui configuré dans l'image (dont on peut voir la valeur prise par défaut dans l'onglet Git de la configuration du service, à l'item _user.email_). Dans l'éventualité où cet identifiant ne correspondrait, il est possible de le reconfigurer une fois le service lancé en soumettant dans un terminal la commande suivante :
+Pour accéder au dépôt distant GitHub (très généralement un _fork_ du dépôt officiel d'`utilitR`, comme expliqué plus bas), il faut que l'identifiant du compte corresponde à celui configuré dans l'image (dont on peut voir la valeur prise par défaut dans l'onglet Git de la configuration du service, à l'item _user.email_). Dans l'éventualité où cet identifiant ne correspondrait, il est possible de le reconfigurer une fois le service lancé en soumettant dans un terminal la commande suivante :
 
 ``` shell
 git config --global user.name "Prénom Nom"
@@ -247,22 +247,22 @@ git config --global user.email "mon.adresse@mail.com"
 
 Il est également possible, pour les utilisateurs avancés, d'incorporer cette commande dans un script d'initialisation qui se lance au démarrage du service, en utilisant également la commande `runuser` de manière à lancer la commande git pour le _user_ `rstudio` et non en _root_ comme cela se fait par défaut.
 
-Enfin, comme montré dans la capture d'écran ci-dessous, il est possible de configurer le mot de passe associé au compte Github de manière à ce qu'il soit conservé dans le cache du service pendant une durée limitée (dans l'exemple ci-dessous, une heure). Une fois le temps écoulé, l'utilisateur devra de nouveau entrer son mot de passe.
+Enfin, comme montré dans la capture d'écran ci-dessous, il est possible de configurer le mot de passe associé au compte GitHub de manière à ce qu'il soit conservé dans le cache du service pendant une durée limitée (dans l'exemple ci-dessous, une heure). Une fois le temps écoulé, l'utilisateur devra de nouveau entrer son mot de passe.
 
 ![](../pics/contributing/configurer_git_cache.png)
 
-#### Configurer l'accès au dépôt distant Github : la méthode à vos risques et périls
+#### Configurer l'accès au dépôt distant GitHub : la méthode à vos risques et périls
 
 La méthode présentée ci-dessus a l'inconvénient qu'elle oblige l'utilisateur à insérer son mot de passe de façon régulière, et quoi qu'il en soit, pour chaque nouveau service RStudio créé sur le SSP Cloud. Il est ainsi possible d'insérer le mot de passe en question dans les variables d'environnement insérées au moment de la création du service, via l'interface `Mes secrets` du SSP Cloud. L'utilisateur intéressé pourra s'il le souhaite consulter la [vidéo de démonstration](https://github.com/InseeFrLab/onyxia-ui/releases/download/assets/Demo_My_Secrets.mp4) explicitant l'usage de ce service.
 
-**ATTENTION : cette méthode comporte des risques car dans l'éventualité où un attaquant parvient à accéder à votre compte sur le SSP Cloud, il récupère des identifiants lui permettant d'accéder, de manière plus ou moins limitée selon la solution retenue, à votre compte Github et à interagir avec vos dépôts. À ce stade, ce n'est pas une méthode recommandée et si elle est utilisée, il convient d'utiliser un jeton d'accès aux droits limités. La fiche `utilitR` [Configurer Git](https://book.utilitr.org/03_Fiches_thematiques/Fiche_configurer_git) présente plus de détails sur la question des jetons d'accès à Github
+**ATTENTION : cette méthode comporte des risques car dans l'éventualité où un attaquant parvient à accéder à votre compte sur le SSP Cloud, il récupère des identifiants lui permettant d'accéder, de manière plus ou moins limitée selon la solution retenue, à votre compte GitHub et à interagir avec vos dépôts. À ce stade, ce n'est pas une méthode recommandée et si elle est utilisée, il convient d'utiliser un jeton d'accès aux droits limités. La fiche `utilitR` [Configurer Git](https://book.utilitr.org/03_Fiches_thematiques/Fiche_configurer_git) présente plus de détails sur la question des jetons d'accès à GitHub
 
-Ainsi, il est possible de récupérer, de manière systématique, son mot de passe ou, de manière un peu plus sécurisée, le token créé sous Github pour communiquer avec le dépôt. La configuration de l'accès de manière automatique peut se configurer en définissant les secrets ci-dessous dans un dossier `utilitr` :
+Ainsi, il est possible de récupérer, de manière systématique, son mot de passe ou, de manière un peu plus sécurisée, le token créé sous GitHub pour communiquer avec le dépôt. La configuration de l'accès de manière automatique peut se configurer en définissant les secrets ci-dessous dans un dossier `utilitr` :
 
 * `PROTOCOL` : prend la valeur `https`
-* `USERNAME` : l'identifiant du compte Github ou Gitlab avec lequel on souhaite interagir sur le dépôt
+* `USERNAME` : l'identifiant du compte GitHub ou Gitlab avec lequel on souhaite interagir sur le dépôt
 * `TOKEN` : il s'agit du token mentionné précédemment
-* `HOST` : pour un accès à Github, la valeur à insérer est `github.com`
+* `HOST` : pour un accès à GitHub, la valeur à insérer est `github.com`
 * `FORK` : une variable optionnelle (qui peut donc être omise) qui, dans le cas où elle prend la valeur `TRUE`, permet de clôner le dépôt _fork_ d'`utilitR` de l'utilisateur. Si elle prend toute autre valeur non vide, elle permet de clôner le dépôt `utilitR`, sur lesquel l'utilisateur, s'il n'est pas identifié comme mainteneur, ne pourra pas réaliser de _push_. Dans le cas où la variable n'est pas spécifiée, ou mise à vide, aucun clônage de dépôt n'est réalisé.
 
 de la manière suivante :
@@ -288,7 +288,7 @@ il faudra mettre à jour sa copie personnelle. C'est expliqué dans la
 [partie dédiée](#two-mettre-a-jour-son-fork).
 
 
-Pour forker le dépôt, il est nécessaire d'avoir un compte `Github`. Une fois
+Pour forker le dépôt, il est nécessaire d'avoir un compte `GitHub`. Une fois
 connecté sur ce compte, on fork le dépôt en cliquant à droite de la page:
 
 ![](../pics/contributing/fork1.png)
@@ -308,7 +308,7 @@ La [documentation officielle](https://docs.github.com/en/free-pro-team@latest/gi
 manipulations à faire pour garder un `fork` à jour. Nous allons un peu développer
 cela.
 
-Généralement, `Github` indique au propriétaire d'un `fork` que sa version
+Généralement, `GitHub` indique au propriétaire d'un `fork` que sa version
 est en retard, ou au contraire en avance, par rapport à la version copiée. 
 
 Pour mettre à jour son `fork`, le plus simple est d'utiliser une copie
@@ -332,7 +332,7 @@ origin  https://github.com/{GITHUB_USERNAME}/utilitR.git (push)
 ```
 
 L'adresse porte normalement le nom `origin`. `{GITHUB_USERNAME}` est
-votre nom d'utilisateur sur `Github`. 
+votre nom d'utilisateur sur `GitHub`. 
 
 Ajouter l'adresse du dépôt officiel `utilitr` avec le nom `upstream` :
 
@@ -416,7 +416,7 @@ prévisualiser en local le livre:
 > 
 > Pour prévisualiser la version web de l'ouvrage: 
 > 
->    * Option 1: utiliser l'onglet 'Build' dans Rstudio;
+>    * Option 1: utiliser l'onglet 'Build' dans RStudio;
 >    * Option 2: taper dans la commande R:
 > ```r
 > bookdown::render_book("index.Rmd", output_dir = "_public", output_format = "utilitr::bs4_utilitr")
@@ -458,12 +458,12 @@ git merge master
 S'il y a des conflits les régler. S'il n'y en a pas, la branche est prête
 à être proposée au dépôt officiel: la `pull request` peut-être ouverte. 
 
-Vérifier que le code est bien fonctionnel. `Github` indique par une
+Vérifier que le code est bien fonctionnel. `GitHub` indique par une
 croix verte :heavy_check_mark: le succès de 
 la compilation, c'est-à-dire la compilation de l'ensemble des 
 fichiers `R Markdown` en un site HTML et un fichier PDF. 
 
-Si tout va bien, `Github` nous indique le succès
+Si tout va bien, `GitHub` nous indique le succès
 
 ![](../pics/contributing/fork3.png)
 
@@ -507,7 +507,7 @@ contributeur corrige sa proposition.
 * Les extensions des images doivent être en minuscules. Cela veut dire qu'il faut éviter l'extension
 `.PNG` que `Windows` génère parfois (notamment via l'outil capture). Si un 
 ou plusieurs fichiers `.PNG` ont été générés,
-`Github` vous enverra une informera d'une erreur de la manière suivante:
+`GitHub` vous enverra une informera d'une erreur de la manière suivante:
 
 ![](../pics/contributing/PR1.png)
 
@@ -516,7 +516,7 @@ et appuyer sur `CTRL`+ `Entrée` pour exécuter le code. Cela vous donnera la
 liste des fichiers incriminés. Avec la fonction 
 `convert_extension("PNG")` ces fichiers seront renommés avec la bonne
 extension. Ne pas oublier de faire un commit et un push pour envoyer ces
-modifications sur `Github`. 
+modifications sur `GitHub`. 
 
 ### Bonnes pratiques de codage en `R`
 
@@ -551,7 +551,7 @@ liste des `Imports`.
 ### Gérer les jeux de données utilisés dans les exemples
 
 * Il est recommandé d'utiliser autant que possible les jeux de données figurant dans le _package_ [`doremifasolData`](https://github.com/InseeFrLab/DoReMIFaSolData), qui contient exclusivement des données téléchargées sur le site de l'Insee.
-* Il est évidemment possible d'ajouter un nouveau *dataset* à `doremifasolData` si vous pensez qu'aucun des _datasets_ du _package_ ne convient pour vos exemples; pour ce faire il suffit d'ouvrir une _issue_ dans le dépôt Gitlab d'`utilitR` ou dans le dépôt Github de `doremifasolData`, puis de discuter avec les contributeurs;
+* Il est évidemment possible d'ajouter un nouveau *dataset* à `doremifasolData` si vous pensez qu'aucun des _datasets_ du _package_ ne convient pour vos exemples; pour ce faire il suffit d'ouvrir une _issue_ dans le dépôt Gitlab d'`utilitR` ou dans le dépôt GitHub de `doremifasolData`, puis de discuter avec les contributeurs;
 * Si vous souhaitez utiliser un jeu de données provenant d'un autre _package_, voici la marche à suivre:
     - demander systématiquement l'approbation des autres contributeurs du projet avant de le faire;
     - préciser systématiquement le *package* d'origine. Par exemple on écrit `data("World", package = "sf")` pour utiliser la table `World` du *package* `sf`. 
