@@ -1,5 +1,3 @@
-install.packages("yaml")
-
 local({
 
   # the requested version of renv
