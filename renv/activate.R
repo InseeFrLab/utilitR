@@ -1,3 +1,4 @@
+install.packages("yaml")
 
 local({
 
