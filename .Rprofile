@@ -1,4 +1,3 @@
-install.packages("yaml")
 source("renv/activate.R")
 if (file.exists('~/.Rprofile')) sys.source('~/.Rprofile', envir = environment())
 
