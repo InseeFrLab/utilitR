@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.549">
+<meta name="generator" content="quarto-1.6.43">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>19&nbsp; Manipuler des données avec data.table</title>
 <style>
@@ -30,7 +30,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -68,12 +68,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-d4d76bf8491c20bad77d141916dc28e1.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-4379b0ccadffce622b03caf4c46266b3.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark"><script id="quarto-search-options" type="application/json">{
+<link href="../site_libs/bootstrap/bootstrap-24e348eb49483fd7b2175c657ae88dd5.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-6806d1676b818f69bfdf2f80fe791bd2.min.css" rel="prefetch" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark"><script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
   "collapse-after": 3,
@@ -114,7 +114,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <img src="../resources/logo-utilitr.png" alt="Logo du projet utilitR" class="navbar-logo"></a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
@@ -149,20 +149,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
 </ul>
 </div> <!-- /navcollapse -->
-          <div class="quarto-navbar-tools tools-wide">
+            <div class="quarto-navbar-tools tools-wide">
     <a href="https://github.com/InseeFrLab/utilitR" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
     <div class="dropdown">
-      <a href="" title="Share" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Share"><i class="bi bi-share"></i></a>
-      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="quarto-navigation-tool-dropdown-0">
+      <a href="" title="Share" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" role="link" aria-label="Share"><i class="bi bi-share"></i></a>
+      <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
 <li>
             <a class="dropdown-item quarto-navbar-tools-item" href="https://twitter.com/intent/tweet?url=%7Curl%7C">
-              <i class="bi bi-bi-twitter pe-1"></i>
+              <i class="bi bi-twitter pe-1"></i>
             Twitter
             </a>
           </li>
           <li>
             <a class="dropdown-item quarto-navbar-tools-item" href="https://www.linkedin.com/sharing/share-offsite/?url=%7Curl%7C">
-              <i class="bi bi-bi-linkedin pe-1"></i>
+              <i class="bi bi-linkedin pe-1"></i>
             LinkedIn
             </a>
           </li>
@@ -177,13 +177,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
       </div> <!-- /container-fluid -->
     </nav><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
-      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
         <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_tidyverse.html">Choisir son paradigme d’analyse des données avec R</a></li><li class="breadcrumb-item"><a href="../03_Fiches_thematiques/Fiche_datatable.html"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Manipuler des données avec <code>data.table</code></span></a></li></ol></nav>
-        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
-      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
         <i class="bi bi-search"></i>
       </button>
     </div>
@@ -208,9 +208,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
  <span class="menu-text">Introduction</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
@@ -231,9 +231,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
  <span class="menu-text">Mener un projet statistique avec R</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
@@ -290,9 +290,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
  <span class="menu-text">Importer des données avec R</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
@@ -337,9 +337,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
  <span class="menu-text">Choisir son paradigme d’analyse des données avec R</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
@@ -372,9 +372,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
  <span class="menu-text">Manipuler des données avec R</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
@@ -419,9 +419,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
  <span class="menu-text">Produire des sorties avec R</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
@@ -448,9 +448,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
  <span class="menu-text">Bonnes pratiques</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
@@ -471,9 +471,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
  <span class="menu-text">Éléments de configuration</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
@@ -486,26 +486,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../01_R_Insee/Fiche_utiliser_Rstudio_SSPCloud.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Utiliser <code>RStudio</code> sur l’environnement SSP Cloud</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="../03_Fiches_thematiques/Fiche_configurer_git.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Configurer <code>Git</code> sur son poste de travail</span></span></a>
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Configurer <code>Git</code> sur son poste de travail</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../01_R_Insee/Fiche-personnaliser-R.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">Personnaliser la configuration de <code>R</code></span></span></a>
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Personnaliser la configuration de <code>R</code></span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../01_R_Insee/Fiche_utiliser_ressources.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">37</span>&nbsp; <span class="chapter-title">Superviser sa session <code>R</code></span></span></a>
+ <span class="menu-text"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">Superviser sa session <code>R</code></span></span></a>
   </div>
 </li>
       </ul>
@@ -527,32 +521,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#encha%C3%AEner-les-op%C3%A9rations-en-data.table" id="toc-enchaîner-les-opérations-en-data.table" class="nav-link" data-scroll-target="#encha%C3%AEner-les-op%C3%A9rations-en-data.table"><span class="header-section-number">19.2.3</span> Enchaîner les opérations en <code>data.table</code></a></li>
   </ul>
 </li>
-  <li>
-<a href="#manipuler-des-tables-de-donn%C3%A9es-avec-data.table" id="toc-manipuler-des-tables-de-données-avec-data.table" class="nav-link" data-scroll-target="#manipuler-des-tables-de-donn%C3%A9es-avec-data.table"><span class="header-section-number">19.3</span> Manipuler des tables de données avec <code>data.table</code></a>
-  <ul class="collapse">
-<li><a href="#mettre-des-donn%C3%A9es-dans-un-data.table" id="toc-mettre-des-données-dans-un-data.table" class="nav-link" data-scroll-target="#mettre-des-donn%C3%A9es-dans-un-data.table"><span class="header-section-number">19.3.1</span> Mettre des données dans un <code>data.table</code></a></li>
-  <li><a href="#manipuler-une-seule-table-avec-data.table" id="toc-manipuler-une-seule-table-avec-data.table" class="nav-link" data-scroll-target="#manipuler-une-seule-table-avec-data.table"><span class="header-section-number">19.3.2</span> Manipuler une seule table avec <code>data.table</code></a></li>
-  <li><a href="#joindre-des-tables-avec-data.table" id="toc-joindre-des-tables-avec-data.table" class="nav-link" data-scroll-target="#joindre-des-tables-avec-data.table"><span class="header-section-number">19.3.3</span> Joindre des tables avec <code>data.table</code></a></li>
-  <li><a href="#indexer-une-table-avec-data.table" id="toc-indexer-une-table-avec-data.table" class="nav-link" data-scroll-target="#indexer-une-table-avec-data.table"><span class="header-section-number">19.3.4</span> Indexer une table avec <code>data.table</code></a></li>
-  <li><a href="#r%C3%A9organiser-les-donn%C3%A9es-en-data.table" id="toc-réorganiser-les-données-en-data.table" class="nav-link" data-scroll-target="#r%C3%A9organiser-les-donn%C3%A9es-en-data.table"><span class="header-section-number">19.3.5</span> Réorganiser les données en <code>data.table</code></a></li>
-  </ul>
-</li>
-  <li>
-<a href="#assignation-reference" id="toc-assignation-reference" class="nav-link" data-scroll-target="#assignation-reference"><span class="header-section-number">19.4</span> La fonction d’assignation par référence (ou <code>:=</code>)</a>
-  <ul class="collapse">
-<li><a href="#la-sp%C3%A9cificit%C3%A9-de-data.table-la-modification-par-r%C3%A9f%C3%A9rence" id="toc-la-spécificité-de-data.table-la-modification-par-référence" class="nav-link" data-scroll-target="#la-sp%C3%A9cificit%C3%A9-de-data.table-la-modification-par-r%C3%A9f%C3%A9rence"><span class="header-section-number">19.4.1</span> La spécificité de <code>data.table</code> : la modification par référence</a></li>
-  <li><a href="#les-usages-de" id="toc-les-usages-de" class="nav-link" data-scroll-target="#les-usages-de"><span class="header-section-number">19.4.2</span> Les usages de <code>:=</code></a></li>
-  <li><a href="#attention-en-utilisant" id="toc-attention-en-utilisant" class="nav-link" data-scroll-target="#attention-en-utilisant"><span class="header-section-number">19.4.3</span> Attention en utilisant <code>:=</code></a></li>
-  </ul>
-</li>
-  <li>
-<a href="#programmer-des-fonctions-avec-data.table" id="toc-programmer-des-fonctions-avec-data.table" class="nav-link" data-scroll-target="#programmer-des-fonctions-avec-data.table"><span class="header-section-number">19.5</span> Programmer des fonctions avec <code>data.table</code></a>
-  <ul class="collapse">
-<li><a href="#utiliser-.sd-et-lapply" id="toc-utiliser-.sd-et-lapply" class="nav-link" data-scroll-target="#utiliser-.sd-et-lapply"><span class="header-section-number">19.5.1</span> Utiliser <code>.SD</code> et <code>lapply</code></a></li>
-  <li><a href="#d%C3%A9finir-des-fonctions-modifiant-un-data.table" id="toc-définir-des-fonctions-modifiant-un-data.table" class="nav-link" data-scroll-target="#d%C3%A9finir-des-fonctions-modifiant-un-data.table"><span class="header-section-number">19.5.2</span> Définir des fonctions modifiant un <code>data.table</code></a></li>
-  </ul>
-</li>
-  <li><a href="#Ressourcesdatatable" id="toc-Ressourcesdatatable" class="nav-link" data-scroll-target="#Ressourcesdatatable"><span class="header-section-number">19.6</span> Pour en savoir plus</a></li>
   </ul><div class="toc-actions"><ul><li><a href="https://github.com/InseeFrLab/utilitR/edit/master/03_Fiches_thematiques/Fiche_datatable.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/InseeFrLab/utilitR/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
@@ -749,7 +717,7 @@ Tip
 </section><section id="quelles-fonctions-peut-on-utiliser-avec-un-data.table" class="level3" data-number="19.2.2"><h3 data-number="19.2.2" class="anchored" data-anchor-id="quelles-fonctions-peut-on-utiliser-avec-un-data.table">
 <span class="header-section-number">19.2.2</span> Quelles fonctions peut-on utiliser avec un <code>data.table</code> ?</h3>
 <p><strong>Les <code>data.tables</code> sont simplement des <code>data.frames</code> particuliers, donc on peut normalement leur appliquer toutes les méthodes valables pour les <code>data.frames</code>.</strong> En particulier, on peut utiliser avec <code>data.table</code> toutes les fonctions des <em>packages</em> habituellement associés à <code>dplyr</code> : <code>stringr</code> pour le maniement de chaînes de caractères, <code>lubridate</code> pour les colonnes temporelles, <code>forcats</code> pour les colonnes de type <code>factor</code>, <em>etc</em>. Toutefois, il est utile de vérifier que le <em>package</em> <code>data.table</code> ne propose pas déjà une fonction adaptée. Par exemple, plutôt que d’utiliser la fonction <code>str_split_fixed()</code> du <em>package</em> <code>stringr</code> pour séparer une colonne en fonction d’un caractère, on utilisera <code>tstrsplit()</code> de <code>data.table</code>.</p>
-</section><section id="enchaîner-les-opérations-en-data.table" class="level3" data-number="19.2.3"><h3 data-number="19.2.3" class="anchored" data-anchor-id="enchaîner-les-opérations-en-data.table">
+</section><section id="enchaîner-les-opérations-en-data.table" class="level3" data-number="19.2.3"><h3 data-number="19.2.3" class="anchored">
 <span class="header-section-number">19.2.3</span> Enchaîner les opérations en <code>data.table</code>
 </h3>
 <section id="le-principe-est-simple" class="level4" data-number="19.2.3.1"><h4 data-number="19.2.3.1" class="anchored" data-anchor-id="le-principe-est-simple">
@@ -806,7 +774,7 @@ Tip
 3: C      12</code></pre>
 </div>
 </div>
-</section><section id="car-on-peut-facilement-faire-des-erreurs" class="level4" data-number="19.2.3.3"><h4 data-number="19.2.3.3" class="anchored" data-anchor-id="car-on-peut-facilement-faire-des-erreurs">
+</section><section id="car-on-peut-facilement-faire-des-erreurs" class="level4" data-number="19.2.3.3"><h4 data-number="19.2.3.3" class="anchored">
 <span class="header-section-number">19.2.3.3</span> … car on peut facilement faire des erreurs</h4>
 <p><strong>L’enchaînement des opérations en <code>data.table</code> est puissant, mais peut aboutir à des résultats non désirés si on ne fait pas attention.</strong> Les exemples de ce paragraphe utilisent la fonction <code>:=</code> ; si vous ne la connaissez pas encore, il est fortement conseillé de lire la section <a href="#assignation-reference">La fonction d’assignation par référence (ou <code>:=</code>)</a> avant de poursuivre la lecture.</p>
 <p>Voici deux exemples d’opérations enchaînées en <code>data.table</code> dont les codes sont très similaires et qui aboutissent à des résultats très différents. Le premier exemple ne conserve qu’une partie de la table <code>dt</code> puis crée une variable, tandis que le second crée une variable avec une valeur non manquante pour une partie de la table uniquement.</p>
@@ -860,7 +828,7 @@ Partir de <code>dt</code>, créer une nouvelle variable <code>newvar</code> qui 
 <tr></tr>
 </tbody></table>
 </div>
-</section></section></section><section id="manipuler-des-tables-de-données-avec-data.table" class="level2" data-number="19.3"><h2 data-number="19.3" class="anchored" data-anchor-id="manipuler-des-tables-de-données-avec-data.table">
+<section id="manipuler-des-tables-de-données-avec-data.table" class="level2" data-number="19.3"><h2 data-number="19.3" class="anchored" data-anchor-id="manipuler-des-tables-de-données-avec-data.table">
 <span class="header-section-number">19.3</span> Manipuler des tables de données avec <code>data.table</code>
 </h2>
 <p>Nous allons illustrer les fonctions de manipulation de données de <code>data.table</code> avec les jeux de données du <em>package</em> <code>doremifasolData</code>.</p>
@@ -988,7 +956,7 @@ Note
 <span class="header-section-number">19.3.2.5</span> Les fonctions statistiques utiles de <code>data.table</code>
 </h4>
 <p>Vous pouvez utiliser toutes les fonctions statistiques de <code>R</code> avec <code>data.table</code>. Le <em>package</em> <code>data.table</code> propose par ailleurs des fonctions optimisées qui peuvent vous être utiles. En voici quelques-unes :</p>
-<table class="table">
+<table class="caption-top table">
 <colgroup>
 <col style="width: 13%">
 <col style="width: 39%">
@@ -1089,7 +1057,7 @@ Note
 <span class="header-section-number">19.3.3</span> Joindre des tables avec <code>data.table</code>
 </h3>
 <p>Pour joindre des données, <code>data.table</code> propose une fonction <code><a href="https://rdrr.io/r/base/merge.html">merge()</a></code> plus rapide que la fonction de base. La syntaxe générale est <code>z &lt;- merge(x, y, [options])</code>. Voici une liste des principales options (les autres options sont consultables avec <code><a href="https://rdatatable.gitlab.io/data.table/reference/merge.html">?data.table::merge</a></code>) :</p>
-<table class="table">
+<table class="caption-top table">
 <colgroup>
 <col style="width: 36%">
 <col style="width: 63%">
@@ -1148,7 +1116,7 @@ Tip
 <span class="header-section-number">19.3.5</span> Réorganiser les données en <code>data.table</code>
 </h3>
 <p><strong>Le <em>package</em> <code>data.table</code> permet de réorganiser facilement une table de données avec les fonctions <code>dcast()</code> et <code>melt()</code>.</strong> La fonction <code>melt()</code> réorganise les données dans un format <code>long</code>. La fonction <code>dcast()</code> réorganise les données dans un format <code>wide</code>.</p>
-<table class="table">
+<table class="caption-top table">
 <colgroup>
 <col style="width: 52%">
 <col style="width: 48%">
@@ -1756,7 +1724,16 @@ Tip
 </ul>
 
 
-</section><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+</section>
+</div>
+</section></section></section></section></section></main>
+</div>
+
+
+
+
+ <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
     const mode = bsSheetEl.getAttribute("data-mode");
@@ -1935,18 +1912,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
     return false;
   }
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    text: function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-    }
-  });
-  clipboard.on('success', function(e) {
+  const onCopySuccess = function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -1978,7 +1944,45 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
   });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
   function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
@@ -2013,7 +2017,11 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       try { href = new URL(href).hash; } catch {}
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
-      return note.innerHTML;
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
     });
   }
   const xrefs = window.document.querySelectorAll('a.quarto-xref');
@@ -2061,7 +2069,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
-      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {
@@ -2287,18 +2294,16 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script><nav class="page-navigation"><div class="nav-page nav-page-previous">
-      <a href="../03_Fiches_thematiques/Fiche_tidyverse.html" class="pagination-link  aria-label=" des="" donn="" avec="" le="">
+      <a href="../03_Fiches_thematiques/Fiche_tidyverse.html" class="pagination-link" aria-label="Manipuler des données avec le `tidyverse`">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Manipuler des données avec le <code>tidyverse</code></span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../03_Fiches_thematiques/Fiche_arrow.html" class="pagination-link" aria-label="<span class='chapter-number'>20</span>&nbsp; <span class='chapter-title'>Manipuler des données avec `arrow`</span>">
+      <a href="../03_Fiches_thematiques/Fiche_arrow.html" class="pagination-link" aria-label="Manipuler des données avec `arrow`">
         <span class="nav-page-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Manipuler des données avec <code>arrow</code></span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
-</nav>
-</div> <!-- /content -->
-<footer class="footer"><div class="nav-footer">
+</nav><!-- /content --><footer class="footer"><div class="nav-footer">
     <div class="nav-footer-left">
 <p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
 </div>   
@@ -2311,8 +2316,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </li>
 </div>
   </div>
-</footer></section></section></main>
-</div>
+</footer>
 
 
 </body></html>
