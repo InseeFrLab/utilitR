@@ -25,7 +25,8 @@ apt-get -qq install --no-install-recommends \
     libmagick++-dev \
     ghostscript \
     libglpk40 \
-    libgdal-dev libgeos-dev
+    libgdal-dev libgeos-dev \
+    libudunits2-dev
 
 apt-get -qq install --no-install-recommends \
     libgs-dev \
