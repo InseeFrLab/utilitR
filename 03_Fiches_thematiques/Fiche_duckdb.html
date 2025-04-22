@@ -72,8 +72,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-4379b0ccadffce622b03caf4c46266b3.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-24e348eb49483fd7b2175c657ae88dd5.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-6806d1676b818f69bfdf2f80fe791bd2.min.css" rel="prefetch" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark"><script id="quarto-search-options" type="application/json">{
+<link href="../site_libs/bootstrap/bootstrap-b4e8633835c5b832926fbdf0b24b9738.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-6d795b6992d62256d9673cc2ffc824d6.min.css" rel="prefetch" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark"><script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
   "collapse-after": 3,
@@ -627,27 +627,27 @@ Note
 <span class="header-section-number">21.2.2</span> À quoi sert le <em>package</em> <code>duckdb</code>?</h3>
 <p>Du point de vue d’un statisticien utilisant <code>R</code>, le <em>package</em> <code>duckdb</code> permet de faire trois choses:</p>
 <ul>
-<li>Importer des données (exemples: fichiers CSV, fichiers Parquet);</li>
+<li>Lire des données dans une multitude de formats (fichiers CSV, fichiers Parquet, geoparquet, json, geojson, shape…);</li>
 <li>Manipuler des données avec la syntaxe <code>dplyr</code>, ou avec le langage SQL;</li>
-<li>Écrire des données au format Parquet.</li>
+<li>Écrire des données dans une multitude de formats (parquet, csv, json, geojson, geoparquet…)</li>
 </ul></section><section id="quels-sont-les-avantages-de-duckdb" class="level3" data-number="21.2.3"><h3 data-number="21.2.3" class="anchored" data-anchor-id="quels-sont-les-avantages-de-duckdb">
 <span class="header-section-number">21.2.3</span> Quels sont les avantages de <code>duckdb</code>?</h3>
 <ul>
 <li>
-<strong>Disponibilité immédiate</strong>: on peut pré-visualiser les données ou le résultat d’un calcul sans l’exécuter totalement, sans attendre le chargement des données;</li>
+<strong>Disponibilité immédiate</strong> dans les cas “simples”: on peut pré-visualiser les données ou le résultat d’un calcul sans l’exécuter totalement, sans attendre le chargement des données (cela n’est pas vrai dans tous les cas comme par exemple sur des agrégations ou des tris)</li>
 <li>
 <strong>Performances élevées</strong>: <code>duckdb</code> est très rapide pour la manipulation de données tabulaires (nettement plus performant que <code>dplyr</code> par exemple);</li>
 <li>
-<strong>Ne pas nécessairement charger les données en mémoire</strong>: <code>duckdb</code> permet également de travailler directement sur des fichiers du disque dur;</li>
+<strong>Ne pas nécessairement charger les données en mémoire</strong>: <code>duckdb</code> permet également de requêter directement sur des fichiers du disque dur (ou en ligne) sans avoir à charger tout le fichier en mémoire ;</li>
 <li>
-<strong>Optimisations automatiques</strong>: <code>duckdb</code> sélectionne automatiquement les colonnes nécessaires, et ne lit que les lignes nécessaires. Cela permet d’accélérer les calculs et de réduire considérablement les besoins en mémoire, même lorsque les données sont volumineuses;</li>
+<strong>Optimisations automatiques</strong>: par exemple dans le cas de fichiers parquet ou d’utilisation du format <code>duckdb</code> natif, <code>duckdb</code> sélectionne automatiquement les colonnes nécessaires, et ne lit que les lignes (ou plus exactement groupes de lignes) nécessaires. Cela permet d’accélérer les calculs et de réduire considérablement les besoins en mémoire, même lorsque les données sont volumineuses. Ces optimisations ne fonctionnent pas pour tous les formats (par exemple CSV, json…);</li>
 <li>
 <strong>Facilité d’apprentissage</strong> grâce aux approches <code>dplyr</code> et SQL: <code>duckdb</code> peut être utilisé avec les verbes de <code>dplyr</code> (<code>select</code>, <code>mutate</code>, etc.) et/ou avec le langage SQL. Par conséquent, il n’est pas nécessaire d’apprendre une nouvelle syntaxe pour utiliser <code>duckdb</code>, on peut s’appuyer sur la ou les approches que l’on maîtrise déjà.</li>
 </ul></section><section id="quels-sont-les-points-dattention-à-lusage" class="level3" data-number="21.2.4"><h3 data-number="21.2.4" class="anchored" data-anchor-id="quels-sont-les-points-dattention-à-lusage">
 <span class="header-section-number">21.2.4</span> Quels sont les points d’attention à l’usage ?</h3>
 <ul>
 <li>
-<strong>Représentation des données en mémoire</strong> : <code>duckdb</code> est un moteur SQL. Les lignes n’ont pas d’ordre pré-défini, et le résultat d’un traitement peut être dans un ordre imprévisible.</li>
+<strong>Préservation de l’ordre des lignes</strong> : contrairement à un moteur SQL classique, <code>duckdb</code> <a href="https://duckdb.org/docs/sql/dialect/order_preservation.html">préserve l’ordre des lignes pour certaines clauses</a> mais le comportement diffère du {tidyverse} (par exemple<code>dplyr::*_join</code> conserve l’ordre mais pas l’ordre <code>JOIN</code> de <code>duckdb</code>)</li>
 <li>
 <strong>Traitement de données volumineuses</strong>: <code>duckdb</code> peut traiter de gros volumes de données, qu’elles soient en mémoire vive ou sur le disque dur. Lorsque les données sont en mémoire vive, les <em>packages</em> <code>duckdb</code> et <code>arrow</code> peuvent être utilisés conjointement de façon très efficace: cela veut dire concrètement que <code>duckdb</code> peut manipuler directement des données stockées dans un objet <code>Arrow Table</code>, sans avoir à convertir les données dans un autre format. Avec des données stockées sur le disque dur, <code>duckdb</code> est capable de faire les traitements sur des données plus volumineuses que la mémoire vive (RAM). C’est un avantage majeur en comparaison aux autres approches possibles en <code>R</code> (<code>data.table</code> et <code>dplyr</code> par exemple). Toutefois, il faut dans ce cas ajouter le temps de lecture des données au temps nécessaire pour le calcul.</li>
 <li>
@@ -778,7 +778,7 @@ Note
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="st">"bpe_ens_2018_duckdb"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># Source:   table&lt;bpe_ens_2018_duckdb&gt; [?? x 7]
-# Database: DuckDB v1.1.0 [unknown@Linux 6.8.0-1021-azure:R 4.4.1/:memory:]
+# Database: DuckDB v1.1.0 [unknown@Linux 6.11.0-1012-azure:R 4.4.1/:memory:]
    REG   DEP   DEPCOM DCIRIS    AN TYPEQU NB_EQUIP
    &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;     &lt;dbl&gt;
  1 84    01    01001  01001   2018 A401          2
@@ -806,7 +806,7 @@ Note
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="st">"read_parquet('bpe_ens_2018_dataset/**/*.parquet')"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># Source:   SQL [?? x 7]
-# Database: DuckDB v1.1.0 [unknown@Linux 6.8.0-1021-azure:R 4.4.1/:memory:]
+# Database: DuckDB v1.1.0 [unknown@Linux 6.11.0-1012-azure:R 4.4.1/:memory:]
    REG   DEP   DEPCOM DCIRIS    AN TYPEQU NB_EQUIP
    &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;     &lt;dbl&gt;
  1 84    01    01001  01001   2018 A401          2
@@ -832,7 +832,7 @@ Note
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="st">'bpe_ens_2018_dataset/**/*.parquet'</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># Source:   table&lt;"bpe_ens_2018_dataset/**/*.parquet"&gt; [?? x 7]
-# Database: DuckDB v1.1.0 [unknown@Linux 6.8.0-1021-azure:R 4.4.1/:memory:]
+# Database: DuckDB v1.1.0 [unknown@Linux 6.11.0-1012-azure:R 4.4.1/:memory:]
    REG   DEP   DEPCOM DCIRIS    AN TYPEQU NB_EQUIP
    &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;     &lt;dbl&gt;
  1 84    01    01001  01001   2018 A401          2
@@ -857,7 +857,7 @@ Note
 <span><span class="va">bpe_ens_2018_dataset</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/to_duckdb.html">to_duckdb</a></span><span class="op">(</span><span class="va">conn_ddb</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># Source:   table&lt;arrow_001&gt; [?? x 7]
-# Database: DuckDB v1.1.0 [unknown@Linux 6.8.0-1021-azure:R 4.4.1/:memory:]
+# Database: DuckDB v1.1.0 [unknown@Linux 6.11.0-1012-azure:R 4.4.1/:memory:]
    REG   DEP   DEPCOM DCIRIS    AN TYPEQU NB_EQUIP
    &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;     &lt;dbl&gt;
  1 84    01    01001  01001   2018 A401          2
@@ -937,24 +937,24 @@ This warning is displayed once every 8 hours.</code></pre>
 <pre><code># A tibble: 18 × 2
    REG   NB_EQUIP_TOT
    &lt;chr&gt;        &lt;dbl&gt;
- 1 02           19068
- 2 03            7852
- 3 28          107186
- 4 53          111291
- 5 24           81379
- 6 44          181130
- 7 27           96309
- 8 84          303775
- 9 32          175859
-10 93          254405
-11 11          469181
-12 04           30767
-13 76          256813
-14 06            7353
-15 52          119689
-16 75          237008
-17 01           23939
-18 94           21778</code></pre>
+ 1 84          303775
+ 2 32          175859
+ 3 02           19068
+ 4 03            7852
+ 5 75          237008
+ 6 94           21778
+ 7 52          119689
+ 8 01           23939
+ 9 24           81379
+10 27           96309
+11 44          181130
+12 76          256813
+13 06            7353
+14 53          111291
+15 28          107186
+16 11          469181
+17 93          254405
+18 04           30767</code></pre>
 </div>
 </div>
 </div>
@@ -977,9 +977,9 @@ GROUP BY REG</code></pre>
 <p>Cette requête est envoyée au serveur SQL et exécutée de façon différente en fonction de la dernière instruction du traitement:</p>
 <ul>
 <li>si le traitement se termine par <code><a href="https://dplyr.tidyverse.org/reference/compute.html">collect()</a></code>: le calcul est exécuté en entier et le résultat est retourné sous la forme d’un <code>tibble</code>,</li>
-<li>si le traitement se termine par <code>print(n=nb_lignes)</code>: le calcul est exécuté partiellement, et seules les <code>nb_lignes</code> demandées sont affichées. Cela permet de minimiser les ressources et la mémoire utilisées.</li>
+<li>si le traitement se termine par <code>print(n=nb_lignes)</code>: seules les <code>nb_lignes</code> demandées sont affichées. Dans le cas où vous n’avez pas d’opérations bloquantes (agrégations, tris…), cela permet de minimiser les ressources et la mémoire utilisées.</li>
 </ul>
-<p><strong>Ce point est important: en utilisant <code><a href="https://rdrr.io/r/base/print.html">print()</a></code>, on peut prévisualiser le résultat d’une requête <code>duckdb</code> de façon très rapide, sans exécuter tout le traitement.</strong> Il ne faut pas hésiter à s’en servir pour explorer les données et pour construire le traitement étape par étape, en ajustant en fonction des résultats.</p>
+<p><strong>Ce point est important: en utilisant <code><a href="https://rdrr.io/r/base/print.html">print()</a></code> en l’abscence d’opérations bloquantes on peut prévisualiser le résultat d’une requête <code>duckdb</code> de façon très rapide, sans exécuter tout le traitement.</strong> Il ne faut pas hésiter à s’en servir pour explorer les données et pour construire le traitement étape par étape, en ajustant en fonction des résultats.</p>
 </section><section id="écriture-au-format-parquet" class="level3" data-number="21.4.5"><h3 data-number="21.4.5" class="anchored" data-anchor-id="écriture-au-format-parquet">
 <span class="header-section-number">21.4.5</span> Écriture au format Parquet</h3>
 <p><strong>Pour écrire une table (ou le résultat de n’importe quelle requête) sur le disque au format Parquet, il est recommandé d’utiliser la librairie <code>arrow</code>.</strong></p>
@@ -1049,19 +1049,19 @@ LINE 1: SELECT DEP, SUM(NB_EQUIP * (TYPEQU = 'B203')) AS nb_boulangeries
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>nb_boulangeries  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html">as.integer</a></span><span class="op">(</span><span class="va">TYPEQU</span> <span class="op">==</span> <span class="st">"B203"</span><span class="op">)</span><span class="op">)</span>, .by <span class="op">=</span> <span class="va">DEP</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># Source:   SQL [?? x 2]
-# Database: DuckDB v1.1.0 [unknown@Linux 6.8.0-1021-azure:R 4.4.1/:memory:]
+# Database: DuckDB v1.1.0 [unknown@Linux 6.11.0-1012-azure:R 4.4.1/:memory:]
    DEP   nb_boulangeries
    &lt;chr&gt;           &lt;dbl&gt;
- 1 13               1626
- 2 30                685
- 3 43                237
- 4 02                339
- 5 03                299
- 6 34               1016
- 7 46                171
- 8 47                260
- 9 57                871
-10 82                197
+ 1 16                285
+ 2 2B                217
+ 3 42                648
+ 4 05                175
+ 5 35                709
+ 6 84                532
+ 7 86                310
+ 8 972               370
+ 9 07                326
+10 32                157
 # ℹ more rows</code></pre>
 </div>
 </div>
@@ -1157,7 +1157,7 @@ GROUP BY DEP
 HAVING (DEP = '59')</code></pre>
 </div>
 </div>
-<p>La fonction <code><a href="https://dplyr.tidyverse.org/reference/compute.html">collect()</a></code> envoie à <code>duckdb</code> l’instruction d’exécuter le calcul, et transmet les résultats à <code>R</code>. Un point essentiel est qu’avant l’instruction <code><a href="https://dplyr.tidyverse.org/reference/compute.html">collect()</a></code>, c’est le moteur SQL de <code>duckdb</code> qui fait les calculs, tandis qu’après l’instruction <code><a href="https://dplyr.tidyverse.org/reference/compute.html">collect()</a></code>, c’est le moteur de <code>R</code> qui fait les calculs car on manipule un objet <code>R</code> (<code>tibble</code>) standard. Par conséquent, il faut faire le plus de calculs possibles avant <code><a href="https://dplyr.tidyverse.org/reference/compute.html">collect()</a></code> pour bénéficier de la rapidité du moteur SQL !</p>
+<p>La fonction <code><a href="https://dplyr.tidyverse.org/reference/compute.html">collect()</a></code> génère le SQL, l’envoie à <code>duckdb</code> pour exécuter le calcul, et transmet les résultats à <code>R</code>. Un point essentiel est que tous les ordres passés avant l’instruction <code><a href="https://dplyr.tidyverse.org/reference/compute.html">collect()</a></code> seront exécutés par le moteur SQL de <code>duckdb</code>, tandis que ceux passés après l’instruction <code><a href="https://dplyr.tidyverse.org/reference/compute.html">collect()</a></code> seront réalisés par le moteur de <code>R</code> sur un objet <code>R</code> (<code>tibble</code>) standard. Par conséquent, il faut passer le plus d’ordres possibles avant <code><a href="https://dplyr.tidyverse.org/reference/compute.html">collect()</a></code> pour bénéficier de la rapidité du moteur SQL !</p>
 <div class="cell">
 <div class="sourceCode" id="cb38"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">req_dep_filter</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html">collect</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -1284,7 +1284,7 @@ LINE 1: SELECT CAST(date_naissance AS DATE) AS date_na...
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>date_naissance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/strptime.html">strptime</a></span><span class="op">(</span><span class="va">date_naissance</span>, <span class="st">"%d/%m/%Y"</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># Source:   SQL [2 x 2]
-# Database: DuckDB v1.1.0 [unknown@Linux 6.8.0-1021-azure:R 4.4.1/:memory:]
+# Database: DuckDB v1.1.0 [unknown@Linux 6.11.0-1012-azure:R 4.4.1/:memory:]
   date_naissance      date_deces
   &lt;dttm&gt;              &lt;chr&gt;     
 1 1980-07-02 00:00:00 05/06/2001
@@ -1308,7 +1308,7 @@ Note
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate_all.html">mutate_at</a></span><span class="op">(</span><span class="va">liste_variables</span>, <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/strptime.html">strptime</a></span><span class="op">(</span><span class="va">.</span>,<span class="st">"%d/%m/%Y"</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># Source:   SQL [2 x 2]
-# Database: DuckDB v1.1.0 [unknown@Linux 6.8.0-1021-azure:R 4.4.1/:memory:]
+# Database: DuckDB v1.1.0 [unknown@Linux 6.11.0-1012-azure:R 4.4.1/:memory:]
   date_naissance      date_deces         
   &lt;dttm&gt;              &lt;dttm&gt;             
 1 1980-07-02 00:00:00 2001-06-05 00:00:00
@@ -1358,19 +1358,19 @@ Note
 <div class="sourceCode" id="cb59"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="st">"bpe_ens_2018_view"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># Source:   table&lt;bpe_ens_2018_view&gt; [?? x 2]
-# Database: DuckDB v1.1.0 [unknown@Linux 6.8.0-1021-azure:R 4.4.1/:memory:]
+# Database: DuckDB v1.1.0 [unknown@Linux 6.11.0-1012-azure:R 4.4.1/:memory:]
    REG   NB_EQUIP_TOT
    &lt;chr&gt;        &lt;dbl&gt;
- 1 84          303775
- 2 32          175859
- 3 06            7353
- 4 76          256813
- 5 02           19068
- 6 03            7852
- 7 01           23939
- 8 75          237008
- 9 94           21778
-10 52          119689
+ 1 24           81379
+ 2 06            7353
+ 3 76          256813
+ 4 01           23939
+ 5 75          237008
+ 6 94           21778
+ 7 52          119689
+ 8 02           19068
+ 9 03            7852
+10 28          107186
 # ℹ more rows</code></pre>
 </div>
 </div>
@@ -1413,11 +1413,29 @@ Tip
 <span><span class="va">resultats</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html">dbGetQuery</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"SELECT * FROM data1_nettoye LEFT JOIN data2_nettoye ON data1.id = data2.id"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Et vous pouvez bien sûr créer des tables intermédiaires (temporaires ou non) à la place des vues (en utilisant <code>CREATE TABLE</code> pluôt que <code>CREATE VIEW</code>) pour éviter de les recalculer à chaque fois.</p>
+<p>A noter, vous pouvez grouper les requêtes SQL dans un même <code>dbExecute</code> :</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Créer une vue qui correspond à la première étape du traitement</span></span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dbExecute</span>(conn_ddb, </span>
+<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"CREATE OR REPLACE VIEW data1_nettoye AS SELECT ... FROM read_parquet('data1.parquet');</span></span>
+<span id="cb64-4"><a href="#cb64-4" aria-hidden="true" tabindex="-1"></a><span class="st">   CREATE OR REPLACE VIEW data2_nettoye AS SELECT ... FROM read_parquet('data2.parquet');</span></span>
+<span id="cb64-5"><a href="#cb64-5" aria-hidden="true" tabindex="-1"></a><span class="st">   SELECT * FROM data1_nettoye LEFT JOIN data2_nettoye ON data1.id = data2.id"</span>)<span class="st">"</span></span>
+<span id="cb64-6"><a href="#cb64-6" aria-hidden="true" tabindex="-1"></a><span class="st">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Ou utiliser la clause SQL <code>WITH</code> :</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Créer une vue qui correspond à la première étape du traitement</span></span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dbExecute</span>(conn_ddb, </span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"WITH data1_nettoye AS (SELECT ... FROM read_parquet('data1.parquet')),</span></span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a><span class="st">        data2_nettoye AS (SELECT ... FROM read_parquet('data2.parquet'))</span></span>
+<span id="cb65-5"><a href="#cb65-5" aria-hidden="true" tabindex="-1"></a><span class="st">   SELECT * FROM data1_nettoye LEFT JOIN data2_nettoye ON data1.id = data2.id"</span>)<span class="st">"</span></span>
+<span id="cb65-6"><a href="#cb65-6" aria-hidden="true" tabindex="-1"></a><span class="st">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section><section id="sec-ecrire-parquet" class="level4" data-number="21.5.4.2"><h4 data-number="21.5.4.2" class="anchored" data-anchor-id="sec-ecrire-parquet">
 <span class="header-section-number">21.5.4.2</span> Écrire des fichiers</h4>
 <p>Vous pouvez exporter des données vers des fichiers en utilisant <a href="https://duckdb.org/docs/sql/statements/copy.html#copy--to"><code>COPY ... TO ...</code></a> :</p>
 <div class="cell">
-<div class="sourceCode" id="cb64"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html">dbExecute</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"COPY (SELECT * FROM read_parquet('bpe_ens_2018_dataset/**/*.parquet')) </span></span>
+<div class="sourceCode" id="cb66"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html">dbExecute</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"COPY (SELECT * FROM read_parquet('bpe_ens_2018_dataset/**/*.parquet')) </span></span>
 <span><span class="st">                      TO 'mon_dataset_parquet' (FORMAT PARQUET, PARTITION_BY (REG), OVERWRITE_OR_IGNORE 1)"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 1035564</code></pre>
@@ -1425,7 +1443,7 @@ Tip
 </div>
 <p>Si vous préférez utiliser les fonctions de <code>arrow</code>, vous pouvez créez une vue et utiliser <code>dbplr::tbl</code> avec <code><a href="https://arrow.apache.org/docs/r/reference/write_dataset.html">arrow::write_dataset</a></code> :</p>
 <div class="cell">
-<div class="sourceCode" id="cb66"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html">dbExecute</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"CREATE OR REPLACE VIEW output AS SELECT ..."</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb68"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html">dbExecute</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"CREATE OR REPLACE VIEW output AS SELECT ..."</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"output"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/to_arrow.html">to_arrow</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -1450,12 +1468,12 @@ Or set PRAGMA temp_directory='/path/to/tmp.tmp'</code></pre>
 <li>diminuer le nombre de <em>threads</em> utilisés par <code>duckdb</code>, donc moins de besoins de mémoire (mais aussi moins de parallélisme):</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>conn_ddb <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(<span class="fu">duckdb</span>(),</span>
-<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a><span class="at">config=</span><span class="fu">list</span>(<span class="st">"threads"</span><span class="ot">=</span><span class="st">"1"</span>))<span class="er">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>conn_ddb <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(<span class="fu">duckdb</span>(),</span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a><span class="at">config=</span><span class="fu">list</span>(<span class="st">"threads"</span><span class="ot">=</span><span class="st">"1"</span>))<span class="er">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>ou</p>
 <div class="cell">
-<div class="sourceCode" id="cb69"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html">dbExecute</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"SET threads = '1';"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb71"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html">dbExecute</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"SET threads = '1';"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ul>
 <li>exécuter et sauvegarder les résultats au fur et à mesure. La commande <code><a href="https://arrow.apache.org/docs/r/reference/write_dataset.html">arrow::write_dataset</a></code> et la commande SQL <code>COPY request TO filename.parquet</code> savent le faire automatiquement, sans faire déborder la mémoire, pour certains calculs.</li>
@@ -1463,7 +1481,7 @@ Or set PRAGMA temp_directory='/path/to/tmp.tmp'</code></pre>
 <li>adosser un fichier sur le disque dur à la base de données en mémoire au moment de la création de la connexion. Cela ralentit considérablement les calculs, et ne permet pas toujours d’obtenir un résultat.</li>
 </ul>
 <div class="cell">
-<div class="sourceCode" id="cb70"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html">dbConnect</a></span><span class="op">(</span><span class="fu"><a href="https://r.duckdb.org/reference/duckdb.html">duckdb</a></span><span class="op">(</span><span class="op">)</span>, dbdir <span class="op">=</span> <span class="st">"my-db.duckdb"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb72"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html">dbConnect</a></span><span class="op">(</span><span class="fu"><a href="https://r.duckdb.org/reference/duckdb.html">duckdb</a></span><span class="op">(</span><span class="op">)</span>, dbdir <span class="op">=</span> <span class="st">"my-db.duckdb"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>L’interaction entre les différentes options de <code>duckdb</code> est complexe et rendent difficile l’élaboration de recommandations claires. Nous mettrons à jour cette fiche quand des benchmarks plus poussés seront disponibles.</p>
 </section><section id="sauvegarder-des-résultats-intermédiaires" class="level4" data-number="21.5.5.2"><h4 data-number="21.5.5.2" class="anchored" data-anchor-id="sauvegarder-des-résultats-intermédiaires">
@@ -1479,7 +1497,7 @@ Or set PRAGMA temp_directory='/path/to/tmp.tmp'</code></pre>
 <code><a href="https://arrow.apache.org/docs/r/reference/write_dataset.html">arrow::write_dataset()</a></code> sait faire les calculs par morceaux automatiquement, et libère la mémoire au fur et à mesure.</li>
 </ul>
 <div class="cell">
-<div class="sourceCode" id="cb71"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu">calcul1</span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<div class="sourceCode" id="cb73"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu">calcul1</span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/to_arrow.html">to_arrow</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/write_dataset.html">write_dataset</a></span><span class="op">(</span><span class="st">"base_intermediaire"</span><span class="op">)</span></span>
 <span></span>
@@ -1491,7 +1509,7 @@ Or set PRAGMA temp_directory='/path/to/tmp.tmp'</code></pre>
 <li>Vous pouvez utiliser <code>dbplyr::compute()</code> pour créer une table <code>duckdb</code> stockée sur le disque (si vous avez préalablement créé une base sur disque) que vous pourrez directement utiliser par la suite dans une autre session :</li>
 </ul>
 <div class="cell">
-<div class="sourceCode" id="cb72"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<div class="sourceCode" id="cb74"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu">calcul1</span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html">compute</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"matable"</span>, temporary <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
@@ -1501,7 +1519,7 @@ Or set PRAGMA temp_directory='/path/to/tmp.tmp'</code></pre>
 <p>La première méthode avec <code>arrow</code> est généralement la plus rapide et la seconde avec <code>dbplyr::compute</code> sur une table nommée est la plus efficace (de loin) en terme d’occupation mémoire.</p>
 <p>A noter que vous pouvez également utiliser <code>dbplyr::compute</code> pour créer une table temporaire <code>duckdb</code> stockée en mémoire qui disparaitra à la fin de votre session :</p>
 <div class="cell">
-<div class="sourceCode" id="cb73"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">table_temporaire</span> <span class="op">&lt;-</span> <span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<div class="sourceCode" id="cb75"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">table_temporaire</span> <span class="op">&lt;-</span> <span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu">calcul1</span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html">compute</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
@@ -1517,7 +1535,7 @@ Or set PRAGMA temp_directory='/path/to/tmp.tmp'</code></pre>
 <li>Par contre, on peut partitionner les données, et le moteur SQL sait utiliser le partitionnement comme un index.</li>
 </ul>
 <div class="cell">
-<div class="sourceCode" id="cb74"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dataset</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<div class="sourceCode" id="cb76"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dataset</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/to_arrow.html">to_arrow</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/write_dataset.html">write_dataset</a></span><span class="op">(</span><span class="st">"bpe_ens_2018_dataset_parts"</span>, partitioning <span class="op">=</span> <span class="st">"REG"</span> <span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html">list.files</a></span><span class="op">(</span><span class="st">"bpe_ens_2018_dataset_parts"</span><span class="op">)</span> <span class="co"># on obtient un sous-répertoire par région</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1532,7 +1550,7 @@ Or set PRAGMA temp_directory='/path/to/tmp.tmp'</code></pre>
 </h4>
 <p>S’il faut absolument charger des données en mémoire, on peut découper le calcul pour ne charger qu’une partie des données. Par exemple, faire une jointure région par région au lieu de faire la jointure sur toute la base d’un coup. On peut utiliser le partitionnement pour sauvegarder les résultats partiels, et les ré-assembler ensuite.</p>
 <div class="cell">
-<div class="sourceCode" id="cb76"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">groups</span> <span class="op">&lt;-</span> <span class="va">bpe_ens_2018_dataset</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<div class="sourceCode" id="cb78"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">groups</span> <span class="op">&lt;-</span> <span class="va">bpe_ens_2018_dataset</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html">distinct</a></span><span class="op">(</span><span class="va">REG</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html">pull</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># liste des modalités de la variable REG</span></span>
 <span></span>
@@ -1556,34 +1574,34 @@ Or set PRAGMA temp_directory='/path/to/tmp.tmp'</code></pre>
 <ul>
 <li>
 <code>duckdb</code> comprend parfaitement SQL. Si vous savez utiliser <code>PROC SQL</code> avec SAS, vous ne serez pas dépaysés.</li>
-<li>Le projet <code>duckdb</code> est très récent. Il y a régulièrement des évolutions qui sont souvent des extensions ou des optimisations, et parfois la résolution de bugs. <code>arrow</code> est un projet plus ancien et plus mature.</li>
-<li>Certaines fonctions standards de <code>R</code> ne sont pas traduites, mais la situation est meilleure du côté de <code>duckdb</code> que d’<code>arrow</code>. Hormis <code>write_dataset()</code>, la plupart des traitements peuvent être effectués en utilisant uniquement <code>duckdb</code>, sans passer par <code>arrow</code>.</li>
+<li>Le projet <code>duckdb</code> évolue encore rapidement (même si le rythme s’est stabilisé depuis la sortie de la version 1.0.0). Il y a régulièrement des évolutions qui sont souvent des extensions ou des optimisations, et parfois la résolution de bugs. <code>arrow</code> est un projet un peu plus ancien et mature.</li>
+<li>Certaines fonctions standards de <code>R</code> ne sont pas traduites, mais la situation est meilleure du côté de <code>duckdb</code> que d’<code>arrow</code>. Hormis <code>write_dataset()</code> (si vous utilisez la syntaxe <code>dplyr</code>), la plupart des traitements peuvent être effectués en utilisant uniquement <code>duckdb</code>, sans passer par <code>arrow</code>.</li>
 <li>Les <strong>conversions de type</strong>: <code>duckdb</code> est plus permissif que <code>arrow</code> et fera plus facilement des <a href="https://duckdb.org/docs/sql/data_types/typecasting.html">conversions automatiques</a> sans danger.</li>
 <li>Les <strong>jointures de tables volumineuses</strong>: <code>arrow</code> ne parvient pas à joindre des tables de données très volumineuses; il est préférable d’utiliser <code>duckdb</code> pour ce type d’opération.</li>
 <li>Les <strong>réorganisations de données</strong> : les fonctions <code>pivot_wider</code> et <code>pivot_longer</code> existent nativement dans <code>duckdb</code> mais pas dans <code>arrow</code>.</li>
 <li>Les <strong>fonctions fenêtre</strong> (<em>window functions</em>): <code>arrow</code> ne permet pas d’ajouter directement à une table des informations issues d’une agrégation par groupe de la même table. Par exemple, <code>arrow</code> ne peut pas ajouter directement à la base permanente des équipements une colonne égale au nombre total d’équipements du département. Le code fonctionne en <code>duckdb</code>.</li>
 </ul>
 <div class="cell">
-<div class="sourceCode" id="cb77"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># arrow ne peut pas exécuter ceci</span></span>
+<div class="sourceCode" id="cb79"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># arrow ne peut pas exécuter ceci</span></span>
 <span><span class="va">bpe_ens_2018_dataset</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">DEP</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>NB_EQUIP_TOTAL_DEP  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">DEP</span>, <span class="va">NB_EQUIP</span>, <span class="va">NB_EQUIP_TOTAL_DEP</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># Source:   SQL [?? x 3]
-# Database: DuckDB v1.1.0 [unknown@Linux 6.8.0-1021-azure:R 4.4.1/:memory:]
+# Database: DuckDB v1.1.0 [unknown@Linux 6.11.0-1012-azure:R 4.4.1/:memory:]
 # Groups:   DEP
    DEP   NB_EQUIP NB_EQUIP_TOTAL_DEP
    &lt;chr&gt;    &lt;dbl&gt;              &lt;dbl&gt;
  1 08           1               9233
  2 08           4               9233
- 3 08           1               9233
- 4 08           1               9233
+ 3 08           3               9233
+ 4 08           2               9233
  5 08           1               9233
- 6 08           2               9233
+ 6 08           1               9233
  7 08           1               9233
  8 08           1               9233
- 9 08           1               9233
+ 9 08           2               9233
 10 08           1               9233
 # ℹ more rows</code></pre>
 </div>
@@ -1592,7 +1610,7 @@ Or set PRAGMA temp_directory='/path/to/tmp.tmp'</code></pre>
 <li>les <strong>empilements de tables</strong>: il est facile d’empiler plusieurs <code>tibbles</code> avec <code>dplyr</code> grâce à la fonction <code><a href="https://dplyr.tidyverse.org/reference/bind_rows.html">bind_rows()</a></code>: <code>bind_rows(table1, table2, table3, table4)</code>. En revanche, il n’existe pas à ce jour de fonction équivalente dans <code>arrow</code> ou dans <code>duckdb</code>: il faut empiler les tables deux à deux avec les fonctions <code><a href="https://dplyr.tidyverse.org/reference/setops.html">union_all()</a></code> et <code><a href="https://generics.r-lib.org/reference/setops.html">union()</a></code>. La différence entre <code>arrow</code> et <code>duckdb</code> est que <code>duckdb</code> est plus souple et acceptera d’empiler des tables qui ne sont pas exactement compatibles (exemple: pas le même nombre de colonnes), tandis qu’<code>arrow</code> exige que les deux tables soient parfaitement compatibles (il faut le même nombre de colonnes avec le même nom et le même type, ce qui n’est pas toujours le cas en pratique). Dans l’exemple suivant, on empile deux tables qui n’ont pas exactement le même nombre de colonnes:</li>
 </ul>
 <div class="cell">
-<div class="sourceCode" id="cb79"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Comment empiler de multiples tables</span></span>
+<div class="sourceCode" id="cb81"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Comment empiler de multiples tables</span></span>
 <span><span class="va">table_empilees</span>  <span class="op">&lt;-</span> <span class="va">bpe_ens_2018_dataset</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/setops.html">union_all</a></span><span class="op">(</span><span class="va">bpe_ens_2018_dataset</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">DEPCOM</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
