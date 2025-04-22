@@ -24,7 +24,8 @@ apt-get -qq install --no-install-recommends \
     imagemagick \
     libmagick++-dev \
     ghostscript \
-    libglpk40
+    libglpk40 \
+    libgdal-dev libgeos-dev
 
 apt-get -qq install --no-install-recommends \
     libgs-dev \
