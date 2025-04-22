@@ -5,9 +5,6 @@ apt-get update && apt-get -qq install gnupg
 
 # Install necessary packages without recommended dependencies
 apt-get -qq install --no-install-recommends \
-    ttf-mscorefonts-installer \
-    fonts-liberation \
-    fonts-freefont-ttf \
     libssl-dev
 
 apt-get -qq install --no-install-recommends \
