@@ -63,7 +63,7 @@ Inversement, le format Parquet présente deux contraintes inhabituelles pour les
 
 Pour en savoir plus notamment sur la comparaison entre les formats Parquet et csv, consultez 
 [le chapitre sur le sujet](https://pythonds.linogaliana.fr/reads3/#le-format-parquet) dans le cours de l'ENSAE _"Python pour la data science"_. 
-Grâce aux travaux du projet Arrow, **les fichiers aux format Parquet sont inter-opérables** c'est-à-dire qu'ils peuvent être lus par plusieurs langages informatiques : [C](https://arrow.apache.org/docs/c_glib/), [C++](https://arrow.apache.org/docs/cpp/), [C#](https://github.com/apache/arrow/blob/main/csharp/README.md), [Go](https://godoc.org/github.com/apache/arrow/go/arrow), [Java](https://arrow.apache.org/docs/java/), [JavaScript](https://arrow.apache.org/docs/js/), [Julia](https://arrow.juliadata.org/stable/), [MATLAB](https://github.com/apache/arrow/blob/main/matlab/README.md), [Python](https://arrow.apache.org/docs/python/), [Ruby](https://github.com/apache/arrow/blob/main/ruby/README.md), [Rust](https://docs.rs/crate/arrow/) et bien entendu [R](https://arrow.apache.org/docs/r/). Le format Parquet est donc particulièrement adapté aux chaînes de traitement qui font appel à plusieurs langages (exemples: manipulation de données avec `R` puis _machine learning_ avec Python).
+Grâce aux travaux du projet Arrow, **les fichiers aux format Parquet sont inter-opérables** c'est-à-dire qu'ils peuvent être lus par plusieurs langages informatiques : [C](https://arrow.apache.org/docs/c_glib/), [C++](https://arrow.apache.org/docs/cpp/), [C#](https://github.com/apache/arrow/blob/main/csharp/README.md), [Go](https://godoc.org/github.com/apache/arrow/go/arrow), [Java](https://arrow.apache.org/docs/java/), [JavaScript](https://arrow.apache.org/docs/js/), [Julia](https://arrow.apache.org/julia/stable/), [MATLAB](https://github.com/apache/arrow/blob/main/matlab/README.md), [Python](https://arrow.apache.org/docs/python/), [Ruby](https://github.com/apache/arrow/blob/main/ruby/README.md), [Rust](https://docs.rs/crate/arrow/) et bien entendu [R](https://arrow.apache.org/docs/r/). Le format Parquet est donc particulièrement adapté aux chaînes de traitement qui font appel à plusieurs langages (exemples: manipulation de données avec `R` puis _machine learning_ avec Python).
 
 S'il est très efficace pour l'analyse de données, **Parquet est en revanche peu adapté à l'ajout de données en continu ou à la modification fréquente de données existantes**.  
 Pour cette utilisation, le statisticien privilégiera un système de gestion de base de données comme par exemple [`PostgreSQL`](https://www.postgresql.org/).
@@ -74,7 +74,7 @@ Pour cette utilisation, le statisticien privilégiera un système de gestion de 
 
 Les tables Parquet sont encore loin d'être majoritaires dans les liens de téléchargement notamment face au format csv. C'est la raison pour laquelle, nous allons dans cette section dérouler **le processus pour obtenir un fichier Parquet à partir d'un fichier csv.**  
 
-Dans un premier temps, on importe le fichier plat avec la fonction **fread()** du _package_ **data.table**, conformément aux recommandations de [la fiche sur les imports de fichiers plats](https://book.utilitr.org/03_fiches_thematiques/fiche_import_fichiers_plats). On obtient un objet `data.table` en mémoire. Dans un second temps, on exporte ces données en format Parquet avec la fonction `write_parquet()` du _package_ `arrow`.
+Dans un premier temps, on importe le fichier plat avec la fonction **fread()** du _package_ **data.table**, conformément aux recommandations de [la fiche sur les imports de fichiers plats](https://book.utilitr.org/03_Fiches_thematiques/Fiche_import_fichiers_plats). On obtient un objet `data.table` en mémoire. Dans un second temps, on exporte ces données en format Parquet avec la fonction `write_parquet()` du _package_ `arrow`.
 
 ```{r, eval=FALSE}
 library(data.table)
@@ -180,18 +180,23 @@ Cette méthode est quasiment aussi efficace que le partitionnement.
 
 ### Vérifier qu'un fichier parquet est correctement optimisé
 
-Dans certains cas pathologiques quand vous manipulez de très gros volumes de données (par exemple quand vous partitionnez avec `arrow::open_dataset` un volume de données de plusieurs de dizaine de millions de lignes), le package `arrow` peut générer des fichiers parquet avec un nombre de lignes par row group très petite (inférieur à 1000 voire à 100). Cela rendra toutes les requêtes sur vos fichiers extrèmement lent.
+Dans certains cas pathologiques quand vous manipulez de très gros volumes de données (par exemple quand vous partitionnez avec `arrow::write_dataset` un volume de données de plusieurs de dizaine de millions de lignes), le package `arrow` peut générer des fichiers parquet avec un nombre de lignes par row group très petite (inférieur à 1000 voire à 100). Cela rendra toutes les requêtes sur vos fichiers extrêmement lent.
 
-Pour vérifier que vos fichiers ont une taille de row group correcte, vous pouvez utiliser la fonction suivante :
+Pour vérifier que vos fichiers ont une taille de row group correcte, vous pouvez utiliser la fonction suivante qui prend un chemin de fichier ou de dataset parquet et retourne le nombre moyen de lignes par row group pour chaque fichier :
 
 ```{r, eval = FALSE}
-library(arrow)
-
 mean_row_group_size <- function(path) {
-  a <- arrow::ParquetFileReader$create(path)
-  (a$num_rows / a$num_row_groups)
+  lapply(arrow::open_dataset(path)$files, function(file) {
+    a <- arrow::ParquetFileReader$create(file)
+    cat(a$num_rows / a$num_row_groups, "\t", file, "\n")
+  })
+  invisible()
 }
+
+# pour un fichier
 mean_row_group_size('bpe2018/REG=11/part-0.parquet')
+# pour un dataset
+mean_row_group_size('bpe2018/')
 ```
 
 Vous devez obtenir une valeur au moins égale à 10 000. Si vous obtenez une valeur inférieure, vous aurez intérêt à regénérer votre fichier en passant par d'autres méthodes (par exemple générer chaque partition en faisant une boucle et un filtre).

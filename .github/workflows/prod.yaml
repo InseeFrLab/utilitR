@@ -1,82 +1,42 @@
-name: Production de la documentation
-
-
 on:
+  workflow_dispatch:
   push:
-    branches:
-      - main
-      - master
-      - test
+    branches: master
+
+name: Quarto Publish
 
 jobs:
-  docker:
-    if: "!contains(github.event.commits[0].message, '[skip ci]')"
+  build-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v2    
-      -
-        name: Set up QEMU
-        if: ${{ github.repository == 'inseefrlab/utilitr' }}
-        uses: docker/setup-qemu-action@v1
-      -
-        name: Set up Docker Buildx
-        if: ${{ github.repository == 'inseefrlab/utilitr' }}
-        uses: docker/setup-buildx-action@v1
-      -
-        name: Login to DockerHub
-        if: ${{ github.repository == 'inseefrlab/utilitr' }}
-        uses: docker/login-action@v1 
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install R
+        uses: r-lib/actions/setup-r@v2
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      -
-        name: Build and push
-        if: ${{ github.repository == 'inseefrlab/utilitr' }}
-        id: docker_build
-        uses: docker/build-push-action@v2
-        env:
-          GITHUB_PAT: ${{ secrets.PAT }}
-        with:
-          push: true
-          context: .
-          tags: |
-            inseefrlab/utilitr:latest
-            inseefrlab/utilitr:0.9.1      
-      -
-        name: Image digest
-        run: echo ${{ steps.docker_build.outputs.digest }}
-  website:
-    name: Render website
-    if: "!contains(github.event.commits[0].message, '[skip ci]')"
-    needs: docker
-    runs-on: ubuntu-latest
-    container: inseefrlab/utilitr:latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: ${{ github.event.pull_request.head.ref }}
-          repository: ${{github.event.pull_request.head.repo.full_name}}
+          r-version: '4.4.1'
+
       - name: Install dependencies
         run: |
-          git config --global --add safe.directory /__w/utilitR/utilitR
-          Rscript -e "install.packages(c('remotes'))"
-          Rscript -e "remotes::install_github('rstudio/htmltools')"
-          Rscript -e "remotes::install_github('r-spatial/sf', dependencies = TRUE)"
-        env:
-          GITHUB_PAT: ${{ secrets.PAT }}
-      - name: Render Book
-        run: |
-          ls
-          git remote -v
-          git config --global user.email quarto-github-actions-publish@example.com
-          git config --global user.name "Quarto GHA Workflow Runner"
-          quarto render --to html
-          quarto publish gh-pages --no-render --no-browser
-      - uses: actions/upload-artifact@v2
+          sudo ./docker/dependencies.sh
+          rm -rf renv/
+          rm .Rprofile
+          Rscript -e "install.packages('yaml')"
+
+      - name: Install renv packages
+        uses: r-lib/actions/setup-renv@v2
         with:
-          name: _public
-          path: _public/
-          retention-days: 5
+          cache-version: 2
+
+      - name: Set up Quarto environment
+        uses: quarto-dev/quarto-actions/setup@v2
+
+      - name: Render and Publish
+        uses: quarto-dev/quarto-actions/publish@v2
+        with:
+          target: gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
