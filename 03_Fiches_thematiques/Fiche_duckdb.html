@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.6.43">
+<meta name="generator" content="quarto-1.8.26">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>21&nbsp; Manipuler des données avec duckdb</title>
 <style>
@@ -18,8 +18,9 @@ ul.task-list li input[type="checkbox"] {
   vertical-align: middle;
 }
 /* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -30,7 +31,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -63,17 +64,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../03_Fiches_thematiques/Fiche_joindre_donnees.html" rel="next">
 <link href="../03_Fiches_thematiques/Fiche_arrow.html" rel="prev">
 <link href="../resources/logo-utilitr.png" rel="icon" type="image/png">
-<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-d4d76bf8491c20bad77d141916dc28e1.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-4379b0ccadffce622b03caf4c46266b3.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b758ccaa5987ceb1b75504551e579abf.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-b4e8633835c5b832926fbdf0b24b9738.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-6d795b6992d62256d9673cc2ffc824d6.min.css" rel="prefetch" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark"><script id="quarto-search-options" type="application/json">{
+<link href="../site_libs/bootstrap/bootstrap-39ebe287720e5855f1c6e83f308b2e18.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-23d4ee7aba3f0cd382972278a17b039c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-39ebe287720e5855f1c6e83f308b2e18.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
   "collapse-after": 3,
@@ -105,13 +110,175 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   });
 </script>
 </head>
-<body class="nav-sidebar docked nav-fixed">
+<body class="nav-sidebar docked nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top"><nav class="navbar navbar-expand-lg " data-bs-theme="dark"><div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a href="../index.html" class="navbar-brand navbar-brand-logo">
-    <img src="../resources/logo-utilitr.png" alt="Logo du projet utilitR" class="navbar-logo"></a>
+    <img src="../resources/logo-utilitr.png" alt="Logo du projet utilitR" class="navbar-logo light-content"><img src="../resources/logo-utilitr.png" alt="Logo du projet utilitR" class="navbar-logo dark-content"></a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
@@ -191,7 +358,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
       <a href="../index.html" class="sidebar-logo-link">
-      <img src="../resources/logo-utilitr.png" alt="" class="sidebar-logo py-0 d-lg-inline d-none"></a>
+      <img src="../resources/logo-utilitr.png" alt="" class="sidebar-logo light-content py-0 d-lg-inline d-none"><img src="../resources/logo-utilitr.png" alt="" class="sidebar-logo dark-content py-0 d-lg-inline d-none"></a>
       </div>
         <div class="mt-2 flex-shrink-0 align-items-center">
         <div class="sidebar-search">
@@ -719,7 +886,7 @@ Note
 </h2>
 <p>Il suffit d’installer le <em>package</em> <code>duckdb</code>, qui contient à la fois <code>DuckDB</code> et une interface pour que <code>R</code> puisse s’y connecter.</p>
 <div class="cell">
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"duckdb"</span>, repos<span class="op">=</span><span class="st">"https://cloud.r-project.org"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"duckdb"</span>, repos<span class="op">=</span><span class="st">"https://cloud.r-project.org"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section><section id="utilisation-de-duckdb" class="level2" data-number="21.4"><h2 data-number="21.4" class="anchored" data-anchor-id="utilisation-de-duckdb">
 <span class="header-section-number">21.4</span> Utilisation de <code>duckdb</code>
@@ -730,8 +897,8 @@ Note
 </h3>
 <p>Pour utiliser <code>duckdb</code>, il faut commencer par charger le <em>package</em>. Cela charge automatiquement le <em>package</em> <code>DBI</code>, qui permet de se connecter aux bases de données. Il est utile de charger également le <em>package</em> <code>dplyr</code> afin de pouvoir requêter la base de données avec la syntaxe bien connue de <code>dplyr</code>.</p>
 <div class="cell">
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r.duckdb.org/">duckdb</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r.duckdb.org/">duckdb</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Le moteur <code>duckdb</code> fonctionnant “en dehors” de <code>R</code>, il détecte le nombre de processeurs et effectue les opérations en parallèle si possible.</p>
 </section><section id="connexion-à-une-base-de-données" class="level3" data-number="21.4.2"><h3 data-number="21.4.2" class="anchored" data-anchor-id="connexion-à-une-base-de-données">
@@ -739,18 +906,18 @@ Note
 <p><strong><code>duckdb</code> est une base de données distante et s’utilise comme telle: il faut ouvrir une connexion, puis “charger” les données dans la base de données pour les manipuler.</strong></p>
 <p>Comme beaucoup d’autres bases de données (distantes ou locales), on ouvre une connexion au moteur <code>duckdb</code> avec une base de données en mémoire vive de la façon suivante :</p>
 <div class="cell">
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html">dbConnect</a></span><span class="op">(</span>drv <span class="op">=</span> <span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://r.duckdb.org/reference/duckdb.html">duckdb</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html">dbConnect</a></span><span class="op">(</span>drv <span class="op">=</span> <span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://r.duckdb.org/reference/duckdb.html">duckdb</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Concrètement, cette commande crée une nouvelle base de données <code>duckdb</code> dans la mémoire vive. Cette base de données ne contient aucune donnée lorsqu’elle est créée. L’objet <code>conn_ddb</code> apparaît dans l’onglet <code>Data</code> de l’environnement <code>RStudio</code>, mais la liste des tables n’y est pas directement accessible. Pour plus d’informations, se reporter à la documentation du <em>package</em> <code>DBI</code>.</p>
 <p>À la fin du traitement ou du programme, on ferme la connexion avec le code ci-dessous. L’option <code>shutdown</code> est importante : elle permet de fermer complètement la session <code>duckdb</code> et de libérer la mémoire utilisée. Si on n’utilise pas cette option, il arrive souvent que des connexions à moitié ouvertes continuent à consommer des ressources, et il faut alors relancer la session <code>R</code>.</p>
 <div class="cell">
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html">dbDisconnect</a></span><span class="op">(</span><span class="va">conn_ddb</span>, shutdown <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html">dbDisconnect</a></span><span class="op">(</span><span class="va">conn_ddb</span>, shutdown <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Par défaut, <code>duckdb</code> utilisera tous les cœurs disponibles. Si vous travaillez sur un serveur mutualisé, il est conseillé de limiter le nombre de cœurs utilisés par <code>duckdb</code> afin de ne pas consommer toutes les ressources. Vous pouvez trouver plus d’information dans la section <a href="#sec-configuration">Configurer <code>duckdb</code></a>.</p>
 <div class="cell">
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html">dbConnect</a></span><span class="op">(</span><span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://r.duckdb.org/reference/duckdb.html">duckdb</a></span><span class="op">(</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html">dbConnect</a></span><span class="op">(</span><span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://r.duckdb.org/reference/duckdb.html">duckdb</a></span><span class="op">(</span></span>
 <span>  config <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>threads <span class="op">=</span> <span class="st">"6"</span><span class="op">)</span></span>
-<span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Pour la suite, on supposera que la connexion à une base de données duckdb est ouverte.</p>
 </section><section id="chargement-des-données" class="level3" data-number="21.4.3"><h3 data-number="21.4.3" class="anchored" data-anchor-id="chargement-des-données">
@@ -765,20 +932,20 @@ Note
 </h4>
 <p><strong>La fonction <code><a href="https://r.duckdb.org/reference/duckdb_register.html">duckdb_register()</a></code> permet de charger dans <code>duckdb</code> des données présentes dans la session <code>R</code>.</strong> Cette méthode a l’avantage de ne pas <em>recopier</em> les données: elle se contente d’établir un lien logique entre la base de données <code>duckdb</code> et un objet de la session <code>R</code>. Voici un exemple avec la Base permanente des équipements: grâce à la fonction <code><a href="https://r.duckdb.org/reference/duckdb_register.html">duckdb::duckdb_register()</a></code>, l’objet <code>bpe_ens_2018</code> est référencé dans la base de données <code>duckdb</code> sous le nom <code>bpe_ens_2018_duckdb</code>.</p>
 <div class="cell">
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Charger la Base permanente des équipements 2018 dans la session R</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Charger la Base permanente des équipements 2018 dans la session R</span></span>
 <span><span class="va">bpe_ens_2018</span> <span class="op">&lt;-</span> <span class="fu">doremifasolData</span><span class="fu">::</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData/reference/bpe_ens_2018.html">bpe_ens_2018</a></span> <span class="op">|&gt;</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Etablir le lien logique entre la base de données duckdb et la table de données</span></span>
 <span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://r.duckdb.org/reference/duckdb_register.html">duckdb_register</a></span><span class="op">(</span></span>
 <span>  name <span class="op">=</span> <span class="st">"bpe_ens_2018_duckdb"</span>, </span>
-<span>  df <span class="op">=</span> <span class="va">bpe_ens_2018</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span>  df <span class="op">=</span> <span class="va">bpe_ens_2018</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Le code ci-dessous permet de vérifier que le chargement des données a bien fonctionné. La fonction <code>tbl</code> permet d’accéder à un objet de la base de données par le nom (de la table), ou par du code SQL (utilisation un peu plus avancée). Par défaut, <code>duckdb</code> affiche les 10 premières lignes du résultat, sans effectuer tout le calcul. C’est très pratique et très rapide !</p>
 <div class="cell">
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="st">"bpe_ens_2018_duckdb"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="st">"bpe_ens_2018_duckdb"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># Source:   table&lt;bpe_ens_2018_duckdb&gt; [?? x 7]
-# Database: DuckDB v1.1.0 [unknown@Linux 6.11.0-1012-azure:R 4.4.1/:memory:]
+# Database: DuckDB v1.1.0 [unknown@Linux 6.11.0-1018-azure:R 4.4.1/:memory:]
    REG   DEP   DEPCOM DCIRIS    AN TYPEQU NB_EQUIP
    &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;     &lt;dbl&gt;
  1 84    01    01001  01001   2018 A401          2
@@ -798,15 +965,15 @@ Note
 <span class="header-section-number">21.4.3.2</span> Chargement de données stockées sur le disque dur</h4>
 <p>Pour l’exemple suivant, on sauvegarde les données <code>bpe_ens_2018</code> au format Parquet.</p>
 <div class="cell">
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018</span> <span class="op">|&gt;</span> <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/write_dataset.html">write_dataset</a></span><span class="op">(</span><span class="st">"bpe_ens_2018_dataset"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018</span> <span class="op">|&gt;</span> <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/write_dataset.html">write_dataset</a></span><span class="op">(</span><span class="st">"bpe_ens_2018_dataset"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p><strong>Il existe deux méthodes pour manipuler des données stockées en Parquet avec <code>duckdb</code> sans avoir à les charger en mémoire</strong>: soit utiliser la fonction <code><a href="https://dplyr.tidyverse.org/reference/tbl.html">dplyr::tbl()</a></code> qui lit directement les fichiers Parquet avec <code>duckdb</code>, soit utiliser la fonction <code><a href="https://arrow.apache.org/docs/r/reference/open_dataset.html">arrow::open_dataset()</a></code> et créer un lien logique avec la fonction <code><a href="https://arrow.apache.org/docs/r/reference/to_duckdb.html">arrow::to_duckdb()</a></code>. Si la deuxième méthode est plus simple, surtout quand vous connaissez déjà <code>arrow</code>, la première est systématiquement plus efficace et peut générer des gains de consommation mémoire et de temps de traitement conséquents. Il est donc conseillé de ne pas lire vos fichiers avec <code><a href="https://arrow.apache.org/docs/r/reference/open_dataset.html">arrow::open_dataset</a></code> si vos traitements sont lourds (il ne faut pas hésiter à faire des tests).</p>
 <p><strong>La première approche repose uniquement sur <code>duckdb</code>.</strong> Vous devez utilisez la fonction <code><a href="https://dplyr.tidyverse.org/reference/tbl.html">dplyr::tbl</a></code>:</p>
 <div class="cell" data-messages="false">
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="st">"read_parquet('bpe_ens_2018_dataset/**/*.parquet')"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="st">"read_parquet('bpe_ens_2018_dataset/**/*.parquet')"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># Source:   SQL [?? x 7]
-# Database: DuckDB v1.1.0 [unknown@Linux 6.11.0-1012-azure:R 4.4.1/:memory:]
+# Database: DuckDB v1.1.0 [unknown@Linux 6.11.0-1018-azure:R 4.4.1/:memory:]
    REG   DEP   DEPCOM DCIRIS    AN TYPEQU NB_EQUIP
    &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;     &lt;dbl&gt;
  1 84    01    01001  01001   2018 A401          2
@@ -829,10 +996,10 @@ Note
 <code>**/*.parquet</code> est un motif qui indique que vous souhaitez lire, dans tous les sous-dossiers quelque soit le niveau (<code>**</code>), l’ensemble des fichiers parquets (<code>*.parquet</code>) qui s’y trouvent. C’est notamment utile pour lire des fichiers Parquet partitionnés. Quand vous n’avez pas besoin de passer d’arguments à <code>read_parquet</code>, vous pouvez l’omettre :</li>
 </ul>
 <div class="cell" data-messages="false">
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="st">'bpe_ens_2018_dataset/**/*.parquet'</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="st">'bpe_ens_2018_dataset/**/*.parquet'</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># Source:   table&lt;"bpe_ens_2018_dataset/**/*.parquet"&gt; [?? x 7]
-# Database: DuckDB v1.1.0 [unknown@Linux 6.11.0-1012-azure:R 4.4.1/:memory:]
+# Database: DuckDB v1.1.0 [unknown@Linux 6.11.0-1018-azure:R 4.4.1/:memory:]
    REG   DEP   DEPCOM DCIRIS    AN TYPEQU NB_EQUIP
    &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;     &lt;dbl&gt;
  1 84    01    01001  01001   2018 A401          2
@@ -850,14 +1017,14 @@ Note
 </div>
 <p><strong>La seconde approche consiste à passer par <code>arrow</code>, puis à transmettre les données à <code>duckdb</code>.</strong> Cette méthode utilise un objet intermédiaire de type Arrow Dataset (voir la fiche <a href="Fiche_arrow.html">Manipuler des données avec <code>arrow</code></a>):</p>
 <div class="cell">
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Créer une connexion au dataset Parquet</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Créer une connexion au dataset Parquet</span></span>
 <span><span class="va">bpe_ens_2018_dataset</span> <span class="op">&lt;-</span> <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/open_dataset.html">open_dataset</a></span><span class="op">(</span><span class="st">"bpe_ens_2018_dataset"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Etablir le lien entre la base de données duckdb et le dataset Parquet</span></span>
-<span><span class="va">bpe_ens_2018_dataset</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/to_duckdb.html">to_duckdb</a></span><span class="op">(</span><span class="va">conn_ddb</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="va">bpe_ens_2018_dataset</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/to_duckdb.html">to_duckdb</a></span><span class="op">(</span><span class="va">conn_ddb</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># Source:   table&lt;arrow_001&gt; [?? x 7]
-# Database: DuckDB v1.1.0 [unknown@Linux 6.11.0-1012-azure:R 4.4.1/:memory:]
+# Database: DuckDB v1.1.0 [unknown@Linux 6.11.0-1018-azure:R 4.4.1/:memory:]
    REG   DEP   DEPCOM DCIRIS    AN TYPEQU NB_EQUIP
    &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;     &lt;dbl&gt;
  1 84    01    01001  01001   2018 A401          2
@@ -876,8 +1043,8 @@ Note
 <p>Ces deux approches ont un point commun important: <strong>elles établissent une connexion aux données contenues dans le dataset Parquet, mais elles ne chargent pas les données en mémoire</strong> (ni dans la mémoire de <code>R</code>, ni dans celle de <code>DuckDB</code>).</p>
 <p>Pour plus de commodité, on sauvegarde l’instruction précédente dans la variable <code>bpe_ens_2018_dataset</code>.</p>
 <div class="cell">
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dataset</span> <span class="op">&lt;-</span> <span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="st">'bpe_ens_2018_dataset/*.parquet'</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dataset</span> <span class="op">&lt;-</span> <span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="st">'bpe_ens_2018_dataset/*.parquet'</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section></section><section id="manipulation-des-données-avec-la-syntaxe-dplyr" class="level3" data-number="21.4.4"><h3 data-number="21.4.4" class="anchored" data-anchor-id="manipulation-des-données-avec-la-syntaxe-dplyr">
 <span class="header-section-number">21.4.4</span> Manipulation des données avec la syntaxe <code>dplyr</code>
@@ -888,11 +1055,11 @@ Note
 <div class="column" style="width:49%;">
 <p><strong>Manipulation d’un <code>tibble</code></strong></p>
 <div class="cell">
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">doremifasolData</span><span class="fu">::</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData/reference/bpe_ens_2018.html">bpe_ens_2018</a></span> <span class="op">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">doremifasolData</span><span class="fu">::</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData/reference/bpe_ens_2018.html">bpe_ens_2018</a></span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">REG</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
 <span>    NB_EQUIP_TOT <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span><span class="op">)</span></span>
-<span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 18 × 2
    REG   NB_EQUIP_TOT
@@ -922,12 +1089,12 @@ Note
 </div><div class="column" style="width:49%;">
 <p><strong>Manipulation d’une table <code>duckdb</code></strong></p>
 <div class="cell">
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dataset</span> <span class="op">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dataset</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">REG</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
 <span>    NB_EQUIP_TOT <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html">collect</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html">collect</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: Missing values are always removed in SQL aggregation functions.
 Use `na.rm = TRUE` to silence this warning
@@ -937,23 +1104,23 @@ This warning is displayed once every 8 hours.</code></pre>
 <pre><code># A tibble: 18 × 2
    REG   NB_EQUIP_TOT
    &lt;chr&gt;        &lt;dbl&gt;
- 1 84          303775
- 2 32          175859
- 3 02           19068
- 4 03            7852
- 5 75          237008
+ 1 76          256813
+ 2 06            7353
+ 3 75          237008
+ 4 52          119689
+ 5 01           23939
  6 94           21778
- 7 52          119689
- 8 01           23939
- 9 24           81379
-10 27           96309
-11 44          181130
-12 76          256813
-13 06            7353
-14 53          111291
-15 28          107186
-16 11          469181
-17 93          254405
+ 7 24           81379
+ 8 53          111291
+ 9 28          107186
+10 02           19068
+11 03            7852
+12 27           96309
+13 44          181130
+14 84          303775
+15 32          175859
+16 93          254405
+17 11          469181
 18 04           30767</code></pre>
 </div>
 </div>
@@ -961,12 +1128,12 @@ This warning is displayed once every 8 hours.</code></pre>
 </div>
 <p>On peut examiner la requête SQL construite par <code>duckdb</code> avec la fonction <code><a href="https://dplyr.tidyverse.org/reference/explain.html">show_query()</a></code>.</p>
 <div class="cell">
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dataset</span> <span class="op">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dataset</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">REG</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
 <span>    NB_EQUIP_TOT <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/explain.html">show_query</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/explain.html">show_query</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;SQL&gt;
 SELECT REG, SUM(NB_EQUIP) AS NB_EQUIP_TOT
@@ -984,9 +1151,9 @@ GROUP BY REG</code></pre>
 <span class="header-section-number">21.4.5</span> Écriture au format Parquet</h3>
 <p><strong>Pour écrire une table (ou le résultat de n’importe quelle requête) sur le disque au format Parquet, il est recommandé d’utiliser la librairie <code>arrow</code>.</strong></p>
 <div class="cell">
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dataset</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dataset</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/to_arrow.html">to_arrow</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/write_dataset.html">write_dataset</a></span><span class="op">(</span><span class="st">"temp_dataset"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html">list.files</a></span><span class="op">(</span><span class="st">"temp_dataset"</span><span class="op">)</span> <span class="co"># liste des fichiers du répertoire temp_dataset/</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html">list.files</a></span><span class="op">(</span><span class="st">"temp_dataset"</span><span class="op">)</span> <span class="co"># liste des fichiers du répertoire temp_dataset/</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "part-0.parquet"</code></pre>
 </div>
@@ -998,8 +1165,8 @@ GROUP BY REG</code></pre>
 <section id="on-a-éliminé-des-colonnes-nécessaires" class="level4" data-number="21.4.6.1"><h4 data-number="21.4.6.1" class="anchored" data-anchor-id="on-a-éliminé-des-colonnes-nécessaires">
 <span class="header-section-number">21.4.6.1</span> On a éliminé des colonnes nécessaires</h4>
 <div class="cell">
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dataset</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">DEP</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>NB_EQUIP_TOTAL_DEP  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dataset</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">DEP</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>NB_EQUIP_TOTAL_DEP  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-error">
 <pre><code>Error in `mutate()`:
 ℹ In argument: `NB_EQUIP_TOTAL_DEP = sum(NB_EQUIP)`
@@ -1011,8 +1178,8 @@ Caused by error:
 <span class="header-section-number">21.4.6.2</span> Convertir les types</h4>
 <p>Dans cet exemple, on veut multiplier un nombre par une indicatrice.</p>
 <div class="cell">
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dataset</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>nb_boulangeries  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span> <span class="op">*</span> <span class="op">(</span><span class="va">TYPEQU</span> <span class="op">==</span> <span class="st">"B203"</span><span class="op">)</span><span class="op">)</span>, .by <span class="op">=</span> <span class="va">DEP</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dataset</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>nb_boulangeries  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span> <span class="op">*</span> <span class="op">(</span><span class="va">TYPEQU</span> <span class="op">==</span> <span class="st">"B203"</span><span class="op">)</span><span class="op">)</span>, .by <span class="op">=</span> <span class="va">DEP</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-error">
 <pre><code>Error in `collect()`:
 ! Failed to collect lazy table.
@@ -1045,23 +1212,23 @@ LINE 1: SELECT DEP, SUM(NB_EQUIP * (TYPEQU = 'B203')) AS nb_boulangeries
 </div>
 <p>Avec <code>duckdb</code>, il faut transformer explicitement un booléen en nombre (entier ou flottant).</p>
 <div class="cell">
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dataset</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>nb_boulangeries  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html">as.integer</a></span><span class="op">(</span><span class="va">TYPEQU</span> <span class="op">==</span> <span class="st">"B203"</span><span class="op">)</span><span class="op">)</span>, .by <span class="op">=</span> <span class="va">DEP</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dataset</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>nb_boulangeries  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html">as.integer</a></span><span class="op">(</span><span class="va">TYPEQU</span> <span class="op">==</span> <span class="st">"B203"</span><span class="op">)</span><span class="op">)</span>, .by <span class="op">=</span> <span class="va">DEP</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># Source:   SQL [?? x 2]
-# Database: DuckDB v1.1.0 [unknown@Linux 6.11.0-1012-azure:R 4.4.1/:memory:]
+# Database: DuckDB v1.1.0 [unknown@Linux 6.11.0-1018-azure:R 4.4.1/:memory:]
    DEP   nb_boulangeries
    &lt;chr&gt;           &lt;dbl&gt;
- 1 16                285
- 2 2B                217
- 3 42                648
- 4 05                175
- 5 35                709
- 6 84                532
- 7 86                310
- 8 972               370
- 9 07                326
-10 32                157
+ 1 13               1626
+ 2 14                599
+ 3 43                237
+ 4 30                685
+ 5 40                321
+ 6 57                871
+ 7 82                197
+ 8 34               1016
+ 9 46                171
+10 47                260
 # ℹ more rows</code></pre>
 </div>
 </div>
@@ -1076,7 +1243,7 @@ LINE 1: SELECT DEP, SUM(NB_EQUIP * (TYPEQU = 'B203')) AS nb_boulangeries
 <span class="header-section-number">21.5.1.1</span> Configuration lors de l’initialisation</h4>
 <p>Pour configurer <code>duckdb</code> lors de l’initialisation de la base de données (c’est-à-dire au moment où on utilise <code>DBI::dbConnect(drv = duckdb::duckdb())</code>), on utilise les arguments du <em>driver</em> <code>duckdb</code>.</p>
 <div class="cell">
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Configurer le driver duckdb</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb32"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Configurer le driver duckdb</span></span>
 <span><span class="va">drv</span> <span class="op">&lt;-</span> <span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://r.duckdb.org/reference/duckdb.html">duckdb</a></span><span class="op">(</span></span>
 <span>  dbdir <span class="op">=</span> <span class="st">"fichier.db"</span>, </span>
 <span>  config <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
@@ -1087,7 +1254,7 @@ LINE 1: SELECT DEP, SUM(NB_EQUIP * (TYPEQU = 'B203')) AS nb_boulangeries
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Initaliser la base de données duckdb avec la configuration</span></span>
-<span><span class="va">conn_ddb</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html">dbConnect</a></span><span class="op">(</span>drv <span class="op">=</span> <span class="va">drv</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="va">conn_ddb</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html">dbConnect</a></span><span class="op">(</span>drv <span class="op">=</span> <span class="va">drv</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Voici une description des principaux paramètres de configuration:</p>
 <ul>
@@ -1110,7 +1277,7 @@ LINE 1: SELECT DEP, SUM(NB_EQUIP * (TYPEQU = 'B203')) AS nb_boulangeries
 <span class="header-section-number">21.5.1.2</span> Fixer les paramètres après l’initialisation</h4>
 <p>Vous pouvez également changer les paramètres d’une base après son initialisation en utilisant la commande <code>dbExecute</code>. Par exemple, pour fixer le nombre de <em>threads</em> à 4 :</p>
 <div class="cell">
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html">dbExecute</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"SET threads = '4';"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html">dbExecute</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"SET threads = '4';"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section></section><section id="sec-lazy" class="level3" data-number="21.5.2"><h3 data-number="21.5.2" class="anchored" data-anchor-id="sec-lazy">
 <span class="header-section-number">21.5.2</span> L’évaluation différée avec <code>duckdb</code> (<em>lazy evaluation</em>)</h3>
@@ -1129,7 +1296,7 @@ Tip
 </div>
 <p>Quand on manipule des objets <code>duckdb</code>, on construit des requêtes SQL. Le <em>package</em> <code>duckdb</code> se contente de traduire le code <code>dplyr</code> en <code>SQL</code> sans l’exécuter (de la même façon que le <em>package</em> <code>arrow</code> traduit du code <code>dplyr</code> en instructions C++). On rappelle qu’il faut utiliser <code><a href="https://dplyr.tidyverse.org/reference/explain.html">show_query()</a></code> pour visualiser la requête. La fonction <code><a href="https://rdrr.io/r/base/print.html">print()</a></code> permet de pré-visualiser le résultat.</p>
 <div class="cell">
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Étape 1: compter les équipements</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb34"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Étape 1: compter les équipements</span></span>
 <span><span class="va">req_dep</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="va">bpe_ens_2018_dataset</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">DEP</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -1137,18 +1304,18 @@ Tip
 <span>    NB_EQUIP_TOT <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> </span>
 <span><span class="va">req_dep</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/explain.html">show_query</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/explain.html">show_query</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;SQL&gt;
 SELECT DEP, SUM(NB_EQUIP) AS NB_EQUIP_TOT
 FROM "bpe_ens_2018_dataset/*.parquet"
 GROUP BY DEP</code></pre>
 </div>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Étape 2: filtrer sur le département</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Étape 2: filtrer sur le département</span></span>
 <span><span class="va">req_dep_filter</span> <span class="op">&lt;-</span> <span class="va">req_dep</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">DEP</span> <span class="op">==</span> <span class="st">"59"</span><span class="op">)</span> </span>
 <span><span class="va">req_dep_filter</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/explain.html">show_query</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/explain.html">show_query</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;SQL&gt;
 SELECT DEP, SUM(NB_EQUIP) AS NB_EQUIP_TOT
@@ -1159,7 +1326,7 @@ HAVING (DEP = '59')</code></pre>
 </div>
 <p>La fonction <code><a href="https://dplyr.tidyverse.org/reference/compute.html">collect()</a></code> génère le SQL, l’envoie à <code>duckdb</code> pour exécuter le calcul, et transmet les résultats à <code>R</code>. Un point essentiel est que tous les ordres passés avant l’instruction <code><a href="https://dplyr.tidyverse.org/reference/compute.html">collect()</a></code> seront exécutés par le moteur SQL de <code>duckdb</code>, tandis que ceux passés après l’instruction <code><a href="https://dplyr.tidyverse.org/reference/compute.html">collect()</a></code> seront réalisés par le moteur de <code>R</code> sur un objet <code>R</code> (<code>tibble</code>) standard. Par conséquent, il faut passer le plus d’ordres possibles avant <code><a href="https://dplyr.tidyverse.org/reference/compute.html">collect()</a></code> pour bénéficier de la rapidité du moteur SQL !</p>
 <div class="cell">
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">req_dep_filter</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html">collect</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb38"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">req_dep_filter</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html">collect</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 2
   DEP   NB_EQUIP_TOT
@@ -1173,7 +1340,7 @@ HAVING (DEP = '59')</code></pre>
 <p><strong>Situation à éviter</strong></p>
 <p>La première étape de traitement est déclenchée par <code><a href="https://dplyr.tidyverse.org/reference/compute.html">collect()</a></code>, la table intermédiaire <code>res_etape1</code> est donc un <code>tibble</code>. C’est le moteur d’exécution de <code>dplyr</code> qui est utilisé pour manipuler <code>res_etape1</code> lors de la seconde étape, ce qui dégrade fortement les performances sur données volumineuses.</p>
 <div class="cell">
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Etape 1</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb40"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Etape 1</span></span>
 <span><span class="va">res_etape1</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="va">bpe_ens_2018_dataset</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">DEP</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -1188,7 +1355,7 @@ HAVING (DEP = '59')</code></pre>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html">collect</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Sauvegarder les résultats</span></span>
-<span><span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/write_parquet.html">write_parquet</a></span><span class="op">(</span><span class="va">res_final</span>, <span class="st">"resultats.parquet"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/write_parquet.html">write_parquet</a></span><span class="op">(</span><span class="va">res_final</span>, <span class="st">"resultats.parquet"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div><div class="column" style="width:2%;">
 <!-- empty column to create gap -->
@@ -1196,7 +1363,7 @@ HAVING (DEP = '59')</code></pre>
 <p><strong>Usage recommandé</strong></p>
 <p>La première étape construit une requête SQL, sans effectuer de calcul. La deuxième étape complète la requête sans effectuer de calcul. Ici, pas de fonction <code><a href="https://rdrr.io/r/base/print.html">print()</a></code>, donc pas de calcul partiel. Le calcul n’est exécuté qu’au moment de la sauvegarde des résultats par <code>DuckDB</code>, ce qui assure de bonnes performances notamment sur données volumineuses. Les données ne sont chargées dans la mémoire de <code>R</code> à aucun moment.</p>
 <div class="cell">
-<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Etape 1</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb41"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Etape 1</span></span>
 <span><span class="va">res_etape1</span> <span class="op">&lt;-</span> <span class="va">bpe_ens_2018_dataset</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">DEP</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
@@ -1209,7 +1376,7 @@ HAVING (DEP = '59')</code></pre>
 <span></span>
 <span><span class="co"># Sauvegarder les résultats</span></span>
 <span><span class="va">res_final</span> <span class="op">|&gt;</span> <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/to_arrow.html">to_arrow</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/write_parquet.html">write_parquet</a></span><span class="op">(</span><span class="st">"resultats.parquet"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span>  <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/write_parquet.html">write_parquet</a></span><span class="op">(</span><span class="st">"resultats.parquet"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 </div>
@@ -1233,9 +1400,9 @@ Tip
 <li>Lorsque <code>duckdb</code> ne connaît pas la traduction SQL d’une fonction <code>R</code> est que <strong>la fonction inconnue est reprise directement dans le code SQL</strong> sans aucune modification. Voici un exemple, dans lequel on peut voir que la fonction <code>fonction_inexistante()</code> apparaît telle quelle dans le code SQL.</li>
 </ul>
 <div class="cell">
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">req</span> <span class="op">&lt;-</span> <span class="va">bpe_ens_2018_dataset</span> <span class="op">|&gt;</span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb42"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">req</span> <span class="op">&lt;-</span> <span class="va">bpe_ens_2018_dataset</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>test <span class="op">=</span> <span class="fu">fonction_inexistante</span><span class="op">(</span><span class="va">DEP</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/explain.html">show_query</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/explain.html">show_query</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;SQL&gt;
 SELECT "bpe_ens_2018_dataset/*.parquet".*, fonction_inexistante(DEP) AS test
@@ -1248,26 +1415,26 @@ FROM "bpe_ens_2018_dataset/*.parquet"</code></pre>
 </ul>
 <p>Ces deux points ensemble permettent de <strong>surmonter dans la plupart des cas le problème des fonctions <code>R</code> inconnues de <code>duckdb</code>: il suffit d’appeler la fonction de <code>DuckDB</code> qui fait la même chose</strong>. Voici un exemple qui explique cela en détail dans le cas de la fonction <code>R</code> <code><a href="https://rdrr.io/r/base/as.Date.html">as.Date()</a></code>. On commence par créer une petite table <code>duckdb</code> contenant des dates sous forme de chaînes de caractères avec le format “DD/MM/YYYY”.</p>
 <div class="cell">
-<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Créer des dates sous forme de chaînes de caractères</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb44"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Créer des dates sous forme de chaînes de caractères</span></span>
 <span><span class="va">dates</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
 <span>  date_naissance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"02/07/1980"</span>, <span class="st">"29/02/2004"</span><span class="op">)</span>,</span>
 <span>  date_deces <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"05/06/2001"</span>, <span class="st">"12/07/2023"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Créer une connexion entre ces données et la base de données duckdb</span></span>
-<span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://r.duckdb.org/reference/duckdb_register.html">duckdb_register</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"dates_duckdb"</span>, df <span class="op">=</span> <span class="va">dates</span>, overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://r.duckdb.org/reference/duckdb_register.html">duckdb_register</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"dates_duckdb"</span>, df <span class="op">=</span> <span class="va">dates</span>, overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Le <em>package</em> <code>duckdb</code> dispose d’une traduction SQL de la fonction <code><a href="https://rdrr.io/r/base/as.Date.html">as.Date()</a></code>, mais cette traduction a deux limites: elle n’accepte que les données en format “YYYY-MM-DD”, et ne supporte pas l’argument <code>format</code> qui permet de préciser que les données sont en format “DD/MM/YYYY”. Par conséquent, on rencontre une erreur si on essaie d’utiliser la fonction <code><a href="https://rdrr.io/r/base/as.Date.html">as.Date()</a></code> avec l’argument <code>format</code> (car <code>duckdb</code> ne sait pas gérer cet argument), et on rencontre une erreur si on essaie d’utiliser la fonction <code><a href="https://rdrr.io/r/base/as.Date.html">as.Date()</a></code> sans cet argument (car les données n’ont pas le bon format).</p>
 <div class="cell">
-<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="st">"dates_duckdb"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>date_naissance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="va">date_naissance</span>, format <span class="op">=</span> <span class="st">"%d/%m/%Y"</span><span class="op">)</span><span class="op">)</span> <span class="co"># erreur</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb45"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="st">"dates_duckdb"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>date_naissance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="va">date_naissance</span>, format <span class="op">=</span> <span class="st">"%d/%m/%Y"</span><span class="op">)</span><span class="op">)</span> <span class="co"># erreur</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-error">
 <pre><code>Error in as.Date(date_naissance, format = "%d/%m/%Y"): unused argument (format = "%d/%m/%Y")</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="st">"dates_duckdb"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>date_naissance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="va">date_naissance</span><span class="op">)</span><span class="op">)</span> <span class="co"># erreur</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb47"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="st">"dates_duckdb"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>date_naissance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="va">date_naissance</span><span class="op">)</span><span class="op">)</span> <span class="co"># erreur</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-error">
 <pre><code>Error in `collect()`:
 ! Failed to collect lazy table.
@@ -1280,11 +1447,11 @@ LINE 1: SELECT CAST(date_naissance AS DATE) AS date_na...
 </div>
 <p>On pourrait penser que ce problème est sérieux. En fait, la solution est très simple: il suffit d’utiliser la fonction <a href="https://duckdb.org/docs/sql/functions/dateformat.html"><code>strptime</code></a> du moteur SQL <code>DuckDB</code> en indiquant le paramètre adéquat. Comme vous pouvez voir dans l’exemple suivant, on appelle cette fonction directement dans le code <code>R</code>. Par ailleurs, cette façon d’utiliser les fonctions de <code>DuckDB</code> dans du code <code>R</code> permet de passer facilement un paramètre à une fonction (le format “%d/%m/%Y” dans le cas présent).</p>
 <div class="cell">
-<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="st">"dates_duckdb"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>date_naissance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/strptime.html">strptime</a></span><span class="op">(</span><span class="va">date_naissance</span>, <span class="st">"%d/%m/%Y"</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb49"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="st">"dates_duckdb"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>date_naissance <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/strptime.html">strptime</a></span><span class="op">(</span><span class="va">date_naissance</span>, <span class="st">"%d/%m/%Y"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># Source:   SQL [2 x 2]
-# Database: DuckDB v1.1.0 [unknown@Linux 6.11.0-1012-azure:R 4.4.1/:memory:]
+# Database: DuckDB v1.1.0 [unknown@Linux 6.11.0-1018-azure:R 4.4.1/:memory:]
   date_naissance      date_deces
   &lt;dttm&gt;              &lt;chr&gt;     
 1 1980-07-02 00:00:00 05/06/2001
@@ -1303,12 +1470,12 @@ Note
 <div class="callout-body-container callout-body">
 <p>La logique présentée ici fonctionne également dans un cas plus avancé: l’utilisation d’une fonction sur plusieurs variables avec <code>mutate_at</code>. L’exemple ci-dessous reprend l’exemple ci-dessus avec deux variables.</p>
 <div class="cell">
-<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">liste_variables</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"date_naissance"</span>,<span class="st">"date_deces"</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb51"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">liste_variables</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"date_naissance"</span>,<span class="st">"date_deces"</span><span class="op">)</span></span>
 <span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="st">"dates_duckdb"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate_all.html">mutate_at</a></span><span class="op">(</span><span class="va">liste_variables</span>, <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/strptime.html">strptime</a></span><span class="op">(</span><span class="va">.</span>,<span class="st">"%d/%m/%Y"</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate_all.html">mutate_at</a></span><span class="op">(</span><span class="va">liste_variables</span>, <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/strptime.html">strptime</a></span><span class="op">(</span><span class="va">.</span>,<span class="st">"%d/%m/%Y"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># Source:   SQL [2 x 2]
-# Database: DuckDB v1.1.0 [unknown@Linux 6.11.0-1012-azure:R 4.4.1/:memory:]
+# Database: DuckDB v1.1.0 [unknown@Linux 6.11.0-1018-azure:R 4.4.1/:memory:]
   date_naissance      date_deces         
   &lt;dttm&gt;              &lt;dttm&gt;             
 1 1980-07-02 00:00:00 2001-06-05 00:00:00
@@ -1321,7 +1488,7 @@ Note
 <span class="header-section-number">21.5.4</span> Manipulation des données avec SQL</h3>
 <p><code>DuckDB</code> étant un moteur SQL à part entière, on peut interagir avec <code>DuckDB</code> directement avec des requêtes SQL. Par exemple, en reprenant une table enregistrée plus haut avec la fonction <code><a href="https://r.duckdb.org/reference/duckdb_register.html">duckdb::duckdb_register</a></code> :</p>
 <div class="cell">
-<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html">dbGetQuery</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"SELECT * FROM bpe_ens_2018_duckdb"</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb53"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html">dbGetQuery</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"SELECT * FROM bpe_ens_2018_duckdb"</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  REG DEP DEPCOM DCIRIS   AN TYPEQU NB_EQUIP
 1  84  01  01001  01001 2018   A401        2
@@ -1334,49 +1501,49 @@ Note
 </div>
 <p>Vous pouvez créer des vues ou des tables explicitement. La fonction <code><a href="https://dbi.r-dbi.org/reference/dbExecute.html">dbExecute()</a></code> retourne le nombre de lignes modifiées, tandis que la fonction <code>dbGetQuery</code> retourne le résultat sous la forme d’un <code>tibble</code>. Si vous n’avez pas l’intention de conserver durablement une table intermédiaire, il est préférable de créer une vue (qui ne consomme pas de mémoire) plutôt qu’une table (qui consomme de la mémoire). On peut d’ailleurs noter que les fonctions <code>read_parquet()</code> en SQL et <code>duckdb_register</code> du <em>package</em> utilisent <code>CREATE VIEW</code> implicitement.</p>
 <div class="cell">
-<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Créer une table dans la base de données DuckDB</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb55"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Créer une table dans la base de données DuckDB</span></span>
 <span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html">dbExecute</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"</span></span>
 <span><span class="st">               CREATE TABLE bpe_ens_2018_table AS </span></span>
 <span><span class="st">               SELECT REG, SUM(NB_EQUIP) AS NB_EQUIP_TOT </span></span>
 <span><span class="st">               FROM bpe_ens_2018_duckdb </span></span>
-<span><span class="st">               GROUP BY REG"</span><span class="op">)</span> <span class="co"># Utilise de la mémoire</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="st">               GROUP BY REG"</span><span class="op">)</span> <span class="co"># Utilise de la mémoire</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 18</code></pre>
 </div>
-<div class="sourceCode" id="cb57"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Créer une vue dans la base de données DuckDB</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb57"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Créer une vue dans la base de données DuckDB</span></span>
 <span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html">dbExecute</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"</span></span>
 <span><span class="st">               CREATE VIEW bpe_ens_2018_view AS </span></span>
 <span><span class="st">               SELECT REG, SUM(NB_EQUIP) AS NB_EQUIP_TOT </span></span>
 <span><span class="st">               FROM bpe_ens_2018_duckdb </span></span>
-<span><span class="st">               GROUP BY REG"</span><span class="op">)</span>   <span class="co"># n'utilise pas de mémoire</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="st">               GROUP BY REG"</span><span class="op">)</span>   <span class="co"># n'utilise pas de mémoire</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0</code></pre>
 </div>
 </div>
 <p>Vous pouvez ensuite requêter les objets créés dans la base SQL via <code>dplyr</code>:</p>
 <div class="cell">
-<div class="sourceCode" id="cb59"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="st">"bpe_ens_2018_view"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb59"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="st">"bpe_ens_2018_view"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># Source:   table&lt;bpe_ens_2018_view&gt; [?? x 2]
-# Database: DuckDB v1.1.0 [unknown@Linux 6.11.0-1012-azure:R 4.4.1/:memory:]
+# Database: DuckDB v1.1.0 [unknown@Linux 6.11.0-1018-azure:R 4.4.1/:memory:]
    REG   NB_EQUIP_TOT
    &lt;chr&gt;        &lt;dbl&gt;
- 1 24           81379
- 2 06            7353
- 3 76          256813
- 4 01           23939
- 5 75          237008
- 6 94           21778
- 7 52          119689
- 8 02           19068
- 9 03            7852
-10 28          107186
+ 1 06            7353
+ 2 76          256813
+ 3 28          107186
+ 4 53          111291
+ 5 11          469181
+ 6 84          303775
+ 7 32          175859
+ 8 44          181130
+ 9 27           96309
+10 02           19068
 # ℹ more rows</code></pre>
 </div>
 </div>
 <p>Vous pouvez bien sûr lire des fichiers <code>Parquet</code>, <code>CSV</code> ou autres en utilisant les <a href="https://duckdb.org/docs/data/overview">fonctions de duckdb</a> :</p>
 <div class="cell">
-<div class="sourceCode" id="cb61"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html">dbGetQuery</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"SELECT * FROM read_parquet('bpe_ens_2018_dataset/**/*.parquet') LIMIT 5"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb61"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html">dbGetQuery</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"SELECT * FROM read_parquet('bpe_ens_2018_dataset/**/*.parquet') LIMIT 5"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  REG DEP DEPCOM DCIRIS   AN TYPEQU NB_EQUIP
 1  84  01  01001  01001 2018   A401        2
@@ -1403,51 +1570,51 @@ Tip
 <span class="header-section-number">21.5.4.1</span> Séparer vos traitements SQL en blocs</h4>
 <p>Si vos requêtes deviennent trop complexes et/ou longues, vous pouvez facilement les découper en créant des vues intermédiaires que vous réutiliserez plus tard :</p>
 <div class="cell">
-<div class="sourceCode" id="cb63"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Créer une vue qui correspond à la première étape du traitement</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb63"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Créer une vue qui correspond à la première étape du traitement</span></span>
 <span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html">dbExecute</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"CREATE OR REPLACE VIEW data1_nettoye AS SELECT ... FROM read_parquet('data1.parquet')"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Créer une vue qui correspond à la deuxième étape du traitement</span></span>
 <span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html">dbExecute</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"CREATE OR REPLACE VIEW data2_nettoye AS SELECT ... FROM read_parquet('data2.parquet')"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Faire la dernière étape du traitement et récupérer les résultats dans un tibble</span></span>
-<span><span class="va">resultats</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html">dbGetQuery</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"SELECT * FROM data1_nettoye LEFT JOIN data2_nettoye ON data1.id = data2.id"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="va">resultats</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html">dbGetQuery</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"SELECT * FROM data1_nettoye LEFT JOIN data2_nettoye ON data1.id = data2.id"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Et vous pouvez bien sûr créer des tables intermédiaires (temporaires ou non) à la place des vues (en utilisant <code>CREATE TABLE</code> pluôt que <code>CREATE VIEW</code>) pour éviter de les recalculer à chaque fois.</p>
 <p>A noter, vous pouvez grouper les requêtes SQL dans un même <code>dbExecute</code> :</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Créer une vue qui correspond à la première étape du traitement</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Créer une vue qui correspond à la première étape du traitement</span></span>
 <span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dbExecute</span>(conn_ddb, </span>
 <span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"CREATE OR REPLACE VIEW data1_nettoye AS SELECT ... FROM read_parquet('data1.parquet');</span></span>
 <span id="cb64-4"><a href="#cb64-4" aria-hidden="true" tabindex="-1"></a><span class="st">   CREATE OR REPLACE VIEW data2_nettoye AS SELECT ... FROM read_parquet('data2.parquet');</span></span>
 <span id="cb64-5"><a href="#cb64-5" aria-hidden="true" tabindex="-1"></a><span class="st">   SELECT * FROM data1_nettoye LEFT JOIN data2_nettoye ON data1.id = data2.id"</span>)<span class="st">"</span></span>
-<span id="cb64-6"><a href="#cb64-6" aria-hidden="true" tabindex="-1"></a><span class="st">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb64-6"><a href="#cb64-6" aria-hidden="true" tabindex="-1"></a><span class="st">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Ou utiliser la clause SQL <code>WITH</code> :</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Créer une vue qui correspond à la première étape du traitement</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Créer une vue qui correspond à la première étape du traitement</span></span>
 <span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dbExecute</span>(conn_ddb, </span>
 <span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"WITH data1_nettoye AS (SELECT ... FROM read_parquet('data1.parquet')),</span></span>
 <span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a><span class="st">        data2_nettoye AS (SELECT ... FROM read_parquet('data2.parquet'))</span></span>
 <span id="cb65-5"><a href="#cb65-5" aria-hidden="true" tabindex="-1"></a><span class="st">   SELECT * FROM data1_nettoye LEFT JOIN data2_nettoye ON data1.id = data2.id"</span>)<span class="st">"</span></span>
-<span id="cb65-6"><a href="#cb65-6" aria-hidden="true" tabindex="-1"></a><span class="st">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb65-6"><a href="#cb65-6" aria-hidden="true" tabindex="-1"></a><span class="st">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section><section id="sec-ecrire-parquet" class="level4" data-number="21.5.4.2"><h4 data-number="21.5.4.2" class="anchored" data-anchor-id="sec-ecrire-parquet">
 <span class="header-section-number">21.5.4.2</span> Écrire des fichiers</h4>
 <p>Vous pouvez exporter des données vers des fichiers en utilisant <a href="https://duckdb.org/docs/sql/statements/copy.html#copy--to"><code>COPY ... TO ...</code></a> :</p>
 <div class="cell">
-<div class="sourceCode" id="cb66"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html">dbExecute</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"COPY (SELECT * FROM read_parquet('bpe_ens_2018_dataset/**/*.parquet')) </span></span>
-<span><span class="st">                      TO 'mon_dataset_parquet' (FORMAT PARQUET, PARTITION_BY (REG), OVERWRITE_OR_IGNORE 1)"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb66"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html">dbExecute</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"COPY (SELECT * FROM read_parquet('bpe_ens_2018_dataset/**/*.parquet')) </span></span>
+<span><span class="st">                      TO 'mon_dataset_parquet' (FORMAT PARQUET, PARTITION_BY (REG), OVERWRITE_OR_IGNORE 1)"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 1035564</code></pre>
 </div>
 </div>
 <p>Si vous préférez utiliser les fonctions de <code>arrow</code>, vous pouvez créez une vue et utiliser <code>dbplr::tbl</code> avec <code><a href="https://arrow.apache.org/docs/r/reference/write_dataset.html">arrow::write_dataset</a></code> :</p>
 <div class="cell">
-<div class="sourceCode" id="cb68"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html">dbExecute</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"CREATE OR REPLACE VIEW output AS SELECT ..."</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb68"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html">dbExecute</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"CREATE OR REPLACE VIEW output AS SELECT ..."</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"output"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/to_arrow.html">to_arrow</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">write_dataset</span><span class="op">(</span><span class="st">"mon_dataset"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span>  <span class="fu">write_dataset</span><span class="op">(</span><span class="st">"mon_dataset"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section></section><section id="optimisations" class="level3" data-number="21.5.5"><h3 data-number="21.5.5" class="anchored" data-anchor-id="optimisations">
 <span class="header-section-number">21.5.5</span> Optimisations</h3>
@@ -1468,12 +1635,12 @@ Or set PRAGMA temp_directory='/path/to/tmp.tmp'</code></pre>
 <li>diminuer le nombre de <em>threads</em> utilisés par <code>duckdb</code>, donc moins de besoins de mémoire (mais aussi moins de parallélisme):</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>conn_ddb <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(<span class="fu">duckdb</span>(),</span>
-<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a><span class="at">config=</span><span class="fu">list</span>(<span class="st">"threads"</span><span class="ot">=</span><span class="st">"1"</span>))<span class="er">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>conn_ddb <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(<span class="fu">duckdb</span>(),</span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a><span class="at">config=</span><span class="fu">list</span>(<span class="st">"threads"</span><span class="ot">=</span><span class="st">"1"</span>))<span class="er">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>ou</p>
 <div class="cell">
-<div class="sourceCode" id="cb71"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html">dbExecute</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"SET threads = '1';"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb71"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbExecute.html">dbExecute</a></span><span class="op">(</span><span class="va">conn_ddb</span>, <span class="st">"SET threads = '1';"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <ul>
 <li>exécuter et sauvegarder les résultats au fur et à mesure. La commande <code><a href="https://arrow.apache.org/docs/r/reference/write_dataset.html">arrow::write_dataset</a></code> et la commande SQL <code>COPY request TO filename.parquet</code> savent le faire automatiquement, sans faire déborder la mémoire, pour certains calculs.</li>
@@ -1481,7 +1648,7 @@ Or set PRAGMA temp_directory='/path/to/tmp.tmp'</code></pre>
 <li>adosser un fichier sur le disque dur à la base de données en mémoire au moment de la création de la connexion. Cela ralentit considérablement les calculs, et ne permet pas toujours d’obtenir un résultat.</li>
 </ul>
 <div class="cell">
-<div class="sourceCode" id="cb72"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html">dbConnect</a></span><span class="op">(</span><span class="fu"><a href="https://r.duckdb.org/reference/duckdb.html">duckdb</a></span><span class="op">(</span><span class="op">)</span>, dbdir <span class="op">=</span> <span class="st">"my-db.duckdb"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb72"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html">dbConnect</a></span><span class="op">(</span><span class="fu"><a href="https://r.duckdb.org/reference/duckdb.html">duckdb</a></span><span class="op">(</span><span class="op">)</span>, dbdir <span class="op">=</span> <span class="st">"my-db.duckdb"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>L’interaction entre les différentes options de <code>duckdb</code> est complexe et rendent difficile l’élaboration de recommandations claires. Nous mettrons à jour cette fiche quand des benchmarks plus poussés seront disponibles.</p>
 </section><section id="sauvegarder-des-résultats-intermédiaires" class="level4" data-number="21.5.5.2"><h4 data-number="21.5.5.2" class="anchored" data-anchor-id="sauvegarder-des-résultats-intermédiaires">
@@ -1497,34 +1664,34 @@ Or set PRAGMA temp_directory='/path/to/tmp.tmp'</code></pre>
 <code><a href="https://arrow.apache.org/docs/r/reference/write_dataset.html">arrow::write_dataset()</a></code> sait faire les calculs par morceaux automatiquement, et libère la mémoire au fur et à mesure.</li>
 </ul>
 <div class="cell">
-<div class="sourceCode" id="cb73"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu">calcul1</span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb73"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu">calcul1</span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/to_arrow.html">to_arrow</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/write_dataset.html">write_dataset</a></span><span class="op">(</span><span class="st">"base_intermediaire"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/open_dataset.html">open_dataset</a></span><span class="op">(</span><span class="st">"base_intermediaire"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/to_duckdb.html">to_duckdb</a></span><span class="op">(</span><span class="va">conn_ddb</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu">calcul2</span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span>  <span class="fu">calcul2</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <ul>
 <li>Vous pouvez utiliser <code>dbplyr::compute()</code> pour créer une table <code>duckdb</code> stockée sur le disque (si vous avez préalablement créé une base sur disque) que vous pourrez directement utiliser par la suite dans une autre session :</li>
 </ul>
 <div class="cell">
-<div class="sourceCode" id="cb74"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb74"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu">calcul1</span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html">compute</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"matable"</span>, temporary <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/tbl.html">tbl</a></span><span class="op">(</span><span class="va">conn_dbb</span>, <span class="st">"matable"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu">calcul2</span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span>  <span class="fu">calcul2</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>La première méthode avec <code>arrow</code> est généralement la plus rapide et la seconde avec <code>dbplyr::compute</code> sur une table nommée est la plus efficace (de loin) en terme d’occupation mémoire.</p>
 <p>A noter que vous pouvez également utiliser <code>dbplyr::compute</code> pour créer une table temporaire <code>duckdb</code> stockée en mémoire qui disparaitra à la fin de votre session :</p>
 <div class="cell">
-<div class="sourceCode" id="cb75"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">table_temporaire</span> <span class="op">&lt;-</span> <span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb75"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">table_temporaire</span> <span class="op">&lt;-</span> <span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu">calcul1</span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html">compute</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">table_temporaire</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu">calcul2</span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span>  <span class="fu">calcul2</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section><section id="partitionner-les-données" class="level4" data-number="21.5.5.3"><h4 data-number="21.5.5.3" class="anchored" data-anchor-id="partitionner-les-données">
 <span class="header-section-number">21.5.5.3</span> Partitionner les données</h4>
@@ -1535,10 +1702,10 @@ Or set PRAGMA temp_directory='/path/to/tmp.tmp'</code></pre>
 <li>Par contre, on peut partitionner les données, et le moteur SQL sait utiliser le partitionnement comme un index.</li>
 </ul>
 <div class="cell">
-<div class="sourceCode" id="cb76"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dataset</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb76"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dataset</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/to_arrow.html">to_arrow</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu">arrow</span><span class="fu">::</span><span class="fu"><a href="https://arrow.apache.org/docs/r/reference/write_dataset.html">write_dataset</a></span><span class="op">(</span><span class="st">"bpe_ens_2018_dataset_parts"</span>, partitioning <span class="op">=</span> <span class="st">"REG"</span> <span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html">list.files</a></span><span class="op">(</span><span class="st">"bpe_ens_2018_dataset_parts"</span><span class="op">)</span> <span class="co"># on obtient un sous-répertoire par région</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html">list.files</a></span><span class="op">(</span><span class="st">"bpe_ens_2018_dataset_parts"</span><span class="op">)</span> <span class="co"># on obtient un sous-répertoire par région</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1] "REG=01" "REG=02" "REG=03" "REG=04" "REG=06" "REG=11" "REG=24" "REG=27"
  [9] "REG=28" "REG=32" "REG=44" "REG=52" "REG=53" "REG=75" "REG=76" "REG=84"
@@ -1550,7 +1717,7 @@ Or set PRAGMA temp_directory='/path/to/tmp.tmp'</code></pre>
 </h4>
 <p>S’il faut absolument charger des données en mémoire, on peut découper le calcul pour ne charger qu’une partie des données. Par exemple, faire une jointure région par région au lieu de faire la jointure sur toute la base d’un coup. On peut utiliser le partitionnement pour sauvegarder les résultats partiels, et les ré-assembler ensuite.</p>
 <div class="cell">
-<div class="sourceCode" id="cb78"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">groups</span> <span class="op">&lt;-</span> <span class="va">bpe_ens_2018_dataset</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb78"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">groups</span> <span class="op">&lt;-</span> <span class="va">bpe_ens_2018_dataset</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html">distinct</a></span><span class="op">(</span><span class="va">REG</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html">pull</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># liste des modalités de la variable REG</span></span>
 <span></span>
@@ -1565,7 +1732,7 @@ Or set PRAGMA temp_directory='/path/to/tmp.tmp'</code></pre>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="co"># Appliquer la fonction à chaque groupe</span></span>
-<span><span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">walk</a></span><span class="op">(</span><span class="va">f</span>, <span class="va">groups</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">walk</a></span><span class="op">(</span><span class="va">f</span>, <span class="va">groups</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section></section></section><section id="sec-arrow" class="level2" data-number="21.6"><h2 data-number="21.6" class="anchored" data-anchor-id="sec-arrow">
 <span class="header-section-number">21.6</span> Comparaison avec <code>arrow</code>
@@ -1582,21 +1749,21 @@ Or set PRAGMA temp_directory='/path/to/tmp.tmp'</code></pre>
 <li>Les <strong>fonctions fenêtre</strong> (<em>window functions</em>): <code>arrow</code> ne permet pas d’ajouter directement à une table des informations issues d’une agrégation par groupe de la même table. Par exemple, <code>arrow</code> ne peut pas ajouter directement à la base permanente des équipements une colonne égale au nombre total d’équipements du département. Le code fonctionne en <code>duckdb</code>.</li>
 </ul>
 <div class="cell">
-<div class="sourceCode" id="cb79"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># arrow ne peut pas exécuter ceci</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb79"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># arrow ne peut pas exécuter ceci</span></span>
 <span><span class="va">bpe_ens_2018_dataset</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">DEP</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>NB_EQUIP_TOTAL_DEP  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">DEP</span>, <span class="va">NB_EQUIP</span>, <span class="va">NB_EQUIP_TOTAL_DEP</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">DEP</span>, <span class="va">NB_EQUIP</span>, <span class="va">NB_EQUIP_TOTAL_DEP</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># Source:   SQL [?? x 3]
-# Database: DuckDB v1.1.0 [unknown@Linux 6.11.0-1012-azure:R 4.4.1/:memory:]
+# Database: DuckDB v1.1.0 [unknown@Linux 6.11.0-1018-azure:R 4.4.1/:memory:]
 # Groups:   DEP
    DEP   NB_EQUIP NB_EQUIP_TOTAL_DEP
    &lt;chr&gt;    &lt;dbl&gt;              &lt;dbl&gt;
  1 08           1               9233
- 2 08           4               9233
- 3 08           3               9233
- 4 08           2               9233
+ 2 08           1               9233
+ 3 08           1               9233
+ 4 08           1               9233
  5 08           1               9233
  6 08           1               9233
  7 08           1               9233
@@ -1610,9 +1777,9 @@ Or set PRAGMA temp_directory='/path/to/tmp.tmp'</code></pre>
 <li>les <strong>empilements de tables</strong>: il est facile d’empiler plusieurs <code>tibbles</code> avec <code>dplyr</code> grâce à la fonction <code><a href="https://dplyr.tidyverse.org/reference/bind_rows.html">bind_rows()</a></code>: <code>bind_rows(table1, table2, table3, table4)</code>. En revanche, il n’existe pas à ce jour de fonction équivalente dans <code>arrow</code> ou dans <code>duckdb</code>: il faut empiler les tables deux à deux avec les fonctions <code><a href="https://dplyr.tidyverse.org/reference/setops.html">union_all()</a></code> et <code><a href="https://generics.r-lib.org/reference/setops.html">union()</a></code>. La différence entre <code>arrow</code> et <code>duckdb</code> est que <code>duckdb</code> est plus souple et acceptera d’empiler des tables qui ne sont pas exactement compatibles (exemple: pas le même nombre de colonnes), tandis qu’<code>arrow</code> exige que les deux tables soient parfaitement compatibles (il faut le même nombre de colonnes avec le même nom et le même type, ce qui n’est pas toujours le cas en pratique). Dans l’exemple suivant, on empile deux tables qui n’ont pas exactement le même nombre de colonnes:</li>
 </ul>
 <div class="cell">
-<div class="sourceCode" id="cb81"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Comment empiler de multiples tables</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb81"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Comment empiler de multiples tables</span></span>
 <span><span class="va">table_empilees</span>  <span class="op">&lt;-</span> <span class="va">bpe_ens_2018_dataset</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/setops.html">union_all</a></span><span class="op">(</span><span class="va">bpe_ens_2018_dataset</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">DEPCOM</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/setops.html">union_all</a></span><span class="op">(</span><span class="va">bpe_ens_2018_dataset</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">DEPCOM</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section><section id="Ressourcesduckdb" class="level2" data-number="21.7"><h2 data-number="21.7" class="anchored" data-anchor-id="Ressourcesduckdb">
 <span class="header-section-number">21.7</span> Pour en savoir plus</h2>
@@ -1624,380 +1791,256 @@ Or set PRAGMA temp_directory='/path/to/tmp.tmp'</code></pre>
 
 
 </section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
-window.document.addEventListener("DOMContentLoaded", function (event) {
-  const toggleBodyColorMode = (bsSheetEl) => {
-    const mode = bsSheetEl.getAttribute("data-mode");
-    const bodyEl = window.document.querySelector("body");
-    if (mode === "dark") {
-      bodyEl.classList.add("quarto-dark");
-      bodyEl.classList.remove("quarto-light");
-    } else {
-      bodyEl.classList.add("quarto-light");
-      bodyEl.classList.remove("quarto-dark");
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
     }
-  }
-  const toggleBodyColorPrimary = () => {
-    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
-    if (bsSheetEl) {
-      toggleBodyColorMode(bsSheetEl);
-    }
-  }
-  toggleBodyColorPrimary();  
-  const disableStylesheet = (stylesheets) => {
-    for (let i=0; i < stylesheets.length; i++) {
-      const stylesheet = stylesheets[i];
-      stylesheet.rel = 'prefetch';
-    }
-  }
-  const enableStylesheet = (stylesheets) => {
-    for (let i=0; i < stylesheets.length; i++) {
-      const stylesheet = stylesheets[i];
-      stylesheet.rel = 'stylesheet';
-    }
-  }
-  const manageTransitions = (selector, allowTransitions) => {
-    const els = window.document.querySelectorAll(selector);
-    for (let i=0; i < els.length; i++) {
-      const el = els[i];
-      if (allowTransitions) {
-        el.classList.remove('notransition');
-      } else {
-        el.classList.add('notransition');
-      }
-    }
-  }
-  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
-    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
-    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
-    let newTheme = '';
-    if(darkModeDefault) {
-      newTheme = isAlternate ? baseTheme : alternateTheme;
-    } else {
-      newTheme = isAlternate ? alternateTheme : baseTheme;
-    }
-    const changeGiscusTheme = () => {
-      // From: https://github.com/giscus/giscus/issues/336
-      const sendMessage = (message) => {
-        const iframe = document.querySelector('iframe.giscus-frame');
-        if (!iframe) return;
-        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
-      }
-      sendMessage({
-        setConfig: {
-          theme: newTheme
-        }
-      });
-    }
-    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
-    if (isGiscussLoaded) {
-      changeGiscusTheme();
-    }
-  }
-  const toggleColorMode = (alternate) => {
-    // Switch the stylesheets
-    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
-    manageTransitions('#quarto-margin-sidebar .nav-link', false);
-    if (alternate) {
-      enableStylesheet(alternateStylesheets);
-      for (const sheetNode of alternateStylesheets) {
-        if (sheetNode.id === "quarto-bootstrap") {
-          toggleBodyColorMode(sheetNode);
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
         }
       }
-    } else {
-      disableStylesheet(alternateStylesheets);
-      toggleBodyColorPrimary();
-    }
-    manageTransitions('#quarto-margin-sidebar .nav-link', true);
-    // Switch the toggles
-    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
-    for (let i=0; i < toggles.length; i++) {
-      const toggle = toggles[i];
-      if (toggle) {
-        if (alternate) {
-          toggle.classList.add("alternate");     
-        } else {
-          toggle.classList.remove("alternate");
-        }
-      }
-    }
-    // Hack to workaround the fact that safari doesn't
-    // properly recolor the scrollbar when toggling (#1455)
-    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
-      manageTransitions("body", false);
-      window.scrollTo(0, 1);
-      setTimeout(() => {
-        window.scrollTo(0, 0);
-        manageTransitions("body", true);
-      }, 40);  
-    }
-  }
-  const isFileUrl = () => { 
-    return window.location.protocol === 'file:';
-  }
-  const hasAlternateSentinel = () => {  
-    let styleSentinel = getColorSchemeSentinel();
-    if (styleSentinel !== null) {
-      return styleSentinel === "alternate";
-    } else {
       return false;
     }
-  }
-  const setStyleSentinel = (alternate) => {
-    const value = alternate ? "alternate" : "default";
-    if (!isFileUrl()) {
-      window.localStorage.setItem("quarto-color-scheme", value);
-    } else {
-      localAlternateSentinel = value;
-    }
-  }
-  const getColorSchemeSentinel = () => {
-    if (!isFileUrl()) {
-      const storageValue = window.localStorage.getItem("quarto-color-scheme");
-      return storageValue != null ? storageValue : localAlternateSentinel;
-    } else {
-      return localAlternateSentinel;
-    }
-  }
-  const darkModeDefault = false;
-  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
-  // Dark / light mode switch
-  window.quartoToggleColorScheme = () => {
-    // Read the current dark / light value 
-    let toAlternate = !hasAlternateSentinel();
-    toggleColorMode(toAlternate);
-    setStyleSentinel(toAlternate);
-    toggleGiscusIfUsed(toAlternate, darkModeDefault);
-  };
-  // Ensure there is a toggle, if there isn't float one in the top right
-  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
-    const a = window.document.createElement('a');
-    a.classList.add('top-right');
-    a.classList.add('quarto-color-scheme-toggle');
-    a.href = "";
-    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
-    const i = window.document.createElement("i");
-    i.classList.add('bi');
-    a.appendChild(i);
-    window.document.body.appendChild(a);
-  }
-  // Switch to dark mode if need be
-  if (hasAlternateSentinel()) {
-    toggleColorMode(true);
-  } else {
-    toggleColorMode(false);
-  }
-  const icon = "";
-  const anchorJS = new window.AnchorJS();
-  anchorJS.options = {
-    placement: 'right',
-    icon: icon
-  };
-  anchorJS.add('.anchored');
-  const isCodeAnnotation = (el) => {
-    for (const clz of el.classList) {
-      if (clz.startsWith('code-annotation-')) {                     
-        return true;
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
       }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
     }
-    return false;
-  }
-  const onCopySuccess = function(e) {
-    // button target
-    const button = e.trigger;
-    // don't keep focus
-    button.blur();
-    // flash "checked"
-    button.classList.add('code-copy-button-checked');
-    var currentTitle = button.getAttribute("title");
-    button.setAttribute("title", "Copied!");
-    let tooltip;
-    if (window.bootstrap) {
-      button.setAttribute("data-bs-toggle", "tooltip");
-      button.setAttribute("data-bs-placement", "left");
-      button.setAttribute("data-bs-title", "Copied!");
-      tooltip = new bootstrap.Tooltip(button, 
-        { trigger: "manual", 
-          customClass: "code-copy-button-tooltip",
-          offset: [0, -8]});
-      tooltip.show();    
-    }
-    setTimeout(function() {
-      if (tooltip) {
-        tooltip.hide();
-        button.removeAttribute("data-bs-title");
-        button.removeAttribute("data-bs-toggle");
-        button.removeAttribute("data-bs-placement");
-      }
-      button.setAttribute("title", currentTitle);
-      button.classList.remove('code-copy-button-checked');
-    }, 1000);
-    // clear code selection
-    e.clearSelection();
-  }
-  const getTextToCopy = function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
       for (const childEl of codeEl.children) {
         if (isCodeAnnotation(childEl)) {
           childEl.remove();
         }
       }
       return codeEl.innerText;
-  }
-  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
-    text: getTextToCopy
-  });
-  clipboard.on('success', onCopySuccess);
-  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
-      text: getTextToCopy,
-      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
     });
-    clipboardModal.on('success', onCopySuccess);
-  }
-    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
-    var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp('/' + window.location.host + '/');
-    var isInternal = (href) => {
-        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
     }
-    // Inspect non-navigation links and adorn them if external
- 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
-    for (var i=0; i<links.length; i++) {
-      const link = links[i];
-      if (!isInternal(link.href)) {
-        // undo the damage that might have been done by quarto-nav.js in the case of
-        // links that we want to consider external
-        if (link.dataset.originalHref !== undefined) {
-          link.href = link.dataset.originalHref;
-        }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }
-    }
-  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
-    const config = {
-      allowHTML: true,
-      maxWidth: 500,
-      delay: 100,
-      arrow: false,
-      appendTo: function(el) {
-          return el.parentElement;
-      },
-      interactive: true,
-      interactiveBorder: 10,
-      theme: 'quarto',
-      placement: 'bottom-start',
-    };
-    if (contentFn) {
-      config.content = contentFn;
-    }
-    if (onTriggerFn) {
-      config.onTrigger = onTriggerFn;
-    }
-    if (onUntriggerFn) {
-      config.onUntrigger = onUntriggerFn;
-    }
-    window.tippy(el, config); 
-  }
-  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
-  for (var i=0; i<noterefs.length; i++) {
-    const ref = noterefs[i];
-    tippyHover(ref, function() {
-      // use id or data attribute instead here
-      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
-      try { href = new URL(href).hash; } catch {}
-      const id = href.replace(/^#\/?/, "");
-      const note = window.document.getElementById(id);
-      if (note) {
-        return note.innerHTML;
-      } else {
-        return "";
-      }
-    });
-  }
-  const xrefs = window.document.querySelectorAll('a.quarto-xref');
-  const processXRef = (id, note) => {
-    // Strip column container classes
-    const stripColumnClz = (el) => {
-      el.classList.remove("page-full", "page-columns");
-      if (el.children) {
-        for (const child of el.children) {
-          stripColumnClz(child);
-        }
-      }
-    }
-    stripColumnClz(note)
-    if (id === null || id.startsWith('sec-')) {
-      // Special case sections, only their first couple elements
-      const container = document.createElement("div");
-      if (note.children && note.children.length > 2) {
-        container.appendChild(note.children[0].cloneNode(true));
-        for (let i = 1; i < note.children.length; i++) {
-          const child = note.children[i];
-          if (child.tagName === "P" && child.innerText === "") {
-            continue;
-          } else {
-            container.appendChild(child.cloneNode(true));
-            break;
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
           }
         }
-        if (window.Quarto?.typesetMath) {
-          window.Quarto.typesetMath(container);
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
         }
-        return container.innerHTML
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
       } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
         if (window.Quarto?.typesetMath) {
           window.Quarto.typesetMath(note);
         }
-        return note.innerHTML;
-      }
-    } else {
-      // Remove any anchor links if they are present
-      const anchorLink = note.querySelector('a.anchorjs-link');
-      if (anchorLink) {
-        anchorLink.remove();
-      }
-      if (window.Quarto?.typesetMath) {
-        window.Quarto.typesetMath(note);
-      }
-      if (note.classList.contains("callout")) {
-        return note.outerHTML;
-      } else {
-        return note.innerHTML;
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
       }
     }
-  }
-  for (var i=0; i<xrefs.length; i++) {
-    const xref = xrefs[i];
-    tippyHover(xref, undefined, function(instance) {
-      instance.disable();
-      let url = xref.getAttribute('href');
-      let hash = undefined; 
-      if (url.startsWith('#')) {
-        hash = url;
-      } else {
-        try { hash = new URL(url).hash; } catch {}
-      }
-      if (hash) {
-        const id = hash.replace(/^#\/?/, "");
-        const note = window.document.getElementById(id);
-        if (note !== null) {
-          try {
-            const html = processXRef(id, note.cloneNode(true));
-            instance.setContent(html);
-          } finally {
-            instance.enable();
-            instance.show();
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
           }
         } else {
-          // See if we can fetch this
-          fetch(url.split('#')[0])
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
           .then(res => res.text())
           .then(html => {
             const parser = new DOMParser();
             const htmlDoc = parser.parseFromString(html, "text/html");
-            const note = htmlDoc.getElementById(id);
+            const note = htmlDoc.querySelector('main.content');
             if (note !== null) {
-              const html = processXRef(id, note);
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
               instance.setContent(html);
             } 
           }).finally(() => {
@@ -2005,185 +2048,161 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             instance.show();
           });
         }
-      } else {
-        // See if we can fetch a full url (with no hash to target)
-        // This is a special case and we should probably do some content thinning / targeting
-        fetch(url)
-        .then(res => res.text())
-        .then(html => {
-          const parser = new DOMParser();
-          const htmlDoc = parser.parseFromString(html, "text/html");
-          const note = htmlDoc.querySelector('main.content');
-          if (note !== null) {
-            // This should only happen for chapter cross references
-            // (since there is no id in the URL)
-            // remove the first header
-            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
-              note.children[0].remove();
-            }
-            const html = processXRef(null, note);
-            instance.setContent(html);
-          } 
-        }).finally(() => {
-          instance.enable();
-          instance.show();
-        });
-      }
-    }, function(instance) {
-    });
-  }
-      let selectedAnnoteEl;
-      const selectorForAnnotation = ( cell, annotation) => {
-        let cellAttr = 'data-code-cell="' + cell + '"';
-        let lineAttr = 'data-code-annotation="' +  annotation + '"';
-        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
-        return selector;
-      }
-      const selectCodeLines = (annoteEl) => {
-        const doc = window.document;
-        const targetCell = annoteEl.getAttribute("data-target-cell");
-        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
-        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
-        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
-        const lineIds = lines.map((line) => {
-          return targetCell + "-" + line;
-        })
-        let top = null;
-        let height = null;
-        let parent = null;
-        if (lineIds.length > 0) {
-            //compute the position of the single el (top and bottom and make a div)
-            const el = window.document.getElementById(lineIds[0]);
-            top = el.offsetTop;
-            height = el.offsetHeight;
-            parent = el.parentElement.parentElement;
-          if (lineIds.length > 1) {
-            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
-            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
-            height = bottom - top;
-          }
-          if (top !== null && height !== null && parent !== null) {
-            // cook up a div (if necessary) and position it 
-            let div = window.document.getElementById("code-annotation-line-highlight");
-            if (div === null) {
-              div = window.document.createElement("div");
-              div.setAttribute("id", "code-annotation-line-highlight");
-              div.style.position = 'absolute';
-              parent.appendChild(div);
-            }
-            div.style.top = top - 2 + "px";
-            div.style.height = height + 4 + "px";
-            div.style.left = 0;
-            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
-            if (gutterDiv === null) {
-              gutterDiv = window.document.createElement("div");
-              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
-              gutterDiv.style.position = 'absolute';
-              const codeCell = window.document.getElementById(targetCell);
-              const gutter = codeCell.querySelector('.code-annotation-gutter');
-              gutter.appendChild(gutterDiv);
-            }
-            gutterDiv.style.top = top - 2 + "px";
-            gutterDiv.style.height = height + 4 + "px";
-          }
-          selectedAnnoteEl = annoteEl;
-        }
-      };
-      const unselectCodeLines = () => {
-        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
-        elementsIds.forEach((elId) => {
-          const div = window.document.getElementById(elId);
-          if (div) {
-            div.remove();
-          }
-        });
-        selectedAnnoteEl = undefined;
-      };
-        // Handle positioning of the toggle
-    window.addEventListener(
-      "resize",
-      throttle(() => {
-        elRect = undefined;
-        if (selectedAnnoteEl) {
-          selectCodeLines(selectedAnnoteEl);
-        }
-      }, 10)
-    );
-    function throttle(fn, ms) {
-    let throttle = false;
-    let timer;
-      return (...args) => {
-        if(!throttle) { // first call gets through
-            fn.apply(this, args);
-            throttle = true;
-        } else { // all the others get throttled
-            if(timer) clearTimeout(timer); // cancel #2
-            timer = setTimeout(() => {
-              fn.apply(this, args);
-              timer = throttle = false;
-            }, ms);
-        }
-      };
-    }
-      // Attach click handler to the DT
-      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
-      for (const annoteDlNode of annoteDls) {
-        annoteDlNode.addEventListener('click', (event) => {
-          const clickedEl = event.target;
-          if (clickedEl !== selectedAnnoteEl) {
-            unselectCodeLines();
-            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
-            if (activeEl) {
-              activeEl.classList.remove('code-annotation-active');
-            }
-            selectCodeLines(clickedEl);
-            clickedEl.classList.add('code-annotation-active');
-          } else {
-            // Unselect the line
-            unselectCodeLines();
-            clickedEl.classList.remove('code-annotation-active');
-          }
-        });
-      }
-  const findCites = (el) => {
-    const parentEl = el.parentElement;
-    if (parentEl) {
-      const cites = parentEl.dataset.cites;
-      if (cites) {
-        return {
-          el,
-          cites: cites.split(' ')
-        };
-      } else {
-        return findCites(el.parentElement)
-      }
-    } else {
-      return undefined;
-    }
-  };
-  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
-  for (var i=0; i<bibliorefs.length; i++) {
-    const ref = bibliorefs[i];
-    const citeInfo = findCites(ref);
-    if (citeInfo) {
-      tippyHover(citeInfo.el, function() {
-        var popup = window.document.createElement('div');
-        citeInfo.cites.forEach(function(cite) {
-          var citeDiv = window.document.createElement('div');
-          citeDiv.classList.add('hanging-indent');
-          citeDiv.classList.add('csl-entry');
-          var biblioDiv = window.document.getElementById('ref-' + cite);
-          if (biblioDiv) {
-            citeDiv.innerHTML = biblioDiv.innerHTML;
-          }
-          popup.appendChild(citeDiv);
-        });
-        return popup.innerHTML;
+      }, function(instance) {
       });
     }
-  }
-});
-</script><nav class="page-navigation"><div class="nav-page nav-page-previous">
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script><nav class="page-navigation"><div class="nav-page nav-page-previous">
       <a href="../03_Fiches_thematiques/Fiche_arrow.html" class="pagination-link" aria-label="Manipuler des données avec `arrow`">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Manipuler des données avec <code>arrow</code></span></span>
       </a>          
