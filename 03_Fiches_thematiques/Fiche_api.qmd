@@ -8,10 +8,10 @@ L'utilisateur souhaite accéder à des données _via_ une API.
 - En premier lieu, il est recommandé de vérifier s'il existe un _package_ `R` spécifique à l'API que vous voulez utiliser.
 - S'il n'existe de _package_ spécifique, il est recommandé d'utiliser
 le _package_ `httr2` pour transmettre des requêtes à l'API, [le package httr est désormais déprécié](https://cran.r-project.org/web/packages/httr/readme/README.html)
-- `httr2` permet nativement de gérer la transformation des retours au format JSON, mais au besoin pour des cas complexes le _package_ `jsonlite` peut être utilisé
+- `httr2` permet nativement de gérer la transformation des retours au format JSON, mais au besoin pour des cas complexes le _package_ `jsonlite` peut être nécessaire
 - Pour accéder à des données disponibles sur le site <https://www.insee.fr>,
 il est recommandé d'utiliser l'un des _packages_ suivants : `doremifasol`, `melodi` (catalogue de données Melodi), `insee` (séries BDM). 
-- Les jetons d'accès (*token*) doivent être utilisés sous forme de variable d'environnements, inscrits dans un fichier `.Renviron` qui n'est pas partagé. 
+- Si nécessaire, les jetons d'accès (*token*) doivent être utilisés sous forme de variable d'environnements, inscrits dans un fichier `.Renviron` qui n'est pas partagé. 
 - Si l'accès à internet se fait par l'intermédiaire d'un proxy, sous Windows, il est recommandé d'utiliser la fonction `curl::ie_get_proxy_for_url`.
 
 :::
@@ -230,10 +230,10 @@ data <- get_dataset("DUR_D")
 ## Exemple d'utilisation d'une API sans _package_
 
 Les exemples précédents proposaient l'accès à une API par le biais d'un _package_.
-Pour lire les données d'une API ne possédant pas de _package_, il faut utiliser les deux _packages_ `R` suivants :  
+Pour lire les données d'une API ne possédant pas de _package_, il faut utiliser le _package_ `httr2` pour lancer la requête et traiter son retour;  
 
--	le _package_ `httr` pour lancer la requête ;  
--	puis le _package_ `jsonlite` pour transformer en `data.frame` le résultat de la requête (qui est structurée en `JSON`).
+Au besoin pour des structures JSON complexes, le _package_ `jsonlite` peut être utilisé en complément pour transformer en `data.frame` 
+le résultat de la requête (qui est structurée en `JSON`).
 
 ::: {.callout-note}
 
@@ -248,7 +248,12 @@ l'accès à des données par ce biais en `Python`.
 
 :::
 
-### Le _package_ `httr`
+
+### Le _package_ `httr2` (recommandé)
+
+A compléter
+
+### Le _package_ `httr` (déprécié)
 
 Le _package_ `httr` permet de se connecter aux sites web et de se connecter aux API.  
 
@@ -257,8 +262,8 @@ modifier les variables système :
 
 - `set_config()` permet de configurer l'accès internet utilisée par les fonctions du _package_.   
 - `use_proxy()` permet de déterminer le proxy à utiliser.
-De nombreuses institutions utilisent passent par un intermédiaire, le proxy,
-pour accéder à internet. L'adresse du proxy est à ajouter au requête car sinon
+De nombreuses institutions passent par un intermédiaire, le proxy,
+pour accéder à internet. L'adresse du proxy est à ajouter aux requêtes car sinon
 `R` ne sait pas communiquer avec internet. Il s'agit d'un paramètre à ajouter dans
 les options `httr`.
 
