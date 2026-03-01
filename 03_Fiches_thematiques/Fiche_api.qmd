@@ -6,11 +6,12 @@ L'utilisateur souhaite accéder à des données _via_ une API.
 ## Tâche concernée et recommandation
 
 - En premier lieu, il est recommandé de vérifier s'il existe un _package_ `R` spécifique à l'API que vous voulez utiliser.
-- S'il n'existe de _package_ spécifique,il est recommandé d'utiliser
-le _package_ `httr` pour transmettre des requêtes à l'API et le _package_ `jsonlite` pour retravailler le résultat des requêtes afin de la transformer dans un format plus exploitable.
+- S'il n'existe de _package_ spécifique, il est recommandé d'utiliser
+le _package_ `httr2` pour transmettre des requêtes à l'API, [le package httr est désormais déprécié](https://cran.r-project.org/web/packages/httr/readme/README.html)
+- `httr2` permet nativement de gérer la transformation des retours au format JSON, mais au besoin pour des cas complexes le _package_ `jsonlite` peut être nécessaire
 - Pour accéder à des données disponibles sur le site <https://www.insee.fr>,
-il est recommandé d'utiliser l'un des _packages_ suivants : `doremifasol`, `insee`, `inseeLocalData`. Le _package_ `apinsee` permet de gérer le renouvellement des jetons de connexion. 
-- Les jetons d'accès (*token*) doivent être utilisés sous forme de variable d'environnements, inscrits dans un fichier `.Renviron` qui n'est pas partagé. 
+il est recommandé d'utiliser l'un des _packages_ suivants : `doremifasol`, `melodi` (catalogue de données Melodi), `insee` (séries BDM). 
+- Si nécessaire, les jetons d'accès (*token*) doivent être utilisés sous forme de variable d'environnements, inscrits dans un fichier `.Renviron` qui n'est pas partagé. 
 - Si l'accès à internet se fait par l'intermédiaire d'un proxy, sous Windows, il est recommandé d'utiliser la fonction `curl::ie_get_proxy_for_url`.
 
 :::
@@ -49,7 +50,7 @@ Une API peut souvent être utilisée de deux façons : par une interface Web, et
 ## Spécificité Insee
 
 Les API mises à disposition des utilisateurs par l'Insee se trouvent dans le
-[catalogue des API](https://api.insee.fr/catalogue/).
+[catalogue des API](https://portail-api.insee.fr/).
 :::
 
 #### Consulter l'interface Web d'une API
@@ -72,8 +73,10 @@ consultation ou pour réaliser du téléchargement de masse. De plus, l'interfac
 
 Le mode principal de consultation d'une API consiste à adresser une requête à cette API _via_ un logiciel adapté (`R`, `Python`, `Java`...). Comme pour l'utilisation d'une fonction, l'appel d'une API comprend des paramètres qui sont détaillées dans la documentation de l'API. Voici les éléments importants à avoir en tête sur les requêtes :
 
-- Le **point d'entrée** d'un service offert par une API se présente sous la forme d'une URL (adresse web). Chaque service proposé par une API a sa propre URL. Par exemple, dans le cas de l'API Sirene, l'URL à utiliser pour obtenir des informations sur un Siren est :
-<https://api.insee.fr/entreprises/sirene/V3/siren/>.
+- Le **point d'entrée** d'un service offert par une API se présente sous la forme d'une URL (adresse web). 
+Chaque service proposé par une API a sa propre URL. Par exemple, dans le cas de l'API Sirene, 
+l'URL à utiliser pour obtenir des informations sur un Siren est :
+<https://api.insee.fr/api-sirene/3.11/siren/>.
 
 - Cette URL doit être complétée avec différents paramètres qui précisent la **requête** (par exemple l'identifiant Siren). Ces paramètres viennent s'ajouter à l'URL (qui peut donc devenir très longue!). Chaque service proposé par une API a ses propres paramètres, détaillés dans la documentation. S'agissant de l'API Sirene, l'utilisateur intéressé peut retrouver dans la documentation le paramétrage de l'URL.
 
@@ -93,84 +96,25 @@ Dans certains cas, des _packages_ spécifiques à une API ont été créés pour
 Nous allons voir ici quelques _packages_ permettant de traiter l'information
 d'une API facilement :
 
-### Le _package_ [apinsee](https://github.com/InseeFrLab/apinsee)
-
-Ce _package_ est très utile pour l'utilisation des API mises à disposition sur
-le catalogue des API. En effet, pour ces API, pour pouvoir effectuer une requête,
-il est nécessaire de s'authentifier à différents niveaux : 
-
-1. S'authentifier grâce à une clé personnelle, associée à un compte créé
-sur <https://api.insee.fr> ;
-2. Avoir un jeton d'accès temporaire. Ces jetons ont une durée de vie
-limitée et doivent régulièrement être renouvelés.
-
-Ce _package_ propose de générer facilement un jeton d'accès temporaire à partir de `R`. De cette façon, il n'y a plus besoin de naviguer entre le programme `R`
-et le catalogue des API pour renouveler un jeton. 
-
-Pour utiliser cette fonctionnalité, il faut configurer l'usage du _package_ lors de la première utilisation. Plus précisément, il faut renseigner les variables d'environnement `INSEE_APP_KEY` et
-`INSEE_APP_SECRET` dans le fichier de configuration `.Renviron` de `R`. (voir la fiche [Personnaliser la configuration de `R`] pour une présentation détaillée des fichiers de configuration de `R`). Pour le faire, il suffit d'exécuter la commande suivante :
-
-```{r, eval = FALSE}
-usethis::edit_r_environ("user")
-```
-
-Votre fichier `.Renviron` est alors ouvert par RStudio s'il existe déjà. Si le fichier `.Renviron` n'existe pas encore, il est automatiquement créé (vide), enregistré et ouvert
-par `RStudio`. Il convient d'y ajouter deux variables d'environnement, `INSEE_APP_KEY` et 
-`INSEE_APP_SECRET`. Les lignes suivantes peuvent servir de modèle, en 
-remplaçant la deuxième partie de chaque ligne par la clé du compte à utiliser :
-
-~~~markdown
-# clef du consommateur
-INSEE_APP_KEY=xxxxxxxxxxxxxxxxxx
-# secret du consommateur
-INSEE_APP_SECRET=yyyyyyyyyyyyyyyyyy
-~~~
-
-::: {.callout-note}
-Voici deux remarques sur le stockage des variables d'environnement :
-
-- L'option `"user"` dans l'utilisation de la fonction `usethis::edit_r_environ()`
-permet de stocker ces clés dans un fichier global, connu
-de tous les projets d'un utilisateur `R`. Cela évite, d'une part, de stocker
-la même information à deux endroits différents. D'autre part, cela évite
-d'associer des informations personnelles à un projet, qui doit être sous contrôle
-de version (voir la Fiche [Utiliser R avec RStudio](#git)) car
-le fichier `.Renviron` est un fichier contenant des informations personnelles. 
-
-- Si vous avez choisi l'option `"project"` lors de
-l'appel à `usethis::edit_r_environ`, il faut ajouter le `.Renviron` dans
-les fichiers à ne pas suivre avec `Git` grâce à la commande suivante :
-
-```{r, eval = FALSE}
-usethis::edit_git_ignore(".Renviron")
-```
-:::
-
-Enfin, pour créer le token temporaire, il suffit d'exécuter :
-
-
-```{r, eval = FALSE}
-token <- apinsee::insee_auth()
-```
-
-Ce token peut ensuite être utilisé comme valeur du paramètre token de
-la fonction `httr::config()` qui sert à contrôler les paramètres d'une requête
-vers internet faite par `R`
-
-```{r, eval = FALSE}
-library(httr)
-set_config(config(token = token))
-```
-
-Dès lors, vous pouvez accéder aux API de
-l’Insee auxquelles votre application a souscrit.
-
-
 ### Le _package_ [doremifasol](https://inseefrlab.github.io/DoReMIFaSol)
 
-Ce _package_ permet entre autres de solliciter l'API Sirène dans une procédure de requêtage intégrée. 
+Ce _package_ permet d'importer facilement dans R des données mises à disposition par différents canaux sur le site de l'Insee.
 
-`doremifasol` s'appuie sur le _package_ `apinsee`, il faut donc renseigner les variables d'environnement décrites ci-dessus. Il reste ensuite à préciser le type d'information souhaitée (unités légales, établissements...) et la requête via l'argument `argsApi`. Par exemple, pour lister tous les bouchers de la ville de Tourcoing :
+Il permet entre autres de solliciter l'API Sirène dans une procédure de requêtage intégrée.
+
+Pour cela, il faut au préalable avoir configuré un accès à l'API REST de l'Insee et passer en variable d'environnement le jeton d'authentification. 
+Pour obtenir ce jeton, la procédure est expliquée par exemple [ici](https://static.insee.fr/api-sirene/Insee_API_publique_modalites_connexion.pdf) 
+ou encore [là](https://portail-api.insee.fr/catalog/api/2ba0e549-5587-3ef1-9082-99cd865de66f/doc?page=85c5657d-b1a1-4466-8565-7db1a194667b). 
+Une fois cela réalisé, on insère dans la variable d'environnement `INSEE_API_TOKEN` le jeton obtenue, 
+par exemple en insérant la ligne suivante dans le fichier `.Renviron` (en remplaçant `xxxxxxxx` par la valeur du jeton) :
+
+```
+INSEE_API_TOKEN='xxxxxxxx'
+```
+
+Il reste ensuite à préciser le type d'information souhaitée (unités légales, établissements...) et la requête via l'argument `argsApi`. 
+
+Par exemple, pour lister tous les bouchers de la ville de Tourcoing :
 
 ```{r, eval = FALSE}
 bouchers_tourcoing <-
@@ -180,49 +124,38 @@ bouchers_tourcoing <-
   )
 ```
 
-### Le _package_ [inseeLocalData](https://github.com/InseeFrLab/inseeLocalData)
+### Le _package_ [melodi](https://inseefrlab.github.io/melodi/)
 
-Ce _package_ permet de télécharger les données localisées à la commune,
-diffusées sur <https://www.insee.fr> dans la rubrique *Chiffres détaillés*,
-sous forme de cubes prédéfinis. Cette API est hébergée sur le catalogue des
-API de l'Insee. Une authentification par un jeton est donc nécessaire.
+Ce _package_ facilite l'utilisation des données et métadonnées diffusées par l'Insee 
+sur [le catalogue de données de l'Insee (melodi)](https://catalogue-donnees.insee.fr). 
+Il permet de lister, filtrer, télécharger et accéder aux métadonnées de l'ensemble des jeux de données visibles sur le catalogue, 
+en cours d'enrichissement.
 
-Le _package_ comporte une fonction unique qui permet d’importer les données
-présentes dans l’API *Données Locales* dans une liste contenant 4 objets :
+Il s'appuie sur l'API melodi, accessible librement et donc sans besoin de configurer de jeton d'accès.
 
-* les données statistiques ;
-* les modalités de chaque variable ;
-* l’information sur la zone demandée ;
-* l’information sur la source et le jeu de données demandé.
-
-
-Exemple d'utilisation du _package_ pour importer le nombre
-d'entreprises et d'établissements en 2017 (en géographie au 01/01/2017)
-selon l'activité en 5 catégories et une indicatrice indiquant s'il s'agit
-d'une entreprise individuelle ou non pour la commune de Nantes :
-
+Une fois installé, pour lister les jeux de données proposés par l'Insee :
 ```{r, eval = FALSE}
-library(inseeLocalData)
+library(melodi)
 
-croisement <- "NA5_B-ENTR_INDIVIDUELLE"
-jeu_donnees <- "GEO2017REE2017"
-nivgeo <- "COM"
-codgeo <- "44109" #CODE GEO DE NANTES
-modalite <- "all.all"
-
-donneesAPI <- get_dataset(jeton, jeu_donnees, croisement, modalite, nivgeo, codgeo)
-
-donnees <- donneesAPI$donnees # pour accéder aux données
-liste_code <- donneesAPI$liste_code # pour accéder aux nomenclatures
-info_zone <- donneesAPI$info_zone # pour accéder aux données géographiques
-source <- donneesAPI$source # pour accéder à la source
-
+get_catalog()
 ```
 
-<!--- *TO BE COMPLETED: il faudrait plus de détails* --->
+Pour récupérer toutes les données d'un jeu de données par son identifiant :
+```{r, eval = FALSE}
+data <- get_all_data("DS_POPULATIONS_REFERENCE")
+```
 
+Pour filtrer un jeu de données par critère géographiques, par exemple pour obtenir toutes les communes d'un EPCI :
 
-### Le _package_ [insee](https://github.com/InseeFr/R-Insee-Data/)
+```{r, eval = FALSE}
+my_local_data_by_com <- get_local_data_by_com(
+  ds_name = "DS_POPULATIONS_REFERENCE",
+  geo = "244400404", # Nantes Métropole
+  geo_object = "EPCI"
+)
+```
+
+### Le _package_ [insee](https://github.com/pyr-opendatafr/R-Insee-Data)
 
 Ce _package_ permet de télécharger les données et leurs métadonnées
 diffusées sur le service `SDMX` de la Base de données Macroéconomique
@@ -245,9 +178,6 @@ df %>%
 
 ```
 
-
-
-
 ```{r, eval = FALSE}
 library(insee)
 
@@ -259,6 +189,12 @@ indicateur_001694056 <- get_insee_idbank("001694056")
 Il est possible de rajouter des filtres à ces fonctions afin de limiter
 le nombre de données importées (filtre sur la période, sur la date de mise à jour, sur les filtres).
 
+
+<!----- **TO BE COMPLETED** ------->
+
+### Le _package_ [eurostat](https://ropengov.github.io/eurostat/)
+
+Ce _package_ permet de télécharger les données mises à disposition par Eurostat.
 
 <!----- **TO BE COMPLETED** ------->
 
@@ -294,10 +230,10 @@ data <- get_dataset("DUR_D")
 ## Exemple d'utilisation d'une API sans _package_
 
 Les exemples précédents proposaient l'accès à une API par le biais d'un _package_.
-Pour lire les données d'une API ne possédant pas de _package_, il faut utiliser les deux _packages_ `R` suivants :  
+Pour lire les données d'une API ne possédant pas de _package_, il faut utiliser le _package_ `httr2` pour lancer la requête et traiter son retour;  
 
--	le _package_ `httr` pour lancer la requête ;  
--	puis le _package_ `jsonlite` pour transformer en `data.frame` le résultat de la requête (qui est structurée en `JSON`).
+Au besoin pour des structures JSON complexes, le _package_ `jsonlite` peut être utilisé en complément pour transformer en `data.frame` 
+le résultat de la requête (qui est structurée en `JSON`).
 
 ::: {.callout-note}
 
@@ -312,7 +248,12 @@ l'accès à des données par ce biais en `Python`.
 
 :::
 
-### Le _package_ `httr`
+
+### Le _package_ `httr2` (recommandé)
+
+A compléter
+
+### Le _package_ `httr` (déprécié)
 
 Le _package_ `httr` permet de se connecter aux sites web et de se connecter aux API.  
 
@@ -321,8 +262,8 @@ modifier les variables système :
 
 - `set_config()` permet de configurer l'accès internet utilisée par les fonctions du _package_.   
 - `use_proxy()` permet de déterminer le proxy à utiliser.
-De nombreuses institutions utilisent passent par un intermédiaire, le proxy,
-pour accéder à internet. L'adresse du proxy est à ajouter au requête car sinon
+De nombreuses institutions passent par un intermédiaire, le proxy,
+pour accéder à internet. L'adresse du proxy est à ajouter aux requêtes car sinon
 `R` ne sait pas communiquer avec internet. Il s'agit d'un paramètre à ajouter dans
 les options `httr`.
 
