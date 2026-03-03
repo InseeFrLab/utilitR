@@ -251,7 +251,69 @@ l'accès à des données par ce biais en `Python`.
 
 ### Le _package_ `httr2` (recommandé)
 
-A compléter
+Le _package_ `httr2` permet de se connecter aux sites web et aux API. Il offre des fonctionnalités modernes comme le gestion des échecs et l'extraction directe des réponses JSON.  
+<!----- adapter la partie httr sur les proxy ? -> req_proxy() ----->
+
+### Accès à une API sans jeton
+
+Un appel à une API via `httr2` peut s'effectuer de la manière suivante : 
+
+```{r, eval = FALSE}
+resultats <- httr2::request(url) |>                   # url à interroger
+  httr2::req_perform() |>                        # effectuer la requête
+  httr2::resp_body_json(simplifyVector = FALSE)  # extraire le corps de la réponse
+```
+Prenons par exemple l'API d'*OpenFood Facts*, une base de données alimentaire. 
+Imaginons qu'on désire récupérer l'information sur un produit. Cela s'obtient
+de la manière suivante :
+
+```{r}
+url <- "https://world.openfoodfacts.org/api/v0/product/3017620425400.json"
+
+resultats <- httr2::request(url) |>              # url à interroger
+  httr2::req_retry(max_tries = 3) |>             # réessayer automatiquement en cas d'échec
+  httr2::req_timeout(30) |>                      # définir une limite de temps
+  httr2::req_perform() |>                        # effectuer la requête
+  httr2::resp_body_json(simplifyVector = FALSE)  # extraire le corps de la réponse
+```
+Le résultat JSON est formaté sous forme de liste imbriquée.
+
+```{r}
+resultats
+```
+Pour en faire une information exploitable, il est nécessaire de retraiter le résultat de la requête.
+Par exemple en extrayant manuellement le libellé et le nutriscore d'un produit, ainsi que son indice de transformation NOVA :
+
+```{r}
+dataset <- tibble::tibble(
+  product_name      = resultats$product$product_name,
+  nova_groups       = resultats$product$nova_groups,
+  nutriscore_grade  = resultats$product$nutriscore_grade
+)
+```
+### Accès à une API avec jeton
+
+Pour les API protégées par des jetons, il faut rajouter
+un paramètre d'identification. Les jetons d'authentification (*token*)
+étant des informations personnelles, il ne faut pas les faire figurer dans
+un script. Comme expliqué précédemment, ils peuvent être stockés
+sous forme de variable d'environnement, par exemple
+sous le nom `MON_JETON_SECRET`. Il suffit alors d'utiliser
+`Sys.getenv` pour récupérer la valeur derrière le nom `MON_JETON_SECRET`, puis d'ajouter le jeton dans l'en-tête HTTP :
+
+```{r, eval = FALSE}
+jeton <- Sys.getenv("MON_JETON_SECRET") # création d'une variable contenant le jeton
+
+library(httr2)
+
+resultats <- request(url) |>
+  req_headers(Authorization = paste("Bearer", jeton)) |>  # ajout du jeton
+  req_retry(max_tries = 3) |>                             # retry automatique
+  req_timeout(30) |>                                      # timeout
+  req_perform() |>                                        # exécution de la requête
+  resp_body_json(simplifyVector = FALSE)                  # extraction JSON
+```
+
 
 ### Le _package_ `httr` (déprécié)
 
@@ -282,7 +344,7 @@ Le _package_ `httr` permet, lorsqu'on effectue une requête `GET` (une
 requête d'accès au résultat d'une recherche), de récupérer
 le résultat sous la forme d'un texte à retravailler. 
 
-### Accès à une API sans jeton
+### Accès à une API sans jeton (httr, déprécié)
 
 En général, un appel à une API via `httr` s'effectue ainsi de la manière
 suivante : 
@@ -332,7 +394,7 @@ df
 ```
 
 
-### Accès à une API avec jeton
+### Accès à une API avec jeton (httr, déprécié)
 
 Pour les API protégées par des jetons, il faut rajouter
 un paramètre d'identification. Les jetons d'authentification (*token*)
@@ -358,8 +420,19 @@ res <- httr::content(httr::GET(url),
 ### Le _package_ `jsonlite`
 
 Ce _package_ propose principalement la fonction `fromJSON` qui permet de convertir une résultat en format `json` en un objet `R`.
+<!----- moins utile depuis httr2::resp_body_json() ? ----->
 
-### Temporisation
+```{r, eval = FALSE}
+library(httr2)
+library(jsonlite)
+resp_text <- httr2::request(url) |>
+  httr2::req_perform() |>
+  httr2::resp_body_string() 
+
+resultats <- fromJSON(resp_text, flatten = TRUE)
+```
+
+### Temporisation (revoir également :  httr+jsonlite, et pas d'utilisation de Sys.sleep ?)
 
 Pour l'utilisation d'API avec un jeton, comme celle proposées sur le
 catalogue des API de l'Insee, le nombre de requête par minute est limité
