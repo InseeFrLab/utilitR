@@ -7,10 +7,10 @@ L'utilisateur souhaite accéder à des données _via_ une API.
 
 - En premier lieu, il est recommandé de vérifier s'il existe un _package_ `R` spécifique à l'API que vous voulez utiliser.
 - S'il n'existe de _package_ spécifique, il est recommandé d'utiliser
-le _package_ `httr2` pour transmettre des requêtes à l'API, [le package httr est désormais déprécié](https://cran.r-project.org/web/packages/httr/readme/README.html)
+le _package_ `httr2` pour transmettre des requêtes à l'API, [qui remplace le package `httr` désormais *superseded*](https://cran.r-project.org/web/packages/httr/readme/README.html)
 - `httr2` permet nativement de gérer la transformation des retours au format JSON, mais au besoin pour des cas complexes le _package_ `jsonlite` peut être nécessaire
-- Pour accéder à des données disponibles sur le site <https://www.insee.fr>,
-il est recommandé d'utiliser l'un des _packages_ suivants : `doremifasol`, `melodi` (catalogue de données Melodi), `insee` (séries BDM). 
+- Pour accéder à des données de l'Insee,
+il est recommandé d'utiliser l'un des _packages_ suivants : `doremifasol` (fichiers sur [insee.fr](https://www.insee.fr/), API sirene), `melodi` ([catalogue de données Melodi](https://catalogue-donnees.insee.fr)), `insee` (séries BDM). 
 - Si nécessaire, les jetons d'accès (*token*) doivent être utilisés sous forme de variable d'environnements, inscrits dans un fichier `.Renviron` qui n'est pas partagé.
 
 :::
@@ -206,8 +206,8 @@ Cette API étant ouverte, son accès ne demande pas d'identification, ni de jeto
 ## Spécificité Insee
 
 Ce _package_ utilise la librairie `rsmdx` qui n'est pas compatible avec
-la technologie *Direct Access*. Il ne fonctionne pas en télétravail pour les
-postes nomades qui accèdent à internet par ce biais. En revanche il fonctionne sur site.
+la technologie *Direct Access*. Il ne fonctionne pas sur poste en télétravail pour les
+postes nomades Insee qui accèdent à internet par ce biais. En revanche il fonctionne sur site.
 :::
 
 Voici quelques utilisations possibles de ce _package_ :
@@ -225,13 +225,10 @@ browse_metadata("DUR_D")
 data <- get_dataset("DUR_D")
 ```
 
-## Exemple d'utilisation d'une API sans _package_
+## Utiliser une API sans _package_
 
 Les exemples précédents proposaient l'accès à une API par le biais d'un _package_.
-Pour lire les données d'une API ne possédant pas de _package_, il faut utiliser le _package_ `httr2` pour lancer la requête et traiter son retour;  
-
-Au besoin pour des structures JSON complexes, le _package_ `jsonlite` peut être utilisé en complément pour transformer en `data.frame` 
-le résultat de la requête (qui est structurée en `JSON`).
+Pour lire les données d'une API ne possédant pas de _package_, il faut utiliser le _package_ `httr2` pour lancer la requête et traiter son retour
 
 ::: {.callout-note}
 
@@ -250,18 +247,19 @@ l'accès à des données par ce biais en `Python`.
 ### Le _package_ `httr2` (recommandé)
 
 Le _package_ `httr2` permet de se connecter aux sites web et aux API. Il offre des fonctionnalités modernes comme le gestion des échecs et l'extraction directe des réponses JSON.  
+
 <!----- adapter la partie httr sur les proxy ? -> req_proxy() ----->
 
 ### Accès à une API sans jeton
 
-Un appel à une API via `httr2` peut s'effectuer de la manière suivante : 
+Un appel à une API répondant au format JSON via `httr2` peut s'effectuer de la manière suivante : 
 
 ```{r, eval = FALSE}
-resultats <- httr2::request(url) |>             # url à interroger
-  httr2::req_retry(max_tries = 3) |>            # réessayer automatiquement en cas d'échec
-  httr2::req_timeout(30) |>                     # définir une limite de temps de réponse en secondes
-  httr2::req_perform() |>                       # effectuer la requête
-  httr2::resp_body_json(simplifyVector = TRUE)  # extraire le corps de la réponse
+resultats <- httr2::request(url) |>   # url à interroger
+  httr2::req_retry(max_tries = 3) |>  # réessayer automatiquement en cas d'échec
+  httr2::req_timeout(60) |>           # définir une limite de temps en secondes plus haute si besoin
+  httr2::req_perform() |>             # effectuer la requête
+  httr2::resp_body_json()             # extraire le corps de la réponse
 ```
 
 Prenons par exemple l'API d'*OpenFood Facts*, une base de données alimentaire. 
@@ -271,11 +269,11 @@ de la manière suivante :
 ```{r}
 url <- "https://world.openfoodfacts.org/api/v0/product/3017620425400.json"
 
-resultats <- httr2::request(url) |>              # url à interroger
-  httr2::req_retry(max_tries = 3) |>             # réessayer automatiquement en cas d'échec
-  httr2::req_timeout(30) |>                      # définir une limite de temps
-  httr2::req_perform() |>                        # effectuer la requête
-  httr2::resp_body_json(simplifyVector = TRUE)  # extraire le corps de la réponse
+resultats <- httr2::request(url) |>   # url à interroger
+  httr2::req_retry(max_tries = 3) |>  # réessayer automatiquement en cas d'échec
+  httr2::req_timeout(60) |>           # définir une limite de temps en secondes plus haute si besoin
+  httr2::req_perform() |>             # effectuer la requête
+  httr2::resp_body_json()             # extraire le corps de la réponse
 ```
 Le résultat JSON est formaté sous forme de liste imbriquée :
 
@@ -296,7 +294,7 @@ dataset <- tibble::tibble(
 dataset
 ```
 
-### Accès à une API avec jeton
+#### Accès à une API avec jeton
 
 Pour les API protégées par des jetons, il faut rajouter
 un paramètre d'identification. Les jetons d'authentification (*token*)
@@ -304,22 +302,99 @@ un paramètre d'identification. Les jetons d'authentification (*token*)
 un script. Comme expliqué précédemment, ils peuvent être stockés
 sous forme de variable d'environnement, par exemple
 sous le nom `MON_JETON_SECRET`. Il suffit alors d'utiliser
-`Sys.getenv` pour récupérer la valeur derrière le nom `MON_JETON_SECRET`, puis d'ajouter le jeton dans l'en-tête HTTP :
+`Sys.getenv` pour récupérer la valeur derrière le nom `MON_JETON_SECRET`, puis d'ajouter le jeton dans l'en-tête HTTP (nommée `X-INSEE-Api-Key-Integration` pour les API de l'Insee)
 
 ```{r, eval = FALSE}
-jeton <- Sys.getenv("MON_JETON_SECRET") # création d'une variable contenant le jeton
-
 library(httr2)
 
+jeton <- Sys.getenv("MON_JETON_SECRET") # création d'une variable contenant le jeton
+
 resultats <- request(url) |>
-  req_headers(Authorization = paste("Bearer", jeton)) |> # ajout du jeton
+  req_headers(`X-INSEE-Api-Key-Integration` = jeton) |>  # ajout du jeton
   req_retry(max_tries = 3) |>                            # retry automatique
-  req_timeout(30) |>                                     # timeout
+  req_timeout(60) |>                                     # timeout
   req_perform() |>                                       # exécution de la requête
-  resp_body_json(simplifyVector = TRUE)                  # extraction JSON
+  resp_body_json()                                       # extraction JSON
 ```
 
-### Le _package_ `httr` (déprécié, privilégier `httr2`)
+
+#### Exemple d'utilisation de l'API Métadonnées Insee
+
+Une API sur les métadonnées de l'Insee est disponible [sur le portail des API de l'Insee](https://portail-api.insee.fr/catalog/api/5029cf12-e930-4d24-a9cf-12e9307d241d?aq=ALL).
+Elle permet d'obtenir de manière simplifiée des métadonnées
+(sources, concepts, liste de codes géographiques).
+
+Voici un exemple de requête pour obtenir des informations sur une catégorie juridique :
+
+```{r, eval = FALSE}
+library(httr2)
+
+url <- "https://api.insee.fr/metadonnees/codes/cj/n2/10"
+
+resultats <- request(url) |>
+  req_perform() |>             # exécution de la requête
+  resp_body_json()             # extraction JSON
+```
+
+#### Exemple d'utilisation de l'API Sirene
+
+Cet exemple va aller chercher les liens de succession pour un établissement :
+
+```{r, eval = FALSE}
+library(httr2)
+
+jeton <- Sys.getenv("MON_JETON_SECRET") # création d'une variable contenant le jeton
+
+url <- "https://api.insee.fr/api-sirene/3.11/siret/liensSuccession?q=siretEtablissementPredecesseur:39478192600016"
+
+resultats <- request(url) |>
+  req_headers(`X-INSEE-Api-Key-Integration` = jeton) |> # ajout du jeton
+  req_perform() |>                                    # exécution de la requête
+  resp_body_json()                                    # extraction JSON
+
+sortie <- as.data.frame(resultats$liensSuccession)
+```
+
+L'API Sirene permet d'effectuer des recherches multicritères. Dans ce cas, il
+faut séparer les codes par `%20OR%20` (code HTML signifiant ` OR `) :
+
+```{r, eval = FALSE}
+url <- "https://api.insee.fr/api-sirene/3.11/siret/liensSuccession?q=siretEtablissementPredecesseur%3A39478192600016%20OR%20siretEtablissementPredecesseur%3A39488939800027"
+
+resultats <- request(url) |>
+  req_headers(`X-INSEE-Api-Key-Integration` = jeton) |> # ajout du jeton
+  req_perform() |>                                    # exécution de la requête
+  resp_body_json()                                    # extraction JSON
+
+sortie <- as.data.frame(resultats$liensSuccession)
+```
+
+## Le _package_ `jsonlite`
+
+Ce _package_ propose principalement la fonction `fromJSON` qui permet de convertir une résultat en format `json` en un objet `R`. 
+Il était nécessaire en complément de `httr`, mais désormais `httr2` gère cette conversion nativement avec `resp_body_json()`.
+Son usage peut être nécessaire pour traiter des structures JSON complexes pour laquelle le traitement par `httr2` ne convient pas, dans ce cas retourner un résultat sous forme textuel, puis le traiter avec jsonlite :
+
+```{r, eval = FALSE}
+library(httr2)
+library(jsonlite)
+resp_text <- httr2::request(url) |>
+  httr2::req_perform() |>
+  httr2::resp_body_string()
+
+resultats <- jsonlite::fromJSON(resp_text, flatten = TRUE)
+```
+
+## Limites de requêtes et temporisation
+
+Pour l'utilisation d'API comme celles proposées sur le catalogue des API de l'Insee, 
+le nombre de requête par minute est limité.
+Pour ne pas être bloqué par cette limite, il peut être utile de temporiser
+les appels successifs en introduisant une latence.
+La fonction permettant cela est `Sys.sleep`. Par exemple, pour 
+laisser 30 secondes d'attente, ajouter `Sys.sleep(30)`.
+
+## (déprécié, privilégier désormais `httr2`) Le _package_ `httr` 
 
 Le _package_ `httr` permet de se connecter aux sites web et de se connecter aux API.  
 
@@ -348,7 +423,7 @@ Le _package_ `httr` permet, lorsqu'on effectue une requête `GET` (une
 requête d'accès au résultat d'une recherche), de récupérer
 le résultat sous la forme d'un texte à retravailler. 
 
-### Accès à une API sans jeton (httr, déprécié)
+### Accès à une API sans jeton avec `httr`
 
 En général, un appel à une API via `httr` s'effectue ainsi de la manière
 suivante : 
@@ -379,13 +454,7 @@ resultats <-
 ```
 
 Le résultat est formaté sous forme de JSON, ce qui est pratique mais peu
-intelligible :
-
-```{r}
-jsonlite::prettify(resultats)
-```
-
-Pour en faire une information exploitable, il est nécessaire de retraiter le résultat de la requête. Par exemple, pour n'extraire que le libellé et le nutriscore d'un produit, ainsi que son indice de transformation NOVA, il faut utiliser une boucle sur les différentes caractéristiques à extraire :
+intelligible. Pour en faire une information exploitable, il est nécessaire de retraiter le résultat de la requête. Par exemple, pour n'extraire que le libellé et le nutriscore d'un produit, ainsi que son indice de transformation NOVA, il faut utiliser une boucle sur les différentes caractéristiques à extraire :
 
 ```{r}
 df <- data.frame(
@@ -398,7 +467,7 @@ df
 ```
 
 
-### Accès à une API avec jeton (httr, déprécié)
+### Accès à une API avec jeton avec `httr`
 
 Pour les API protégées par des jetons, il faut rajouter
 un paramètre d'identification. Les jetons d'authentification (*token*)
@@ -421,116 +490,6 @@ res <- httr::content(httr::GET(url),
                      encoding='UTF-8')
 ```
 
-### Le _package_ `jsonlite`
-
-Ce _package_ propose principalement la fonction `fromJSON` qui permet de convertir une résultat en format `json` en un objet `R`. 
-Son usage était nécess
-Son usage peut être nécessaire pour traiter des structures JSON complexes, `httr2::resp_body_json()`
-
-
-
-```{r, eval = FALSE}
-library(httr2)
-library(jsonlite)
-resp_text <- httr2::request(url) |>
-  httr2::req_perform() |>
-  httr2::resp_body_string()
-
-resultats <- fromJSON(resp_text, flatten = TRUE)
-```
-
-### Temporisation (revoir également :  httr+jsonlite, et pas d'utilisation de Sys.sleep ?)
-
-Pour l'utilisation d'API avec un jeton, comme celle proposées sur le
-catalogue des API de l'Insee, le nombre de requête par minute est limité
-(30 pour un compte standard sur le catalogue des API).
-Pour ne pas être bloqué par cette limite, il est important de temporiser
-les appels successifs en introduisant une latence.
-La fonction permettant cela est `Sys.sleep`. Par exemple, pour 
-laisser 30 secondes d'attente, taper `Sys.sleep(30)`.
-
-
-### Exemple d'utilisation sur l'API interne RMèS
-
-Une API interne sur les métadonnées de l'Insee est disponible (programme `RMès`).
-Elle permet d'obtenir de manière simplifiée des métadonnées
-(sources, concepts, liste de codes géographiques).
-Comme cette API est disponible en interne à l'Insee, il n'y a pas, comme pour accéder
-à celles sur internet, de proxy.
-
-Voici un exemple de requête pour accéder aux données au niveau
-division de la `Naf-rev2` :
-
-```{r, eval = FALSE}
-library(dplyr)
-library(stringr)
-library(httr)
-library(jsonlite)
-
-# L'API est disponible en interne. Il n'y a pas de proxy pour cette API
-set_config(use_proxy(""))
-
-# url de la requête : ici on souhaite afficher la naf rev 2
-url <- "url_de_la_requete"
-
-
-# connexion à l'API pour récupérer les données en JSON
-res <- content(GET(url),
-                     as="text", content_type_json(), encoding='UTF-8')
-
-# transformation des données pour les transformer en dataframe
-res_ok <- as.data.frame(fromJSON(res))
-
-# travail de la table pour obtenir le niveau division de la NAF-rev2
-division <- res_ok %>% 
-  filter(str_detect(uri,'division')) %>% 
-  select(c('code', 'intituleFr'))
-```
-
-::: {.callout-warning}
-## Spécificité Insee
-
-L'URL de cette API est uniquement disponible en interne à l'Insee. Elle n'est pas rendu publique pour des raisons de sécurité. 
-:::
-
-
-### Exemple d'utilisation de l'[API Sirene](https://api.insee.fr/catalogue/site/themes/wso2/subthemes/insee/pages/item-info.jag?name=Sirene&version=V3&provider=insee)
-
-Cet exemple va aller chercher les liens de succession pour un établissement :
-
-```{r, eval = FALSE}
-library(apinsee)
-library(httr)
-library(jsonlite)
-
-url <- "https://api.insee.fr/entreprises/sirene/V3/siret/liensSuccession?q=siretEtablissementPredecesseur:39478192600016"
-url <- URLencode(url, reserved = TRUE)
-token <- insee_auth()
-set_config(config(token = token))
-res <- content(GET(url, config(token = token)), 
-               as="text", 
-               content_type_json(), 
-               encoding='UTF-8')
-
-res <- fromJSON(res)
-sortie <- as.data.frame(res$liensSuccession)
-```
-
-L'API Sirene permet d'effectuer des recherches multicritères. Dans ce cas, il
-faut séparer les codes par `%20OR%20` (code HTML signifiant ` OR `) :
-
-```{r, eval = FALSE}
-url <- "https://api.insee.fr/entreprises/sirene/V3/siret/liensSuccession?q=siretEtablissementPredecesseur%3A39478192600016%20OR%20siretEtablissementPredecesseur%3A39488939800027"
-token <- apinsee::insee_auth()
-set_config(config(token = token))
-res <- content(httr::GET(url, httr::config(token = token)), 
-               as="text", 
-               content_type_json(), 
-               encoding='UTF-8')
-
-res<-fromJSON(res)
-sortie <- as.data.frame(res$liensSuccession)
-```
 
 <!-----
 ## Références
