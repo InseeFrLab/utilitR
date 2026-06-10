@@ -81,20 +81,9 @@ la pérennité des traitements statistiques avec `R`.
 Ces principes s'appliquent également à la documentation produite: l'ensemble
 des exemples sont construits à partir de données
 disponibles sur le site www.insee.fr et les morceaux de code présents
-sont faits pour être reproductibles. Pour rendre la documentation plus
-reproductible, un certain nombre d'éléments de formattage ont été intégrés
-dans un package `R` proposant des modèles de documents standardisés. Il
-peut être installé de la manière suivante:
+sont faits pour être reproductibles. 
 
-```r
-# install.packages("remotes")
-remotes::install_github("https://github.com/InseeFrLab/utilitr-template")
-```
-
-Les éléments présents dans la documentation visent à être cohérents avec
-les recommandations émises par le comité de certification des packages `R` (`COPS`),
-organe interne visant à prescrire ou proscrire certains packages dans le cadre
-de la production statistique. 
+La documentation s'appuie sur le logiciel de publication reproductible [Quarto](https://quarto.org/)
 
 Plus d'éléments pour faire tourner les codes sont disponibles 
-dans ce [document](doc/extra_info.md)
+dans le [guide de constribution](CONTRIBUTING.md)
