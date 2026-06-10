@@ -1,5 +1,6 @@
 #!/bin/bash
 curl -sSL https://raw.githubusercontent.com/A2-ai/rv/refs/heads/main/scripts/install.sh | bash
+export PATH="~/.local/bin:$PATH"
 source ~/.bashrc
 
 if [ -d "/home/onyxia/work/utilitr" ]; then
