@@ -2,10 +2,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.27">
+<meta name="generator" content="quarto-1.9.38">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>25&nbsp; Manipuler des données spatiales</title>
 <style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -66,19 +69,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../resources/logo-utilitr.png" rel="icon" type="image/png">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-4d9afe2b8d18ee9fa5d0d57b5ed4214d.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-0a6b7249c26820e032cb0bd839ff02b1.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-2e167819262fc07cba409bef9b2ef907.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-f89374b9317068b845339f11473949f2.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-2e167819262fc07cba409bef9b2ef907.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+<link href="../site_libs/bootstrap/bootstrap-c1f2cef315c3bbab927bb8be32162f6d.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-5f6358e8dc35bdb1d66bb638555fbf64.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-c1f2cef315c3bbab927bb8be32162f6d.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
   "collapse-after": 3,
@@ -108,7 +110,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   window.document.addEventListener("DOMContentLoaded", function (_event) {
     document.body.classList.add('hypothesis-enabled');
   });
-</script><script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script><script type="text/javascript">
+</script><script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script><script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script><script type="text/javascript">
 const typesetMath = (el) => {
   if (window.MathJax) {
     // MathJax Typeset
@@ -850,33 +852,12 @@ Note
 <p>La commande <code><a href="https://rdrr.io/r/utils/head.html">head()</a></code> fait apparaître la structure de l’objet <code>sf</code> <code>martinique</code>. L’en-tête précise le type de <code>geometry</code> (<code>polygon</code>, en l’occurrence le contour des communes), et le système de projection (<code>WGS 84 / UTM zone 20N</code>). La table de données contient la liste des communes avec leurs caractéristiques (nom, population…). Enfin, la dernière colonne (<code>geometry</code>) contient l’information géographique (le contour des communes).</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">martinique</span>, <span class="fl">3</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Simple feature collection with 3 features and 7 fields
-Geometry type: MULTIPOLYGON
-Dimension:     XY
-Bounding box:  xmin: 697602 ymin: 1598818 xmax: 710462 ymax: 1645182
-Projected CRS: WGS 84 / UTM zone 20N
-  INSEE_COM              STATUS            LIBGEO  POP   MED CHOM  ACT
-1     97201 Simple municipality L'Ajoupa-Bouillon 1902 13633  254  801
-2     97202 Simple municipality Les Anses-d'Arlet 3737 14558  425 1659
-3     97203 Simple municipality      Basse-Pointe 3357 14456  400 1395
-                            geom
-1 MULTIPOLYGON (((699261 1637...
-2 MULTIPOLYGON (((709840 1599...
-3 MULTIPOLYGON (((697602 1638...</code></pre>
-</div>
 </div>
 <p>Pour revenir à un <code>dataframe</code> traditionnel, c’est-à-dire sans la dimension géographique, la manière la plus simple est de rendre nulle la géométrie grâce à la commande <strong><code>sf::drop_geometry</code></strong>. Exemple : <code>martinique &lt;- martinique %&gt;% sf::st_drop_geometry()</code>.</p>
 <p>On peut produire très rapidement une représentation cartographique d’un attribut avec la fonction <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code> :</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Produire une carte de la population par commune</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Produire une carte de la population par commune</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">martinique</span><span class="op">[</span><span class="st">'POP'</span><span class="op">]</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure"><p><img src="Fiche_donnees_spatiales_files/figure-html/plot_sf-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
 </div>
 </section><section id="effectuer-des-opérations-sur-un-objet-sf" class="level3" data-number="25.3.3"><h3 data-number="25.3.3" class="anchored" data-anchor-id="effectuer-des-opérations-sur-un-objet-sf">
 <span class="header-section-number">25.3.3</span> Effectuer des opérations sur un objet <code>sf</code>
@@ -885,48 +866,25 @@ Projected CRS: WGS 84 / UTM zone 20N
 <span class="header-section-number">25.3.3.1</span> Effectuer des opérations sur les attributs</h4>
 <p><strong>Il est possible d’appliquer aux attributs des objets <code>sf</code> les fonctions de la grammaire <code>dplyr</code></strong> comme si l’objet était un <code>data.frame</code> standard. On peut ainsi sélectionner un sous-champ de la base avec <code><a href="https://dplyr.tidyverse.org/reference/filter.html">dplyr::filter()</a></code>, faire du tri avec <code><a href="https://dplyr.tidyverse.org/reference/arrange.html">dplyr::arrange()</a></code> et créer de nouvelles variables avec <code><a href="https://dplyr.tidyverse.org/reference/mutate.html">dplyr::mutate()</a></code> :</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">grandes_villes_martinique</span> <span class="op">&lt;-</span> <span class="va">martinique</span> <span class="op">%&gt;%</span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">grandes_villes_martinique</span> <span class="op">&lt;-</span> <span class="va">martinique</span> <span class="op">%&gt;%</span> </span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">POP</span> <span class="op">&gt;</span> <span class="fl">10000</span><span class="op">)</span> <span class="op">%&gt;%</span> </span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">POP</span><span class="op">)</span> <span class="op">%&gt;%</span> </span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>log_pop <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">POP</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>On peut également appliquer des fonctions de statistiques descriptives avec <code><a href="https://dplyr.tidyverse.org/reference/summarise.html">dplyr::summarise()</a></code> et construire des groupes avec <code><a href="https://dplyr.tidyverse.org/reference/group_by.html">dplyr::group_by()</a></code>. Le <code>group_by()</code> sur un objet spatial va également agréger les géométries : il va créer une nouvelle géométrie recoupant l’ensemble des points, des lignes ou des polygones appartenant au groupe. Par exemple, on peut construire très facilement une géométrie plus agrégée par regroupement des géométries plus fines. Imaginons que la table de données sur la Martinique comprend deux groupes : les villes de plus de 10 000 habitants et celles de moins de 10 000 habitants. On désire faire la somme de la variable <code>POP</code> pour chaque groupe. Dans ce cas, après avoir créé les groupes, on va effectuer un <code>group_by()</code> puis un <code>summarise()</code> :</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">martinique_agg</span> <span class="op">&lt;-</span> <span class="va">martinique</span> <span class="op">%&gt;%</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">martinique_agg</span> <span class="op">&lt;-</span> <span class="va">martinique</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>group <span class="op">=</span> <span class="op">(</span><span class="va">POP</span> <span class="op">&lt;</span> <span class="fl">10000</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">group</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>POP <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">POP</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">martinique_agg</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Simple feature collection with 2 features and 2 fields
-Geometry type: MULTIPOLYGON
-Dimension:     XY
-Bounding box:  xmin: 690574 ymin: 1592536 xmax: 735940.2 ymax: 1645660
-Projected CRS: WGS 84 / UTM zone 20N
-# A tibble: 2 × 3
-  group    POP                                                              geom
-  &lt;lgl&gt;  &lt;dbl&gt;                                                &lt;MULTIPOLYGON [m]&gt;
-1 FALSE 281471 (((722317 1613892, 722287 1613877, 722225 1613781, 722215 161375…
-2 TRUE   99406 (((703149 1624633, 703169 1624533, 703588 1623940, 703848 162345…</code></pre>
-</div>
 </div>
 <p>Le résultat est analogue à celui qu’on obtiendrait avec un<code>data.frame</code>, à l’exception de la colonne <code>geometry</code>. L’agrégation d’une géométrie de nature <code>POLYGON</code> aboutit à une colonne de format <code>MULTIPOLYGON</code> qui agrège des polygones. La représentation graphique rend plus évidente cette agrégation :</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">martinique</span><span class="op">[</span><span class="st">'POP'</span><span class="op">]</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure"><p><img src="Fiche_donnees_spatiales_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">martinique_agg</span><span class="op">[</span><span class="st">'POP'</span><span class="op">]</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure"><p><img src="Fiche_donnees_spatiales_files/figure-html/unnamed-chunk-3-2.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">martinique</span><span class="op">[</span><span class="st">'POP'</span><span class="op">]</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">martinique_agg</span><span class="op">[</span><span class="st">'POP'</span><span class="op">]</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -947,31 +905,10 @@ Tip
 <!---CommOM : je mettrais bien ici un petit tableau avec quelques fonctions, leurs arguments et la description de ce qu'elles font.--->
 <p>Par exemple, on peut calculer la superficie d’un polygone avec <code><a href="https://r-spatial.github.io/sf/reference/geos_measures.html">sf::st_area()</a></code>. Si l’unité ne convient pas, il est possible de convertir cette superficie en <span class="math inline">\(km^2\)</span> :</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">martinique</span> <span class="op">%&gt;%</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">martinique</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>area <span class="op">=</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_measures.html">st_area</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu">units</span><span class="fu">::</span><span class="fu"><a href="https://r-quantities.github.io/units/reference/units.html">set_units</a></span><span class="op">(</span><span class="va">area</span>, <span class="va">km</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Simple feature collection with 6 features and 9 fields
-Geometry type: MULTIPOLYGON
-Dimension:     XY
-Bounding box:  xmin: 695444 ymin: 1598818 xmax: 717731 ymax: 1645182
-Projected CRS: WGS 84 / UTM zone 20N
-  INSEE_COM              STATUS            LIBGEO  POP   MED CHOM  ACT
-1     97201 Simple municipality L'Ajoupa-Bouillon 1902 13633  254  801
-2     97202 Simple municipality Les Anses-d'Arlet 3737 14558  425 1659
-3     97203 Simple municipality      Basse-Pointe 3357 14456  400 1395
-4     97204 Simple municipality         Le Carbet 3683 18847  285 1568
-5     97205 Simple municipality       Case-Pilote 4458 21005  347 2096
-6     97206 Simple municipality        Le Diamant 5976 19704  430 2654
-                            geom           area               x
-1 MULTIPOLYGON (((699261 1637... 12176271 [m^2] 12.17627 [km^2]
-2 MULTIPOLYGON (((709840 1599... 25783065 [m^2] 25.78307 [km^2]
-3 MULTIPOLYGON (((697602 1638... 27753371 [m^2] 27.75337 [km^2]
-4 MULTIPOLYGON (((702229 1628... 17806777 [m^2] 17.80678 [km^2]
-5 MULTIPOLYGON (((698805 1621... 18609342 [m^2] 18.60934 [km^2]
-6 MULTIPOLYGON (((709840 1599... 28042394 [m^2] 28.04239 [km^2]</code></pre>
-</div>
 </div>
 </section><section id="joindre-des-données-géographiques-et-attributaires" class="level3" data-number="25.3.5"><h3 data-number="25.3.5" class="anchored" data-anchor-id="joindre-des-données-géographiques-et-attributaires">
 <span class="header-section-number">25.3.5</span> Joindre des données géographiques et attributaires</h3>
@@ -1051,58 +988,7 @@ Tip
 <span class="header-section-number">25.3.6</span> Gérer le système de projection</h3>
 <p>Le système de projection est fondamental pour que la dimension spatiale soit bien interprétée par <code>R</code>. Si un système de projection est défini, il s’affiche dans la ligne <code>Projected CRS</code> lorsqu’on applique la fonction <code><a href="https://rdrr.io/r/utils/head.html">head()</a></code> à un objet <code>sf</code>. Pour vérifier le système de projection d’une base de données, on peut utiliser <code><a href="https://r-spatial.github.io/sf/reference/st_crs.html">sf::st_crs</a></code> :</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html">st_crs</a></span><span class="op">(</span><span class="va">martinique</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Coordinate Reference System:
-  User input: WGS 84 / UTM zone 20N 
-  wkt:
-PROJCRS["WGS 84 / UTM zone 20N",
-    BASEGEOGCRS["WGS 84",
-        ENSEMBLE["World Geodetic System 1984 ensemble",
-            MEMBER["World Geodetic System 1984 (Transit)"],
-            MEMBER["World Geodetic System 1984 (G730)"],
-            MEMBER["World Geodetic System 1984 (G873)"],
-            MEMBER["World Geodetic System 1984 (G1150)"],
-            MEMBER["World Geodetic System 1984 (G1674)"],
-            MEMBER["World Geodetic System 1984 (G1762)"],
-            MEMBER["World Geodetic System 1984 (G2139)"],
-            ELLIPSOID["WGS 84",6378137,298.257223563,
-                LENGTHUNIT["metre",1]],
-            ENSEMBLEACCURACY[2.0]],
-        PRIMEM["Greenwich",0,
-            ANGLEUNIT["degree",0.0174532925199433]],
-        ID["EPSG",4326]],
-    CONVERSION["UTM zone 20N",
-        METHOD["Transverse Mercator",
-            ID["EPSG",9807]],
-        PARAMETER["Latitude of natural origin",0,
-            ANGLEUNIT["degree",0.0174532925199433],
-            ID["EPSG",8801]],
-        PARAMETER["Longitude of natural origin",-63,
-            ANGLEUNIT["degree",0.0174532925199433],
-            ID["EPSG",8802]],
-        PARAMETER["Scale factor at natural origin",0.9996,
-            SCALEUNIT["unity",1],
-            ID["EPSG",8805]],
-        PARAMETER["False easting",500000,
-            LENGTHUNIT["metre",1],
-            ID["EPSG",8806]],
-        PARAMETER["False northing",0,
-            LENGTHUNIT["metre",1],
-            ID["EPSG",8807]]],
-    CS[Cartesian,2],
-        AXIS["(E)",east,
-            ORDER[1],
-            LENGTHUNIT["metre",1]],
-        AXIS["(N)",north,
-            ORDER[2],
-            LENGTHUNIT["metre",1]],
-    USAGE[
-        SCOPE["Navigation and medium accuracy spatial referencing."],
-        AREA["Between 66°W and 60°W, northern hemisphere between equator and 84°N, onshore and offshore. Anguilla. Antigua and Barbuda. Bermuda. Brazil. British Virgin Islands. Canada - New Brunswick; Labrador; Nova Scotia; Nunavut; Prince Edward Island; Quebec. Dominica. Greenland. Grenada. Guadeloupe. Guyana. Martinique. Montserrat. Puerto Rico. St Kitts and Nevis. St Barthelemy. St Lucia. St Maarten, St Martin. St Vincent and the Grenadines. Trinidad and Tobago. Venezuela. US Virgin Islands."],
-        BBOX[0,-66,84,-60]],
-    ID["EPSG",32620]]</code></pre>
-</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html">st_crs</a></span><span class="op">(</span><span class="va">martinique</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Les deux principales fonctions pour définir le système de projection utilisé sont :</p>
 <ul>
@@ -1113,11 +999,11 @@ PROJCRS["WGS 84 / UTM zone 20N",
 </ul>
 <p>La définition du système de projection se fait de la manière suivante :</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">martinique</span> <span class="op">&lt;-</span> <span class="va">martinique</span> <span class="op">%&gt;%</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html">st_set_crs</a></span><span class="op">(</span><span class="fl">32620</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">martinique</span> <span class="op">&lt;-</span> <span class="va">martinique</span> <span class="op">%&gt;%</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html">st_set_crs</a></span><span class="op">(</span><span class="fl">32620</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Alors que la reprojection s’obtient de la manière suivante :</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">martinique</span> <span class="op">&lt;-</span> <span class="va">martinique</span> <span class="op">%&gt;%</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span><span class="fl">4326</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">martinique</span> <span class="op">&lt;-</span> <span class="va">martinique</span> <span class="op">%&gt;%</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span><span class="fl">4326</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section></section><section id="pour-aller-plus-loin" class="level2" data-number="25.4"><h2 data-number="25.4" class="anchored" data-anchor-id="pour-aller-plus-loin">
 <span class="header-section-number">25.4</span> Pour aller plus loin</h2>
@@ -1168,7 +1054,7 @@ Note
 <div class="callout-body-container callout-body">
 <p>Ce package n’étant pas disponible sur le CRAN, dans un environnement connecté à internet, il est nécessaire de l’installer depuis <code>Github</code>:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"antuki/COGugaison"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"antuki/COGugaison"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 </div>

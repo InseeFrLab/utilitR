@@ -2,10 +2,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.27">
+<meta name="generator" content="quarto-1.9.38">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>11&nbsp; Construire une chaîne de traitement reproductible avec targets</title>
 <style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -66,19 +69,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../resources/logo-utilitr.png" rel="icon" type="image/png">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-4d9afe2b8d18ee9fa5d0d57b5ed4214d.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-0a6b7249c26820e032cb0bd839ff02b1.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-2e167819262fc07cba409bef9b2ef907.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-f89374b9317068b845339f11473949f2.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-2e167819262fc07cba409bef9b2ef907.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+<link href="../site_libs/bootstrap/bootstrap-c1f2cef315c3bbab927bb8be32162f6d.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-5f6358e8dc35bdb1d66bb638555fbf64.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-c1f2cef315c3bbab927bb8be32162f6d.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
   "collapse-after": 3,
@@ -873,10 +875,9 @@ Tip
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_make.html">tar_make</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>- The project is out-of-sync -- use `renv::status()` for details.
-▶ dispatched target csv_file
-● completed target csv_file [0.062 seconds, 4.193 megabytes]
-▶ dispatched target raw_filosofi_epci
+<pre><code>+ csv_file dispatched
+✔ csv_file completed [168ms, 4.19 MB]
++ raw_filosofi_epci dispatched
 Rows: 34932 Columns: 29
 ── Column specification ────────────────────────────────────────────────────────
 Delimiter: ","
@@ -885,12 +886,12 @@ dbl (27): NBMENFISC16, NBPERSMENFISC16, MED16, PIMP16, TP6016, TP60AGE116, T...
 
 ℹ Use `spec()` to retrieve the full column specification for this data.
 ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-● completed target raw_filosofi_epci [0.151 seconds, 961.603 kilobytes]
-▶ dispatched target grandes_villes
-● completed target grandes_villes [0.011 seconds, 1.479 kilobytes]
-▶ dispatched target prop_sup_25k
-● completed target prop_sup_25k [0.003 seconds, 158 bytes]
-▶ ended pipeline [0.485 seconds]</code></pre>
+✔ raw_filosofi_epci completed [130ms, 961.60 kB]
++ grandes_villes dispatched
+✔ grandes_villes completed [8ms, 1.48 kB]
++ prop_sup_25k dispatched
+✔ prop_sup_25k completed [2ms, 154 B]
+✔ ended pipeline [734ms, 4 completed, 0 skipped]</code></pre>
 </div>
 </div>
 <p>Lorsque la chaîne de traitement est de taille relativement modeste (comme ici), on peut la visualiser avec la fonction <code>tar_visnetwork</code>:</p>
@@ -956,14 +957,11 @@ Note
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_make.html">tar_make</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>- The project is out-of-sync -- use `renv::status()` for details.
-✔ skipped target csv_file
-✔ skipped target raw_filosofi_epci
-▶ dispatched target grandes_villes
-● completed target grandes_villes [0.006 seconds, 70.69 kilobytes]
-▶ dispatched target prop_sup_25k
-● completed target prop_sup_25k [0.003 seconds, 164 bytes]
-▶ ended pipeline [0.205 seconds]
+<pre><code>+ grandes_villes dispatched
+✔ grandes_villes completed [7ms, 70.69 kB]
++ prop_sup_25k dispatched
+✔ prop_sup_25k completed [3ms, 160 B]
+✔ ended pipeline [388ms, 2 completed, 2 skipped]
 Warning message:
 In dir.create("data") : 'data' already exists</code></pre>
 </div>
