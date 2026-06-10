@@ -12,12 +12,14 @@ then
     git clone https://github.com/$USERNAME/utilitr.git && \
     cd utilitr && \
     git remote add upstream https://github.com/inseefrlab/utilitr.git && \
-    git fetch upstream"
+    git fetch upstream
+    rv sync"
 else
     cd /home/onyxia/work
     runuser -l onyxia -c "cd $WORKSPACE_DIR && \
     git clone https://github.com/inseefrlab/utilitr.git && \
-    cd utilitr"
+    cd utilitr
+    rv sync"
 fi
 if [ ! -z "$FORK" ]
 then
