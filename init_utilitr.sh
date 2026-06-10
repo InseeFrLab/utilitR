@@ -1,37 +1,13 @@
 #!/bin/bash
-echo "$PROTOCOL://$USERNAME:$TOKEN@$HOST" > /home/onyxia/git.store
-chown onyxia /home/onyxia/git.store
-chmod o-r,g-r /home/onyxia/git.store
-runuser -l onyxia -c 'git config --global credential.helper "store --file ~/git.store"'
-if [ -z "$FORK" ]
-then
-    echo "Pas de clonage de dépôt"
-elif [ "$FORK" = "TRUE" ]
-then
-    runuser -l onyxia -c "cd $WORKSPACE_DIR && \
-    git clone https://github.com/$USERNAME/utilitr.git && \
-    cd utilitr && \
-    git remote add upstream https://github.com/inseefrlab/utilitr.git && \
-    git fetch upstream
-    rv sync"
+curl -sSL https://raw.githubusercontent.com/A2-ai/rv/refs/heads/main/scripts/install.sh | bash
+
+if [ -d "/home/onyxia/work/utilitr" ]; then
+  cd /home/onyxia/work/utilitr
+  rv sync
 else
-    cd /home/onyxia/work
-    runuser -l onyxia -c "cd $WORKSPACE_DIR && \
-    git clone https://github.com/inseefrlab/utilitr.git && \
-    cd utilitr
-    rv sync"
-fi
-if [ ! -z "$FORK" ]
-then
-    # Open the project
-    echo \
-    "
-    setHook('rstudio.sessionInit', function(newSession) {
-        if (newSession && identical(getwd(), path.expand(\"$WORKSPACE_DIR\")))
-        {
-            message('Ouverture du tutoriel')
-            rstudioapi::openProject(\"$WORKSPACE_DIR/utilitr\")
-            }
-            }, action = 'append')
-            " >> /home/onyxia/.Rprofile
+  git clone https://github.com/inseefrlab/utilitr
+  cd /home/onyxia/work/utilitr
+  rv sync
+  cd ..
+  rm -rf utilitr
 fi
