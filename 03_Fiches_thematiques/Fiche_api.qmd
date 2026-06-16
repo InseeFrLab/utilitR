@@ -309,6 +309,7 @@ resultats <- httr2::request(url) |>   # url à interroger
   httr2::req_perform() |>             # effectuer la requête
   httr2::resp_body_json()             # extraire le corps de la réponse
 ```
+
 Le résultat JSON est formaté sous forme de liste imbriquée :
 
 ```{r}
@@ -336,7 +337,7 @@ un paramètre d'identification. Les jetons d'authentification (*token*)
 un script. Comme expliqué précédemment, ils peuvent être stockés
 sous forme de variable d'environnement, par exemple
 sous le nom `MON_JETON_SECRET`. Il suffit alors d'utiliser
-`Sys.getenv` pour récupérer la valeur derrière le nom `MON_JETON_SECRET`, puis d'ajouter le jeton dans l'en-tête HTTP (nommée `X-INSEE-Api-Key-Integration` pour les API de l'Insee)
+`Sys.getenv` pour récupérer la valeur derrière le nom `MON_JETON_SECRET`, puis d'ajouter le jeton dans l'en-tête HTTP (nommée `X-INSEE-Api-Key-Integration` pour les API de l'Insee).
 
 ```{r, eval = FALSE}
 library(httr2)
@@ -372,12 +373,15 @@ resultats <- request(url) |>
 
 #### Exemple d'utilisation de l'API Sirene
 
+Vous pouvez utiliser un fichier `.Renviron` pour stocker votre jeton de manière sécurisée, comme spécifié au début. 
+Le fichier `.Renviron` est chargé au démarrage de R, rechargez votre session R après avoir modifié ce fichier pour que les changements prennent effet.
+Vous pouvez aussi utiliser la fonction `Sys.setenv()` pour définir temporairement votre jeton dans la session R en cours, mais cela ne sera pas persistant entre les sessions.
 Cet exemple va aller chercher les liens de succession pour un établissement :
 
 ```{r, eval = FALSE}
 library(httr2)
 
-jeton <- Sys.getenv("MON_JETON_SECRET") # création d'une variable contenant le jeton
+jeton <- Sys.getenv("INSEE_API_TOKEN") # création d'une variable contenant le jeton 
 
 url <- "https://api.insee.fr/api-sirene/3.11/siret/liensSuccession?q=siretEtablissementPredecesseur:39478192600016"
 
