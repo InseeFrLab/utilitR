@@ -111,13 +111,16 @@ par exemple en insérant la ligne suivante dans le fichier `.Renviron` (en rempl
 INSEE_API_TOKEN='xxxxxxxx'
 ```
 
+N'oubliez pas d'ignorer le fichier `.Renviron` dans le dépôt Git pour ne pas partager votre jeton d'accès.
+Le ficher `.Renviron` est lu à chaque démarrage de R, donc il est nécessaire de redémarrer R pour que la variable d'environnement soit prise en compte.
+
 Il reste ensuite à préciser le type d'information souhaitée (unités légales, établissements...) et la requête via l'argument `argsApi`. 
 
 Par exemple, pour lister tous les bouchers de la ville de Tourcoing :
 
 ```{r, eval = FALSE}
 bouchers_tourcoing <-
-  telechargerDonnees(
+  doremifasol::telechargerDonnees(
     "SIRENE_SIRET",
     argsApi = list(
       q = "codeCommuneEtablissement:59599 AND activitePrincipaleUniteLegale:47.22Z"
@@ -134,21 +137,20 @@ Il permet de lister, filtrer, télécharger et accéder aux métadonnées de l'e
 Le package s'appuie sur l'API melodi, accessible librement et donc sans besoin de configurer de jeton d'accès.
 
 Une fois installé, pour lister les jeux de données proposés par l'Insee :
-```{r, eval = FALSE}
-library(melodi)
 
-get_catalog()
+```{r, eval = FALSE}
+melodi::get_catalog()
 ```
 
 Pour récupérer toutes les données d'un jeu de données par son identifiant :
 ```{r, eval = FALSE}
-data <- get_all_data("DS_POPULATIONS_REFERENCE")
+data <- melodi::get_all_data("DS_POPULATIONS_REFERENCE")
 ```
 
 Pour filtrer un jeu de données par critère géographiques, par exemple pour obtenir les données de toutes les communes d'un EPCI :
 
 ```{r, eval = FALSE}
-my_local_data_by_com <- get_local_data_by_com(
+my_local_data_by_com <- melodi::get_local_data_by_com(
   ds_name = "DS_POPULATIONS_REFERENCE",
   geo = "244400404", # Nantes Métropole
   geo_object = "EPCI"
