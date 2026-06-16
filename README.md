@@ -25,8 +25,7 @@ disponible. Chaque fiche, disponible sur le site web, peut être imprimée
 avec une mise en page agréable grâce à un bouton dédié sur le site web.
 
 Les exemples sont construits sur des données ouvertes, disponibles sur www.insee.fr. 
-Le package [`doremifasolData`](https://github.com/InseeFrLab/DoReMIFaSolData) facilite
-l'import de ces données dans la documentation. Le modèle de document est
+Le modèle de document est
 encapsulé dans un *package* `R` dédié: https://github.com/InseeFrLab/utilitr-template 
 
 L'ensemble des ressources du projet `utilitR` sont disponibles sur https://www.utilitr.org
