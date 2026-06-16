@@ -213,19 +213,51 @@ la technologie *Direct Access*. Il ne fonctionne pas sur poste en télétravail 
 postes nomades Insee qui accèdent à internet par ce biais. En revanche il fonctionne sur site.
 :::
 
-Voici quelques utilisations possibles de ce _package_ :
 
-```{r, eval = FALSE}
+Comme spécifié dans le lisez-moi du package, la meilleure façon d'utiliser ce package est d'utiliser l'[explorateur de données de l'OCDE](https://data-explorer.oecd.org) pour parcourir les jeux de données disponibles et filtrer des jeux de données spécifiques.
 
-# Obtenir la liste des tables présentes sur le site :
-dsets <- OECD::get_datasets()
+Dans cet exemple, nous allons utiliser les données des *Comptes nationaux en bref*, Chapitre 1 : PIB.
 
-# Voir les métadonnées d'une table, via l'ouverture d'une page web (ici la table DUR_D) :
-browse_metadata("DUR_D")
+Après avoir filtré les données à l'aide de l'explorateur de données intégré, cliquez sur le bouton « API Développeur ».
 
-# Importer une table de données (ici la table DUR_D) :
-data <- OECD::get_dataset("DUR_D")
+Nous extrayons la première chaîne (représentant le jeu de données dans son ensemble) et la deuxième chaîne (représentant le filtre que nous avons appliqué) :
+
+```{r}
+dataset <- "OECD.SDD.NAD,DSD_NAAG@DF_NAAG_I,1.0"
+filter <- "A.USA+EU.B1GQ_R_POP+B1GQ_R_GR.USD_PPP_PS+PC."
 ```
+
+Nous utilisons ensuite la fonction `get_dataset` pour récupérer les données :
+
+```{r}
+df <- OECD::get_dataset(dataset, filter)
+head(df)
+```
+
+Nous sélectionnons les variables pertinentes :
+
+```{r}
+df <- df |>
+  subset(select = c(REF_AREA, MEASURE, UNIT_MEASURE, TIME_PERIOD, ObsValue)) |>
+  transform(
+    ObsValue = as.numeric(ObsValue),
+    TIME_PERIOD = as.numeric(TIME_PERIOD)
+  )
+
+names(df) <- tolower(names(df))
+
+head(df)
+```
+
+Les valeurs des variables `measure` et `unit_measure` ne sont pas immédiatement claires, nous récupérons donc un dictionnaire de données et l'intégrons au jeu de données.
+
+La fonction `get_data_structure` renvoie une liste de dataframes avec des valeurs lisibles pour les noms et les valeurs des variables. Le premier dataframe contient les noms des variables et affiche les dimensions d'un jeu de données :
+
+
+```{r}
+data_structure <- OECD::get_data_structure(dataset)
+```
+
 
 ## Utiliser une API sans _package_
 
