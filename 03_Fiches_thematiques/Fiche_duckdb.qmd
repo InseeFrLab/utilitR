@@ -156,7 +156,11 @@ __La fonction `duckdb_register()` permet de charger dans `duckdb` des données p
 
 ```{r}
 # Charger la Base permanente des équipements 2018 dans la session R
-bpe_ens_2018 <- doremifasolData::bpe_ens_2018 |> as_tibble()
+bpe_ens_2018 <- duckdb::sql_query("
+  INSTALL httpfs;
+  LOAD httpfs;
+  SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/bpe_ens_2018.parquet'
+") |> as_tibble()
 
 # Etablir le lien logique entre la base de données duckdb et la table de données
 conn_ddb %>% duckdb::duckdb_register(
@@ -228,7 +232,11 @@ Dans l'exemple suivant, on calcule le nombre d'équipements par région, à part
 __Manipulation d'un `tibble`__
 
 ```{r message=FALSE}
-doremifasolData::bpe_ens_2018 |>
+duckdb::sql_query("
+  INSTALL httpfs;
+  LOAD httpfs;
+  SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/bpe_ens_2018.parquet'
+") |>
   group_by(REG) |>
   summarise(
     NB_EQUIP_TOT = sum(NB_EQUIP)

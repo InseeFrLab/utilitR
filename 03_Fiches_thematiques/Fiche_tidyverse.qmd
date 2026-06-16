@@ -66,7 +66,11 @@ Les objets récupérés en sortie de `doremifasolData` sont tous des `data.frame
 
 ```{r}
 # Charger la base permanente des équipements
-bpe_ens_2018 <- doremifasolData::bpe_ens_2018
+bpe_ens_2018 <- duckdb::sql_query("
+  INSTALL httpfs;
+  LOAD httpfs;
+  SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/bpe_ens_2018.parquet'
+")
 # Convertir ce data.frame en tibble
 bpe_ens_2018_tbl <- as_tibble(bpe_ens_2018)
 ```

@@ -233,11 +233,7 @@ Partir de `dt`, créer une nouvelle variable `newvar` qui vaut 1 pour les observ
 
 ## Manipuler des tables de données avec `data.table`
 
-Nous allons illustrer les fonctions de manipulation de données de `data.table` avec les jeux de données du _package_ `doremifasolData`.
-
-```{r, echo = TRUE}
-library(doremifasolData)
-```
+Nous allons illustrer les fonctions de manipulation de données de `data.table`.
 
 ### Mettre des données dans un `data.table`
 
@@ -250,9 +246,13 @@ Dans la suite de cette section, on va illustrer les opérations de base en `data
 
 ```{r}
 # Charger la base permanente des équipements
-bpe_ens_2018 <- doremifasolData::bpe_ens_2018
+bpe_ens_2018 <- duckdb::sql_query("
+  INSTALL httpfs;
+  LOAD httpfs;
+  SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/bpe_ens_2018.parquet'
+")
 # Convertir ce data.frame en data.table
-bpe_ens_2018_dt <- as.data.table(bpe_ens_2018)
+bpe_ens_2018_dt <- data.table::as.data.table(bpe_ens_2018)
 ```
 
 ### Manipuler une seule table avec `data.table`
