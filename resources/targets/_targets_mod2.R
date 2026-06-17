@@ -13,7 +13,7 @@ readr::write_csv(filosofi_com_2016_dt <- data.table::as.data.table(
   duckdb::sql_query("
     INSTALL httpfs;
     LOAD httpfs;
-    SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/filosofi_com_2016.parquet'
+    SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/filosofi_com_2016.parquet'
   "), raw_file_path)
 
 list(
