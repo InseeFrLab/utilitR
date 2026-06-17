@@ -10,6 +10,7 @@ concurrency:
 
 jobs:
   build-preview:
+    if: github.event.action != 'closed' # If closing the PR, no publishing
     runs-on: ubuntu-latest
     permissions:
       contents: write  # For pushing to gh-pages branch
@@ -59,3 +60,30 @@ jobs:
               repo: context.repo.repo,
               body: `🔍 Preview deployed! View it here: [PR #${pr_number} Preview](${preview_url})`
             });
+
+# For this workflow only
+  delete-preview:
+    if: github.event.action == 'closed' # Only run when PR is closed
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0 # To enable full access to Git repo
+          ref: ${{ github.event.pull_request.head.ref }} # Reference of the commit to checkout to. To ensure it's the one of the PR
+          repository: ${{github.event.pull_request.head.repo.full_name}} # Reference to the branch to checkout to. Useful with PR from forks
+
+      - name: Remove preview
+        id: remove-preview
+        uses: rossjrw/pr-preview-action@v1.8.1
+        with:
+          action: remove
+          token: ${{ secrets.DEPLOY_GH_PAGES_TOKEN }}  # Uses a token to allow preview from forks
+
+      - name: Comment PR that preview was removed
+        uses: marocchino/sticky-pull-request-comment@v3
+        with:
+          header: pr-preview
+          message: |
+            Preview removed because the pull request was closed.
+            ${{ steps.remove-preview.outputs.action-start-time }}
