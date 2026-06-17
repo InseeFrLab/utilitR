@@ -10,10 +10,6 @@ L'utilisateur souhaite réaliser des graphiques (nuages de points, histogrammes,
 * Il est conseillé aux utilisateurs débutants d'utiliser l'*add-in* `esquisse` pour se familiariser avec `ggplot2`.
 :::
 
-::: {.callout-note}
-Certains exemples de cette fiche utilisent les données disponibles dans le _package_ `doremifasolData` ; vous ne pourrez reproduire ces exemples que si ce _package_ est installé sur la machine sur laquelle vous travaillez. Si vous ne savez pas si ce _package_ est déjà installé, consultez la fiche [Comment utiliser la documentation `utilitR`](#presentation-utilitr).
-:::
-
 
 ## Découvrir `ggplot2` avec l'_add-in_ `esquisse`
 
@@ -39,11 +35,14 @@ L'_add-in_ `esquisse` est disponible sous la forme d'un _package_, qu'il faut in
 install.packages("esquisse")
 ```
 
-Cette section illustre l'utilisation d'`esquisse` avec la table `data_iris_paris_2017` du _package_ `doremifasolData`, qui contient des données économiques et sociales sur les iris de la ville de Paris en 2017. Il faut donc charger ces données dans `R` :
+Cette section illustre l'utilisation d'`esquisse` avec la table `data_iris_paris_2017`, qui contient des données économiques et sociales sur les iris de la ville de Paris en 2017. Il faut donc charger ces données dans `R` :
 
 ```{r, message = FALSE}
-library(doremifasolData)
-data_iris_paris2017 <- doremifasolData::data_iris_paris_2017
+data_iris_paris2017 <- duckdb::sql_query("
+    INSTALL httpfs;
+    LOAD httpfs;
+    SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/data_iris_paris_2017.parquet'
+  ")
 ```
 
 Une fois qu'il est installé, vous pouvez accéder à cet _add-in_ en cliquant sur *'ggplot2' builder* dans le menu _Addins_ de  RStudio.
@@ -83,12 +82,15 @@ Une fois que le graphique est terminé, vous pouvez récupérer le code `ggplot2
 
 L'objectif du *package* `ggplot2` est de fournir une approche unique pour produire quasiment toute représentation graphique de données. Ce _package_ propose un grand nombre de fonctions permettant de personnaliser finement les représentations graphiques. Cette fiche n'est donc qu'une introduction succincte à `ggplot2`. Pour des formations plus détaillées, se référer à {#ggplot2Ressources}.
 
-Pour commencer, il faut charger le _package_ avec `library`. Cette fiche illustre l'utilisation de `ggplot2` avec la table `data_iris_paris_2017` du _package_ `doremifasolData`, qui contient des données économiques et sociales sur les iris de la ville de Paris en 2017.
+Pour commencer, il faut charger le _package_ avec `library`. Cette fiche illustre l'utilisation de `ggplot2` avec la table `data_iris_paris_2017` stockée sur le S3, qui contient des données économiques et sociales sur les iris de la ville de Paris en 2017.
 
 ```{r, message = FALSE}
 library(ggplot2)
-library(doremifasolData)
-data_iris_paris_2017 <- doremifasolData::data_iris_paris_2017
+data_iris_paris_2017 <- duckdb::sql_query("
+    INSTALL httpfs;
+    LOAD httpfs;
+    SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/data_iris_paris_2017.parquet'
+  ")
 ggplot2::theme_set(theme_minimal())
 ```
 
