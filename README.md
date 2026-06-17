@@ -4,7 +4,7 @@
 <!-- badges: start -->
 [![build-doc Actions Status](https://github.com/InseeFrLab/utilitR/workflows/Production%20de%20la%20documentation/badge.svg)](https://github.com/InseeFrLab/utilitR/actions)
 [![Docker Pulls](https://img.shields.io/docker/pulls/inseefrlab/utilitr)](https://hub.docker.com/repository/docker/inseefrlab/utilitr/general)
-[![SSPcloud](https://img.shields.io/badge/SSPcloud-Tester%20via%20SSP--cloud-informational?logo=R)](https://datalab.sspcloud.fr/launcher/ide/rstudio?autoLaunch=true&onyxia.friendlyName=«utilitr-tester»&init.personalInit=«https%3A%2F%2Fraw.githubusercontent.com%2FInseeFrLab%2FutilitR%2Fmaster%2Fresources%2Finit_9juin.sh»&service.image.version=«inseefrlab%2Futilitr%3Alatest»)
+[![SSPcloud](https://img.shields.io/badge/SSPcloud-Tester%20via%20SSP--cloud-informational?logo=R)](https://datalab.sspcloud.fr/launcher/ide/rstudio?name=rstudio%20utilitr&version=2.4.6&s3=default&init.personalInit=%C2%ABhttps%3A%2F%2Fraw.githubusercontent.com%2FInseeFrLab%2FutilitR%2Frefs%2Fheads%2Fmain%2Finit_utilitr.sh%C2%BB&kubernetes.role=%C2%ABadmin%C2%BB&git.repository=%C2%ABhttps%3A%2F%2Fgithub.com%2Finseefrlab%2Futilitr.git%C2%BB&networking.user.enabled=true&autoLaunch=false)
 <!-- badges: end -->
 
 <br>
@@ -30,7 +30,7 @@ encapsulé dans un *package* `R` dédié: https://github.com/InseeFrLab/utilitr-
 
 L'ensemble des ressources du projet `utilitR` sont disponibles sur https://www.utilitr.org
 
-Un environnement prêt à l'emploi est disponible pour les utilisateurs du `SSPCloud` en cliquant sur le [lien suivant](https://datalab.sspcloud.fr/launcher/ide/rstudio?autoLaunch=false&init.personalInit=%C2%ABhttps%3A%2F%2Fgithub.com%2FInseeFrLab%2FutilitR%2Fblob%2Fmaster%2Finit_utilitr.sh%C2%BB&service.image.custom.enabled=true&service.image.custom.version=%C2%ABinseefrlab%2Futilitr%3Alatest%C2%BB) [![SSPcloud](https://img.shields.io/badge/SSPcloud-Tester%20via%20SSP--cloud-informational?logo=R)](https://datalab.sspcloud.fr/launcher/ide/rstudio?autoLaunch=false&init.personalInit=%C2%ABhttps%3A%2F%2Fgithub.com%2FInseeFrLab%2FutilitR%2Fblob%2Fmaster%2Finit_utilitr.sh%C2%BB&service.image.custom.enabled=true&service.image.custom.version=%C2%ABinseefrlab%2Futilitr%3Alatest%C2%BB)
+Un environnement prêt à l'emploi est disponible pour les utilisateurs du `SSPCloud` en cliquant sur le [lien suivant](https://datalab.sspcloud.fr/launcher/ide/rstudio?name=rstudio%20utilitr&version=2.4.7&s3=default&init.personalInit=«https%3A%2F%2Fraw.githubusercontent.com%2FInseeFrLab%2FutilitR%2Frefs%2Fheads%2Fmain%2Finit_utilitr.sh»&kubernetes.role=«admin»&git.repository=«https%3A%2F%2Fgithub.com%2Finseefrlab%2Futilitr.git»&networking.user.enabled=true&autoLaunch=true) [![SSPcloud](https://img.shields.io/badge/SSPcloud-Tester%20via%20SSP--cloud-informational?logo=R)](https://datalab.sspcloud.fr/launcher/ide/rstudio?name=rstudio%20utilitr&version=2.4.7&s3=default&init.personalInit=«https%3A%2F%2Fraw.githubusercontent.com%2FInseeFrLab%2FutilitR%2Frefs%2Fheads%2Fmain%2Finit_utilitr.sh»&kubernetes.role=«admin»&git.repository=«https%3A%2F%2Fgithub.com%2Finseefrlab%2Futilitr.git»&networking.user.enabled=true&autoLaunch=true
 
 <br>
 
