@@ -9,7 +9,12 @@ source("mesfonctions_pour_faire_ceci.R", encoding = "utf-8")
 # on crée un fichier à partir d'un des jeux d'exemples
 raw_file_path <- "data/donnes_entrees.csv"
 dir.create("data")
-readr::write_csv(doremifasolData::filosofi_com_2016, raw_file_path)
+filosofi_com_2016 <- duckdb::sql_query("
+  INSTALL httpfs;
+  LOAD httpfs;
+  SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/filosofi_com_2016.parquet'
+")
+readr::write_csv(filosofi_com_2016, raw_file_path)
 
 list(
   
