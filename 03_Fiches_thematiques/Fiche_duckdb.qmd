@@ -228,6 +228,43 @@ conn_ddb %>% tbl('bpe_ens_2018_dataset/**/*.parquet')
 
  __Cette approche établit une connexion aux données contenues dans le dataset Parquet, mais elle ne charge pas les données en mémoire__ (ni dans la mémoire de `R`, ni dans celle de `DuckDB`). 
 
+#### Chargement de données provenant du stockage S3 (LS3 / SSPCloud)
+
+De plus en plus de statisticiens utilisent la plateforme de datascience Onyxia, dont le SSPCloud et LS3 en sont des instances.
+Le chargement des données sur la base `duckdb` peut être plus complexe à réaliser, notamment car un lien doit être fait entre la base de données et le service s3.
+
+Pour cela, une table `secret` doit être créée dans la base de données avec tous les credentials nécessaires à la connexion au service S3, afin que `duckdb` puisse établir cette connexion :
+
+```{r, eval = FALSE}
+
+DBI::dbExecute(con, sprintf("
+  CREATE SECRET my_s3_secret (
+    TYPE S3,
+    KEY_ID '%s',
+    SECRET '%s',
+    ENDPOINT '%s',
+    SESSION_TOKEN '%s',
+    REGION 'us-east-1',
+    URL_STYLE 'path'
+  )",
+  Sys.getenv("AWS_ACCESS_KEY_ID"),
+  Sys.getenv("AWS_SECRET_ACCESS_KEY"),
+  Sys.getenv("AWS_S3_ENDPOINT"),
+  Sys.getenv("AWS_SESSION_TOKEN")
+))
+
+```
+Toutes ces variables sont déjà définies dans le service Rstudio / VScode ouvert, il n'y a donc pas besoin de les redéfinir.
+
+Une fois cette table de secret créée, il suffit de lancer la requête SQL avec `dbExecute()`, en ajoutant le chemin vers les données stockées dans le S3 :
+
+```{r, eval=FALSE}
+bpe_ens_2018_s3 <- DBI::dbGetQuery(con, glue::glue(
+        " SELECT *
+          FROM read_parquet('s3://{BUCKET}/XXX.parquet')
+        ")
+    )
+```
 
 ### Manipulation des données avec la syntaxe `dplyr`
 
@@ -434,6 +471,86 @@ req <- duckplyr::as_duckdb_tibble(source_data) |>
 ## Utilisation du package `arrow` pour l'export de fichier parquet
 Même si le package `arrow` peut sembler plus simple à utiliser que SQL pour certaines manipulations `dplyr`, il est préférable de rester avec `duckdb` pour limiter les dépendances et garder une approche cohérente. 
 :::
+
+### Exemple minimal d'utilisation de duckdb dans un projet
+
+```{r, eval=FALSE}
+library(duckdb)
+library(dplyr)
+
+con <- DBI::dbConnect(drv = duckdb::duckdb())
+
+# Chargement des données
+
+## 1 - Directement dans la session R, puis dans la base duckdb
+bpe_ens_2018 <- doremifasolData::bpe_ens_2018 |> as_tibble()
+con %>% duckdb::duckdb_register(
+  name = "bpe_ens_2018_duckdb", 
+  df = bpe_ens_2018)
+
+## 2 - Depuis un fichier stocké sur le disque dur (ou dans un service)
+bpe_ens_2018_dataset <- conn_ddb %>% tbl("read_parquet('XXX.parquet')")
+
+## 3 - Depuis un fichier stocké sur le S3 
+# création de la table des secrets
+DBI::dbExecute(con, sprintf("
+  CREATE SECRET my_s3_secret (
+    TYPE S3,
+    KEY_ID '%s',
+    SECRET '%s',
+    ENDPOINT '%s',
+    SESSION_TOKEN '%s',
+    REGION 'us-east-1',
+    URL_STYLE 'path'
+  )",
+  Sys.getenv("AWS_ACCESS_KEY_ID"),
+  Sys.getenv("AWS_SECRET_ACCESS_KEY"),
+  Sys.getenv("AWS_S3_ENDPOINT"),
+  Sys.getenv("AWS_SESSION_TOKEN")
+))
+
+bpe_ens_2018_s3 <- DBI::dbGetQuery(con, glue::glue(
+        " SELECT *
+          FROM read_parquet('s3://{BUCKET}/XXX.parquet')
+        ")
+    )
+
+# Manipulation de données (table duckdb)
+
+## 1 - avec SQL
+
+### a - Créer une View
+DBI::dbExecute(conn_ddb, "
+  CREATE VIEW bpe_ens_2018_view AS 
+  SELECT REG, SUM(NB_EQUIP) AS NB_EQUIP_TOT 
+  FROM bpe_ens_2018_duckdb 
+  GROUP BY REG")
+
+### b - Créer une table duckdb
+DBI::dbExecute(conn_ddb, "
+  CREATE TABLE bpe_ens_2018_table AS 
+  SELECT REG, SUM(NB_EQUIP) AS NB_EQUIP_TOT 
+  FROM bpe_ens_2018_duckdb 
+  GROUP BY REG") # Utilise de la mémoire
+
+## 2 - avec dplyr
+bpe_ens_2018_dataset |>
+  group_by(REG) |>
+  summarise(
+    NB_EQUIP_TOT = sum(NB_EQUIP)
+  ) |>
+  collect() # permet de passer une table duckdb en tibble sur la session R
+
+# Export dans un fichier parquet
+dir.create("temp_dataset", showWarnings = FALSE) # Création d'un répertoire pour l'export du fichier parquet
+
+duckdb::duckdb_register(con, "bpe_ens_2018_temp", bpe_ens_2018) # ajouter l'objet R dans la base duckDB
+DBI::dbExecute(con, "COPY bpe_ens_2018_temp TO 'temp_dataset/bpe_ens_2018.parquet' (FORMAT PARQUET)")
+
+
+DBI::dbDisconnect(con, shutdown = TRUE)
+
+```
 
 ## Bien utiliser `duckdb` avec l'évaluation différée {#sec-lazy}
 
