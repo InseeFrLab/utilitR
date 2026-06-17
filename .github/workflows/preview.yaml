@@ -53,18 +53,14 @@ jobs:
           destination_dir: previews/pr-${{ github.event.pull_request.number }}
           keep_files: true
 
-      - name: Comment PR with preview link
-        uses: actions/github-script@v7
+      - name: Comment PR (custom)
+        uses: marocchino/sticky-pull-request-comment@v3
         with:
-          script: |
-            const pr_number = context.issue.number;
-            const preview_url = `https://${{ github.repository_owner }}.github.io/utilitR/previews/pr-${pr_number}/`;
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `🔍 Preview deployed! View it here: [PR #${pr_number} Preview](${preview_url})`
-            });
+          header: pr-preview
+          message: |
+            :rocket: View preview at <br> ${{ steps.deploy-preview.outputs.preview-url }} <br>
+            <h6>Built to branch <a href="${{ github.server_url }}/${{ github.repository }}/tree/gh-pages"> gh-pages </a> at ${{ steps.deploy-preview.outputs.action-start-time }}. <br> Preview will be ready when the <a href="${{ github.server_url }}/${{ github.repository }}/deployments">GitHub Pages deployment</a> is complete. <br> </h6>
+  
 
 # For this workflow only
   delete-preview:
