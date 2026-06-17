@@ -12,9 +12,6 @@ L'utilisateur souhaite manipuler des données structurées sous forme de `data.f
 * Pour des tables de données de grande taille (plus de 1 Go ou plus d'un million d'observations), il est recommandé d'utiliser soit le _package_ `data.table` présenté dans la fiche [Manipuler des données avec `data.table`](#datatable), soit les _packages_ `arrow` et `duckdb` présentés dans les fiches [Manipuler des données avec `arrow`](#arrow) et [Manipuler des données avec `duckdb`](#duckdb).
 :::
 
-::: {.callout-note}
-Certains exemples de cette fiche utilisent les données disponibles dans le _package_ `doremifasolData` ; vous ne pourrez reproduire ces exemples que si ce _package_ est installé sur la machine sur laquelle vous travaillez. Si vous ne savez pas si ce _package_ est déjà installé, consultez la fiche [Comment utiliser la documentation `utilitR`](#presentation-utilitr).
-:::
 
 ## Présentation des _packages_ `dplyr`, `tidyr` et `tibble`
 
@@ -51,13 +48,10 @@ options(dplyr.print_min  = 6)
 options(dplyr.print_max  = 6)
 ```
 
-Les exemples de cette fiche s’appuient sur les données disponibles dans le *package* `doremifasolData`. On utilise en premier lieu la base permanente des équipements 2018.
+Les exemples de cette fiche s’appuient sur les données disponibles sur S3 et provenant du *package* `doremifasolData`. On utilise en premier lieu la base permanente des équipements 2018.
 
-```{r}
-library(doremifasolData)
-```
 
-Les objets récupérés en sortie de `doremifasolData` sont tous des `data.frame`, bien que le _package_ s'appuie sur des fonctions issues de `tidyverse`. Il est donc nécessaire de les convertir en `tibble` avec la fonction `as_tibble` du *package* `tibble`.
+Les objets récupérés en sortie de S3 et provenant  `doremifasolData` sont tous des `data.frame`, bien que le _package_ s'appuie sur des fonctions issues de `tidyverse`. Il est donc nécessaire de les convertir en `tibble` avec la fonction `as_tibble` du *package* `tibble`.
 
 ### Le `tibble` : un `data.frame` amélioré
 
@@ -434,8 +428,19 @@ Il est préférable d'utiliser ces fonctions sur des objets `tibble` plutôt que
 
 ```{r, message = FALSE, warning = FALSE}
 library(dplyr)
-filosofi_com_2016_tbl <- as_tibble(doremifasolData::filosofi_com_2016)
-cog_com_2019_tbl <- as_tibble(doremifasolData::cog_com_2019)
+filosofi_com_2016_tbl <- as_tibble(filosofi_com_2016_dt <- data.table::as.data.table(
+  duckdb::sql_query("
+    INSTALL httpfs;
+    LOAD httpfs;
+    SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/filosofi_com_2016.parquet'
+  ")
+  )
+cog_com_2019_tbl <- as_tibble(filosofi_com_2016_dt <- data.table::as.data.table(
+  duckdb::sql_query("
+    INSTALL httpfs;
+    LOAD httpfs;
+    SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/cog_com_2019.parquet'
+  "))
 ```
 
 Voici un exemple dans lequel on utilise la fonction `left_join` pour réaliser une jointure à gauche entre la table des données Filosofi et la table des communes du COG.
@@ -509,7 +514,11 @@ La fonction `separate_wider_position` attend ensuite l'argument `widths` sous la
 Voici un exemple qui utilise la table des communes du Code Officiel Géographique. Dans cette table, la colonne `com` (code commune Insee) contient deux informations : le numéro du département et le numéro de la commune.
 
 ```{r}
-cog_com_2019_tbl <- doremifasolData::cog_com_2019 %>% as_tibble()
+cog_com_2019_tbl <- duckdb::sql_query("
+    INSTALL httpfs;
+    LOAD httpfs;
+    SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/cog_com_2019.parquet'
+  ") %>% as_tibble()
 cog_com_2019_tbl
 ```
 
@@ -612,9 +621,16 @@ Une table de données stocke des informations sous forme de lignes et de colonne
 ![Transformation *long to wide*](../pics/datatable/longtowide.png)
 
 
-Pour illustrer ces transformations, nous allons utiliser les données du répertoire Filosofi 2016 agrégées au niveau des EPCI (table `filosofi_epci_2016`), et disponibles dans le _package_ `doremifasolData`. On convertit cette table en `tibble` et on conserve uniquement certaines variables grâce à la fonction `select`.
+Pour illustrer ces transformations, nous allons utiliser les données du répertoire Filosofi 2016 agrégées au niveau des EPCI (table `filosofi_epci_2016`), et disponibles sur le S3 du SSPCloud. On convertit cette table en `tibble` et on conserve uniquement certaines variables grâce à la fonction `select`.
 
 ```{r}
+
+filosofi_epci_2016 <- duckdb::sql_query("
+    INSTALL httpfs;
+    LOAD httpfs;
+    SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/filosofi_epci_2016.parquet'
+  ")
+
 filosofi_epci_2016_tbl <- as_tibble(filosofi_epci_2016) %>% 
   select(CODGEO, TP6016, TP60AGE116, TP60AGE216,
          TP60AGE316, TP60AGE416, TP60AGE516, TP60AGE616)
