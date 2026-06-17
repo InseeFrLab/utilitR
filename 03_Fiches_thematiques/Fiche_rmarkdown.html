@@ -761,19 +761,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 </div>
 </div>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Certains exemples de cette fiche utilisent les données disponibles dans le <em>package</em> <code>doremifasolData</code> ; vous ne pourrez reproduire ces exemples que si ce <em>package</em> est installé sur la machine sur laquelle vous travaillez. Si vous ne savez pas si ce <em>package</em> est déjà installé, consultez la fiche <a href="../01_R_Insee/Fiche_utiliser_utilitR.html">Comment utiliser la documentation <code>utilitR</code></a>.</p>
-</div>
-</div>
 </section><section id="présentation-générale-de-r-markdown" class="level2" data-number="29.2"><h2 data-number="29.2" class="anchored" data-anchor-id="présentation-générale-de-r-markdown">
 <span class="header-section-number">29.2</span> Présentation générale de <code>R Markdown</code>
 </h2>
@@ -935,7 +922,7 @@ Tip
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="pp">--- </span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">title </span><span class="kw">:</span><span class="at"> </span><span class="st">"Produire des documents avec R Markdown"</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">author </span><span class="kw">:</span><span class="at"> </span><span class="st">"Daffy Duck"</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">date </span><span class="kw">:</span><span class="at"> </span><span class="st">"2026-06-16"</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">date </span><span class="kw">:</span><span class="at"> </span><span class="st">"2026-06-17"</span></span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">output </span><span class="kw">:</span><span class="at"> </span></span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">html_document </span><span class="kw">:</span></span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">keep_md </span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
@@ -1275,12 +1262,15 @@ autopromo tablelight en footnote ? :)
 </section><section id="une-table-basique-en-r-markdown" class="level3" data-number="29.5.2"><h3 data-number="29.5.2" class="anchored" data-anchor-id="une-table-basique-en-r-markdown">
 <span class="header-section-number">29.5.2</span> Une table basique en <code>R Markdown</code>
 </h3>
-<p>Supposons, par exemple, qu’on désire faire la liste de toutes les communes dont le libellé contient “Montreuil-sur”. On commence par récupérer les données du Code officiel géographique 2019, disponibles dans le <em>package</em> <code>doremifasolData</code>. On utilise ensuite le <em>package</em> <code>stringr</code> pour repérer les communes dont le libellé contient “Montreuil-sur” (l’usage de ce package est détaillé dans la fiche [Manipuler des données textuelles]).</p>
+<p>Supposons, par exemple, qu’on désire faire la liste de toutes les communes dont le libellé contient “Montreuil-sur”. On commence par récupérer les données du Code officiel géographique 2019, disponibles sur le S3 du SSPCloud (et provenant du package <code>DoremifasolData</code>). On utilise ensuite le package <code>stringr</code> pour repérer les communes dont le libellé contient “Montreuil-sur” (l’usage de ce package est détaillé dans la fiche [Manipuler des données textuelles]).</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData">doremifasolData</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://stringr.tidyverse.org">stringr</a></span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://stringr.tidyverse.org">stringr</a></span><span class="op">)</span></span>
 <span><span class="co"># Charger les données du COG</span></span>
-<span><span class="va">cog_com_2019</span> <span class="op">&lt;-</span> <span class="fu">doremifasolData</span><span class="fu">::</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData/reference/cog_com_2019.html">cog_com_2019</a></span></span>
+<span><span class="va">cog_com_2019</span> <span class="op">&lt;-</span> <span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://r.duckdb.org/reference/sql_query.html">sql_query</a></span><span class="op">(</span><span class="st">"</span></span>
+<span><span class="st">  INSTALL httpfs;</span></span>
+<span><span class="st">  LOAD httpfs;</span></span>
+<span><span class="st">  SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/cog_com_2019.parquet'</span></span>
+<span><span class="st">"</span><span class="op">)</span></span>
 <span><span class="va">montreuil</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="va">cog_com_2019</span><span class="op">[</span><span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_detect.html">str_detect</a></span><span class="op">(</span><span class="va">cog_com_2019</span><span class="op">$</span><span class="va">libelle</span>, <span class="st">"Montreuil-sur"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"libelle"</span>,<span class="st">"com"</span><span class="op">)</span><span class="op">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -1327,11 +1317,14 @@ autopromo tablelight en footnote ? :)
 <code><a href="https://rdrr.io/pkg/knitr/man/include_graphics.html">knitr::include_graphics</a></code> permet, en conjonction d’options de blocs, d’aller plus loin.</li>
 </ol></section><section id="sans-passer-par-un-fichier-image" class="level3" data-number="29.7.2"><h3 data-number="29.7.2" class="anchored" data-anchor-id="sans-passer-par-un-fichier-image">
 <span class="header-section-number">29.7.2</span> Sans passer par un fichier image</h3>
-<p><code>R Markdown</code> présente l’avantage de pouvoir créer un document sans générer de sorties intermédiaires (tableaux, graphiques…). Si un bloc de code propose d’inséer un graphique dans le document final, le graphique sera automatiquement et directement intégré au document. Par exemple, le bloc suivant permet de représenter l’histogramme des populations communales (avec une échelle logarithmique) à partir des données Filosofi agrégées, disponibles dans le <em>package</em> <code>doremifasolData</code>.</p>
+<p><code>R Markdown</code> présente l’avantage de pouvoir créer un document sans générer de sorties intermédiaires (tableaux, graphiques…). Si un bloc de code propose d’inséer un graphique dans le document final, le graphique sera automatiquement et directement intégré au document. Par exemple, le bloc suivant permet de représenter l’histogramme des populations communales (avec une échelle logarithmique) à partir des données Filosofi agrégées, disponibles sur le S3 du SSPCloud.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData">doremifasolData</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span></span>
-<span><span class="va">filosofi_com_2016</span> <span class="op">&lt;-</span> <span class="fu">doremifasolData</span><span class="fu">::</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData/reference/filosofi_com_2016.html">filosofi_com_2016</a></span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span></span>
+<span><span class="va">filosofi_com_2016</span> <span class="op">&lt;-</span> <span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://r.duckdb.org/reference/sql_query.html">sql_query</a></span><span class="op">(</span><span class="st">"</span></span>
+<span><span class="st">    INSTALL httpfs;</span></span>
+<span><span class="st">    LOAD httpfs;</span></span>
+<span><span class="st">    SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/filosofi_com_2016.parquet'</span></span>
+<span><span class="st">  "</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">filosofi_com_2016</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html">geom_histogram</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">NBPERSMENFISC16</span>, y <span class="op">=</span> <span class="va">..density..</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span><span class="op">(</span><span class="st">"Nombre de personnes"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span><span class="op">(</span><span class="st">"Densité"</span><span class="op">)</span> <span class="op">+</span></span>

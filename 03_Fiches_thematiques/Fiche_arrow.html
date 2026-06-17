@@ -852,10 +852,18 @@ Illustration de ce principe
 <p>Par rapport à un <code>data.frame</code> standard ou à un <code>tibble</code>, le <code>Arrow Table</code> se distingue immédiatement sur trois points. Pour illustrer ces différences, on utilise la base permanente des équipements 2018 (table <code>bpe_ens_2018</code>), transformée en <code>tibble</code> d’une part, et en <code>Arrow Table</code> d’autre part.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Charger les données et les convertir en tibble</span></span>
-<span><span class="va">bpe_ens_2018_tbl</span>   <span class="op">&lt;-</span> <span class="fu">doremifasolData</span><span class="fu">::</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData/reference/bpe_ens_2018.html">bpe_ens_2018</a></span> <span class="op">|&gt;</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">bpe_ens_2018_tbl</span>   <span class="op">&lt;-</span> <span class="va">bpe_ens_2018</span> <span class="op">&lt;-</span> <span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://r.duckdb.org/reference/sql_query.html">sql_query</a></span><span class="op">(</span><span class="st">"</span></span>
+<span><span class="st">  INSTALL httpfs;</span></span>
+<span><span class="st">  LOAD httpfs;</span></span>
+<span><span class="st">  SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/bpe_ens_2018.parquet'</span></span>
+<span><span class="st">"</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Charger les données et les convertir en Arrow Table</span></span>
-<span><span class="va">bpe_ens_2018_arrow</span> <span class="op">&lt;-</span> <span class="fu">doremifasolData</span><span class="fu">::</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData/reference/bpe_ens_2018.html">bpe_ens_2018</a></span> <span class="op">|&gt;</span> <span class="fu"><a href="https://arrow.apache.org/docs/r/reference/as_arrow_table.html">as_arrow_table</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span><span class="va">bpe_ens_2018_arrow</span> <span class="op">&lt;-</span> <span class="va">bpe_ens_2018</span> <span class="op">&lt;-</span> <span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://r.duckdb.org/reference/sql_query.html">sql_query</a></span><span class="op">(</span><span class="st">"</span></span>
+<span><span class="st">  INSTALL httpfs;</span></span>
+<span><span class="st">  LOAD httpfs;</span></span>
+<span><span class="st">  SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/bpe_ens_2018.parquet'</span></span>
+<span><span class="st">"</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://arrow.apache.org/docs/r/reference/as_arrow_table.html">as_arrow_table</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Première différence: alors que les <code>data.frames</code> et les <code>tibbles</code> apparaissent dans la rubrique <code>Data</code> de l’environnement <code>RStudio</code> (cadre rouge dans la capture d’écran), les objets <code>Arrow Table</code> apparaissent dans la rubrique <code>Values</code> (cadre blanc).</p>
 <p><img src="../pics/arrow/diff_environnement.png" class="img-fluid"></p>

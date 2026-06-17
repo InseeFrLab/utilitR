@@ -802,32 +802,39 @@ Tip
 </h2>
 <p><strong>Afin de se rapprocher le plus possible des situations de travail rencontrées par les agents de l’Insee, la plupart des exemples de la documentation <code>utilitR</code> reposent sur des données produites par l’Insee.</strong> Ces données sont soit directement disponibles sur le site de l’Insee, soit construites à partir de données disponibles sur le site de l’Insee.</p>
 <p>Ces jeux de données sont mis à disposition par l’intermédiaire d’un <em>package</em> nommé <code>doremifasolData</code> développé par les contributeurs du projet <code>utilitR</code>. La documentation détaillée de ce <em>package</em> est disponible <a href="https://inseefrlab.github.io/DoReMIFaSolData/">sur GitHub</a>.</p>
-<p>Voici la liste des tables disponibles dans <code>doremifasolData</code> :</p>
+<p>Comme les bonnes pratiques sont de stocker le code sur Git et les données sur un serveur de stockage (S3 pour le SSPCloud et LS3), les tables de sortie du package <code>doremifasolData</code> ont aussi été stockées sur un serveur S3 du SSPCloud à l’adresse https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/ au format <code>.parquet</code>.</p>
+<p>Voici la liste des tables disponibles dans <code>doremifasolData</code> et stockées sur le S3 du SSPCloud :</p>
 <table class="caption-top table">
 <thead><tr class="header">
-<th data-quarto-table-cell-role="th" style="text-align: center; font-weight: bold;">Table</th>
-<th data-quarto-table-cell-role="th" style="text-align: left; font-weight: bold;">Description</th>
+<th>Table</th>
+<th>Description</th>
+<th>Chemin S3</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: center; width: 4cm;">bpe_ens_2018</td>
-<td style="text-align: left; width: 13cm;">Base Permanente des Équipements 2018</td>
+<td>bpe_ens_2018</td>
+<td>Base Permanente des Équipements 2018</td>
+<td><a href="https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/bpe_ens_2018.parquet">s3/projet-formation/diffusion/utilitR/doremifasoldata/bpe_ens_2018.parquet</a></td>
 </tr>
 <tr class="even">
-<td style="text-align: center; width: 4cm;">cog_com_2019</td>
-<td style="text-align: left; width: 13cm;">Code Officiel Géographique 2019</td>
+<td>cog_com_2019</td>
+<td>Code Officiel Géographique 2019</td>
+<td><a href="https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/cog_com_2019.parquet">s3/projet-formation/diffusion/utilitR/doremifasoldata/cog_com_2019.parquet</a></td>
 </tr>
 <tr class="odd">
-<td style="text-align: center; width: 4cm;">data_iris_paris_2017</td>
-<td style="text-align: left; width: 13cm;">Données sociales sur les IRIS de Paris 2017</td>
+<td>data_iris_paris_2017</td>
+<td>Données sociales sur les IRIS de Paris 2017</td>
+<td><a href="https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/data_iris_paris_2017.parquet">s3/projet-formation/diffusion/utilitR/doremifasoldata/data_iris_paris_2017.parquet</a></td>
 </tr>
 <tr class="even">
-<td style="text-align: center; width: 4cm;">filosofi_com_2016</td>
-<td style="text-align: left; width: 13cm;">Données sur les revenus et la pauvreté en 2016, niveau communal</td>
+<td>filosofi_com_2016</td>
+<td>Données sur les revenus et la pauvreté en 2016, niveau communal</td>
+<td><a href="https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/filosofi_com_2016.parquet">s3/projet-formation/diffusion/utilitR/doremifasoldata/filosofi_com_2016.parquet</a></td>
 </tr>
 <tr class="odd">
-<td style="text-align: center; width: 4cm;">filosofi_epci_2016</td>
-<td style="text-align: left; width: 13cm;">Données sur les revenus et la pauvreté en 2016, niveau EPCI</td>
+<td>filosofi_epci_2016</td>
+<td>Données sur les revenus et la pauvreté en 2016, niveau EPCI</td>
+<td><a href="https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/filosofi_epci_2016.parquet">s3/projet-formation/diffusion/utilitR/doremifasoldata/filosofi_epci_2016.parquet</a></td>
 </tr>
 </tbody>
 </table>
@@ -847,9 +854,18 @@ Note
 <section id="comment-installer-le-package-doremifasoldata" class="level3" data-number="3.5.1"><h3 data-number="3.5.1" class="anchored" data-anchor-id="comment-installer-le-package-doremifasoldata">
 <span class="header-section-number">3.5.1</span> Comment installer le <em>package</em> <code>doremifasolData</code>
 </h3>
-<p>Le <em>package</em> <code>doremifasolData</code> n’est pas disponible sur le répertoire central des <em>packages</em> <code>R</code> (le CRAN). Pour installer installer le <em>package</em>, il est nécessaire d’exécuter les deux commandes suivantes :</p>
+<p>Vous n’avez pas besoin d’installer le <em>package</em> <code>doremifasolData</code>. Le code va directement télécharger les données depuis le S3 du SSPCloud avec une requête SQL de la forme :</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://r.duckdb.org/reference/sql_query.html">sql_query</a></span><span class="op">(</span><span class="st">"</span></span>
+<span><span class="st">  INSTALL httpfs;</span></span>
+<span><span class="st">  LOAD httpfs;</span></span>
+<span><span class="st">  SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/cog_com_2019.parquet'</span></span>
+<span><span class="st">"</span><span class="op">)</span>  <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice_head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Cependant, si vous voulez utiliser le <em>package</em> <code>doremifasolData</code>, il n’est pas disponible sur le répertoire central des <em>packages</em> <code>R</code> (le CRAN). Pour installer installer le <em>package</em>, il est nécessaire d’exécuter les deux commandes suivantes :</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"InseeFrLab/doremifasolData"</span>, ref <span class="op">=</span> <span class="st">"main"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="callout callout-style-default callout-warning callout-titled">
@@ -862,9 +878,9 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Si vous utilisez <code>R</code> sur un poste Insee (y compris en télétravail) ou dans l’environnement de travail AUS, il faut exécuter la commande suivante :</p>
+<p>Si vous utilisez <code>R</code> sur un poste Insee (y compris en télétravail) ou dans l’environnement de travail AUS, les données du SSPCloud ne sont pas accessibles. Il faut alors utiliser directement le package <code>doremifasolData</code> pour accéder aux données. Pour installer le <em>package</em> <code>doremifasolData</code>, il est nécessaire d’exécuter la commande suivante :</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span></span>
 <span>  <span class="st">"doremifasolData"</span>, </span>
 <span>  repos <span class="op">=</span> <span class="st">"https://nexus.insee.fr/repository/r-public"</span>,</span>
 <span>  type <span class="op">=</span> <span class="st">"source"</span></span>

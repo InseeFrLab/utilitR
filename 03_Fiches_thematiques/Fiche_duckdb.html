@@ -935,7 +935,11 @@ Note
 <p><strong>La fonction <code><a href="https://r.duckdb.org/reference/duckdb_register.html">duckdb_register()</a></code> permet de charger dans <code>duckdb</code> des données présentes dans la session <code>R</code>.</strong> Cette méthode a l’avantage de ne pas <em>recopier</em> les données: elle se contente d’établir un lien logique entre la base de données <code>duckdb</code> et un objet de la session <code>R</code>. Voici un exemple avec la Base permanente des équipements: grâce à la fonction <code><a href="https://r.duckdb.org/reference/duckdb_register.html">duckdb::duckdb_register()</a></code>, l’objet <code>bpe_ens_2018</code> est référencé dans la base de données <code>duckdb</code> sous le nom <code>bpe_ens_2018_duckdb</code>.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Charger la Base permanente des équipements 2018 dans la session R</span></span>
-<span><span class="va">bpe_ens_2018</span> <span class="op">&lt;-</span> <span class="fu">doremifasolData</span><span class="fu">::</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData/reference/bpe_ens_2018.html">bpe_ens_2018</a></span> <span class="op">|&gt;</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">bpe_ens_2018</span> <span class="op">&lt;-</span> <span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://r.duckdb.org/reference/sql_query.html">sql_query</a></span><span class="op">(</span><span class="st">"</span></span>
+<span><span class="st">  INSTALL httpfs;</span></span>
+<span><span class="st">  LOAD httpfs;</span></span>
+<span><span class="st">  SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/bpe_ens_2018.parquet'</span></span>
+<span><span class="st">"</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Etablir le lien logique entre la base de données duckdb et la table de données</span></span>
 <span><span class="va">conn_ddb</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://r.duckdb.org/reference/duckdb_register.html">duckdb_register</a></span><span class="op">(</span></span>
@@ -1057,7 +1061,11 @@ Note
 <div class="column" style="width:49%;">
 <p><strong>Manipulation d’un <code>tibble</code></strong></p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">doremifasolData</span><span class="fu">::</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData/reference/bpe_ens_2018.html">bpe_ens_2018</a></span> <span class="op">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://r.duckdb.org/reference/sql_query.html">sql_query</a></span><span class="op">(</span><span class="st">"</span></span>
+<span><span class="st">  INSTALL httpfs;</span></span>
+<span><span class="st">  LOAD httpfs;</span></span>
+<span><span class="st">  SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/bpe_ens_2018.parquet'</span></span>
+<span><span class="st">"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">REG</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
 <span>    NB_EQUIP_TOT <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span><span class="op">)</span></span>
@@ -1106,24 +1114,24 @@ This warning is displayed once every 8 hours.</code></pre>
 <pre><code># A tibble: 18 × 2
    REG   NB_EQUIP_TOT
    &lt;chr&gt;        &lt;dbl&gt;
- 1 44          181130
- 2 76          256813
- 3 03            7852
- 4 93          254405
- 5 01           23939
- 6 28          107186
- 7 02           19068
- 8 32          175859
- 9 84          303775
-10 11          469181
-11 04           30767
-12 06            7353
-13 94           21778
-14 27           96309
-15 24           81379
-16 53          111291
-17 75          237008
-18 52          119689</code></pre>
+ 1 32          175859
+ 2 93          254405
+ 3 28          107186
+ 4 02           19068
+ 5 84          303775
+ 6 94           21778
+ 7 11          469181
+ 8 04           30767
+ 9 06            7353
+10 53          111291
+11 75          237008
+12 52          119689
+13 27           96309
+14 24           81379
+15 01           23939
+16 76          256813
+17 44          181130
+18 03            7852</code></pre>
 </div>
 </div>
 </div>
@@ -1222,16 +1230,16 @@ LINE 1: SELECT DEP, SUM(NB_EQUIP * (TYPEQU = 'B203')) AS nb_boulangeries
 # Database: DuckDB 1.5.2 [unknown@Linux 6.17.0-1018-azure:R 4.6.0/:memory:]
    DEP   nb_boulangeries
    &lt;chr&gt;           &lt;dbl&gt;
- 1 55                157
- 2 56                640
- 3 87                230
- 4 03                299
- 5 21                357
- 6 34               1016
- 7 972               370
- 8 976               101
- 9 23                107
-10 38                838
+ 1 15                143
+ 2 22                460
+ 3 63                525
+ 4 75               2032
+ 5 86                310
+ 6 13               1626
+ 7 23                107
+ 8 38                838
+ 9 64                543
+10 72                396
 # ℹ more rows</code></pre>
 </div>
 </div>
@@ -1531,24 +1539,24 @@ Note
 # Database: DuckDB 1.5.2 [unknown@Linux 6.17.0-1018-azure:R 4.6.0/:memory:]
    REG   NB_EQUIP_TOT
    &lt;chr&gt;        &lt;dbl&gt;
- 1 32          175859
- 2 11          469181
- 3 04           30767
- 4 06            7353
- 5 84          303775
- 6 94           21778
- 7 03            7852
- 8 44          181130
- 9 76          256813
-10 02           19068
-11 28          107186
-12 75          237008
-13 53          111291
-14 52          119689
-15 01           23939
-16 93          254405
-17 24           81379
-18 27           96309</code></pre>
+ 1 75          237008
+ 2 53          111291
+ 3 52          119689
+ 4 11          469181
+ 5 04           30767
+ 6 06            7353
+ 7 84          303775
+ 8 94           21778
+ 9 32          175859
+10 01           23939
+11 03            7852
+12 44          181130
+13 76          256813
+14 24           81379
+15 27           96309
+16 02           19068
+17 28          107186
+18 93          254405</code></pre>
 </div>
 </div>
 <p>Vous pouvez bien sûr lire des fichiers <code>Parquet</code>, <code>CSV</code> ou autres en utilisant les <a href="https://duckdb.org/docs/data/overview">fonctions de duckdb</a> :</p>
@@ -1770,16 +1778,16 @@ Or set PRAGMA temp_directory='/path/to/tmp.tmp'</code></pre>
 # Groups:   DEP
    DEP   NB_EQUIP NB_EQUIP_TOTAL_DEP
    &lt;chr&gt;    &lt;dbl&gt;              &lt;dbl&gt;
- 1 01           2              21394
- 2 01           4              21394
- 3 01           1              21394
- 4 01           1              21394
- 5 01           1              21394
- 6 01           1              21394
- 7 01           1              21394
- 8 01           1              21394
- 9 01           1              21394
-10 01           1              21394
+ 1 16           2              12151
+ 2 16           2              12151
+ 3 16           9              12151
+ 4 16           1              12151
+ 5 16           3              12151
+ 6 16           3              12151
+ 7 16           3              12151
+ 8 16           1              12151
+ 9 16           1              12151
+10 16           1              12151
 # ℹ more rows</code></pre>
 </div>
 </div>

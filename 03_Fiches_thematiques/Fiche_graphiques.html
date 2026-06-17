@@ -770,19 +770,6 @@ window.Quarto = {
 </ul>
 </div>
 </div>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Certains exemples de cette fiche utilisent les données disponibles dans le <em>package</em> <code>doremifasolData</code> ; vous ne pourrez reproduire ces exemples que si ce <em>package</em> est installé sur la machine sur laquelle vous travaillez. Si vous ne savez pas si ce <em>package</em> est déjà installé, consultez la fiche <a href="../01_R_Insee/Fiche_utiliser_utilitR.html">Comment utiliser la documentation <code>utilitR</code></a>.</p>
-</div>
-</div>
 </section><section id="découvrir-ggplot2-avec-ladd-in-esquisse" class="level2" data-number="28.2"><h2 data-number="28.2" class="anchored" data-anchor-id="découvrir-ggplot2-avec-ladd-in-esquisse">
 <span class="header-section-number">28.2</span> Découvrir <code>ggplot2</code> avec l’<em>add-in</em> <code>esquisse</code>
 </h2>
@@ -823,10 +810,13 @@ Note
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"esquisse"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Cette section illustre l’utilisation d’<code>esquisse</code> avec la table <code>data_iris_paris_2017</code> du <em>package</em> <code>doremifasolData</code>, qui contient des données économiques et sociales sur les iris de la ville de Paris en 2017. Il faut donc charger ces données dans <code>R</code> :</p>
+<p>Cette section illustre l’utilisation d’<code>esquisse</code> avec la table <code>data_iris_paris_2017</code>, qui contient des données économiques et sociales sur les iris de la ville de Paris en 2017. Il faut donc charger ces données dans <code>R</code> :</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData">doremifasolData</a></span><span class="op">)</span></span>
-<span><span class="va">data_iris_paris2017</span> <span class="op">&lt;-</span> <span class="fu">doremifasolData</span><span class="fu">::</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData/reference/data_iris_paris_2017.html">data_iris_paris_2017</a></span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">data_iris_paris2017</span> <span class="op">&lt;-</span> <span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://r.duckdb.org/reference/sql_query.html">sql_query</a></span><span class="op">(</span><span class="st">"</span></span>
+<span><span class="st">    INSTALL httpfs;</span></span>
+<span><span class="st">    LOAD httpfs;</span></span>
+<span><span class="st">    SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/data_iris_paris_2017.parquet'</span></span>
+<span><span class="st">  "</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Une fois qu’il est installé, vous pouvez accéder à cet <em>add-in</em> en cliquant sur <em>‘ggplot2’ builder</em> dans le menu <em>Addins</em> de RStudio.</p>
 <p><img src="../pics/intro_graphiques/addin_rstudio.png" class="img-fluid"></p>
@@ -850,11 +840,14 @@ Note
 <span class="header-section-number">28.3</span> Les concepts clefs de <code>ggplot2</code>
 </h2>
 <p>L’objectif du <em>package</em> <code>ggplot2</code> est de fournir une approche unique pour produire quasiment toute représentation graphique de données. Ce <em>package</em> propose un grand nombre de fonctions permettant de personnaliser finement les représentations graphiques. Cette fiche n’est donc qu’une introduction succincte à <code>ggplot2</code>. Pour des formations plus détaillées, se référer à {#ggplot2Ressources}.</p>
-<p>Pour commencer, il faut charger le <em>package</em> avec <code>library</code>. Cette fiche illustre l’utilisation de <code>ggplot2</code> avec la table <code>data_iris_paris_2017</code> du <em>package</em> <code>doremifasolData</code>, qui contient des données économiques et sociales sur les iris de la ville de Paris en 2017.</p>
+<p>Pour commencer, il faut charger le <em>package</em> avec <code>library</code>. Cette fiche illustre l’utilisation de <code>ggplot2</code> avec la table <code>data_iris_paris_2017</code> stockée sur le S3, qui contient des données économiques et sociales sur les iris de la ville de Paris en 2017.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData">doremifasolData</a></span><span class="op">)</span></span>
-<span><span class="va">data_iris_paris_2017</span> <span class="op">&lt;-</span> <span class="fu">doremifasolData</span><span class="fu">::</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData/reference/data_iris_paris_2017.html">data_iris_paris_2017</a></span></span>
+<span><span class="va">data_iris_paris_2017</span> <span class="op">&lt;-</span> <span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://r.duckdb.org/reference/sql_query.html">sql_query</a></span><span class="op">(</span><span class="st">"</span></span>
+<span><span class="st">    INSTALL httpfs;</span></span>
+<span><span class="st">    LOAD httpfs;</span></span>
+<span><span class="st">    SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/data_iris_paris_2017.parquet'</span></span>
+<span><span class="st">  "</span><span class="op">)</span></span>
 <span><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/get_theme.html">theme_set</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <section id="introduction" class="level3" data-number="28.3.1"><h3 data-number="28.3.1" class="anchored" data-anchor-id="introduction">

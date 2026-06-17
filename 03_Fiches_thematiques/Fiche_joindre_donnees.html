@@ -737,19 +737,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 </div>
 </div>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Certains exemples de cette fiche utilisent les données disponibles dans le <em>package</em> <code>doremifasolData</code> ; vous ne pourrez reproduire ces exemples que si ce <em>package</em> est installé sur la machine sur laquelle vous travaillez. Si vous ne savez pas si ce <em>package</em> est déjà installé, consultez la fiche <a href="../01_R_Insee/Fiche_utiliser_utilitR.html">Comment utiliser la documentation <code>utilitR</code></a>.</p>
-</div>
-</div>
 </section><section id="les-différents-types-de-jointure" class="level2" data-number="22.2"><h2 data-number="22.2" class="anchored" data-anchor-id="les-différents-types-de-jointure">
 <span class="header-section-number">22.2</span> Les différents types de jointure</h2>
 <p><strong>Une jointure consiste à associer les observations de deux tables à l’aide d’un identifiant présent dans les deux tables</strong>, qui prend généralement la forme d’une ou plusieurs variables de jointure. Il existe plusieurs types de jointure. Les principales sont :</p>
@@ -839,10 +826,20 @@ Tip
 <p>Il est possible de réaliser les jointures avec chacune des trois approches présentées ici. Il est néanmoins conseillé d’être cohérent avec les outils de manipulation de données que vous utilisez. Si vous manipulez vos données avec <code>data.table</code>, il sera préférable d’utiliser la fonction <code>merge</code> de ce <em>package</em> qui est optimisée pour les objets <code>data.table</code>. Si vous manipulez vos données avec le <code>tidyverse</code>, il est recommandé d’utiliser les fonctions du <em>package</em> <code>dplyr</code>.</p>
 </div>
 </div>
-<p>Les fonctions de jointure vont être illustrées avec la table des communes du code officiel géographique 2019 et les données du répertoire Filosofi 2016 agrégées par commune. Ces tables sont disponibles dans le <em>package</em> <code>doremifasolData</code>. Pour alléger les sorties, on conserve uniquement l’identifiant de commune, le revenu médian 2016 <code>MED16</code> et le taux de pauvreté <code>TP6016</code> dans la première table, et l’identifiant de commune <code>com</code>, le type de commune <code>typecom</code>, le nom officiel de la commune <code>libelle</code> et son département <code>dep</code> dans la seconde table.</p>
+<p>Les fonctions de jointure vont être illustrées avec la table des communes du code officiel géographique 2019 et les données du répertoire Filosofi 2016 agrégées par commune. Ces tables sont chargées sur le S3 du SSPCloud. Pour alléger les sorties, on conserve uniquement l’identifiant de commune, le revenu médian 2016 <code>MED16</code> et le taux de pauvreté <code>TP6016</code> dans la première table, et l’identifiant de commune <code>com</code>, le type de commune <code>typecom</code>, le nom officiel de la commune <code>libelle</code> et son département <code>dep</code> dans la seconde table.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData">doremifasolData</a></span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">filosofi_com_2016</span> <span class="op">&lt;-</span> <span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://r.duckdb.org/reference/sql_query.html">sql_query</a></span><span class="op">(</span><span class="st">"</span></span>
+<span><span class="st">  INSTALL httpfs;</span></span>
+<span><span class="st">  LOAD httpfs;</span></span>
+<span><span class="st">  SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/filosofi_com_2016.parquet'</span></span>
+<span><span class="st">"</span><span class="op">)</span></span>
 <span><span class="va">filosofi_com_2016</span> <span class="op">&lt;-</span> <span class="va">filosofi_com_2016</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"CODGEO"</span>, <span class="st">"MED16"</span>, <span class="st">"TP6016"</span><span class="op">)</span><span class="op">]</span></span>
+<span></span>
+<span><span class="va">cog_com_2019</span> <span class="op">&lt;-</span> <span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://r.duckdb.org/reference/sql_query.html">sql_query</a></span><span class="op">(</span><span class="st">"</span></span>
+<span><span class="st">  INSTALL httpfs;</span></span>
+<span><span class="st">  LOAD httpfs;</span></span>
+<span><span class="st">  SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/cog_com_2019.parquet'</span></span>
+<span><span class="st">"</span><span class="op">)</span></span>
 <span><span class="va">cog_com_2019</span> <span class="op">&lt;-</span> <span class="va">cog_com_2019</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"com"</span>, <span class="st">"typecom"</span>, <span class="st">"libelle"</span>, <span class="st">"dep"</span><span class="op">)</span><span class="op">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Voici un aperçu des données :</p>

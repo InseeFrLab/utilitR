@@ -750,19 +750,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 </div>
 </div>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Certains exemples de cette fiche utilisent les données disponibles dans le <em>package</em> <code>doremifasolData</code> ; vous ne pourrez reproduire ces exemples que si ce <em>package</em> est installé sur la machine sur laquelle vous travaillez. Si vous ne savez pas si ce <em>package</em> est déjà installé, consultez la fiche <a href="../01_R_Insee/Fiche_utiliser_utilitR.html">Comment utiliser la documentation <code>utilitR</code></a>.</p>
-</div>
-</div>
 </section><section id="présentation-des-packages-dplyr-tidyr-et-tibble" class="level2" data-number="18.2"><h2 data-number="18.2" class="anchored" data-anchor-id="présentation-des-packages-dplyr-tidyr-et-tibble">
 <span class="header-section-number">18.2</span> Présentation des <em>packages</em> <code>dplyr</code>, <code>tidyr</code> et <code>tibble</code>
 </h2>
@@ -789,18 +776,19 @@ Note
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org">tidyr</a></span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>Les exemples de cette fiche s’appuient sur les données disponibles dans le <em>package</em> <code>doremifasolData</code>. On utilise en premier lieu la base permanente des équipements 2018.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData">doremifasolData</a></span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p>Les objets récupérés en sortie de <code>doremifasolData</code> sont tous des <code>data.frame</code>, bien que le <em>package</em> s’appuie sur des fonctions issues de <code>tidyverse</code>. Il est donc nécessaire de les convertir en <code>tibble</code> avec la fonction <code>as_tibble</code> du <em>package</em> <code>tibble</code>.</p>
+<p>Les exemples de cette fiche s’appuient sur les données disponibles sur S3 et provenant du <em>package</em> <code>doremifasolData</code>. On utilise en premier lieu la base permanente des équipements 2018.</p>
+<p>Les objets récupérés en sortie de S3 et provenant <code>doremifasolData</code> sont tous des <code>data.frame</code>, bien que le <em>package</em> s’appuie sur des fonctions issues de <code>tidyverse</code>. Il est donc nécessaire de les convertir en <code>tibble</code> avec la fonction <code>as_tibble</code> du <em>package</em> <code>tibble</code>.</p>
 </section><section id="le-tibble-un-data.frame-amélioré" class="level3" data-number="18.2.2"><h3 data-number="18.2.2" class="anchored" data-anchor-id="le-tibble-un-data.frame-amélioré">
 <span class="header-section-number">18.2.2</span> Le <code>tibble</code> : un <code>data.frame</code> amélioré</h3>
 <p><strong>Le <code>tidyverse</code> propose une version améliorée du <code>data.frame</code> de base : le <code>tibble</code>.</strong> Il s’agit d’un <code>data.frame</code> standard, avec quelques propriétés supplémentaires qui rendent son utilisation plus facile. Le <em>package</em> <code>tibble</code> contient par ailleurs des fonctions utiles pour manipuler les <code>tibbles</code>. Sauf exception, toutes les fonctions de <code>R</code> qui manipulent un <code>data.frame</code> fonctionneront sans problème avec un <code>tibble</code>.</p>
 <p><strong>Pour convertir un <code>data.frame</code> en <code>tibble</code> on utilise la fonction <code><a href="https://tibble.tidyverse.org/reference/as_tibble.html">tibble::as_tibble()</a></code>.</strong> Dans l’exemple suivant, on charge la table de la base permanente des équipements puis on la convertit en <code>tibble</code>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Charger la base permanente des équipements</span></span>
-<span><span class="va">bpe_ens_2018</span> <span class="op">&lt;-</span> <span class="fu">doremifasolData</span><span class="fu">::</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData/reference/bpe_ens_2018.html">bpe_ens_2018</a></span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Charger la base permanente des équipements</span></span>
+<span><span class="va">bpe_ens_2018</span> <span class="op">&lt;-</span> <span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://r.duckdb.org/reference/sql_query.html">sql_query</a></span><span class="op">(</span><span class="st">"</span></span>
+<span><span class="st">  INSTALL httpfs;</span></span>
+<span><span class="st">  LOAD httpfs;</span></span>
+<span><span class="st">  SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/bpe_ens_2018.parquet'</span></span>
+<span><span class="st">"</span><span class="op">)</span></span>
 <span><span class="co"># Convertir ce data.frame en tibble</span></span>
 <span><span class="va">bpe_ens_2018_tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="va">bpe_ens_2018</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -809,7 +797,7 @@ Note
 <li>
 <p><strong>La sélection (<em>subsetting</em>) fonctionne différemment :</strong> sélectionner une colonne dans un <code>data.frame</code> renvoie un vecteur, alors que sélectionner une colonne dans un <code>tibble</code> renvoie un <code>tibble</code> à une seule colonne. Si on veut vraiment récupérer un vecteur à partir d’un <code>tibble</code> à une colonne, on utilise la fonction <code>pull</code>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Si on sélectionne une colonne dans un data.frame,</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Si on sélectionne une colonne dans un data.frame,</span></span>
 <span><span class="co"># on obtient un vecteur.</span></span>
 <span><span class="va">bpe_ens_2018</span><span class="op">[</span> , <span class="fl">1</span><span class="op">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -818,7 +806,7 @@ Note
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Si on sélectionne une colonne dans un tibble,</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Si on sélectionne une colonne dans un tibble,</span></span>
 <span><span class="co"># on obtient un tibble avec une seule colonne.</span></span>
 <span><span class="va">bpe_ens_2018_tbl</span><span class="op">[</span> , <span class="fl">1</span><span class="op">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -835,7 +823,7 @@ Note
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html">pull</a></span><span class="op">(</span><span class="va">bpe_ens_2018_tbl</span><span class="op">[</span> , <span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html">pull</a></span><span class="op">(</span><span class="va">bpe_ens_2018_tbl</span><span class="op">[</span> , <span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1] "84" "84" "84" "84" "84" "84" "84" "84" "84" "84"
  [ reached 'max' / getOption("max.print") -- omitted 1035554 entries ]</code></pre>
@@ -845,7 +833,7 @@ Note
 <li><p><strong>L’affichage des <code>tibbles</code> est meilleur que celui des <code>data.frames</code>.</strong> Vous pouvez par exemple remarquer que même sans la fonction <code><a href="https://rdrr.io/r/utils/head.html">head()</a></code>, l’affichage d’un <code>tibble</code> affiche toujours les dimensions de celui-ci (nombres de lignes et de colonnes), ainsi que le type des variables (en-dessous des noms des colonnes).</p></li>
 </ul>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Afficher les premières lignes d'un dataframe</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Afficher les premières lignes d'un dataframe</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">bpe_ens_2018</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  REG DEP DEPCOM DCIRIS   AN TYPEQU NB_EQUIP
@@ -854,7 +842,7 @@ Note
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Afficher les premières lignes d'un tibble</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Afficher les premières lignes d'un tibble</span></span>
 <span><span class="va">bpe_ens_2018_tbl</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1,035,564 × 7
@@ -892,11 +880,11 @@ Note
 <p>Par défaut, <strong>les fonctions du <code>tidyverse</code> renvoient une copie des données manipulées.</strong> Cela signifie que vous devez utiliser l’opérateur d’assignation <code>&lt;-</code> si vous voulez modifier une table. Voici deux exemples simples pour bien comprendre la différence.</p>
 <p>Le premier code sélectionne la variable <code>TYPEEQ</code> dans la table <code>bpe_ens_2018_tbl</code> et renvoie un <code>data.frame</code> contenant uniquement cette variable. En revanche, la table <code>bpe_ens_2018_tbl</code> n’est <strong>pas modifiée</strong>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">bpe_ens_2018_tbl</span>, <span class="va">TYPEQU</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">bpe_ens_2018_tbl</span>, <span class="va">TYPEQU</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Le second code modifie la table <code>bpe_ens_2018_tbl</code> en utilisant l’opérateur <code>&lt;-</code> :</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">bpe_ens_2018_tbl</span>, <span class="va">TYPEQU</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">bpe_ens_2018_tbl</span>, <span class="va">TYPEQU</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Ce fonctionnement des fonctions du <code>tidyverse</code> a pour avantage qu’il est difficile d’écraser ses données par mégarde. Il a pour inconvénient d’être gourmand en mémoire vive (RAM) car les données sont temporairement dupliquées. C’est pour cette raison que le <code>tidyverse</code> n’est pas adapté à la manipulation de données volumineuses.</p>
 </div>
@@ -944,7 +932,7 @@ Note
 <p><strong>Un traitement statistique avec les <em>packages</em> du <code>tidyverse</code> prend généralement la forme d’une succession de verbes séparés par l’opérateur <code>pipe</code> (<code>%&gt;%</code>).</strong> Il est possible d’aller à la ligne en mettant le <code>pipe</code> en bout de ligne (mais pas en début de ligne).</p>
 <p>Voici un exemple détaillé pour comprendre l’utilisation du <code>pipe</code>. Toutes les fonctions utilisées sont présentées ailleurs dans cette fiche. Ce code se lit comme ceci : on part de la base permanente des équipements 2018, puis on la transforme en <code>tibble</code>, puis on conserve uniquement les stations services <code>TYPEQU == "B316"</code>, puis on groupe les observations par département <code>group_by(DEP)</code>, puis on calcule la somme du nombre de stations-services par département <code>summarise(nb_equip_total = sum(NB_EQUIP, na.rm = TRUE))</code>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">nombre</span> <span class="op">&lt;-</span> <span class="va">bpe_ens_2018</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">nombre</span> <span class="op">&lt;-</span> <span class="va">bpe_ens_2018</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">TYPEQU</span> <span class="op">==</span> <span class="st">"B316"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">DEP</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
@@ -995,7 +983,7 @@ Note
 <li>
 <p>Avec une liste de noms de variables. Le code suivant sélectionne le code commune, le type d’équipement et le nombre d’équipement dans la base permanente des équipements :</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">DEPCOM</span>, <span class="va">TYPEQU</span>, <span class="va">NB_EQUIP</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1,035,564 × 3
@@ -1014,7 +1002,7 @@ Note
 <li>
 <p>Avec la position des colonnes. Le code suivant sélectionne les cinq premières colonnes :</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1,035,564 × 5
@@ -1033,7 +1021,7 @@ Note
 <li>
 <p>Avec une condition logique. Par exemple, la fonction <code>starts_with("DEP")</code> permet de sélectionner toutes les variables dont le nom commence par “DEP”.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">starts_with</a></span><span class="op">(</span><span class="st">"DEP"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1,035,564 × 2
@@ -1092,7 +1080,7 @@ Note
 <li>On peut aussi renommer des colonnes avec la syntaxe <code>select(data, nouveau_nom = selection_colonne)</code> :</li>
 </ul>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span>  <span class="va">bpe_ens_2018_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span>  <span class="va">bpe_ens_2018_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span>dept <span class="op">=</span> <span class="va">DEP</span>, depcom <span class="op">=</span> <span class="va">DEPCOM</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1,035,564 × 2
@@ -1112,7 +1100,7 @@ Note
 </h4>
 <p>La fonction <code><a href="https://dplyr.tidyverse.org/reference/rename.html">rename()</a></code> permet de renommer des variables. La syntaxe est la suivante : <code>rename(data, nouveau_nom = ancien nom)</code>. Voici un exemple :</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename</a></span><span class="op">(</span>code_commune <span class="op">=</span> <span class="va">DEPCOM</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1,035,564 × 7
@@ -1129,7 +1117,7 @@ Note
 </div>
 <p>La fonction <code><a href="https://dplyr.tidyverse.org/reference/rename.html">rename_with()</a></code> permet de renommer un groupe de colonnes avec une fonction. La syntaxe est la suivante : <code>rename_with(data, nom_fonction, selection_colonnes)</code>. Voici un exemple qui met en minuscules tous les noms de colonnes :</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename_with</a></span><span class="op">(</span><span class="va">tolower</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1,035,564 × 7
@@ -1149,7 +1137,7 @@ Note
 </h4>
 <p><strong>Le verbe <code><a href="https://dplyr.tidyverse.org/reference/filter.html">filter()</a></code> permet de sélectionner des observations selon une ou plusieurs conditions logiques.</strong> Voici un exemple de code qui sélectionne les magasins de chaussures (<code>TYPEQU == "B304"</code>) dans le premier arrondissement de Paris (<code>DEPCOM == "75101"</code>) dans la BPE.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">DEPCOM</span> <span class="op">==</span> <span class="st">"75101"</span> <span class="op">&amp;</span> <span class="va">TYPEQU</span> <span class="op">==</span> <span class="st">"B304"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 12 × 7
@@ -1205,7 +1193,7 @@ Note
 </h4>
 <p><strong>Le verbe <code><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange()</a></code> permet de trier les observations de la table selon une ou plusieurs colonnes.</strong> Par défaut, <code>arrange</code> trie par ordre croissant. Il faut utiliser <code>desc(nom_de_variable)</code> pour trier par ordre décroissant. Le code suivant trie la BPE selon le code commune et le type d’équipement.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb32"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">DEPCOM</span>, <span class="va">TYPEQU</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1,035,564 × 7
@@ -1251,7 +1239,7 @@ Note
 </h4>
 <p><strong>La fonction <code><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate()</a></code> permet de créer de nouvelles colonnes ou de modifier des colonnes existantes.</strong> Il est possible d’utiliser toutes sortes de fonctions à l’intérieur d’une étape <code><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate()</a></code>. Le code suivant crée une variable <code>NB_EQUIP_3PLUS</code> qui vaut <code>TRUE</code> si le nombre d’équipement est supérieur ou égal à 3, et <code>FALSE</code> sinon.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb34"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>NB_EQUIP_3PLUS <span class="op">=</span> <span class="op">(</span><span class="va">NB_EQUIP</span> <span class="op">&gt;=</span> <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1,035,564 × 8
@@ -1296,7 +1284,7 @@ Note
 </h4>
 <p><strong>La fonction <code><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise()</a></code> permet de calculer une ou plusieurs statistiques à partir de la table de données.</strong> Cette fonction est souvent utilisée après la fonction <code><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by()</a></code> pour calculer des statistiques par groupe, et elle conduit à une agrégation de la table en fonction des groupes définis par la fonction <code>group_by</code> (par défaut une agrégation sur l’ensemble de la table). Le code suivant calcule le nombre total d’équipements dans la BPE <code>sum(NB_EQUIP, na.rm = TRUE)</code>, et le nombre total de boulangeries <code>sum(NB_EQUIP * (TYPEQU == "B203"), na.rm = TRUE)</code>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
 <span>    NB_EQUIP_TOT <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>    NB_BOULANGERIES_TOT <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span> <span class="op">*</span> <span class="op">(</span><span class="va">TYPEQU</span> <span class="op">==</span> <span class="st">"B203"</span><span class="op">)</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -1376,7 +1364,7 @@ Note
 <li>
 <p>Si vous voulez résumer une information contenue dans une table, il faut utiliser <code><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise()</a></code>. Exemple : calculer le nombre total d’équipements pour chaque commune.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb38"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>  </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb37"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>  </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">DEPCOM</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>NB_EQUIP_TOT <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -1384,7 +1372,7 @@ Note
 <li>
 <p>Si vous voulez ajouter une information dans une table (en conservant toutes les autres variables), il faut utiliser <code><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate()</a></code>. Exemple : ajouter dans la table <code>bpe_ens_2018_tbl</code> une colonne donnant le nombre total d’équipements pour chaque commune.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb39"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>  </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb38"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>  </span>
 <span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">DEPCOM</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>NB_EQUIP_TOT <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -1397,7 +1385,7 @@ Note
 </h4>
 <p><strong>La fonction <code><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by()</a></code> permet de définir des groupes dans la table de données pour faire des opérations par groupe.</strong> L’utilisation de <code><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by()</a></code> rend très utiles les opérations avec <code><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise()</a></code>. Le code suivant groupe les données de la BPE par département <code>group_by(DEP)</code> puis calcule le nombre total d’équipements <code>sum(NB_EQUIP, na.rm = TRUE)</code> et le nombre total de boulangeries <code>sum(NB_EQUIP * (TYPEQU == "B203"), na.rm = TRUE)</code>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb40"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb39"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">DEP</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>NB_EQUIP_TOT <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>            NB_BOULANGERIES_TOT <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span> <span class="op">*</span> <span class="op">(</span><span class="va">TYPEQU</span> <span class="op">==</span> <span class="st">"B203"</span><span class="op">)</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1416,7 +1404,7 @@ Note
 </div>
 <p>La fonction <code>group_by</code> peut également modifier le comportement des fonctions <code>filter</code> ou <code>mutate</code>, comme pour <code>summarise</code>. L’instruction suivante permet ainsi d’ajouter à la BPE une variable égale au nombre total de boulangeries dans le département.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb42"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb41"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">DEP</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>NB_BOULANGERIES_DEP <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span> <span class="op">*</span> <span class="op">(</span><span class="va">TYPEQU</span> <span class="op">==</span> <span class="st">"B203"</span><span class="op">)</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -1435,7 +1423,7 @@ Note
 </div>
 <p>L’instruction suivante permet de ne conserver que les communes pour lesquelles le nombre d’équipements est le plus important de leur région.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb44"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb43"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">REG</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">NB_EQUIP</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">NB_EQUIP</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -1476,7 +1464,7 @@ Note
 </h4>
 <p><strong>La fonction <code><a href="https://dplyr.tidyverse.org/reference/across.html">across()</a></code> permet de sélectionner un groupe de colonnes sur lequel on veut appliquer une fonction dplyr.</strong> Ainsi on peut appliquer une fonction sur des colonnes en les sélectionnant comme le fait <code><a href="https://dplyr.tidyverse.org/reference/select.html">select()</a></code>. Si on veut sélectionner des colonnes en fonction de leur type, on utilise en outre <code><a href="https://tidyselect.r-lib.org/reference/where.html">where()</a></code>. Le code suivant groupe les données de la BPE avec les deux colonnes dont le nom commence par “DEP”, puis effectue la somme de toutes les colonnes de type numérique.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb46"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb45"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html">across</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">starts_with</a></span><span class="op">(</span><span class="st">'DEP'</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html">across</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/where.html">where</a></span><span class="op">(</span><span class="va">is.numeric</span><span class="op">)</span>, <span class="va">sum</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -1526,13 +1514,27 @@ Note
 </ul>
 <p>Il est préférable d’utiliser ces fonctions sur des objets <code>tibble</code> plutôt que <code>data.frame</code>. On va donc convertir les deux tables avant de présenter un exemple :</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb48"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span></span>
-<span><span class="va">filosofi_com_2016_tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="fu">doremifasolData</span><span class="fu">::</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData/reference/filosofi_com_2016.html">filosofi_com_2016</a></span><span class="op">)</span></span>
-<span><span class="va">cog_com_2019_tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="fu">doremifasolData</span><span class="fu">::</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData/reference/cog_com_2019.html">cog_com_2019</a></span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb47"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span></span>
+<span><span class="va">filosofi_com_2016_tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span></span>
+<span>  <span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://r.duckdb.org/reference/sql_query.html">sql_query</a></span><span class="op">(</span><span class="st">"</span></span>
+<span><span class="st">    INSTALL httpfs;</span></span>
+<span><span class="st">    LOAD httpfs;</span></span>
+<span><span class="st">    SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/filosofi_com_2016.parquet'</span></span>
+<span><span class="st">  "</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span></span>
+<span><span class="va">cog_com_2019_tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span></span>
+<span>  <span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://r.duckdb.org/reference/sql_query.html">sql_query</a></span><span class="op">(</span><span class="st">"</span></span>
+<span><span class="st">    INSTALL httpfs;</span></span>
+<span><span class="st">    LOAD httpfs;</span></span>
+<span><span class="st">    SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/cog_com_2019.parquet'</span></span>
+<span><span class="st">  "</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Voici un exemple dans lequel on utilise la fonction <code>left_join</code> pour réaliser une jointure à gauche entre la table des données Filosofi et la table des communes du COG.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb49"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">table_jointe_tbl</span> <span class="op">&lt;-</span> <span class="va">filosofi_com_2016_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb48"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">table_jointe_tbl</span> <span class="op">&lt;-</span> <span class="va">filosofi_com_2016_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">cog_com_2019_tbl</span>, </span>
 <span>by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"CODGEO"</span> <span class="op">=</span> <span class="st">"com"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">table_jointe_tbl</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1622,7 +1624,11 @@ Note
 <p>La fonction <code>separate_wider_position</code> attend ensuite l’argument <code>widths</code> sous la forme d’un vecteur qui indique la position des éléments à scinder.</p>
 <p>Voici un exemple qui utilise la table des communes du Code Officiel Géographique. Dans cette table, la colonne <code>com</code> (code commune Insee) contient deux informations : le numéro du département et le numéro de la commune.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb51"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">cog_com_2019_tbl</span> <span class="op">&lt;-</span> <span class="fu">doremifasolData</span><span class="fu">::</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData/reference/cog_com_2019.html">cog_com_2019</a></span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb50"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">cog_com_2019_tbl</span> <span class="op">&lt;-</span> <span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://r.duckdb.org/reference/sql_query.html">sql_query</a></span><span class="op">(</span><span class="st">"</span></span>
+<span><span class="st">    INSTALL httpfs;</span></span>
+<span><span class="st">    LOAD httpfs;</span></span>
+<span><span class="st">    SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/cog_com_2019.parquet'</span></span>
+<span><span class="st">  "</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">cog_com_2019_tbl</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 37,930 × 11
@@ -1639,7 +1645,7 @@ Note
 </div>
 <p>Voici comment on peut utiliser <code>separate_wider_position</code> pour scinder <code>com</code> en deux nouvelles colonnes <code>code_dep</code> et <code>code_com</code>. La première colonne <code>code_dep</code> est extraite à partir des deux premiers caractères (position 2) et la deuxième colonne <code>code_com</code> est extraite à partir du troisième caractère (position 3). Vous pouvez noter que la colonne <code>com</code> a disparu, car par défaut les fonctions préfixées par <code>separate_</code> supprime la colonne scindée. Si on veut la conserver, il faut ajouter l’option <code>cols_remove = FALSE</code>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb53"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">cog_com_2019_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb52"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">cog_com_2019_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/separate_wider_delim.html">separate_wider_position</a></span><span class="op">(</span><span class="va">com</span>, widths <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>code_dep <span class="op">=</span> <span class="fl">2</span>, code_com <span class="op">=</span> <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 37,930 × 12
@@ -1660,7 +1666,7 @@ Note
 - L’argument <code>names</code> sous la forme d’un vecteur qui indique les noms des nouvelles colonnes.</p>
 <p>Voici un exemple pour illustrer comment on peut utiliser <code>separate_wider_delim</code>. On utilise ici le séparateur “espace” pour scinder la colonne <code>libelle</code> et définir les nouvelles colonnes <code>prenom</code> et <code>nom</code>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb55"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, libelle <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Lino Galiana"</span>, <span class="st">"Olivier Meslin"</span>, <span class="st">"Pierre Lamarche"</span>, <span class="st">"Damien Dotta"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb54"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, libelle <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Lino Galiana"</span>, <span class="st">"Olivier Meslin"</span>, <span class="st">"Pierre Lamarche"</span>, <span class="st">"Damien Dotta"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/separate_wider_delim.html">separate_wider_delim</a></span><span class="op">(</span><span class="va">libelle</span>, delim <span class="op">=</span> <span class="st">" "</span>, names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"prenom"</span>,<span class="st">"nom"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 4 × 3
@@ -1683,7 +1689,7 @@ Note
 </ul>
 <p>Voici un exemple où l’on regroupe le code commune Insee et le nom officiel de la commune, avec ” - ” comme séparateur. Vous pouvez noter que les colonnes <code>com</code> et <code>ncc</code> ont disparu, car par défaut <code>unite</code> supprime les colonnes regroupées. Si on veut les conserver, il faut ajouter l’option <code>remove = FALSE</code>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb57"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">cog_com_2019_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb56"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">cog_com_2019_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/unite.html">unite</a></span><span class="op">(</span><span class="va">code_et_nom</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"com"</span>, <span class="st">"ncc"</span><span class="op">)</span>, sep <span class="op">=</span> <span class="st">" - "</span><span class="op">)</span> </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 37,930 × 10
@@ -1702,7 +1708,7 @@ Note
 <span class="header-section-number">18.4.1.3</span> <code>replace_na</code> : remplacer des valeurs manquantes</h4>
 <p>La fonction <code>replace_na</code> permet de remplacer des valeurs manquantes (<code>NA</code>). Cette fonction peut être utilisée de deux façons, que l’on va illustrer avec les données suivantes :</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb59"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="cn">NA</span><span class="op">)</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="cn">NA</span>, <span class="st">"b"</span>, <span class="cn">NA</span><span class="op">)</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb58"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="cn">NA</span><span class="op">)</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="cn">NA</span>, <span class="st">"b"</span>, <span class="cn">NA</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">df</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 4 × 2
@@ -1716,7 +1722,7 @@ Note
 </div>
 <p>Premier usage : on remplace les valeurs manquantes <strong>dans une colonne</strong> d’un <code>data.frame</code>. Dans ce cas, la fonction prend deux arguments : le nom de la variable et la valeur utilisée pour remplacer les valeurs manquantes. Voici un exemple :</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb61"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb60"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://tidyr.tidyverse.org/reference/replace_na.html">replace_na</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">888</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 4 × 2
@@ -1730,7 +1736,7 @@ Note
 </div>
 <p>Second usage : on remplace les valeurs manquantes <strong>dans toutes les colonnes</strong> d’un <code>data.frame</code>. Dans ce cas, la fonction prend deux arguments : le nom du <code>data.frame</code>, et une liste donnant pour chaque variable la valeur à utiliser pour remplacer les valeurs manquantes. Voici un exemple :</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb63"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb62"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/replace_na.html">replace_na</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">888</span>, y <span class="op">=</span> <span class="st">"zzz"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 4 × 2
@@ -1746,7 +1752,7 @@ Note
 <span class="header-section-number">18.4.1.4</span> <code>complete</code> : compléter des combinaisons de variables manquantes</h4>
 <p>La fonction <code>complete</code> permet de compléter des combinaisons manquantes de valeurs de plusieurs colonnes (autrement dit, de compléter un produit cartésien incomplet). Dans le tableau de donnée suivant, seuls les pays ayant remporté la Coupe du Monde de football sont renseignés, avec l’année de leur victoire. Supposons qu’on veuille compléter ce tableau, en indiquant 0 lorsqu’un pays n’a pas remporté la Coupe du Monde.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb65"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span>pays <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"France"</span>, <span class="st">"France"</span>, <span class="st">"Espagne"</span>, <span class="st">"Angleterre"</span><span class="op">)</span>,</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb64"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span>pays <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"France"</span>, <span class="st">"France"</span>, <span class="st">"Espagne"</span>, <span class="st">"Angleterre"</span><span class="op">)</span>,</span>
 <span>             annee <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1998</span>, <span class="fl">2018</span>, <span class="fl">2010</span>, <span class="fl">1966</span><span class="op">)</span>,</span>
 <span>             victoire <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">df</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1762,7 +1768,7 @@ Note
 </div>
 <p>On peut l’utiliser de cette manière :</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb67"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://tidyr.tidyverse.org/reference/complete.html">complete</a></span><span class="op">(</span><span class="va">pays</span>, <span class="va">annee</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb66"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://tidyr.tidyverse.org/reference/complete.html">complete</a></span><span class="op">(</span><span class="va">pays</span>, <span class="va">annee</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 12 × 3
   pays       annee victoire
@@ -1778,7 +1784,7 @@ Note
 </div>
 <p>On voit que les combinaisons manquantes ont bien été ajoutées par <code>complete</code>. Par défaut les lignes insérées comprennent des valeurs manquantes <code>NA</code> pour les colonnes restantes. On peut néanmoins choisir une autre valeur avec l’argument <code>fill</code>, qui prend la forme d’une liste nommée. Dans le cas présent, la liste ne comprend qu’un seul élément car il n’y a qu’une seule variable à compléter :</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb69"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://tidyr.tidyverse.org/reference/complete.html">complete</a></span><span class="op">(</span><span class="va">pays</span>, <span class="va">annee</span>, fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>victoire <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb68"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://tidyr.tidyverse.org/reference/complete.html">complete</a></span><span class="op">(</span><span class="va">pays</span>, <span class="va">annee</span>, fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>victoire <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 12 × 3
   pays       annee victoire
@@ -1815,9 +1821,15 @@ Note
 <figure class="figure"><p><img src="../pics/datatable/longtowide.png" class="img-fluid figure-img"></p>
 <figcaption>Transformation <em>long to wide</em></figcaption></figure>
 </div>
-<p>Pour illustrer ces transformations, nous allons utiliser les données du répertoire Filosofi 2016 agrégées au niveau des EPCI (table <code>filosofi_epci_2016</code>), et disponibles dans le <em>package</em> <code>doremifasolData</code>. On convertit cette table en <code>tibble</code> et on conserve uniquement certaines variables grâce à la fonction <code>select</code>.</p>
+<p>Pour illustrer ces transformations, nous allons utiliser les données du répertoire Filosofi 2016 agrégées au niveau des EPCI (table <code>filosofi_epci_2016</code>), et disponibles sur le S3 du SSPCloud. On convertit cette table en <code>tibble</code> et on conserve uniquement certaines variables grâce à la fonction <code>select</code>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb71"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">filosofi_epci_2016_tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="va">filosofi_epci_2016</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb70"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">filosofi_epci_2016</span> <span class="op">&lt;-</span> <span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://r.duckdb.org/reference/sql_query.html">sql_query</a></span><span class="op">(</span><span class="st">"</span></span>
+<span><span class="st">    INSTALL httpfs;</span></span>
+<span><span class="st">    LOAD httpfs;</span></span>
+<span><span class="st">    SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/filosofi_epci_2016.parquet'</span></span>
+<span><span class="st">  "</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">filosofi_epci_2016_tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="va">filosofi_epci_2016</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">CODGEO</span>, <span class="va">TP6016</span>, <span class="va">TP60AGE116</span>, <span class="va">TP60AGE216</span>,</span>
 <span>         <span class="va">TP60AGE316</span>, <span class="va">TP60AGE416</span>, <span class="va">TP60AGE516</span>, <span class="va">TP60AGE616</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -1835,7 +1847,7 @@ Note
 </ul>
 <p>Pour illustrer l’usage de cette fonction, nous allons utiliser les données du répertoire Filosofi 2016 agrégées au niveau des EPCI (table <code>filosofi_epci_2016</code>), et disponibles dans le <em>package</em> <code>doremifasol</code>. On convertit cette table en <code>tibble</code> et on conserve uniquement certaines variables grâce à la fonction <code>select</code>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb72"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">filosofi_epci_2016_tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="va">filosofi_epci_2016</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb71"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">filosofi_epci_2016_tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="va">filosofi_epci_2016</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">CODGEO</span>, <span class="va">TP6016</span>, <span class="va">TP60AGE116</span>, <span class="va">TP60AGE216</span>,</span>
 <span>         <span class="va">TP60AGE316</span>, <span class="va">TP60AGE416</span>, <span class="va">TP60AGE516</span>, <span class="va">TP60AGE616</span><span class="op">)</span></span>
 <span><span class="va">filosofi_epci_2016_tbl</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1855,7 +1867,7 @@ Note
 </div>
 <p>Nous allons restructurer cette table pour obtenir une nouvelle table, avec une observation par EPCI et par tranche d’âge. Voici le code qui permet d’obtenir cette table : on transpose les valeurs des colonnes dont le nom commence par “TP” (<code>cols = starts_with("TP")</code>), le nom des colonnes transposées sera indiquée dans la nouvelle colonne “tranche_age” (<code>names_to = "tranche_age"</code>) et les valeurs des colonnes transposées seront indiquées dans la colonne “taux_pauvrete” (<code>values_to = "taux_pauvrete"</code>).</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb74"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">donnees_pauvrete_long</span> <span class="op">&lt;-</span> <span class="va">filosofi_epci_2016_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb73"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">donnees_pauvrete_long</span> <span class="op">&lt;-</span> <span class="va">filosofi_epci_2016_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html">pivot_longer</a></span><span class="op">(</span>cols <span class="op">=</span> <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">starts_with</a></span><span class="op">(</span><span class="st">"TP"</span><span class="op">)</span>, </span>
 <span>               names_to <span class="op">=</span> <span class="st">"tranche_age"</span>, </span>
 <span>               values_to <span class="op">=</span> <span class="st">"taux_pauvrete"</span><span class="op">)</span></span>
@@ -1904,7 +1916,7 @@ Tip
 </ul>
 <p>Par ailleurs, l’option <code>names_prefix</code> permet de définir le préfixe du nom des nouvelles colonnes, ce qui est utile pour avoir des noms explicites.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb76"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb75"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_tbl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">REG</span>, <span class="va">TYPEQU</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>NB_EQUIP_TOT <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>    <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html">pivot_wider</a></span><span class="op">(</span>id_cols <span class="op">=</span><span class="va">TYPEQU</span>,  </span>
@@ -1954,7 +1966,7 @@ Tip
 <span class="header-section-number">18.5.1</span> Présentation de la difficulté à fonctionnaliser</h3>
 <p>La fonctionnalisation n’est pas simple lorsqu’on travaille avec le <code>tidyverse</code>, en raison de l’<em>évaluation non standard</em> que celui-ci exploite. En effet, le <code>tidyverse</code> est un paradigme de traitement des données qui cherche à faciliter au maximum son utilisation. Pour ce faire, comme vu précédemment, il n’est pas besoin d’écrire le nom des variables entre guillemets, ou de répéter le nom de la base que l’on exploite, ni même d’utiliser le <code>$</code>. Toutefois, cette facilité génère des difficultés lorsqu’on souhaite créer une fonction. Le code suivant montre deux traitements qui, en toute logique, devrait donner des résultats similaires.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb78"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">bpe_ens_2018</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">REG</span><span class="op">)</span> <span class="co"># fonctionne</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb77"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">bpe_ens_2018</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">REG</span><span class="op">)</span> <span class="co"># fonctionne</span></span>
 <span></span>
 <span><span class="va">selectionner_colonne</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">donnees</span>,<span class="va">colonne</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">retour</span> <span class="op">&lt;-</span> <span class="va">donnees</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
@@ -1996,7 +2008,7 @@ Note
 <span class="header-section-number">18.5.2</span> Présentation de la solution</h3>
 <p>Pour réussir à créer des fonctions facilement compatibles avec le <code>tidyverse</code>, il faut faire appel à un opérateur spécifique, appelé <em>curly-curly</em> ou <em>doublestache</em> : <code><a href="https://rdrr.io/r/base/Paren.html">{ }</a></code>. Il s’agit de l’équivalent <code>tidyverse</code> de la fonction <code>get</code> présentée dans le chapitre <a href="Fiche_datatable.html">Manipuler ses données avec data.table</a>. Son utilisation est particulièrement simple, car il suffit d’entourer la variable par ces accolades.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb79"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">selectionner_colonne</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">donnees</span>,<span class="va">colonne</span><span class="op">)</span> <span class="op">{</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb78"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">selectionner_colonne</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">donnees</span>,<span class="va">colonne</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">retour</span> <span class="op">&lt;-</span> <span class="va">donnees</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="op">{</span><span class="op">{</span><span class="va">colonne</span><span class="op">}</span><span class="op">}</span><span class="op">)</span></span>
 <span>  </span>
@@ -2037,7 +2049,7 @@ Note
 </div>
 <p>Lorsqu’on souhaite définir une nouvelle colonne dans le tidyverse, une légère modification est nécessaire, avec l’utilisation de l’opérateur <code>:=</code>, comme dans l’exemple suivant.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb81"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">selectionner_et_renommer</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">donnees</span>,<span class="va">colonne</span>, <span class="va">nouveau_nom</span> <span class="op">=</span> <span class="st">"nouveau_nom"</span><span class="op">)</span> <span class="op">{</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb80"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">selectionner_et_renommer</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">donnees</span>,<span class="va">colonne</span>, <span class="va">nouveau_nom</span> <span class="op">=</span> <span class="st">"nouveau_nom"</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">retour</span> <span class="op">&lt;-</span> <span class="va">donnees</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="op">{</span><span class="op">{</span><span class="va">colonne</span><span class="op">}</span><span class="op">}</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename</a></span><span class="op">(</span><span class="op">{</span><span class="op">{</span><span class="va">nouveau_nom</span><span class="op">}</span><span class="op">}</span><span class="op">:=</span><span class="op">{</span><span class="op">{</span><span class="va">colonne</span><span class="op">}</span><span class="op">}</span><span class="op">)</span></span>

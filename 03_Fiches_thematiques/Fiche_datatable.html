@@ -727,19 +727,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 </div>
 </div>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Certains exemples de cette fiche utilisent les données disponibles dans le <em>package</em> <code>doremifasolData</code> ; vous ne pourrez reproduire ces exemples que si ce <em>package</em> est installé sur la machine sur laquelle vous travaillez. Si vous ne savez pas si ce <em>package</em> est déjà installé, consultez la fiche <a href="../01_R_Insee/Fiche_utiliser_utilitR.html">Comment utiliser la documentation <code>utilitR</code></a>.</p>
-</div>
-</div>
 </section><section id="présentation-de-data.table" class="level2" data-number="19.2"><h2 data-number="19.2" class="anchored" data-anchor-id="présentation-de-data.table">
 <span class="header-section-number">19.2</span> Présentation de <code>data.table</code>
 </h2>
@@ -1012,10 +999,7 @@ Partir de <code>dt</code>, créer une nouvelle variable <code>newvar</code> qui 
 <section id="manipuler-des-tables-de-données-avec-data.table" class="level2" data-number="19.3"><h2 data-number="19.3" class="anchored" data-anchor-id="manipuler-des-tables-de-données-avec-data.table">
 <span class="header-section-number">19.3</span> Manipuler des tables de données avec <code>data.table</code>
 </h2>
-<p>Nous allons illustrer les fonctions de manipulation de données de <code>data.table</code> avec les jeux de données du <em>package</em> <code>doremifasolData</code>.</p>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData">doremifasolData</a></span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
+<p>Nous allons illustrer les fonctions de manipulation de données de <code>data.table</code>.</p>
 <section id="mettre-des-données-dans-un-data.table" class="level3" data-number="19.3.1"><h3 data-number="19.3.1" class="anchored" data-anchor-id="mettre-des-données-dans-un-data.table">
 <span class="header-section-number">19.3.1</span> Mettre des données dans un <code>data.table</code>
 </h3>
@@ -1026,10 +1010,14 @@ Partir de <code>dt</code>, créer une nouvelle variable <code>newvar</code> qui 
 </ul>
 <p>Dans la suite de cette section, on va illustrer les opérations de base en <code>data.table</code> avec la base permanente des équipements (table <code>bpe_ens_2018</code>), qu’on transforme en <code>data.table</code>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Charger la base permanente des équipements</span></span>
-<span><span class="va">bpe_ens_2018</span> <span class="op">&lt;-</span> <span class="fu">doremifasolData</span><span class="fu">::</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData/reference/bpe_ens_2018.html">bpe_ens_2018</a></span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Charger la base permanente des équipements</span></span>
+<span><span class="va">bpe_ens_2018</span> <span class="op">&lt;-</span> <span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://r.duckdb.org/reference/sql_query.html">sql_query</a></span><span class="op">(</span><span class="st">"</span></span>
+<span><span class="st">  INSTALL httpfs;</span></span>
+<span><span class="st">  LOAD httpfs;</span></span>
+<span><span class="st">  SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/bpe_ens_2018.parquet'</span></span>
+<span><span class="st">"</span><span class="op">)</span></span>
 <span><span class="co"># Convertir ce data.frame en data.table</span></span>
-<span><span class="va">bpe_ens_2018_dt</span> <span class="op">&lt;-</span> <span class="fu">as.data.table</span><span class="op">(</span><span class="va">bpe_ens_2018</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span><span class="va">bpe_ens_2018_dt</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/as.data.table.html">as.data.table</a></span><span class="op">(</span><span class="va">bpe_ens_2018</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section><section id="manipuler-une-seule-table-avec-data.table" class="level3" data-number="19.3.2"><h3 data-number="19.3.2" class="anchored" data-anchor-id="manipuler-une-seule-table-avec-data.table">
 <span class="header-section-number">19.3.2</span> Manipuler une seule table avec <code>data.table</code>
@@ -1038,7 +1026,7 @@ Partir de <code>dt</code>, créer une nouvelle variable <code>newvar</code> qui 
 <span class="header-section-number">19.3.2.1</span> Sélectionner des lignes</h4>
 <p><strong>On peut sélectionner des lignes dans un <code>data.table</code> avec <code>dt[i]</code>.</strong> Voici un exemple de code qui sélectionne les magasins de chaussures (<code>TYPEQU == "B304"</code>) dans le premier arrondissement de Paris (<code>DEPCOM == "75101"</code>) dans la table <code>bpe_ens_2018_dt</code> :</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">selection</span> <span class="op">&lt;-</span> <span class="va">bpe_ens_2018_dt</span><span class="op">[</span><span class="va">DEPCOM</span> <span class="op">==</span> <span class="st">"75101"</span> <span class="op">&amp;</span> <span class="va">TYPEQU</span> <span class="op">==</span> <span class="st">"B304"</span><span class="op">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">selection</span> <span class="op">&lt;-</span> <span class="va">bpe_ens_2018_dt</span><span class="op">[</span><span class="va">DEPCOM</span> <span class="op">==</span> <span class="st">"75101"</span> <span class="op">&amp;</span> <span class="va">TYPEQU</span> <span class="op">==</span> <span class="st">"B304"</span><span class="op">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1060,14 +1048,14 @@ Note
 <li>La première consiste à indiquer les colonnes à conserver sous forme de liste. La notation <code>.()</code> est un alias pour <code><a href="https://rdrr.io/r/base/list.html">list()</a></code> qui est pratique et concis dans un code <code>data.table</code>. Le code suivant sélectionne le code commune, le type d’équipement et le nombre d’équipement dans la base permanente des équipements, de deux façons équivalentes :</li>
 </ul>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">DEPCOM</span>, <span class="va">TYPEQU</span>, <span class="va">NB_EQUIP</span><span class="op">)</span><span class="op">]</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">DEPCOM</span>, <span class="va">TYPEQU</span>, <span class="va">NB_EQUIP</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , <span class="fu">.</span><span class="op">(</span><span class="va">DEPCOM</span>, <span class="va">TYPEQU</span>, <span class="va">NB_EQUIP</span><span class="op">)</span><span class="op">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <ul>
 <li>La seconde méthode consiste à utiliser un mot-clé de <code>data.table</code>, <code>.SD</code> qui signifie <code>Subset of Data</code>. On indique les colonnes qui seront aliasées par <code>.SD</code> avec la dimension <code>.SDcols</code>.</li>
 </ul>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , <span class="va">.SD</span>, .SDcols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"DEPCOM"</span>, <span class="st">"TYPEQU"</span>, <span class="st">"NB_EQUIP"</span><span class="op">)</span><span class="op">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , <span class="va">.SD</span>, .SDcols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"DEPCOM"</span>, <span class="st">"TYPEQU"</span>, <span class="st">"NB_EQUIP"</span><span class="op">)</span><span class="op">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1087,7 +1075,7 @@ Note
 </h4>
 <p><strong>On peut trier un <code>data.table</code> avec la fonction <code><a href="https://rdrr.io/r/base/order.html">order()</a></code>.</strong> Le code suivant trie la BPE selon le code commune et le type d’équipement.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="va">DEPCOM</span>, <span class="va">TYPEQU</span><span class="op">)</span><span class="op">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="va">DEPCOM</span>, <span class="va">TYPEQU</span><span class="op">)</span><span class="op">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>         REG DEP DEPCOM DCIRIS   AN TYPEQU NB_EQUIP
       1:  84  01  01001  01001 2018   A401        2
@@ -1103,13 +1091,13 @@ Note
 </div>
 <p>Il suffit d’ajouter un signe <code>-</code> devant une variable pour trier par ordre décroissant. Le code suivant trie la BPE par code commune croissant et type d’équipement décroissant.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="va">DEPCOM</span>, <span class="op">-</span><span class="va">TYPEQU</span><span class="op">)</span><span class="op">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="va">DEPCOM</span>, <span class="op">-</span><span class="va">TYPEQU</span><span class="op">)</span><span class="op">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section><section id="calculer-des-statistiques" class="level4" data-number="19.3.2.4"><h4 data-number="19.3.2.4" class="anchored" data-anchor-id="calculer-des-statistiques">
 <span class="header-section-number">19.3.2.4</span> Calculer des statistiques</h4>
 <p><strong>La méthode pour sélectionner des colonnes est également valable pour calculer des statistiques, car <code>data.table</code> accepte les expressions dans <code>j</code>.</strong> Le code suivant calcule le nombre total d’équipements dans la BPE, <code>sum(NB_EQUIP, na.rm = TRUE)</code> :</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , <span class="fu">.</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , <span class="fu">.</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        V1
 1: 2504782</code></pre>
@@ -1117,7 +1105,7 @@ Note
 </div>
 <p>Il est possible de calculer plusieurs statistiques à la fois, et de donner des noms aux variables ; il suffit de séparer les formules par une virgule. Le code suivant calcule le nombre total d’équipements dans la BPE <code>sum(NB_EQUIP, na.rm = TRUE)</code>, et le nombre total de boulangeries <code>sum(NB_EQUIP * (TYPEQU == "B203"), na.rm = TRUE)</code>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , </span>
 <span>                 <span class="fu">.</span><span class="op">(</span>NB_EQUIP_TOT   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>                   NB_BOULANG_TOT <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span> <span class="op">*</span> <span class="op">(</span><span class="va">TYPEQU</span> <span class="op">==</span> <span class="st">"B203"</span><span class="op">)</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -1127,7 +1115,7 @@ Note
 </div>
 <p><strong>On peut évidemment combiner <code>i</code> et <code>j</code> pour calculer des statistiques sur un sous-ensemble d’observations.</strong> Dans l’exemple suivant, on sélectionne les boulangeries avec <code>i</code>, <code>(TYPEQU == "B203")</code>, et on calcule le nombre total d’équipements avec <code>j</code>, <code>sum(NB_EQUIP, na.rm = TRUE)</code>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span><span class="va">TYPEQU</span> <span class="op">==</span> <span class="st">"B203"</span>, <span class="fu">.</span><span class="op">(</span>NB_BOULANG_TOT <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span><span class="va">TYPEQU</span> <span class="op">==</span> <span class="st">"B203"</span>, <span class="fu">.</span><span class="op">(</span>NB_BOULANG_TOT <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   NB_BOULANG_TOT
 1:          48568</code></pre>
@@ -1204,7 +1192,7 @@ Note
 </ul>
 <p>Le code suivant groupe les données de la BPE par département, <code>by = .(DEP)</code>, puis calcule le nombre total d’équipements, <code>sum(NB_EQUIP, na.rm = TRUE)</code> et le nombre total de boulangeries, <code>sum(NB_EQUIP * (TYPEQU == "B203"), na.rm = TRUE)</code>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb32"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , </span>
 <span>                 <span class="fu">.</span><span class="op">(</span>NB_EQUIP_TOT <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>                   NB_BOULANG_TOT <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">NB_EQUIP</span> <span class="op">*</span> <span class="op">(</span><span class="va">TYPEQU</span> <span class="op">==</span> <span class="st">"B203"</span><span class="op">)</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>, </span>
 <span>                 by <span class="op">=</span> <span class="fu">.</span><span class="op">(</span><span class="va">DEP</span><span class="op">)</span><span class="op">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1334,12 +1322,16 @@ Tip
 <li>
 <code>value.name</code> : le nom de la nouvelle colonne qui contient la valeur des variables transposées.</li>
 </ul>
-<p>Pour illustrer l’usage de cette fonction, nous allons utiliser les données du répertoire Filosofi 2016 agrégées au niveau des EPCI (table <code>filosofi_epci_2016</code>), et disponibles dans le package <code>doremifasolData</code>. On convertit cette table en <code>data.table</code> et on conserve uniquement certaines variables.</p>
+<p>Pour illustrer l’usage de cette fonction, nous allons utiliser les données du répertoire Filosofi 2016 agrégées au niveau des EPCI (table <code>filosofi_epci_2016</code>), et disponibles sur S3. On convertit cette table en <code>data.table</code> et on conserve uniquement certaines variables.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb34"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Charger la table de Filosofi</span></span>
-<span><span class="va">filosofi_epci_2016</span> <span class="op">&lt;-</span> <span class="fu">doremifasolData</span><span class="fu">::</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData/reference/filosofi_epci_2016.html">filosofi_epci_2016</a></span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Charger la table de Filosofi</span></span>
+<span><span class="va">filosofi_epci_2016</span> <span class="op">&lt;-</span> <span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://r.duckdb.org/reference/sql_query.html">sql_query</a></span><span class="op">(</span><span class="st">"</span></span>
+<span><span class="st">  INSTALL httpfs;</span></span>
+<span><span class="st">  LOAD httpfs;</span></span>
+<span><span class="st">  SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/filosofi_epci_2016.parquet'</span></span>
+<span><span class="st">"</span><span class="op">)</span></span>
 <span><span class="co"># Convertir la table en data.table</span></span>
-<span><span class="va">filosofi_epci_2016_dt</span> <span class="op">&lt;-</span> <span class="fu">as.data.table</span><span class="op">(</span><span class="va">filosofi_epci_2016</span><span class="op">)</span></span>
+<span><span class="va">filosofi_epci_2016_dt</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/as.data.table.html">as.data.table</a></span><span class="op">(</span><span class="va">filosofi_epci_2016</span><span class="op">)</span></span>
 <span><span class="co"># Sélectionner des colonnes</span></span>
 <span><span class="va">filosofi_epci_2016_dt</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="va">filosofi_epci_2016_dt</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span><span class="va">CODGEO</span>, <span class="va">TP6016</span>, <span class="va">TP60AGE116</span>, <span class="va">TP60AGE216</span>, </span>
@@ -1347,7 +1339,7 @@ Tip
 </div>
 <p>Nous allons restructurer cette table pour obtenir une nouvelle table, avec une observation par EPCI et par tranche d’âge. Voici le code qui permet d’obtenir cette table : on indique dans <code>measure.vars</code> le nom des colonnes qui seront transposées, le nom des colonnes transposées sera indiqué dans la nouvelle colonne “tranche_age” (<code>variable.name = "tranche_age"</code>) et les valeurs des colonnes transposées seront stockées dans la colonne “taux_pauvrete” (<code>value.name = "taux_pauvrete"</code>).</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">donnees_pauvrete_long</span> <span class="op">&lt;-</span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb34"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">donnees_pauvrete_long</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="fu">melt</span><span class="op">(</span>data <span class="op">=</span> <span class="va">filosofi_epci_2016_dt</span>, </span>
 <span>       id.vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"CODGEO"</span><span class="op">)</span>, </span>
 <span>       measure.vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"TP6016"</span>, <span class="st">"TP60AGE116"</span>, <span class="st">"TP60AGE216"</span>, </span>
@@ -1406,7 +1398,7 @@ Tip
 </ul>
 <p>Dans l’exemple qui suit, on réorganise la table <code>bpe_ens_2018_dt</code> de façon à obtenir une table qui contient une ligne par type d’équipement et une colonne par région (<code>TYPEQU ~ REG</code>). Ces colonnes vont contenir la somme (<code>fun.aggregate = sum</code>) du nombre d’équipements (<code>value.var = "NB_EQUIP"</code>).</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb37"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_wide</span> <span class="op">&lt;-</span> <span class="fu">dcast</span><span class="op">(</span><span class="va">bpe_ens_2018_dt</span>, </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_wide</span> <span class="op">&lt;-</span> <span class="fu">dcast</span><span class="op">(</span><span class="va">bpe_ens_2018_dt</span>, </span>
 <span>                           <span class="va">TYPEQU</span> <span class="op">~</span> <span class="va">REG</span>, </span>
 <span>                           value.var <span class="op">=</span> <span class="st">"NB_EQUIP"</span>, </span>
 <span>                           fun.aggregate <span class="op">=</span> <span class="va">sum</span><span class="op">)</span></span>
@@ -1423,7 +1415,7 @@ Tip
 </div>
 <p><strong>Il est possible d’utiliser <code>dcast()</code> avec plusieurs variables à transposer et plusieurs fonctions pour transposer.</strong> Dans l’exemple qui suit, on obtient une ligne par type d’équipement, et une colonne par région et par fonction d’agrégation (<code>mean</code> et <code>sum</code>).</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb39"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_wide2</span> <span class="op">&lt;-</span> <span class="fu">dcast</span><span class="op">(</span><span class="va">bpe_ens_2018_dt</span>, </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb38"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_wide2</span> <span class="op">&lt;-</span> <span class="fu">dcast</span><span class="op">(</span><span class="va">bpe_ens_2018_dt</span>, </span>
 <span>                            <span class="va">TYPEQU</span> <span class="op">~</span> <span class="va">REG</span>, </span>
 <span>                            value.var <span class="op">=</span> <span class="st">"NB_EQUIP"</span>, </span>
 <span>                            fun.aggregate <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">sum</span>, <span class="va">mean</span><span class="op">)</span><span class="op">)</span></span>
@@ -1536,7 +1528,7 @@ Tip
 <li>
 <p>On peut obtenir des <strong>noms de colonnes peu significatifs</strong> lorsqu’on utilise <code>dcast()</code> avec une fonction d’agrégation. Il est conseillé de modifier légèrement la partie droite de la formule pour obtenir des noms plus significatifs. Voici un exemple où on ajoute le préfixe <code>resultat_region</code> :</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb41"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_wide2</span> <span class="op">&lt;-</span> <span class="fu">dcast</span><span class="op">(</span><span class="va">bpe_ens_2018_dt</span>, </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb40"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_wide2</span> <span class="op">&lt;-</span> <span class="fu">dcast</span><span class="op">(</span><span class="va">bpe_ens_2018_dt</span>, </span>
 <span>                         <span class="va">TYPEQU</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"resultat_region"</span>,<span class="va">REG</span><span class="op">)</span>, </span>
 <span>                         value.var <span class="op">=</span> <span class="st">"NB_EQUIP"</span>, </span>
 <span>                         fun.aggregate <span class="op">=</span> <span class="va">sum</span><span class="op">)</span></span>
@@ -1595,7 +1587,7 @@ Note
 <div class="callout-body-container callout-body">
 <p><strong>Il est conseillé de bien réfléchir avant de restructurer des données en format <em>wide</em>, et de ne le faire que lorsque cela paraît indispensable</strong>. En effet, s’il est tentant de restructurer les données sous format <em>wide</em> car ce format peut paraître plus intuitif, il est généralement plus simple et plus rigoureux de traiter les données en format <em>long</em>. Ceci dit, il existe des situations dans lesquelles il est indiqué de restructurer les données en format <em>wide</em>. Voici deux exemples :</p>
 <ul>
-<li>produire un tableau synthétique de résultats, prêt à être diffusé, avec quelques colonnes donnant des indicateurs par catégorie (exemple : la table <code>filosofi_epci_2016</code> du <em>package</em> <code>doremifasolData</code>) ;</li>
+<li>produire un tableau synthétique de résultats, prêt à être diffusé, avec quelques colonnes donnant des indicateurs par catégorie (exemple : la table <code>filosofi_epci_2016</code>) ;</li>
 <li>produire une table avec une colonne par année, de façon à calculer facilement un taux d’évolution entre deux dates.</li>
 </ul>
 </div>
@@ -1615,7 +1607,7 @@ Note
 <span class="header-section-number">19.4</span> La fonction d’assignation par référence (ou <code>:=</code>)</h2>
 <p>Jusqu’à présent, nous avons manipulé un <code>data.table</code> existant, mais nous ne lui avons pas ajouté de nouvelles colonnes. Pour ce faire, nous allons utiliser la fonction <code>:=</code> qui s’appelle “<em>assignation par référence</em>” et qui peut également s’appeler comme une fonction <code>`:=`()</code>, prenant ses arguments entre parenthèses. Voici comment on crée une nouvelle colonne dans <code>bpe_ens_2018_dt</code> :</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb43"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , <span class="va">nouvelle_colonne</span> <span class="op">:=</span>  <span class="va">NB_EQUIP</span> <span class="op">*</span> <span class="fl">10</span><span class="op">]</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb42"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , <span class="va">nouvelle_colonne</span> <span class="op">:=</span>  <span class="va">NB_EQUIP</span> <span class="op">*</span> <span class="fl">10</span><span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">bpe_ens_2018_dt</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   REG DEP DEPCOM DCIRIS   AN TYPEQU NB_EQUIP nouvelle_colonne
@@ -1658,7 +1650,7 @@ Commentaire
 </td>
 <td>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb45"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018</span> <span class="op">&lt;-</span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb44"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="va">bpe_ens_2018</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>nouvelle_colonne <span class="op">=</span>  <span class="va">NB_EQUIP</span> <span class="op">*</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -1675,7 +1667,7 @@ Il faut utiliser une assignation (<code>&lt;-</code>) pour modifier la table.
 </td>
 <td>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb46"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , <span class="va">nouvelle_colonne</span> <span class="op">:=</span>  <span class="va">NB_EQUIP</span> <span class="op">*</span> <span class="fl">10</span><span class="op">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb45"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , <span class="va">nouvelle_colonne</span> <span class="op">:=</span>  <span class="va">NB_EQUIP</span> <span class="op">*</span> <span class="fl">10</span><span class="op">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </td>
 <td>
@@ -1691,12 +1683,12 @@ Il ne faut pas d’assignation pour modifier la table, qui est modifiée par ré
 <span class="header-section-number">19.4.2.1</span> Créer plusieurs variables à la fois</h4>
 <p>Voici comment créer plusieurs variables à la fois avec <code>:=</code>, en utilisant une notation vectorielle :</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb47"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"nouvelle_colonne1"</span>, <span class="st">"nouvelle_colonne2"</span><span class="op">)</span> <span class="op">:=</span>  </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb46"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"nouvelle_colonne1"</span>, <span class="st">"nouvelle_colonne2"</span><span class="op">)</span> <span class="op">:=</span>  </span>
 <span>                   <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">NB_EQUIP</span> <span class="op">*</span> <span class="fl">2</span>, <span class="va">NB_EQUIP</span> <span class="op">+</span> <span class="fl">3</span><span class="op">)</span><span class="op">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>On peut faire exactement la même chose en utilisant la notation <code>`:=`()</code>. Voici le même exemple écrit avec <code>`:=`()</code>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb48"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , <span class="fu">`:=`</span><span class="op">(</span>nouvelle_colonne1 <span class="op">=</span> <span class="va">NB_EQUIP</span> <span class="op">*</span> <span class="fl">2</span>,</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb47"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , <span class="fu">`:=`</span><span class="op">(</span>nouvelle_colonne1 <span class="op">=</span> <span class="va">NB_EQUIP</span> <span class="op">*</span> <span class="fl">2</span>,</span>
 <span>                        nouvelle_colonne2 <span class="op">=</span> <span class="va">NB_EQUIP</span> <span class="op">+</span> <span class="fl">3</span><span class="op">)</span><span class="op">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
@@ -1711,7 +1703,7 @@ Note
 <div class="callout-body-container callout-body">
 <p>Si vous utilisez la notation<code>`:=`()</code>, alors il faut utiliser uniquement <code>=</code> à l’intérieur des parenthèses pour créer ou modifier des variables, et non <code>:=</code>. Par exemple,</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb49"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">dt</span><span class="op">[</span> , <span class="fu">`:=`</span><span class="op">(</span>var1 <span class="op">=</span> <span class="st">"Hello"</span>, var2 <span class="op">=</span> <span class="st">"world"</span><span class="op">)</span><span class="op">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb48"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">dt</span><span class="op">[</span> , <span class="fu">`:=`</span><span class="op">(</span>var1 <span class="op">=</span> <span class="st">"Hello"</span>, var2 <span class="op">=</span> <span class="st">"world"</span><span class="op">)</span><span class="op">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 </div>
@@ -1719,13 +1711,13 @@ Note
 <span class="header-section-number">19.4.2.2</span> Supprimer une colonne</h4>
 <p>On peut facilement supprimer une colonne en lui assignant la valeur <code>NULL</code> (c’est hyper rapide !). Voici un exemple :</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb50"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , <span class="va">NB_EQUIP</span> <span class="op">:=</span> <span class="cn">NULL</span><span class="op">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb49"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , <span class="va">NB_EQUIP</span> <span class="op">:=</span> <span class="cn">NULL</span><span class="op">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section><section id="faire-un-remplacement-conditionnel" class="level4" data-number="19.4.2.3"><h4 data-number="19.4.2.3" class="anchored" data-anchor-id="faire-un-remplacement-conditionnel">
 <span class="header-section-number">19.4.2.3</span> Faire un remplacement conditionnel</h4>
 <p>La fonction <code>:=</code> peut être utilisée pour modifier une colonne pour certaines lignes seulement, en fonction d’une condition logique. C’est beaucoup plus efficace qu’un terme <code><a href="https://dplyr.tidyverse.org/reference/if_else.html">dplyr::if_else()</a></code> ou <code><a href="https://dplyr.tidyverse.org/reference/case-and-replace-when.html">dplyr::case_when()</a></code>. Imaginons qu’on veuille créer une colonne <code>EQUIP_HORS_CHAUSS</code> égale au nombre d’équipements (<code>NB_EQUIP</code>) sauf pour les lignes correspondantes à des magasins de chaussures (<code>TYPEQU == "B304"</code>) où elle vaut <code>NA</code>. Dans ce cas, le code <code>dplyr</code> serait :</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb51"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018</span> <span class="op">%&gt;%</span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb50"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018</span> <span class="op">%&gt;%</span> </span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>NB_EQUIP_HORS_CHAUSS <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/case-and-replace-when.html">case_when</a></span><span class="op">(</span></span>
 <span>    <span class="va">TYPEQU</span> <span class="op">==</span> <span class="st">"B304"</span> <span class="op">~</span> <span class="cn">NA_real_</span>,</span>
 <span>    <span class="cn">TRUE</span> <span class="op">~</span> <span class="va">NB_EQUIP</span><span class="op">)</span></span>
@@ -1733,12 +1725,12 @@ Note
 </div>
 <p>Deux alternatives existent en <code>data.table</code> nécessitant toutes deux beaucoup moins de mémoire vive :</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb52"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , <span class="va">NB_EQUIP_HORS_CHAUSS</span> <span class="op">:=</span> <span class="va">NB_EQUIP</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb51"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , <span class="va">NB_EQUIP_HORS_CHAUSS</span> <span class="op">:=</span> <span class="va">NB_EQUIP</span></span>
 <span>                 <span class="op">]</span><span class="op">[</span><span class="va">TYPEQU</span> <span class="op">==</span> <span class="st">"B304"</span>, <span class="va">NB_EQUIP_HORS_CHAUSS</span> <span class="op">:=</span> <span class="cn">NA_real_</span><span class="op">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>ou bien en utilisant la fonction <code><a href="https://rdrr.io/pkg/data.table/man/fcase.html">data.table::fcase</a></code> dont le fonctionnement ressemble à celui de <code><a href="https://dplyr.tidyverse.org/reference/case-and-replace-when.html">dplyr::case_when</a></code> :</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb53"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , <span class="va">NB_EQUIP_HORS_CHAUSS</span> <span class="op">:=</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fcase.html">fcase</a></span><span class="op">(</span><span class="va">TYPEQU</span> <span class="op">==</span> <span class="st">"B304"</span>, <span class="cn">NA_real_</span>,</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb52"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , <span class="va">NB_EQUIP_HORS_CHAUSS</span> <span class="op">:=</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fcase.html">fcase</a></span><span class="op">(</span><span class="va">TYPEQU</span> <span class="op">==</span> <span class="st">"B304"</span>, <span class="cn">NA_real_</span>,</span>
 <span>                                                   <span class="va">TYPEQU</span> <span class="op">!=</span> <span class="st">"B304"</span>, <span class="va">NB_EQUIP</span><span class="op">)</span></span>
 <span>                                                   <span class="op">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -1750,35 +1742,41 @@ Note
 <li>
 <p><strong>Vous pouvez faire appel à d’autres fonctions à l’intérieur de la fonction <code>:=</code>.</strong> Par exemple, si on veut mettre la variable <code>name</code> en minuscules, on peut utiliser la fonction <code><a href="https://rdrr.io/r/base/chartr.html">tolower()</a></code>. On écrit alors :</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb54"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">dt</span><span class="op">[</span> , <span class="va">name_minuscule</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/chartr.html">tolower</a></span><span class="op">(</span><span class="va">name</span><span class="op">)</span><span class="op">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb53"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">dt</span><span class="op">[</span> , <span class="va">name_minuscule</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/chartr.html">tolower</a></span><span class="op">(</span><span class="va">name</span><span class="op">)</span><span class="op">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </li>
 <li>
 <p>Lorsque l’on crée plusieurs variables avec la fonction <code>:=</code>, elles sont créées en même temps. <strong>On ne peut donc pas faire appel dans une formule à une variable qu’on crée dans le même appel à la fonction <code>:=</code>.</strong> Par exemple, le code suivant <em>ne fonctionne pas</em> :</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb55"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , <span class="fu">`:=`</span><span class="op">(</span>nouvelle_colonne1 <span class="op">=</span>  <span class="va">NB_EQUIP</span> <span class="op">*</span> <span class="fl">2</span>,</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb54"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , <span class="fu">`:=`</span><span class="op">(</span>nouvelle_colonne1 <span class="op">=</span>  <span class="va">NB_EQUIP</span> <span class="op">*</span> <span class="fl">2</span>,</span>
 <span>                        nouvelle_colonne2 <span class="op">=</span>  <span class="va">nouvelle_colonne1</span> <span class="op">+</span> <span class="fl">3</span><span class="op">)</span><span class="op">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>En effet, au moment où la fonction <code>:=</code> est exécutée, la colonne <code>nouvelle_colonne1</code> n’existe pas encore, donc la formule <code>nouvelle_colonne2 = nouvelle_colonne1 + 3</code> n’a pas encore de sens. Si vous créez des variables en chaîne, il faut décomposer l’opération en plusieurs étapes enchaînées. Voici le code qui permet de créer les deux colonnes à la suite :</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb56"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , <span class="va">nouvelle_colonne1</span> <span class="op">:=</span>  <span class="va">NB_EQUIP</span> <span class="op">*</span> <span class="fl">2</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb55"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bpe_ens_2018_dt</span><span class="op">[</span> , <span class="va">nouvelle_colonne1</span> <span class="op">:=</span>  <span class="va">NB_EQUIP</span> <span class="op">*</span> <span class="fl">2</span></span>
 <span>                <span class="op">]</span><span class="op">[</span> , <span class="va">nouvelle_colonne2</span> <span class="op">:=</span>  <span class="va">nouvelle_colonne1</span> <span class="op">+</span> <span class="fl">3</span><span class="op">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </li>
 <li>
 <p><strong>Un mauvais usage de la fonction <code>:=</code> peut vous amener à écraser par erreur vos données.</strong> En effet, si vous exécuter par erreur la commande <code>dt[ , ma_variable_importante := 0]</code>, vous écrasez la variable <code>ma_variable_importante</code>. Vous devez alors recharger vos données… Il faut donc bien réfléchir à ce que vous voulez faire avant de remplacer ou modifier une variable existante avec la fonction <code>:=</code>. Si vous modifiez un <code>data.table</code> dans une fonction, un filet de sécurité consiste à d’abord copier le <code>data.table</code> initial et ainsi faire les modifications sur le nouvel objet, de la manière suivante :</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb57"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span>  <span class="va">dt_copy</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/copy.html">copy</a></span><span class="op">(</span><span class="va">dt</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb56"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span>  <span class="va">dt_copy</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/copy.html">copy</a></span><span class="op">(</span><span class="va">dt</span><span class="op">)</span></span>
 <span>  <span class="va">dt_copy</span><span class="op">[</span>, <span class="va">ma_variable_importante</span> <span class="op">:=</span> <span class="st">"Nouvelle valeur"</span><span class="op">]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </li>
 </ul></section><section id="programmer-des-fonctions-avec-data.table" class="level2" data-number="19.5"><h2 data-number="19.5" class="anchored" data-anchor-id="programmer-des-fonctions-avec-data.table">
 <span class="header-section-number">19.5</span> Programmer des fonctions avec <code>data.table</code>
 </h2>
-<p>Une des forces de <code>data.table</code> est qu’il est relativement simple d’utiliser ce <em>package</em> dans des fonctions. Pour illustrer l’usage des fonctions, nous allons utiliser la table <code>filosofi_com_2016</code> disponible dans le <em>package</em> <code>doremifasolData</code>. Cette table donne des informations sur les revenus des ménages au niveau communal. Nous créons une variable donnant le numéro du département (<code>departement</code>) en extrayant les deux premiers caractères du code commune (<code>CODGEO</code>) avec la fonction <code>str_sub</code> du <em>package</em> <code>stringr</code> (vous pouvez consulter la fiche [Manipuler des données textuelles pour en apprendre davantage sur <code>stringr</code>]). Enfin, nous utilisons la fonction <code>.SD</code> pour sélectionner uniquement quelques variables.</p>
+<p>Une des forces de <code>data.table</code> est qu’il est relativement simple d’utiliser ce <em>package</em> dans des fonctions. Pour illustrer l’usage des fonctions, nous allons utiliser la table <code>filosofi_com_2016</code> disponible sur le <a href="https://datalab.sspcloud.fr/s3/?profile=default">stockage de données (dit S3) du sspcloud</a>. Cette table donne des informations sur les revenus des ménages au niveau communal. Nous créons une variable donnant le numéro du département (<code>departement</code>) en extrayant les deux premiers caractères du code commune (<code>CODGEO</code>) avec la fonction <code>str_sub</code> du <em>package</em> <code>stringr</code> (vous pouvez consulter la fiche [Manipuler des données textuelles pour en apprendre davantage sur <code>stringr</code>]). Enfin, nous utilisons la fonction <code>.SD</code> pour sélectionner uniquement quelques variables.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb58"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Charger la table de données et la transformer en data.table</span></span>
-<span><span class="va">filosofi_com_2016_dt</span> <span class="op">&lt;-</span> <span class="fu">as.data.table</span><span class="op">(</span><span class="fu">doremifasolData</span><span class="fu">::</span><span class="va"><a href="https://InseeFrLab.github.io/DoReMIFaSolData/reference/filosofi_com_2016.html">filosofi_com_2016</a></span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb57"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Charger la table de données et la transformer en data.table</span></span>
+<span><span class="va">filosofi_com_2016_dt</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/as.data.table.html">as.data.table</a></span><span class="op">(</span></span>
+<span>  <span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://r.duckdb.org/reference/sql_query.html">sql_query</a></span><span class="op">(</span><span class="st">"</span></span>
+<span><span class="st">    INSTALL httpfs;</span></span>
+<span><span class="st">    LOAD httpfs;</span></span>
+<span><span class="st">    SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/filosofi_com_2016.parquet'</span></span>
+<span><span class="st">  "</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
 <span><span class="co"># Créer une variable donnant le département</span></span>
 <span><span class="va">filosofi_com_2016_dt</span><span class="op">[</span>, <span class="va">departement</span> <span class="op">:=</span> <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_sub.html">str_sub</a></span><span class="op">(</span><span class="va">CODGEO</span>, start <span class="op">=</span> <span class="fl">1L</span>, end <span class="op">=</span> <span class="fl">2L</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co"># Supprimer les départements d'outre-mer</span></span>
@@ -1794,14 +1792,14 @@ Note
 <p>Le mot clé <code>.SD</code> (<em>Subset of Data</em>) permet d’appliquer la même opération sur plusieurs colonnes. Les colonnes auxquelles l’opération s’applique sont contrôlées par l’argument <code>.SDcols</code> (par défaut, toutes les colonnes sont traitées). Le mot clé <code>.SD</code> est régulièrement utilisé en conjonction avec la fonction <code>lapply</code>. <strong>Cette syntaxe, très puissante, permet également d’avoir des codes assez compacts, ce qui les rend plus lisible.</strong></p>
 <p>Un usage classique de ce duo <code>lapply</code>+<code>.SD</code> consiste à écrire des fonctions de statistiques descriptives. Par exemple, imaginons qu’on souhaite calculer la moyenne, l’écart-type et les quantiles (P25, P50 et P75) de nombreuses colonnes. On peut alors définir la fonction suivante :</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb59"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">mes_statistiques</span> <span class="op">&lt;-</span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb58"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">mes_statistiques</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">x</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, </span>
 <span>                       <span class="fu"><a href="https://rdrr.io/r/stats/sd.html">sd</a></span><span class="op">(</span><span class="va">x</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, </span>
 <span>                       <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html">quantile</a></span><span class="op">(</span><span class="va">x</span>, probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">.25</span>,<span class="fl">.5</span>,<span class="fl">.75</span><span class="op">)</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Voici comment on peut appliquer cette fonction aux colonnes <code>NBMENFISC16</code> (nombre de ménages fiscaux) et <code>NBPERSMENFISC16</code> (nombre de personnes dans les ménages fiscaux) de la table <code>filosofi_com_2016_dt</code> :</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb60"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">data_agregee</span> <span class="op">&lt;-</span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb59"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">data_agregee</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="va">filosofi_com_2016_dt</span><span class="op">[</span> ,</span>
 <span>                        <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">.SD</span>, <span class="va">mes_statistiques</span><span class="op">)</span>, </span>
 <span>                        .SDcols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"NBMENFISC16"</span>, <span class="st">"NBPERSMENFISC16"</span><span class="op">)</span><span class="op">]</span></span>
@@ -1818,7 +1816,7 @@ Note
 </div>
 <p><strong>Il est également très simple d’effectuer des calculs par groupe avec la méthode <code>lapply</code>+<code>.SD</code>.</strong> On peut par facilement adapter le code précédent pour calculer des statistiques descriptives par département (variable <code>departement</code>).</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb62"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">data_agregee</span> <span class="op">&lt;-</span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb61"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">data_agregee</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="va">filosofi_com_2016_dt</span><span class="op">[</span> ,</span>
 <span>                        <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">.SD</span>, <span class="va">mes_statistiques</span><span class="op">)</span>, </span>
 <span>                        by <span class="op">=</span> <span class="va">departement</span>,</span>
@@ -1831,7 +1829,7 @@ Note
 </h3>
 <p><strong>Il est très facile d’écrire avec <code>data.table</code> des fonctions génériques faisant appel à des noms de variables en arguments.</strong> Pour déclarer à <code>data.table</code> qu’un nom fait référence à une colonne, la manière la plus simple est d’utiliser la fonction <code>get</code>. Dans l’exemple suivant, on définit la fonction <code>creation_var</code> qui crée dans la table <code>data</code> une nouvelle variable (dont le nom est l’argument <code>nouveau_nom</code>) égale à une autre variable incrémentée (dont le nom est l’argument <code>nom_variable</code>) de 1. L’utilisation de la fonction <code>get</code> permet d’indiquer à <code>data.table</code> que la chaîne de caractères <code>nom_variable</code> désigne une colonne de la table <code>data</code>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb63"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">creation_var</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">nom_variable</span>, <span class="va">nouveau_nom</span><span class="op">)</span><span class="op">{</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb62"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">creation_var</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">nom_variable</span>, <span class="va">nouveau_nom</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="va">data</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">nouveau_nom</span><span class="op">)</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/get.html">get</a></span><span class="op">(</span><span class="va">nom_variable</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span><span class="op">]</span></span>
 <span><span class="op">}</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="fu">creation_var</span><span class="op">(</span><span class="va">filosofi_com_2016_dt</span>, </span>
