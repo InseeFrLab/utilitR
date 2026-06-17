@@ -107,30 +107,38 @@ Voici un exemple : la fiche sur la manipulation de données textuelles commence 
 
 Ces jeux de données sont mis à disposition par l'intermédiaire d'un _package_ nommé `doremifasolData` développé par les contributeurs du projet `utilitR`. La documentation détaillée de ce _package_ est disponible [sur GitHub](https://inseefrlab.github.io/DoReMIFaSolData/).
 
-Voici la liste des tables disponibles dans `doremifasolData` :
+Comme les bonnes pratiques sont de stocker le code sur Git et les données sur un serveur de stockage (S3 pour le SSPCloud et LS3), les tables de sortie du package `doremifasolData` ont aussi été stockées sur un serveur S3 du SSPCloud à l'adresse https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/ au format `.parquet`. 
 
-```{r "contenu_doremifasolData", echo = FALSE, results = "asis"}
-tables <- data(package = "doremifasolData")$results
+Voici la liste des tables disponibles dans `doremifasolData` et stockées sur le S3 du SSPCloud :
 
-output <- 
-  knitr::kable(
-  as.data.frame(list("Table" = tables[, "Item"], "Description" = tables[, "Title"])),
-  format = "html",
-  escape = F, position = "center", full_width = F, align="cl") %>%
-  kableExtra::column_spec(1, width = "4cm") %>%
-  kableExtra::column_spec(2, width = "13cm") %>% 
-  kableExtra::row_spec(0, bold=TRUE, align = "c")
-output
-```
+| Table | Description | Chemin S3 |
+| --- | --- | --- |
+| bpe_ens_2018 | Base Permanente des Équipements 2018 | [s3/projet-formation/diffusion/utilitR/doremifasoldata/bpe_ens_2018.parquet](https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/bpe_ens_2018.parquet) |
+| cog_com_2019 | Code Officiel Géographique 2019 | [s3/projet-formation/diffusion/utilitR/doremifasoldata/cog_com_2019.parquet](https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/cog_com_2019.parquet) |
+| data_iris_paris_2017 | Données sociales sur les IRIS de Paris 2017 | [s3/projet-formation/diffusion/utilitR/doremifasoldata/data_iris_paris_2017.parquet](https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/data_iris_paris_2017.parquet) |
+| filosofi_com_2016 | Données sur les revenus et la pauvreté en 2016, niveau communal | [s3/projet-formation/diffusion/utilitR/doremifasoldata/filosofi_com_2016.parquet](https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/filosofi_com_2016.parquet) |
+| filosofi_epci_2016 | Données sur les revenus et la pauvreté en 2016, niveau EPCI | [s3/projet-formation/diffusion/utilitR/doremifasoldata/filosofi_epci_2016.parquet](https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/filosofi_epci_2016.parquet) |
 
 ::: {.callout-note}
 
 Le package tire son nom de son "grand frère", le _package_ [`doremifasol`](https://inseefrlab.github.io/DoReMIFaSol). Ce _package_ a pour finalité de charger dans `R` des données disponibles sur le site de l'Insee, sans que l'utilisateur n'ait ni à naviguer sur ce site, ni à effectuer l'import des données. Tous les jeux de données présents dans `doremifasolData` ont été téléchargés avec `doremifasol`.
 :::
 
+
 ### Comment installer le _package_ `doremifasolData`
 
-Le _package_ `doremifasolData` n'est pas disponible sur le répertoire central des _packages_ `R` (le CRAN). Pour installer installer le _package_, il est nécessaire d'exécuter les deux commandes suivantes :
+Vous n'avez pas besoin d'installer le _package_ `doremifasolData`. Le code va directement télécharger les données depuis le S3 du SSPCloud avec une requête SQL de la forme :
+
+```{r, eval = FALSE}
+duckdb::sql_query("
+  INSTALL httpfs;
+  LOAD httpfs;
+  SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/cog_com_2019.parquet'
+")  |>
+  dplyr::slice_head(n = 5)
+```
+
+Cependant, si vous voulez utiliser le _package_ `doremifasolData`, il n'est pas disponible sur le répertoire central des _packages_ `R` (le CRAN). Pour installer installer le _package_, il est nécessaire d'exécuter les deux commandes suivantes :
 
 ```{r, eval = FALSE}
 install.packages("remotes")
@@ -140,7 +148,7 @@ remotes::install_github("InseeFrLab/doremifasolData", ref = "main")
 ::: {.callout-warning}
 ## Spécificité Insee
 
-Si vous utilisez `R` sur un poste Insee (y compris en télétravail) ou dans l'environnement de travail AUS, il faut exécuter la commande suivante :
+Si vous utilisez `R` sur un poste Insee (y compris en télétravail) ou dans l'environnement de travail AUS, les données du SSPCloud ne sont pas accessibles. Il faut alors utiliser directement le package `doremifasolData` pour accéder aux données. Pour installer le _package_ `doremifasolData`, il est nécessaire d'exécuter la commande suivante :
 
 ```{r, eval = FALSE}
 install.packages(
