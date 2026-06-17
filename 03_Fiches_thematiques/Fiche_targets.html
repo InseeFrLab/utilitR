@@ -881,7 +881,7 @@ Tip
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_make.html">tar_make</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>+ csv_file dispatched
-✔ csv_file completed [63ms, 4.19 MB]
+✔ csv_file completed [65ms, 4.19 MB]
 + raw_filosofi_epci dispatched
 Rows: 34932 Columns: 29
 ── Column specification ────────────────────────────────────────────────────────
@@ -891,12 +891,12 @@ dbl (27): NBMENFISC16, NBPERSMENFISC16, MED16, PIMP16, TP6016, TP60AGE116, T...
 
 ℹ Use `spec()` to retrieve the full column specification for this data.
 ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-✔ raw_filosofi_epci completed [135ms, 961.60 kB]
+✔ raw_filosofi_epci completed [138ms, 961.60 kB]
 + grandes_villes dispatched
 ✔ grandes_villes completed [7ms, 1.48 kB]
 + prop_sup_25k dispatched
 ✔ prop_sup_25k completed [3ms, 154 B]
-✔ ended pipeline [790ms, 4 completed, 0 skipped]</code></pre>
+✔ ended pipeline [750ms, 4 completed, 0 skipped]</code></pre>
 </div>
 </div>
 <p>Lorsque la chaîne de traitement est de taille relativement modeste (comme ici), on peut la visualiser avec la fonction <code>tar_visnetwork</code>:</p>
@@ -968,10 +968,10 @@ Note
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_make.html">tar_make</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>+ grandes_villes dispatched
-✔ grandes_villes completed [9ms, 70.69 kB]
+✔ grandes_villes completed [8ms, 70.69 kB]
 + prop_sup_25k dispatched
 ✔ prop_sup_25k completed [4ms, 160 B]
-✔ ended pipeline [452ms, 2 completed, 2 skipped]
+✔ ended pipeline [416ms, 2 completed, 2 skipped]
 Warning message:
 In dir.create("data") : 'data' already exists</code></pre>
 </div>
@@ -1071,7 +1071,7 @@ Note
 </ul>
 <section id="concevoir-un-rapport-en-sortie-de-chaîne-de-traitement" class="level3" data-number="11.5.1"><h3 data-number="11.5.1" class="anchored" data-anchor-id="concevoir-un-rapport-en-sortie-de-chaîne-de-traitement">
 <span class="header-section-number">11.5.1</span> Concevoir un rapport en sortie de chaîne de traitement</h3>
-<p>Le <em>package</em> <code>tarchetypes</code> est un complément utile. Ce <em>package</em> permet d’intégrer simplement des rapports <code>Rmarkdown</code> dans la pipeline avec <code>tarchetypes::tar_render()</code>. L’essentiel des calculs doit être en amont du rapport markdown, qui doit être rapide à exécuter.</p>
+<p>Le <em>package</em> <code>tarchetypes</code> est un complément utile. Ce <em>package</em> permet d’intégrer simplement des rapports <code>Rmarkdown</code> dans la pipeline avec <code><a href="https://docs.ropensci.org/tarchetypes/reference/tar_render.html">tarchetypes::tar_render()</a></code>. L’essentiel des calculs doit être en amont du rapport markdown, qui doit être rapide à exécuter.</p>
 <p>Par exemple, on peut écrire un Rmarkdown <code>report.Rmd</code> considéré comme une des cibles de l’analyse (par exemple, c’est le compte-rendu de l’analyse), et qui dépend d’autres cibles. On souhaite également qu’il soit reproductible, et mis à jour automatiquement en fonction des modifications sur les cibles dont il dépend.</p>
 <p>Il suffit d’intégrer ces cibles via <code>tar_read(data)</code> ou <code>tar_load(data)</code> appelé dans un chunk du <code>.Rmd</code>, et de spécifier un <code>_targets.R</code> sur le modèle suivant :</p>
 <div class="cell">
@@ -1082,7 +1082,7 @@ Note
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_target.html">tar_target</a></span><span class="op">(</span><span class="va">data</span>, <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>a <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">9</span><span class="op">)</span>, b <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">9</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  <span class="fu">tar_render</span><span class="op">(</span><span class="va">report</span>, path <span class="op">=</span> <span class="st">'report.Rmd'</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://docs.ropensci.org/tarchetypes/reference/tar_render.html">tar_render</a></span><span class="op">(</span><span class="va">report</span>, path <span class="op">=</span> <span class="st">'report.Rmd'</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section><section id="utiliser-des-objets-issus-dune-chaîne-de-traitement-dans-un-r-markdown" class="level3" data-number="11.5.2"><h3 data-number="11.5.2" class="anchored" data-anchor-id="utiliser-des-objets-issus-dune-chaîne-de-traitement-dans-un-r-markdown">
