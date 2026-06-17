@@ -428,19 +428,22 @@ Il est préférable d'utiliser ces fonctions sur des objets `tibble` plutôt que
 
 ```{r, message = FALSE, warning = FALSE}
 library(dplyr)
-filosofi_com_2016_tbl <- as_tibble(filosofi_com_2016_dt <- data.table::as.data.table(
+filosofi_com_2016_tbl <- as_tibble(
   duckdb::sql_query("
     INSTALL httpfs;
     LOAD httpfs;
     SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/filosofi_com_2016.parquet'
   ")
   )
-cog_com_2019_tbl <- as_tibble(filosofi_com_2016_dt <- data.table::as.data.table(
+
+
+cog_com_2019_tbl <- as_tibble(
   duckdb::sql_query("
     INSTALL httpfs;
     LOAD httpfs;
     SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/cog_com_2019.parquet'
-  "))
+  ")
+  )
 ```
 
 Voici un exemple dans lequel on utilise la fonction `left_join` pour réaliser une jointure à gauche entre la table des données Filosofi et la table des communes du COG.
