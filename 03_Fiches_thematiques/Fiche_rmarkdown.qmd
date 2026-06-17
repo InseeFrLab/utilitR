@@ -17,10 +17,6 @@ L'utilisateur souhaite produire avec `R` des documents contenant à la fois du t
 * Pour aller plus loin et s'exercer sur `R Markdown`, il est recommandé de lire le chapitre sur `R Markdown` dans la formation [Travail collaboratif avec `R`](https://linogaliana.gitlab.io/collaboratif/rmd.html).
 :::
 
-::: {.callout-note}
-Certains exemples de cette fiche utilisent les données disponibles dans le _package_ `doremifasolData` ; vous ne pourrez reproduire ces exemples que si ce _package_ est installé sur la machine sur laquelle vous travaillez. Si vous ne savez pas si ce _package_ est déjà installé, consultez la fiche [Comment utiliser la documentation `utilitR`](#presentation-utilitr).
-:::
-
 ## Présentation générale de `R Markdown`
 
 `R Markdown` est une extension de `R` qui se présente sous la forme d'un _package_. `R Markdown` permet de produire des documents texte en y intégrant nativement des morceaux de code `R` (pour le rendre public, pour générer des sorties...). `R Markdown` permet de fluidifier le processus de rédaction d'une publication, en réduisant fortement le nombre de gestes manuels nécessaires pour inclure des graphiques ou du code dans un document : plutôt qu'avoir un code `SAS` ou `Stata` ayant généré des sorties `Excel`/`Calc` intégrées dans un document `Word` ou transformées en table `LaTeX`, on dispose d'un unique document-source qui contient à la fois le texte et les codes qui produisent les sorties du document final. L'utilisation de `R Markdown` facilite la production de publications reproductibles.
@@ -534,13 +530,16 @@ Des éléments supplémentaires de stylisation sont disponibles dans le [guide d
 
 ### Une table basique en `R Markdown`
 
-Supposons, par exemple, qu'on désire faire la liste de toutes les communes dont le libellé contient "Montreuil-sur". On commence par récupérer les données du Code officiel géographique 2019, disponibles dans le _package_ `doremifasolData`. On utilise ensuite le _package_ `stringr` pour repérer les communes dont le libellé contient "Montreuil-sur" (l'usage de ce package est détaillé dans la fiche [Manipuler des données textuelles]).
+Supposons, par exemple, qu'on désire faire la liste de toutes les communes dont le libellé contient "Montreuil-sur". On commence par récupérer les données du Code officiel géographique 2019, disponibles sur le S3 du SSPCloud (et provenant du package `DoremifasolData`). On utilise ensuite le package `stringr` pour repérer les communes dont le libellé contient "Montreuil-sur" (l'usage de ce package est détaillé dans la fiche [Manipuler des données textuelles]).
 
 ```{r}
-library(doremifasolData)
 library(stringr)
 # Charger les données du COG
-cog_com_2019 <- doremifasolData::cog_com_2019
+cog_com_2019 <- duckdb::sql_query("
+  INSTALL httpfs;
+  LOAD httpfs;
+  SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/cog_com_2019.parquet'
+")
 montreuil <- 
   cog_com_2019[stringr::str_detect(cog_com_2019$libelle, "Montreuil-sur"), c("libelle","com")]
 ```
@@ -595,16 +594,19 @@ utilitr::render_rmd("resources/rmarkdown/chunk08.Rmd")
 
 ### Sans passer par un fichier image
 
-`R Markdown` présente l'avantage de pouvoir créer un document sans générer de sorties intermédiaires (tableaux, graphiques...). Si un bloc de code propose d'inséer un graphique dans le document final, le graphique sera automatiquement et directement intégré au document. Par exemple, le bloc suivant permet de représenter l'histogramme des populations communales (avec une échelle logarithmique) à partir des données Filosofi agrégées, disponibles dans le _package_ `doremifasolData`.
+`R Markdown` présente l'avantage de pouvoir créer un document sans générer de sorties intermédiaires (tableaux, graphiques...). Si un bloc de code propose d'inséer un graphique dans le document final, le graphique sera automatiquement et directement intégré au document. Par exemple, le bloc suivant permet de représenter l'histogramme des populations communales (avec une échelle logarithmique) à partir des données Filosofi agrégées, disponibles sur le S3 du SSPCloud.
 
 ```{r chunk09, echo = FALSE, comment = "", eval = FALSE}
 utilitr::render_rmd("resources/rmarkdown/chunk09.Rmd")
 ```
 
 ```{r ggplot2, warning = FALSE, comment = FALSE, message = FALSE, eval = FALSE}
-library(doremifasolData)
 library(ggplot2)
-filosofi_com_2016 <- doremifasolData::filosofi_com_2016
+filosofi_com_2016 <- duckdb::sql_query("
+    INSTALL httpfs;
+    LOAD httpfs;
+    SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/filosofi_com_2016.parquet'
+  ")
 ggplot(data = filosofi_com_2016) +
   geom_histogram(aes(x = NBPERSMENFISC16, y = ..density..)) +
   xlab("Nombre de personnes") + ylab("Densité") +
