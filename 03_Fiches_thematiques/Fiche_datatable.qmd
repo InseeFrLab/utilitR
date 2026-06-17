@@ -410,9 +410,13 @@ Pour illustrer l'usage de cette fonction, nous allons utiliser les données du r
 
 ```{r}
 # Charger la table de Filosofi
-filosofi_epci_2016 <- doremifasolData::filosofi_epci_2016
+filosofi_epci_2016 <- duckdb::sql_query("
+  INSTALL httpfs;
+  LOAD httpfs;
+  SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/filosofi_epci_2016.parquet'
+")
 # Convertir la table en data.table
-filosofi_epci_2016_dt <- as.data.table(filosofi_epci_2016)
+filosofi_epci_2016_dt <- data.table::as.data.table(filosofi_epci_2016)
 # Sélectionner des colonnes
 filosofi_epci_2016_dt <- 
   filosofi_epci_2016_dt[, .(CODGEO, TP6016, TP60AGE116, TP60AGE216, 
@@ -669,11 +673,17 @@ L'utilisation de la fonction `:=` est déroutante lorsqu'on découvre `data.tabl
 
 ## Programmer des fonctions avec `data.table`
 
-Une des forces de `data.table` est qu'il est relativement simple d'utiliser ce _package_ dans des fonctions. Pour illustrer l'usage des fonctions, nous allons utiliser la table `filosofi_com_2016` disponible dans le _package_ `doremifasolData`. Cette table donne des informations sur les revenus des ménages au niveau communal. Nous créons une variable donnant le numéro du département (`departement`) en extrayant les deux premiers caractères du code commune (`CODGEO`) avec la fonction `str_sub` du _package_ `stringr` (vous pouvez consulter la fiche [Manipuler des données textuelles pour en apprendre davantage sur `stringr`]). Enfin, nous utilisons la fonction `.SD` pour sélectionner uniquement quelques variables.
+Une des forces de `data.table` est qu'il est relativement simple d'utiliser ce _package_ dans des fonctions. Pour illustrer l'usage des fonctions, nous allons utiliser la table `filosofi_com_2016` disponible sur le [stockage de données (dit S3) du sspcloud](https://datalab.sspcloud.fr/s3/?profile=default). Cette table donne des informations sur les revenus des ménages au niveau communal. Nous créons une variable donnant le numéro du département (`departement`) en extrayant les deux premiers caractères du code commune (`CODGEO`) avec la fonction `str_sub` du _package_ `stringr` (vous pouvez consulter la fiche [Manipuler des données textuelles pour en apprendre davantage sur `stringr`]). Enfin, nous utilisons la fonction `.SD` pour sélectionner uniquement quelques variables.
 
 ```{r}
 # Charger la table de données et la transformer en data.table
-filosofi_com_2016_dt <- as.data.table(doremifasolData::filosofi_com_2016)
+filosofi_com_2016_dt <- data.table::as.data.table(
+  duckdb::sql_query("
+    INSTALL httpfs;
+    LOAD httpfs;
+    SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/filosofi_com_2016.parquet'
+  ")
+)
 # Créer une variable donnant le département
 filosofi_com_2016_dt[, departement := stringr::str_sub(CODGEO, start = 1L, end = 2L)]
 # Supprimer les départements d'outre-mer
