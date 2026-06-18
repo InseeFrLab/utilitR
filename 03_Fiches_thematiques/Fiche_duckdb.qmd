@@ -355,7 +355,9 @@ Avec DuckDB, on peut matérialiser un résultat à l'aide de requêtes SQL de de
 - **Une table** : les données sont calculées et stockées physiquement (en mémoire ou sur disque). C'est utile si le calcul est long et que vous souhaitez réutiliser le résultat plusieurs fois sans le recalculer.
 - **Une vue (view)** : aucune donnée n'est stockée. Une vue n'est qu'un raccourci vers une requête SQL qui sera ré-exécutée à chaque utilisation. Elle ne consomme pas de mémoire.
 
-En pratique, préférez toujours une vue si vous n'avez pas besoin de conserver le résultat durablement.
+En pratique, préférez toujours une vue si vous n'avez pas besoin de conserver le résultat durablement. Ce schéma résume l'utilisation de `TABLE` ou `VIEW` selon le contexte du traitement :
+
+![](../resources/img/arbre_decision_duckdb.png)
 
 Pour créer une table ou une vue, on utilise `DBI::dbExecute()` qui envoie une instruction SQL à DuckDB :
   
@@ -367,7 +369,7 @@ DBI::dbExecute(conn_ddb, "
                FROM bpe_ens_2018_duckdb 
                GROUP BY REG") # Utilise de la mémoire
 
-# Créer une vue dans la base de données DuckDB (Recommandé)
+# Créer une vue dans la base de données DuckDB
 DBI::dbExecute(conn_ddb, "
                CREATE VIEW bpe_ens_2018_view AS 
                SELECT REG, SUM(NB_EQUIP) AS NB_EQUIP_TOT 
