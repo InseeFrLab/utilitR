@@ -1,31 +1,42 @@
 on:
   pull_request:
+    types:
+    - opened
+    - reopened
+    - synchronize # When the ref of the branch is updated (= commit to the branch to merge)
+    - closed # Including closed to remove preview when PR is closed.
     branches: main
 
 name: Quarto Preview
 
+concurrency:
+  group: ${{ github.workflow }}-pr-${{ github.event.pull_request.number }}  # Unique Quarto Preview per PR
+  cancel-in-progress: true
+
 jobs:
   build-preview:
+    if: github.event.action != 'closed' # If closing the PR, no publishing
     runs-on: ubuntu-latest
     permissions:
-      contents: read
-      pull-requests: write
+      contents: write  # For pushing to gh-pages branch
+      pull-requests: write  # For permissions to write comments on PRs
+    container:
+      image: inseefrlab/onyxia-r-minimal:r4.6.0
+      options: --user root  # Force root user
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
-
-      - name: Install R
-        uses: r-lib/actions/setup-r@v2
-        with:
-          r-version: '4.6'
+        uses: actions/checkout@v6
 
       - name: Install dependencies
         run: |
-          sudo ./docker/dependencies.sh
           curl -sSL https://raw.githubusercontent.com/A2-ai/rv/refs/heads/main/scripts/install.sh | bash
-          export PATH="~/.local/bin:$PATH"
-          source ~/.bashrc
+          export PATH="$HOME/.local/bin:$PATH"  # Use $HOME instead of ~ for reliability
+          . ~/.bashrc  # no source command for this container, so use . instead
           rv sync
+
+      - name: Don't publish CNAME for preview
+        run: |
+          rm CNAME
 
       - name: Set up Quarto environment
         uses: quarto-dev/quarto-actions/setup@v2
@@ -37,19 +48,46 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./_site
+          publish_dir: ./_public
           destination_dir: previews/pr-${{ github.event.pull_request.number }}
           keep_files: true
 
-      - name: Comment PR with preview link
-        uses: actions/github-script@v7
+      - name: Comment PR (custom)
+        uses: marocchino/sticky-pull-request-comment@v3
         with:
-          script: |
-            const pr_number = context.issue.number;
-            const preview_url = `https://${{ github.repository_owner }}.github.io/utilitR/previews/pr-${pr_number}/`;
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `🔍 Preview deployed! View it here: [PR #${pr_number} Preview](${preview_url})`
-            });
+          header: pr-preview
+          message: |
+            :rocket: View preview at <br> ${{ steps.deploy-preview.outputs.preview-url }} <br>
+            <h6>Built to branch <a href="${{ github.server_url }}/${{ github.repository }}/tree/gh-pages"> gh-pages </a> at ${{ steps.deploy-preview.outputs.action-start-time }}. <br> Preview will be ready when the <a href="${{ github.server_url }}/${{ github.repository }}/deployments">GitHub Pages deployment</a> is complete. <br> </h6>
+  
+
+# For this workflow only
+  delete-preview:
+    if: github.event.action == 'closed' # Only run when PR is closed
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Required for gh-pages pushes
+      pull-requests: write  # Required to comment PR
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0 # To enable full access to Git repo
+          ref: ${{ github.event.pull_request.head.ref }} # Reference of the commit to checkout to. To ensure it's the one of the PR
+          repository: ${{github.event.pull_request.head.repo.full_name}} # Reference to the branch to checkout to. Useful with PR from forks
+
+      - name: Remove preview
+        id: remove-preview
+        uses: rossjrw/pr-preview-action@v1.8.1
+        with:
+          action: remove
+          umbrella-dir: previews  
+          token: ${{ secrets.GITHUB_TOKEN }}  
+
+      - name: Comment PR that preview was removed
+        uses: marocchino/sticky-pull-request-comment@v3
+        with:
+          header: pr-preview
+          message: |
+            Preview removed because the pull request was closed.
+            ${{ steps.remove-preview.outputs.action-start-time }}
