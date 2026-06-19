@@ -265,7 +265,7 @@ Une fois cette table de secret créée, il suffit de lancer la requête SQL avec
 ```{r, eval=FALSE}
 bpe_ens_2018_s3 <- DBI::dbGetQuery(con, glue::glue(
         " SELECT *
-          FROM read_parquet('s3://{BUCKET}/XXX.parquet')
+          FROM read_parquet('https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/bpe_ens_2018.parquet')
         ")
     )
 ```
@@ -445,9 +445,6 @@ dbExecute(conn_ddb,
 )
 ```
 
-:::
-
-
 ### Écriture au format Parquet {#sec-ecrire-parquet}
 
 Pour écrire une table (ou le résultat de n'importe quelle requête) sur le disque au format Parquet avec `duckdb`, il faut utiliser l'instruction SQL `COPY ... TO ... (FORMAT PARQUET)`
@@ -493,13 +490,21 @@ con <- DBI::dbConnect(drv = duckdb::duckdb())
 # Chargement des données
 
 ## 1 - Directement dans la session R, puis dans la base duckdb
-bpe_ens_2018 <- doremifasolData::bpe_ens_2018 |> as_tibble()
+bpe_ens_2018 <- duckdb::sql_query("
+  INSTALL httpfs;
+  LOAD httpfs;
+  SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/bpe_ens_2018.parquet'
+") |> as_tibble()
+
 con %>% duckdb::duckdb_register(
   name = "bpe_ens_2018_duckdb", 
   df = bpe_ens_2018)
 
+# Cette ligne permet l'export de la table afin de tester la deuxième méthode d'import
+DBI::dbExecute(con, "COPY bpe_ens_2018_duckdb TO 'bpe_ens_2018.parquet' (FORMAT PARQUET)")
+
 ## 2 - Depuis un fichier stocké sur le disque dur (ou dans un service)
-bpe_ens_2018_dataset <- conn_ddb %>% tbl("read_parquet('XXX.parquet')")
+bpe_ens_2018_dataset <- con %>% tbl("read_parquet('bpe_ens_2018.parquet')")
 
 ## 3 - Depuis un fichier stocké sur le S3 
 # création de la table des secrets
@@ -520,8 +525,10 @@ DBI::dbExecute(con, sprintf("
 ))
 
 bpe_ens_2018_s3 <- DBI::dbGetQuery(con, glue::glue(
-        " SELECT *
-          FROM read_parquet('s3://{BUCKET}/XXX.parquet')
+        " INSTALL httpfs;
+          LOAD httpfs;
+          SELECT *
+          FROM read_parquet('https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/bpe_ens_2018.parquet')
         ")
     )
 
@@ -530,14 +537,14 @@ bpe_ens_2018_s3 <- DBI::dbGetQuery(con, glue::glue(
 ## 1 - avec SQL
 
 ### a - Créer une View
-DBI::dbExecute(conn_ddb, "
+DBI::dbExecute(con, "
   CREATE VIEW bpe_ens_2018_view AS 
   SELECT REG, SUM(NB_EQUIP) AS NB_EQUIP_TOT 
   FROM bpe_ens_2018_duckdb 
   GROUP BY REG")
 
 ### b - Créer une table duckdb
-DBI::dbExecute(conn_ddb, "
+DBI::dbExecute(con, "
   CREATE TABLE bpe_ens_2018_table AS 
   SELECT REG, SUM(NB_EQUIP) AS NB_EQUIP_TOT 
   FROM bpe_ens_2018_duckdb 
