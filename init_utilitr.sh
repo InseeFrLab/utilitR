@@ -3,8 +3,8 @@ curl -sSL https://raw.githubusercontent.com/A2-ai/rv/refs/heads/main/scripts/ins
 export PATH="~/.local/bin:$PATH"
 source ~/.bashrc
 
-if [ -d "/home/onyxia/work/utilitr" ]; then
-  cd /home/onyxia/work/utilitr
+if [ -d "/home/onyxia/work/utilitR" ]; then
+  cd /home/onyxia/work/utilitR
   rv sync
 else
   git clone https://github.com/inseefrlab/utilitr
