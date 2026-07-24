@@ -6,7 +6,7 @@ Il est possible de contribuer au projet `utilitR` de différentes manières, dé
 
 > [!TIP]
 >**Il n'est pas nécessaire d'être un expert en `R` pour contribuer au projet `utilitR`.** En revanche, il est nécessaire de s'inscrire dans le fonctionnement
-des contributeurs actuels, fonctionnement qui est orchestré autour de `Github` et de ses différents outils.
+des contributeurs actuels, fonctionnement qui est orchestré autour de `GitHub` et de ses différents outils.
 Il est possible d'en acquérir très rapidement les bases à partir de [cette formation](https://inseefrlab.github.io/formation-bonnes-pratiques-git-R/) ou à partir d'échanges avec les contributeurs actuels.
 
 Un environnement prêt à l'emploi pour l'exécution des scripts est disponible sur le `SSPCloud`. Il est présenté dans une section dédiée.
@@ -16,13 +16,13 @@ Un environnement prêt à l'emploi pour l'exécution des scripts est disponible 
 
 [:arrow_up: Retour à l'introduction](#one-introduction)
 
-Pour ce type de modifications, il est demandé d'utiliser directement l'outil de suggestions de changements de `Github`. Le livre déployé sur https://book.utilitr.org comprend un bouton `Edit` qui permet de proposer, automatiquement, des modifications via l'interface de  `Github`. 
+Pour ce type de modifications, il est demandé d'utiliser directement l'outil de suggestions de changements de `GitHub`. Le livre déployé sur https://book.utilitr.org comprend un bouton `Edit` qui permet de proposer, automatiquement, des modifications via l'interface de  `GitHub`. 
 
 ## :three: Comment participer aux discussions collectives?
 
 [:arrow_up: Retour à l'introduction](#one-introduction)
 
-L'équipe du projet `utilitR` dispose d'un espace de discussion collective sur les problèmes techniques et les développements futurs du projet. Cet espace de discussion est stocké sur le dépôt `Github` du projet et est structuré sous forme d'_issues_.
+L'équipe du projet `utilitR` dispose d'un espace de discussion collective sur les problèmes techniques et les développements futurs du projet. Cet espace de discussion est stocké sur le dépôt `GitHub` du projet et est structuré sous forme d'_issues_.
 
 Une *issue* est un fil de discussion permettant aux contributeurs du projet (mais aussi aux personnes extérieures) d'échanger sur un sujet précis (défini par le titre de l'*issue*). Vous
 pouvez consulter la liste des *issues* ouvertes
@@ -47,7 +47,7 @@ son organisation globale.
 
 Le lieu idéal de retour de la part d'un relecteur ou d'une relectrice dépend du type de modification envisagée :
 
-* Proposer des corrections mineures (faute d'orthographes, formulations peu claires) : il est recommandé de passer directement par l'interface de Github ; 
+* Proposer des corrections mineures (faute d'orthographes, formulations peu claires) : il est recommandé de passer directement par l'interface de GitHub ; 
 * Pour des problèmes plus importants, il est possible d'ouvrir une *issue*
 
 ## :five: Comment modifier ou ajouter une nouvelle fiche à la documentation? 
@@ -58,14 +58,14 @@ Le lieu idéal de retour de la part d'un relecteur ou d'une relectrice dépend d
 > Ajouter une nouvelle fiche thématique à la documentation représente un travail conséquent qui requiert l'approbation de la majorité des contributeurs du projet.
 
 La première étape consiste à __ouvrir une *issue*__ dans le
-dépôt `Github`. 
+dépôt `GitHub`. 
 
 Une fois que l'équipe de contributeurs est d'accord sur l'objet de la fiche et les grandes lignes de son contenu, la fiche peut être rédigée en suivant la procédure décrite ci-dessous.
 
 > [!CAUTION]
 > Ne pas travailler sur la branche `main` de son fork. Celle-ci servira à mettre à jour le fork pour intégrer les dernières mises à jour de la documentation `utilitR`.
 
-Plutôt que d'utiliser un environnement en local dont la configuration peut différer de manière parfois significative avec l'environnement canonique qui sert à générer la documentation `utilitR` sous Github, il est recommandé d'utiliser le service RStudio du `SSPCloud`.
+Plutôt que d'utiliser un environnement en local dont la configuration peut différer de manière parfois significative avec l'environnement canonique qui sert à générer la documentation `utilitR` sous GitHub, il est recommandé d'utiliser le service RStudio du `SSPCloud`.
 
 #### Lancer le service RStudio configuré sur le `SSPCloud`
 
@@ -73,10 +73,10 @@ Pour contribuer à `utilitR`, il est possible de créer un service RStudio enti�
 
 1. Mettre de côté l'URL de votre *fork* du projet `utilitR` (celui terminant par `.git`)
 2. Copier-coller le lien préconfiguré pour ouvrir l'interface de configuration de votre service
-3. Dans l'onglet `Git`, coller l'URL de votre dépôt `Github` 
+3. Dans l'onglet `Git`, coller l'URL de votre dépôt `GitHub` 
 4. Lancer la création du service, attendre puis ouvrir lorsque celui-ci est prêt. Vous devriez avoir un RStudio prêt à l'emploi.
 5. Faire des modifications et tester le bon fonctionnement en prévisualisant le résultat
-6. Soumettre ces modifications par une *pull request* après les avoir poussées sur Github. 
+6. Soumettre ces modifications par une *pull request* après les avoir poussées sur GitHub. 
 
 > [!NOTE]  
 > S'il est nécessaire d'utiliser un nouveau *package* R, par exemple `toto`, il faut l'installer via la commande `rv add toto` en ligne de commande
@@ -110,4 +110,3 @@ Il est recommandé de lancer régulièrement des compilations de la documentatio
 Pendant ce temps, vous pouvez commencer à tester vos modifications: la prévisualisation se rafraîchira régulièrement. 
 
 Si vous devez ajouter des packages, par exemple `toto`, il faut taper la commande `rv add toto`. 
-

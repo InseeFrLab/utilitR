@@ -26,7 +26,7 @@ Cette documentation ne prétend pas être exhaustive ou sans erreurs. **Elle doi
 
 **Le projet `utilitR` repose sur cinq principes: transparence, ouverture, bienveillance, exigence, reproductibilité.**
 
-- Transparence: l'ensemble du projet est librement accessible sur le [dépôt Github](https://github.com/InseeFrLab/utilitR), sous licence libre;
+- Transparence: l'ensemble du projet est librement accessible sur le [dépôt GitHub](https://github.com/InseeFrLab/utilitR), sous licence libre;
 - Ouverture: **tout agent de l'Insee qui le souhaite peut rejoindre le projet à tout moment**. Les modalités de contribution peuvent prendre différentes formes, détaillées dans le [guide des contributeurs](CONTRIBUTING.md);
 - Bienveillance: toutes les idées, initiatives et propositions sont les bienvenues, et les contributeurs veillent à se soutenir les uns les autres;
 - Exigence: les modifications de la documentation sont systématiquement soumises à une revue par les contributeurs du projet et ne sont acceptées que lorsqu'elles rencontrent une large approbation;
