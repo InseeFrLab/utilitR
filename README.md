@@ -4,7 +4,7 @@
 <!-- badges: start -->
 [![build-doc Actions Status](https://github.com/InseeFrLab/utilitR/workflows/Production%20de%20la%20documentation/badge.svg)](https://github.com/InseeFrLab/utilitR/actions)
 [![Docker Pulls](https://img.shields.io/docker/pulls/inseefrlab/utilitr)](https://hub.docker.com/repository/docker/inseefrlab/utilitr/general)
-[![SSPcloud](https://img.shields.io/badge/SSPcloud-Tester%20via%20SSP--cloud-informational?logo=R)](https://datalab.sspcloud.fr/launcher/ide/rstudio?autoLaunch=true&onyxia.friendlyName=«utilitr-tester»&init.personalInit=«https%3A%2F%2Fraw.githubusercontent.com%2FInseeFrLab%2FutilitR%2Fmaster%2Fresources%2Finit_9juin.sh»&service.image.version=«inseefrlab%2Futilitr%3Alatest»)
+[![SSPcloud](https://img.shields.io/badge/SSPcloud-Tester%20via%20SSP--cloud-informational?logo=R)](https://datalab.sspcloud.fr/launcher/ide/rstudio?name=rstudio%20utilitr&version=2.4.7&s3=default&init.personalInit=%C2%ABhttps%3A%2F%2Fraw.githubusercontent.com%2FInseeFrLab%2FutilitR%2Frefs%2Fheads%2Fmain%2Finit_utilitr.sh%C2%BB&kubernetes.role=%C2%ABadmin%C2%BB&git.repository=%C2%ABhttps%3A%2F%2Fgithub.com%2Finseefrlab%2Futilitr.git%C2%BB&networking.user.enabled=true&autoLaunch=false)
 <!-- badges: end -->
 
 <br>
@@ -25,15 +25,15 @@ disponible. Chaque fiche, disponible sur le site web, peut être imprimée
 avec une mise en page agréable grâce à un bouton dédié sur le site web.
 
 Les exemples sont construits sur des données ouvertes, disponibles sur www.insee.fr. 
-Le package [`doremifasolData`](https://github.com/InseeFrLab/DoReMIFaSolData) facilite
-l'import de ces données dans la documentation. Le modèle de document est
+Le modèle de document est
 encapsulé dans un *package* `R` dédié: https://github.com/InseeFrLab/utilitr-template 
 
 L'ensemble des ressources du projet `utilitR` sont disponibles sur https://www.utilitr.org
 
-Un environnement prêt à l'emploi est disponible pour les utilisateurs du `SSPCloud` en cliquant sur le [lien suivant](https://datalab.sspcloud.fr/launcher/ide/rstudio?autoLaunch=false&init.personalInit=%C2%ABhttps%3A%2F%2Fgithub.com%2FInseeFrLab%2FutilitR%2Fblob%2Fmaster%2Finit_utilitr.sh%C2%BB&service.image.custom.enabled=true&service.image.custom.version=%C2%ABinseefrlab%2Futilitr%3Alatest%C2%BB) [![SSPcloud](https://img.shields.io/badge/SSPcloud-Tester%20via%20SSP--cloud-informational?logo=R)](https://datalab.sspcloud.fr/launcher/ide/rstudio?autoLaunch=false&init.personalInit=%C2%ABhttps%3A%2F%2Fgithub.com%2FInseeFrLab%2FutilitR%2Fblob%2Fmaster%2Finit_utilitr.sh%C2%BB&service.image.custom.enabled=true&service.image.custom.version=%C2%ABinseefrlab%2Futilitr%3Alatest%C2%BB)
+Un environnement prêt à l'emploi est disponible pour les utilisateurs du `SSPCloud` en cliquant sur le [lien suivant](https://datalab.sspcloud.fr/launcher/ide/rstudio?name=rstudio%20utilitr&version=2.4.7&s3=default&init.personalInit=%C2%ABhttps%3A%2F%2Fraw.githubusercontent.com%2FInseeFrLab%2FutilitR%2Frefs%2Fheads%2Fmain%2Finit_utilitr.sh%C2%BB&kubernetes.role=%C2%ABadmin%C2%BB&git.repository=%C2%ABhttps%3A%2F%2Fgithub.com%2Finseefrlab%2Futilitr.git%C2%BB&networking.user.enabled=true&autoLaunch=true) [![SSPcloud](https://img.shields.io/badge/SSPcloud-Tester%20via%20SSP--cloud-informational?logo=R)](https://datalab.sspcloud.fr/launcher/ide/rstudio?name=rstudio%20utilitr&version=2.4.7&s3=default&init.personalInit=«%C2%ABhttps%3A%2F%2Fraw.githubusercontent.com%2FInseeFrLab%2FutilitR%2Frefs%2Fheads%2Fmain%2Finit_utilitr.sh%C2%BB&kubernetes.role=%C2%ABadmin%C2%BB&git.repository=%C2%ABhttps%3A%2F%2Fgithub.com%2Finseefrlab%2Futilitr.git%C2%BB&networking.user.enabled=true&autoLaunch=true)
 
 <br>
+
 
 ## :two: Objectifs de la documentation :book:
 
@@ -80,20 +80,9 @@ la pérennité des traitements statistiques avec `R`.
 Ces principes s'appliquent également à la documentation produite: l'ensemble
 des exemples sont construits à partir de données
 disponibles sur le site www.insee.fr et les morceaux de code présents
-sont faits pour être reproductibles. Pour rendre la documentation plus
-reproductible, un certain nombre d'éléments de formattage ont été intégrés
-dans un package `R` proposant des modèles de documents standardisés. Il
-peut être installé de la manière suivante:
+sont faits pour être reproductibles. 
 
-```r
-# install.packages("remotes")
-remotes::install_github("https://github.com/InseeFrLab/utilitr-template")
-```
-
-Les éléments présents dans la documentation visent à être cohérents avec
-les recommandations émises par le comité de certification des packages `R` (`COPS`),
-organe interne visant à prescrire ou proscrire certains packages dans le cadre
-de la production statistique. 
+La documentation s'appuie sur le logiciel de publication reproductible [Quarto](https://quarto.org/)
 
 Plus d'éléments pour faire tourner les codes sont disponibles 
-dans ce [document](doc/extra_info.md)
+dans le [guide de constribution](CONTRIBUTING.md)

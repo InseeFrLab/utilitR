@@ -17,12 +17,15 @@ knitr::opts_chunk$set(echo = FALSE,
 ```
 
 ```{r load-packages}
-library(doremifasolData)
 library(data.table)
 ```
 
 ```{r importData}
-cog_com_2019 <- as.data.table(doremifasolData::cog_com_2019)
+cog_com_2019 <- data.table::as.data.table(duckdb::sql_query("
+  INSTALL httpfs;
+  LOAD httpfs;
+  SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/cog_com_2019.parquet'
+"))
 ```
 
 ```{r selectData}

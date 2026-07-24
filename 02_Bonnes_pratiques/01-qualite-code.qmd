@@ -181,11 +181,6 @@ avec `lintr::lint`:
 lintr::lint("mesfonctions_pour_faire_ceci.R")
 ```
 
-```{r}
-#| echo: false
-lintr::lint("../mesfonctions_pour_faire_ceci.R")
-```
-
 Le package `styler` propose le même type de fonctions qui vont quant à elles
 modifier le code:
 
@@ -265,7 +260,11 @@ car il est nécessaire d'exécuter le code pour les détecter. Par exemple, le c
 #| error: true
 library(dplyr)
 library(MASS)
-bpe_ens_2018 <- doremifasolData::bpe_ens_2018
+bpe_ens_2018 <- duckdb::sql_query("
+  INSTALL httpfs;
+  LOAD httpfs;
+  SELECT * FROM 'https://minio.lab.sspcloud.fr/projet-formation/diffusion/utilitR/doremifasoldata/bpe_ens_2018.parquet'
+")
 
 nombre <- bpe_ens_2018 %>%
   as_tibble() %>%
